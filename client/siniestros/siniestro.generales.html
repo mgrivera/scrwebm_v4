@@ -1,0 +1,233 @@
+
+<div class="ui-viewBorder">
+
+    <form class="form-horizontal"
+          role="form"
+          name="siniestroForm"
+          novalidate
+          style="margin-top: 15px; text-align: left; font-size: small; ">
+
+        <div class="container-fluid">
+
+            <div class="row">
+                <!-- número -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Número</label><br />
+                        <span  style="color: #337AB7; font-weight: bold; ">
+                            {{ siniestro.numero }}
+                        </span>
+                    </div>
+                </div>
+                <!-- código -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Código</label>
+                        <input type="text"
+                               class="form-control input-sm myinput-sm"
+                               ng-model="siniestro.codigo"
+                               ng-change="setIsEdited()"
+                               ng-model-options="{ updateOn: 'blur' }" />
+                    </div>
+                </div>
+                <!-- referencia -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Referencia</label>
+                        <input type="text"
+                               class="form-control input-sm myinput-sm"
+                               ng-model="siniestro.referencia"
+                               ng-change="setIsEdited()"
+                               ng-model-options="{ updateOn: 'blur' }" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- cedente -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Compañía</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.compania"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.nombre for item in companias | filter: {tipo:'SEG', nosotros:false} | orderBy:'nombre'"
+                                ng-model-options="{ updateOn: 'blur' }"></select>
+                    </div>
+                </div>
+                <!-- moneda -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Moneda</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.moneda"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.descripcion for item in monedas | orderBy:'descripcion'"
+                                ng-model-options="{ updateOn: 'blur' }"></select>
+                    </div>
+                </div>
+                <!-- tipo -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Tipo</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.tipo"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.descripcion for item in tiposSiniestro | orderBy:'descripcion'"
+                                ng-model-options="{ updateOn: 'blur' }"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- asegurado -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Asegurado</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.asegurado"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.nombre for item in asegurados | orderBy:'nombre'"
+                                ng-model-options="{ updateOn: 'blur' }">
+                        </select>
+                    </div>
+                </div>
+                <!-- ramo -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Ramo</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.ramo"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.descripcion for item in ramos | orderBy:'descripcion'"
+                                ng-model-options="{ updateOn: 'blur' }">
+                                <option value=""></option> <!-- not selected / blank option -->
+                            </select>
+                    </div>
+                </div>
+                <!-- ajustador -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Ajustador</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.ajustador"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.nombre for item in companias | filter: {tipo:'AJUST'} | orderBy: 'nombre'"
+                                ng-model-options="{ updateOn: 'blur' }">
+                                <option value=""></option> <!-- not selected / blank option -->
+                            </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- f emisión -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>F emisión</label>
+                        <input type="date"
+                               class="form-control input-sm myinput-sm"
+                               ng-model="siniestro.fechaEmision"
+                               ng-change="setIsEdited()"
+                               ng-required="true"
+                               style="max-width: 180px; " />
+                    </div>
+                </div>
+                <!-- f ocurrencia -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>F ocurrencia</label>
+                        <input type="date"
+                               class="form-control input-sm myinput-sm"
+                               ng-model="siniestro.fechaOcurrencia"
+                               ng-change="setIsEdited()"
+                               ng-required="true"
+                               style="max-width: 180px; " />
+                    </div>
+                </div>
+
+                <!-- f notificación -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group">
+                        <label>F notificación</label>
+                        <input type="date"
+                               class="form-control input-sm myinput-sm"
+                               ng-model="siniestro.fechaNotificacion"
+                               ng-change="setIsEdited()"
+                               ng-required="true"
+                               style="max-width: 180px; " />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- suscriptor -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Suscriptor</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.suscriptor"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.nombre for item in suscriptores | orderBy:'nombre'"
+                                ng-model-options="{ updateOn: 'blur' }"></select>
+                    </div>
+                </div>
+                <!-- causa -->
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Causa</label>
+                        <select class="form-control input-sm myinput-sm"
+                                ng-model="siniestro.causa"
+                                ng-change="setIsEdited()"
+                                ng-options="item._id as item.descripcion for item in causasSiniestro | orderBy:'descripcion'"
+                                ng-model-options="{ updateOn: 'blur' }">
+                                <option value=""></option> <!-- not selected / blank option -->
+                            </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3 col-sm-offset-1">
+                </div>
+
+                <div class="col-sm-3 col-sm-offset-1">
+                </div>
+
+                <div class="col-sm-3 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label>Cia</label><br />
+                        <span>{{ siniestro.cia | empresaUsuariaSeleccionadaFilter }}</span>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1" style="background-color: #F2F2F2; border: 1px solid darkgray; font-size: x-small; ">
+                    <!-- ingreso, ult actualización y usuario  -->
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ingreso: </label>
+                        <br />
+                        <span>{{ siniestro.ingreso | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ siniestro.usuario | userNameOrEmailFilter }} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ult act: </label>
+                        <br />
+                        <span>{{ siniestro.ultAct | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ siniestro.ultUsuario | userNameOrEmailFilter }} </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

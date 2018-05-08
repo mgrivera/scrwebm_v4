@@ -1,0 +1,387 @@
+﻿
+<div class="ui-viewBorder">
+
+    <form class="form-horizontal" role="form" name="riesgoForm" novalidate style="margin-top: 15px; ">
+
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <!-- número -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-2 control-label input-label">Número: </label>
+                        <div class="col-sm-9" style="color: #337AB7; padding-left: 30px; ">
+                            <p class="form-control-static pull-left">{{ riesgo.numero }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- suscriptor -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Suscriptor: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="suscriptor"
+                                    ng-model="riesgo.suscriptor"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.nombre for item in suscriptores | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Código -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Código: </label>
+                        <div class="col-sm-9">
+                            <input type="text"
+                                   name="codigo"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="riesgo.codigo"
+                                   ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Estado: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="estado"
+                                    ng-model="riesgo.estado"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item.estado as item.descripcion for item in estados"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- tipo -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Tipo: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    ng-model="riesgo.tipo"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.descripcion for item in tiposFacultativo"
+                                    ng-model-options="{ updateOn: 'blur' }">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- referencia -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Referencia: </label>
+                        <div class="col-sm-9">
+                            <input type="text"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="riesgo.referencia"
+                                   ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- desde -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Desde: </label>
+                        <div class="col-sm-9">
+                            <input type="date"
+                                   name="desde"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="riesgo.desde"
+                                   ng-change="setIsEdited()"
+                                   ng-required="true"
+                                   style="max-width: 150px; " />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- hasta -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Hasta: </label>
+                        <div class="col-sm-9">
+                            <input type="date"
+                                   name="hasta"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="riesgo.hasta"
+                                   ng-change="setIsEdited()"
+                                   ng-required="true"
+                                   style="max-width: 150px; " />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <!-- moneda -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Moneda: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="moneda"
+                                    ng-model="riesgo.moneda"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.descripcion for item in monedas | orderBy:'descripcion'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- indole -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Indole: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="indole"
+                                    ng-model="riesgo.indole"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.descripcion for item in indoles | orderBy:'descripcion'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- cedente -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Compañía: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="compania"
+                                    ng-model="riesgo.compania"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.nombre for item in companias | filter: {tipo:'SEG', nosotros:false} | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ramo -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Ramo: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="ramo"
+                                    ng-model="riesgo.ramo"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.descripcion for item in ramos | orderBy:'descripcion'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- asegurado -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Asegurado: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="asegurado"
+                                    ng-model="riesgo.asegurado"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.nombre for item in asegurados | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- corredor -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Corredor: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="corredor"
+                                    ng-model="riesgo.corredor"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.nombre for item in companias | filter: {tipo:'CORR', nosotros:false} | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }">
+                                    <option value=""></option> <!-- not selected / blank option -->
+                                </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- objeto asegurado -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Objeto asegurado: </legend>
+
+                        <div class="row">
+
+                            <!-- descripción -->
+                            <div class="col-sm-10 col-sm-offset-1">
+                                <div class="form-group form-group-sm">
+                                    <label for="objetoAseguradoDescripcion" class="control-label input-label pull-left">Descripción: </label>
+                                    <input type="text"
+                                           id="objetoAseguradoDescripcion"
+                                           name="objetoAseguradoDescripcion"
+                                           class="form-control input-sm myinput-sm"
+                                           ng-model="riesgo.objetoAsegurado.descripcion"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           ng-change="setIsEdited()" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <!-- ubicación -->
+                            <div class="col-sm-10 col-sm-offset-1">
+                                <div class="form-group form-group-sm">
+                                    <label for="objetoAseguradoUbicacion" class="control-label input-label pull-left">Ubicación: </label>
+                                    <textarea class="input-sm myinput-sm wide-textarea"
+                                           id="objetoAseguradoUbicacion"
+                                           name="objetoAseguradoUbicacion"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           ng-model="riesgo.objetoAsegurado.ubicacion"
+                                           ng-change="setIsEdited()"
+                                           rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <!-- Renovación -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <fieldset class="scheduler-border" style="margin-left: 35px !important; ">
+                        <legend class="scheduler-border">Renovación: </legend>
+
+                        <div class="row">
+
+                            <!-- renovado por -->
+                            <div class="col-sm-10 col-sm-offset-0">
+                                <div class="form-group form-group-sm">
+                                    <label for="objetoAseguradoDescripcion" class="col-sm-6 control-label input-label pull-left">Renovado por: </label>
+                                    <div class="col-sm-4" style="color: #337AB7; padding-left: 30px; ">
+                                        <p class="form-control-static pull-left">{{ riesgo.renovacion.renovadoPor }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <!-- renueva al -->
+                            <div class="col-sm-10 col-sm-offset-0">
+                                <div class="form-group form-group-sm">
+                                    <label for="objetoAseguradoDescripcion" class="col-sm-6 control-label input-label pull-left">Renueva al: </label>
+                                    <div class="col-sm-4" style="color: #337AB7; padding-left: 30px; ">
+                                        <p class="form-control-static pull-left">{{ riesgo.renovacion.renuevaAl }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <!-- comentarios -->
+                <div class="col-sm-8 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <span class="col-sm-12 textarea-label">Comentarios: </span>
+                        <br />
+                        <div class="col-sm-12">
+                            <textarea class="input-sm myinput-sm wide-textarea"
+                                      name="comentarios"
+                                      ng-model="riesgo.comentarios"
+                                      ng-change="setIsEdited()"
+                                      ng-model-options="{ updateOn: 'blur' }"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-sm-5 col-sm-offset-1">
+                </div>
+
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Cia: </label>
+                        <div class="col-sm-9" style="padding-left: 30px; ">
+                            <p class="form-control-static pull-left">{{ riesgo.cia | empresaUsuariaSeleccionadaFilter }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1" style="background-color: #F2F2F2; border: 1px solid darkgray; font-size: x-small; ">
+
+                    <!-- ingreso, ult actualización y usuario  -->
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ingreso: </label>
+                        <br />
+                        <span>{{ riesgo.ingreso | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ riesgo.usuario | userNameOrEmailFilter }} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ult act: </label>
+                        <br />
+                        <span>{{ riesgo.ultAct | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ riesgo.ultUsuario | userNameOrEmailFilter }} </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>

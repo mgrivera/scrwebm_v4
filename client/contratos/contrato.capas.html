@@ -1,0 +1,127 @@
+﻿
+<div class="ui-viewBorder">
+
+    <div class="row">
+
+        <div class="col-sm-8 col-sm-offset-0">
+
+            <nav class="navbar navbar-default navbar_custom_small" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Capas</a></li>
+
+                            <li><a href="#" ng-click="agregarCapa()" class="navbar_custom_xsmall_node">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="capasDeterminarRegistrosPrimaCompanias()" class="importantLink navbar_custom_xsmall_node">Determinar primas de compañías</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="capas_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 class="angularGrid" style="height: 150px; ">
+            </div>
+
+        </div>
+
+        <div class="col-sm-4 col-sm-offset-0">
+
+            <nav class="navbar navbar-default navbar_custom_small" role="navigation">
+                <div class="container navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Reaseguradores</a></li>
+
+                            <li><a href="#" ng-click="agregarCapaReasegurador()" class="navbar_custom_xsmall_node">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+
+                            <li class="dropdown navbar_custom_small_node">
+                                <a href="#" class="dropdown-toggle navbar_custom_xsmall_node" data-toggle="dropdown" role="button" aria-expanded="false">Otros <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" ng-click="copiarReaseguradoresEntreCapas()" class="navbar_custom_xsmall_node">Copiar reaseguradores entre capas</a></li>
+                                    <li><a href="#" ng-click="refrescarGridCapasReaseguradores()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Refrescar lista <i class="fa fa-refresh"></i></a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="capasReaseguradores_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 class="angularGrid" style="height: 150px; ">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <br />
+        <div class="col-sm-12 col-sm-offset-0">
+
+            <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Primas de compañías</a></li>
+
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="capasPrimasCompaniasCalcular()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                            <li><a href="#" ng-click="generarCuotasCapaSeleccionada()" class="importantLink navbar_custom_xsmall_node">Construir y registrar cuotas</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="capasPrimasCompanias_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide"
+                 style="height: 250px; ">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <br />
+        <div class="col-sm-12 col-sm-offset-0">
+
+            <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Cuotas</a></li>
+
+                            <li><a href="#" ng-click="agregarCapaCuota()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="calcularCapasCuotas()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="capasCuotas_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide"
+                 style="height: 250px; ">
+            </div>
+
+        </div>
+    </div>
+
+</div>

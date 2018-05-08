@@ -1,0 +1,59 @@
+
+<div>
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            <div ng-show="showProgress">
+                <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
+                    ({{ processProgress.current }}/{{ processProgress.max }} - {{ processProgress.progress }})
+                </div>
+                <div ng-show="processProgress.message" style="font-size: x-small; font-weight: bold; ">
+                    ({{ processProgress.message }})
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div class="row" style="text-align: center; ">
+        <div class="col-sm-12 col-sm-offset-0">
+
+            <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Tabla de configuración para el código de contrato <b>{{codigoContrato}}</b></a></li>
+                            <!-- al menos por ahora, impedimos al usuario grabar items a la tabla en forma manual;
+                                 el usuario deberá siempre hacerlo mediante el proceso que permite agregarlos en
+                                 forma automática  -->
+                            <!-- <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li> -->
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="agregarItemsATabla()">Agregar registros a la tabla ... <span class="fa fa-gears"></span></a></li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#" ng-click="regresarALista()" class="navbar_custom_small_node">Regresar ...</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="configuracionContrato_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Auto" style="height: 100%; ">
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,87 @@
+﻿
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-1" style="text-align: left; ">
+            <p>Cobros/Pagos efectuados con la remesa: </p>
+        </div>
+        <div class="col-sm-4 col-sm-offset-0" style="text-align: right; ">
+            <a ui-sref="cobranzas.seleccionRemesa">Hacer nueva cobranza</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <p>
+                {{ remesa.numero }} -
+                {{ remesa.fecha | date:'dd-MM-yyyy'}} -
+                {{ remesa.compania | companiaAbreviaturaFilter }} -
+                {{ remesa.miSu }} -
+                {{ remesa.moneda | monedaSimboloFilter }} -
+                {{ remesa.instrumentoPago.monto | currencyFilter }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <table style="font-size: x-small; " class="table table-condensed table-striped table-bordered table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th style="text-align: center; " colspan="5">Cuota</th>
+                        <th style="text-align: center; " colSpan="4">Pago</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; ">Origen</th>
+
+                        <th style="text-align: center; ">#</th>
+                        <th style="text-align: center; ">Fecha</th>
+                        <th style="text-align: center; ">F venc</th>
+                        <th style="text-align: center; ">Moneda</th>
+                        <th style="text-align: right; ">Monto</th>
+
+                        <th style="text-align: center; ">Moneda</th>
+                        <th style="text-align: center; ">Fecha</th>
+                        <th style="text-align: right; ">Monto</th>
+                        <th style="text-align: center; ">Completo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="pago in pagos">
+
+                        <td style="text-align: center; ">{{ pago.cuota.source.origen }}-{{ pago.cuota.source.numero }}</td>
+
+                        <td style="text-align: center; ">{{ pago.cuota.numero }} de {{ pago.cuota.cantidad }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ pago.cuota.fecha | date:'dd-MM-yyyy' }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ pago.cuota.fechaVencimiento | date:'dd-MM-yyyy' }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ pago.cuota.moneda | monedaSimboloFilter }}</td>
+                        <td style="text-align: right; ">{{ pago.cuota.monto | currencyFilter }}</td>
+
+                        <td style="text-align: center; white-space: nowrap; ">{{ pago.pago.moneda | monedaSimboloFilter }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ pago.pago.fecha | date:'dd-MM-yyyy' }}</td>
+                        <td style="text-align: right; ">{{ pago.pago.monto | currencyFilter }}</td>
+                        <td style="text-align: center; ">{{ pago.pago.completo | boolFilter }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,207 @@
+
+
+
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+        <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        <div ng-show="showProgress">
+            <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
+                ({{ processProgress.current }}/{{ processProgress.max }} - {{ processProgress.progress }})
+            </div>
+            <div ng-show="processProgress.message" style="font-size: x-small; font-weight: bold; ">
+                ({{ processProgress.message }})
+            </div>
+        </div>
+    </div>
+</div>
+    
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+        <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+            <span ng-bind-html="alert.msg | unsafe"></span>
+        </alert>
+    </div>
+</div>
+    
+<div class="row" style="font-size: small; ">
+    <div class="col-sm-10 col-sm-offset-1">
+        <tabset style="text-align: left;">
+                
+            <tab heading="Filtro" active="activeTab.tab1">
+
+                <div class="row">
+                    <form role="form" 
+                          name="myForm.cierreConsulta_Form" 
+                          id="myForm.cierreConsulta_Form" 
+                          novalidate 
+                          ng-submit="submit_cierreConsulta_Form()">
+                        <div class="container-fluid">
+                            
+                            <div class="row" style="margin-top: 20px; ">
+                                <!-- fecha -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-5">
+                                            <label class="control-label input-label">Fecha: </label>
+                                            <input type="date"
+                                                    name="inputFecha1"
+                                                    class="form-control input-sm myinput-sm"
+                                                    ng-model="filtro.fecha1" 
+                                                    required />
+
+                                            <div class="validation-message myinput-xsm"
+                                                ng-show="submitted && myForm.cierreConsulta_Form.inputFecha1.$error.required">
+                                                Indique un valor.
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5">
+                                                <label class="control-label input-label">&nbsp;&nbsp;&nbsp; </label>
+                                            <input type="date"
+                                                    name="inputFecha2"
+                                                    class="form-control input-sm myinput-sm"
+                                                    ng-model="filtro.fecha2" 
+                                                    required />
+
+                                            <div class="validation-message myinput-xsm"
+                                                ng-show="submitted && myForm.cierreConsulta_Form.inputFecha2.$error.required">
+                                                Indique un valor.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="checkbox">
+                                            <label class="control-label myinput-sm" style="margin: 20px 0 0 10px; ">
+                                                <input type="checkbox"
+                                                        ng-model="filtro.cuentasCorrientes"
+                                                        ng-change="setIsEdited('cuentasCorrientes')" 
+                                                        style="margin-top: 0; " />
+                                                <span style="font-weight: bold; ">Cuentas corrientes - contratos proporcionales</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group form-group-sm">
+                                        <div class="checkbox">
+                                            <label class="control-label myinput-sm" style="margin: 0 0 0 25px; ">
+                                                <input type="checkbox"
+                                                        ng-model="filtro.cuentasCorrientes_separarCorretaje"
+                                                        ng-change="setIsEdited('cuentasCorrientes')" 
+                                                        style="margin-top: 0; " />
+                                                <span style="font-weight: bold; ">Separar corretaje de saldo técnico</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 20px; ">
+                                <!-- compañía -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10">
+                                            <label class="control-label input-label">Moneda: </label>
+                                            <select class=" form-control input-sm myinput-sm"
+                                                    ng-model="filtro.moneda"
+                                                    ng-options="item._id as item.simbolo for item in monedas | orderBy:'simbolo'"
+                                                    ng-model-options="{ updateOn: 'blur' }"
+                                                    size="8"
+                                                    multiple="multiple">
+                                            </select>
+                                        </div>  
+                                    </div>
+                                </div>
+                                <!-- moneda -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10">
+                                            <label class="control-label input-label">Compañía: </label>
+                                            <select class=" form-control input-sm myinput-sm"
+                                                    ng-model="filtro.compania"
+                                                    ng-options="item._id as item.nombre for item in companias | orderBy:'nombre'"
+                                                    ng-model-options="{ updateOn: 'blur' }"
+                                                    size="8"
+                                                    multiple="multiple">
+                                            </select>
+                                        </div>  
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 20px; ">
+                                <!-- tipo de negocio  -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10">
+                                            <label class="control-label input-label">Tipos de negocio: </label>
+                                            <select class=" form-control input-sm myinput-sm"
+                                                    ng-model="filtro.tipoNegocio"
+                                                    ng-options="item.tipo as item.descripcion for item in tiposNegocio"
+                                                    ng-model-options="{ updateOn: 'blur' }"
+                                                    ng-disabled="cuentasCorrientes_contratosProporcionales_flag" 
+                                                    size="8"
+                                                    multiple="multiple">
+                                            </select>
+                                        </div>  
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <div class="row">
+                    <hr class="blueLine" />
+
+                    <a href="#" ng-click="limpiarFiltro()" class="btn btn-default btn-sm pull-left" style="min-width: 100px; margin-left: 30px; ">
+                        Limpiar filtro
+                    </a>
+
+                    <button type="submit" form="myForm.cierreConsulta_Form" class="btn btn-primary btn-sm pull-right" style="min-width: 80px; margin-right: 30px; ">
+                        Aplicar filtro
+                    </button>
+                </div>
+            </tab>
+                
+            <tab heading="Lista" active="activeTab.tab2">
+                <div class="row" style="text-align: center; ">
+                    <div class="col-sm-12 col-sm-offset-0">
+
+                        <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                            <div class="container-fluid">
+                                <div class="navbar-collapse collapse">
+                                    <ul class="nav navbar-nav">
+                                        <li><a href="#" class="navbar_custom_small_header">Cierre - Registro - Consulta</a></li>
+                                        <li><a href="#" ng-click="reporteOpcionesModal()" class="navbar_custom_small_node">Reporte&nbsp;&nbsp;<span class="fa fa-print"></span></a></li>
+                                    </ul>
+
+                                    <ul class="nav navbar-nav navbar-right">
+                                        <li><a href="#" ng-click="leerMasRegistros()" class="navbar_custom_small_node_withBackground">Más ...</a></li>
+                                        <li><a href="#" ng-click="leerTodosLosRegistros()" class="navbar_custom_small_node_withBackground">Todo</a></li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </nav>
+
+                        <div ui-grid="consulta_ui_grid"
+                            ui-grid-resize-columns
+                            ui-grid-selection
+                            ui-grid-pinning
+                            class="angularGrid"
+                            style="height: 350px; width: 100%; ">
+                        </div>
+                    </div>
+                </div>
+            </tab>
+
+        </tabset>
+    </div>
+</div>
+        

@@ -1,0 +1,267 @@
+﻿
+<div class="ui-viewBorder">
+
+    <form class="form-horizontal" role="form" name="contratoForm" ng-submit="contratoFormSubmit()" novalidate style="margin-top: 15px; ">
+
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <!-- número -->
+                <div class="col-sm-4 col-sm-offset-2">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-2 control-label input-label">Número: </label>
+                        <div class="col-sm-9" style="color: #337AB7; padding-left: 30px; ">
+                            <p class="form-control-static pull-left">{{ contrato.numero }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- fecha emisión -->
+                <div class="col-sm-4 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Emisión: </label>
+                        <div class="col-sm-9">
+                            <input type="date"
+                                   name="fechaEmision"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contrato.fechaEmision"
+                                   ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-required="true" />
+
+                            <span class="validation-message"
+                                  ng-show="submitted && contratoForm.desde.$error.required">
+                                Indique un valor.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- Código -->
+                <div class="col-sm-4 col-sm-offset-2">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Código: </label>
+                        <div class="col-sm-9">
+                            <input type="text"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contrato.codigo"
+                                   ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- referencia -->
+                <div class="col-sm-4 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Referencia: </label>
+                        <div class="col-sm-9">
+                            <input type="text"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contrato.referencia"
+                                   ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- desde -->
+                <div class="col-sm-4 col-sm-offset-2">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Desde: </label>
+                        <div class="col-sm-9">
+                            <input type="date"
+                                   name="desde"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contrato.desde"
+                                   ng-change="setIsEdited('desde')"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-required="true" />
+
+                            <span class="validation-message"
+                                  ng-show="submitted && contratoForm.desde.$error.required">
+                                Indique un valor.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- hasta -->
+                <div class="col-sm-4 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Hasta: </label>
+                        <div class="col-sm-9">
+                            <input type="date"
+                                   name="hasta"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contrato.hasta"
+                                   ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-required="true" />
+
+                            <span class="validation-message"
+                                  ng-show="submitted && contratoForm.hasta.$error.required">
+                                Indique un valor.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <!-- compañía -->
+                <div class="col-sm-4 col-sm-offset-2">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Compañía: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="compania"
+                                    ng-model="contrato.compania"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.nombre for item in companias | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+
+                            <span class="validation-message"
+                                  ng-show="submitted && contratoForm.compania.$error.required">
+                                Indique un valor.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- tipo -->
+                <div class="col-sm-4 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Tipo: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="tipo"
+                                    ng-model="contrato.tipo"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.descripcion for item in tiposContrato | orderBy:'descripcion'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+
+                            <span class="validation-message"
+                                  ng-show="submitted && contratoForm.tipo.$error.required">
+                                Indique un valor.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- ramo -->
+                <div class="col-sm-4 col-sm-offset-2">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Ramo: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="ramo"
+                                    ng-model="contrato.ramo"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.descripcion for item in ramos | orderBy:'descripcion'"
+                                    ng-model-options="{ updateOn: 'blur' }"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- suscriptor -->
+                <div class="col-sm-4 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Suscriptor: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    name="suscriptor"
+                                    ng-model="contrato.suscriptor"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.nombre for item in suscriptores | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    required></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+
+                <!-- descripcion -->
+                <div class="col-sm-8 col-sm-offset-2">
+                    <div class="form-group form-group-sm">
+                        <span class="col-sm-12 textarea-label">Descripción: </span>
+                        <br />
+                        <div class="col-sm-12">
+                            <textarea class="input-sm myinput-sm wide-textarea"
+                                      name="descripcion"
+                                      ng-model="contrato.descripcion"
+                                      ng-change="setIsEdited()"
+                                      ng-model-options="{ updateOn: 'blur' }"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-sm-4 col-sm-offset-2">
+                </div>
+
+                <div class="col-sm-4 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Cia: </label>
+                        <div class="col-sm-9" style="padding-left: 30px; ">
+                            <p class="form-control-static pull-left">{{ contrato.cia | empresaUsuariaSeleccionadaFilter }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2" style="background-color: #F2F2F2; border: 1px solid darkgray; font-size: x-small; ">
+
+                    <!-- ingreso, ult actualización y usuario  -->
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ingreso: </label>
+                        <br />
+                        <span>{{ contrato.ingreso | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ contrato.usuario | userNameOrEmailFilter }} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ult act: </label>
+                        <br />
+                        <span>{{ contrato.ultAct | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ contrato.ultUsuario | userNameOrEmailFilter }} </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+
+</div>

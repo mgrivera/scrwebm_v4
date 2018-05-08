@@ -1,0 +1,84 @@
+﻿
+
+<div class="row">
+
+    <div class="col-sm-12 col-sm-offset-0">
+
+        <div class="row" style="background-color: #283F51; font-style: italic; color: #B8C0C6; padding-top: 8px; margin-bottom: 10px; margin-left: 3px; margin-right: 3px; ">
+            <div class="col-sm-6 col-sm-offset-0" style="text-align: left; ">
+                <p>
+                    Definiciones de cuentas técnicas
+                </p>
+            </div>
+
+            <div class="col-sm-6 col-sm-offset-0" style="text-align: right; ">
+                <p ng-if="definicionCuentaTecnicaSeleccionada_Info.numero">
+                    Cuenta (definición) seleccionada:
+                    {{ definicionCuentaTecnicaSeleccionada_Info.numero }} -
+                    {{ definicionCuentaTecnicaSeleccionada_Info.moneda }}  -
+                    {{ definicionCuentaTecnicaSeleccionada_Info.desde }}
+                </p>
+        
+                <p ng-if="!definicionCuentaTecnicaSeleccionada_Info.numero">
+                    Cuenta (definición) seleccionada: ninguna
+                </p>
+            </div>
+        </div>
+        
+        <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+            <div class="container-fluid navbar-nopaddingleft">
+                <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#" class="navbar_custom_small_header">Definiciones de cuentas técnicas</a></li>
+
+                        <li><a href="#" ng-click="agregarCuenta()" class="navbar_custom_xsmall_node">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                        <li><a href="#" ng-click="eliminarCuenta()" class="navbar_custom_xsmall_node">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+                        <li class="divider-vertical-small"></li>
+                        <li><a href="#" ng-click="generarCuentas_definiciones()" class="navbar_custom_xsmall_node">Generar cuentas (definición)</a></li>
+                        <li><a href="#" ng-click="generarCuotasCuentaTecnica()" class="navbar_custom_xsmall_node">Generar cuotas</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div ui-grid="cuentasTecnicas_definiciones_ui_grid"
+             ui-grid-edit
+             ui-grid-cellnav
+             ui-grid-resize-columns
+             ui-grid-selection
+             class="angularGrid_Wide"
+             style="height: 150px; ">
+        </div>
+    </div>
+</div>
+
+<br /><br />
+
+<div class="row">
+
+    <div class="col-sm-12 col-sm-offset-0">
+
+        <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+            <div class="container-fluid navbar-nopaddingleft">
+                <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#" class="navbar_custom_small_header">Cuotas (para la 'definición' seleccionada) </a></li>
+
+                        <li><a href="#" ng-click="agregarCuentaCuota()" class="navbar_custom_xsmall_node">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                        <li><a href="#" ng-click="eliminarCuentaCuota()" class="navbar_custom_xsmall_node">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div ui-grid="cuentasCuotas_ui_grid"
+             ui-grid-edit
+             ui-grid-cellnav
+             ui-grid-resize-columns
+             ui-grid-selection
+             ui-grid-pinning
+             class="angularGrid_Wide"
+             style="height: 250px; ">
+        </div>
+    </div>
+</div>

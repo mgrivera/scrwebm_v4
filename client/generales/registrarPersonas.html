@@ -1,0 +1,81 @@
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Personas</span>
+    </h5>
+</div>
+
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12" style="font-size: small; ">
+                <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 15px; ">
+
+            <div class="col-sm-10 col-sm-offset-1" style="font-size: small; ">
+                <p>
+                    <ol>
+                        <li>Seleccione las personas que desee, para cada compañía, en la 1ra. lista.</li>
+                        <li><em>Note</em> que puede editar directamente en la 2da. lista.</li>
+                        <li>Las personas en la 2da. lista serán las destinatarias de las notas que genera el programa.</li>
+                    </ol>
+                </p>
+            </div>
+
+            <div class="col-sm-6" style="font-size: small; ">
+
+                <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                    <div class="container-fluid navbar-nopaddingleft">
+                        <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#" class="navbar_custom_small_header">Personas registradas</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                <div ui-grid="personasRegistradas_ui_grid"
+                     ui-grid-resize-columns
+                     ui-grid-selection
+                     class="angularGrid_Wide">
+                </div>
+
+            </div>
+
+            <div class="col-sm-6" style="font-size: small; ">
+
+                <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                    <div class="container-fluid navbar-nopaddingleft">
+                        <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#" class="navbar_custom_small_header">Personas</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                <div ui-grid="personas_ui_grid"
+                     ui-grid-edit
+                     ui-grid-cellnav
+                     ui-grid-resize-columns
+                     class="angularGrid_Wide">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <!-- <button ng-click="ok()" class="btn btn-sm btn-primary">OK</button> -->
+    <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">Cerrar</button>
+</div>

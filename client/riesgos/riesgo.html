@@ -1,0 +1,74 @@
+﻿
+
+
+<div class="ui-viewBorder">
+
+    <div style="text-align: right; font-style: italic; ">
+        <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+    </div>
+
+    <nav class="navbar navbar-inverse navbar_custom_small_fullWidth" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+
+                    <li><a href="#" class="navbar_custom_small_header" ng-if="riesgo.docState && (origen == 'edicion')"><em>Riesgos</em> (<span class="fa fa-asterisk"></span>)</a></li>
+                    <li><a href="#" class="navbar_custom_small_header" ng-if="!riesgo.docState || (origen == 'consulta')"><em>Riesgos</em></a></li>
+
+                    <li ng-if="origen == 'edicion'"><a href="#" ng-click="grabar()" class="navbar_custom_small_node">Grabar&nbsp;&nbsp;<span class="fa fa-floppy-o"></span></a></li>
+                    <li><a href="#" ng-click="refresh()" class="navbar_custom_small_node">Refresh&nbsp;&nbsp;<span class="fa fa-refresh"></span></a></li>
+                    <li class="divider-vertical-small"></li>
+                    <li><a href="#" ng-click="imprimir()" class="navbar_custom_small_node">Imprimir&nbsp;&nbsp;<span class="fa fa-print"></span></a></li>
+
+                    <li class="divider-vertical-small"></li>
+
+                    <li ng-if="origen == 'edicion'"><a href="#" ng-click="nuevo0()" class="navbar_custom_small_node">Nuevo&nbsp;&nbsp;<span class="fa fa-file-o"></span></a></li>
+                    <li ng-if="origen == 'edicion'"><a href="#" ng-click="eliminar()" class="navbar_custom_small_node">Eliminar&nbsp;&nbsp;<span class="fa fa-times"></span></a></li>
+
+                    <li ng-if="origen=='edicion'" class="divider-vertical-small"></li>
+
+                    <li><a href="#" ng-click="goToState('generales')" class="navbar_custom_small_node">Generales</a></li>
+                    <li><a href="#" ng-click="goToState('movimientos')" class="navbar_custom_small_node">Movimientos</a></li>
+                    <li><a href="#" ng-click="goToState('productores')" class="navbar_custom_small_node">Productores</a></li>
+                    <li><a href="#" ng-click="goToState('cuotas')" class="navbar_custom_small_node">Cuotas</a></li>
+
+                    <li class="divider-vertical-small"></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Otros <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" ng-click="registroDocumentos()" class="navbar_custom_small_node">Documentos&nbsp;&nbsp;<span class="fa fa-file-text-o"></span></a></li>
+                            <li><a href="#" ng-click="registrarPersonasCompanias()" class="navbar_custom_xsmall_node">Personas <i style="color: blue; " class="fa fa-user"></i></a></li>
+                            <li ng-if="origen == 'edicion'" role="separator" class="divider"></li>
+                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="copiarEnUnNuevoRiesgo()" class="navbar_custom_xsmall_node">Copiar en uno nuevo <i class="fa fa-copy"></i></a></li>
+                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="renovarRiesgo()" class="navbar_custom_xsmall_node">Renovar riesgo <i class="fa fa-magic"></i></a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right" ng-if="!vieneDeAfuera">
+                    <li><a href="#" ng-click="regresarALista()" class="navbar_custom_small_node">Regresar ...</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div ui-view></div>
+
+</div>

@@ -1,0 +1,172 @@
+
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Contratos - Generar cuotas para las cuentas técnicas del contrato</span>
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12" style="font-size: small; ">
+                <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12" style="font-size: small; ">
+                <p ng-if="definicionCuentaTecnicaSeleccionada_Info.numero" style="font-style: italic; color: #428BCA; ">
+                    Cuenta (definición) seleccionada: {{ definicionCuentaTecnicaSeleccionada_Info.numero }} -
+                    {{ definicionCuentaTecnicaSeleccionada_Info.moneda }}  -
+                    {{ definicionCuentaTecnicaSeleccionada_Info.desde }}
+                </p>
+
+                <p ng-if="!definicionCuentaTecnicaSeleccionada_Info.numero" style="font-style: italic; color: #428BCA; ">
+                    Cuenta (definición) seleccionada: ninguna
+                </p>
+
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 15px; ">
+
+            <form name="construirCuotasCuentaTecnicaForm"
+                  id="construirCuotasCuentaTecnicaForm"
+                  ng-submit="submitConstruirCuotasForm()"
+                  class="form-horizontal"
+                  role="form"
+                  novalidate>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-4 col-sm-offset-1 control-label myinput-xsm">Cantidad: </label>
+                        <div class="col-sm-7">
+                            <input type="number"
+                                   name="cantidadCuotas"
+                                   min="1" max="25"
+                                   class="form-control input-sm myinput-xsm"
+                                   ng-model="parametros.cantidadCuotas"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   required
+                                   style="width: 100px; " />
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirCuotasCuentaTecnicaForm.cantidadCuotas.$error.required">
+                                Indique un valor.
+                            </div>
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirCuotasCuentaTecnicaForm.cantidadCuotas.$error.number">
+                                Valor inválido.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-4 col-sm-offset-1 control-label myinput-xsm">Fecha de la 1ra cuota: </label>
+
+                        <div class="col-sm-7">
+                            <input type="date"
+                                   name="fecha1raCuota"
+                                   class="form-control input-sm myinput-xsm"
+                                   ng-model="parametros.fecha1raCuota"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   required
+                                   style="width: 135px; " />
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirCuotasCuentaTecnicaForm.fecha1raCuota.$error.required">
+                                Indique un valor.
+                            </div>
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirCuotasCuentaTecnicaForm.fecha1raCuota.$error.date">
+                                Valor inválido.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-sm-4 col-sm-offset-1 control-label myinput-xsm">Días de vencimiento: </label>
+                        <div class="col-sm-7">
+                            <input type="number"
+                                   name="diasVencimiento"
+                                   min="0" max="9999"
+                                   class="form-control input-sm myinput-xsm"
+                                   ng-model="parametros.diasVencimiento"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   required
+                                   style="width: 100px; " />
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirCuotasCuentaTecnicaForm.diasVencimiento.$error.required">
+                                Indique un valor.
+                            </div>
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirCuotasCuentaTecnicaForm.diasVencimiento.$error.number">
+                                Valor inválido.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-8 col-lg-offset-2">
+                        <fieldset class="scheduler-border" style="font-size: x-small; ">
+                            <legend class="scheduler-border-xsm">Cantidad de días (o meses) entre cuotas: </legend>
+                            <div class="form-group col-sm-5 col-offset-1">
+                                <label class="control-label myinput-xsm">Días: </label>
+                                <div>
+                                    <input type="number"
+                                           name="cantidadDias"
+                                           class="form-control input-sm myinput-xsm"
+                                           ng-model="parametros.cantidadDias"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           style="width: 100px; " />
+
+                                    <div class="validation-message myinput-xsm"
+                                         ng-show="submitted && construirCuotasCuentaTecnicaForm.cantidadDias.$error.number">
+                                        Valor inválido.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-5 col-offset-1">
+                                <label class="control-label myinput-xsm">Meses: </label>
+                                <div>
+                                    <input type="number"
+                                           name="cantidadMeses"
+                                           class="form-control input-sm myinput-xsm"
+                                           ng-model="parametros.cantidadMeses"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           style="width: 100px; " />
+
+                                    <div class="validation-message myinput-xsm"
+                                         ng-show="submitted && construirCuotasCuentaTecnicaForm.cantidadMeses.$error.number">
+                                        Valor inválido.
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">Cerrar</button>
+    <button type="submit" form="construirCuotasCuentaTecnicaForm" class="btn btn-sm pull-right btn-primary" style="margin-right: 15px; ">Constrir y registrar cuotas</button>
+</div>

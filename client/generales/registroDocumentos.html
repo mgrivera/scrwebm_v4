@@ -1,0 +1,50 @@
+
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Documentos</span>
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12" style="font-size: small; ">
+                <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 15px; ">
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Documentos</a></li>
+
+                            <li><a href="#" ng-click="agregarDocumento()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                            <li><a href="#" ng-click="eliminarDocumento()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="documentos_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 class="angularGrid_Wide">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <!-- <button ng-click="ok()" class="btn btn-sm btn-primary">OK</button> -->
+    <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">Cerrar</button>
+</div>

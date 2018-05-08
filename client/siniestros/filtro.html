@@ -1,0 +1,278 @@
+
+
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div style="text-align: right; font-style: italic; ">
+            <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <form role="form" novalidate style="margin-top: 15px; ">
+
+            <div class="container-fluid">
+
+                <tabset style="text-align: left; ">
+                    <tab heading="General">
+
+                        <div class="row row-m-b" style="margin-top: 20px; ">
+                            <!-- número -->
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">Número (desde): </label>
+                                        <input type="number"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.numero1" />
+                                    </div>
+        
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">Número (hasta): </label>
+                                        <input type="number"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.numero2" />
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <!-- código y referencia -->
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">Código: </label>
+                                        <input type="text"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.codigo" />
+                                    </div>
+        
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">Referencia: </label>
+                                        <input type="text"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.referencia" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="row row-m-b">
+                            <!-- f emision -->
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">F emisión (desde): </label>
+                                        <input type="date"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.fechaEmision1" />
+                                    </div>
+        
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">F emisión (hasta): </label>
+                                        <input type="date"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.fechaEmision2" />
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <!-- f ocurrencia -->
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">F ocurrencia (desde): </label>
+                                        <input type="date"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.fechaOcurrencia1" />
+                                    </div>
+        
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">F ocurrencia (hasta): </label>
+                                        <input type="date"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.fechaOcurrencia2" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="row row-m-b">
+                            <!-- f notificación -->
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">F notificación (desde): </label>
+                                        <input type="date"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.fechaNotificacion1" />
+                                    </div>
+        
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">F notificación (hasta): </label>
+                                        <input type="date"
+                                                style="max-width: 150px; "
+                                                class="form-control input-sm myinput-sm"
+                                                ng-model="filtro.fechaNotificacion2" />
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <div class="col-sm-6">
+                            </div>
+                        </div>
+
+                    </tab>
+
+                    <tab heading="Listas">
+                        <div class="row row-m-b" style="margin-top: 20px; ">
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">Compañías </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                name="compania"
+                                                ng-model="filtro.compania"
+                                                ng-options="item._id as item.nombre for item in companias | filter:{tipo:'SEG'} | orderBy:'nombre'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">Monedas </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                name="moneda"
+                                                ng-model="filtro.moneda"
+                                                ng-options="item._id as item.descripcion for item in monedas | orderBy:'descripcion'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">Ramos </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                name="ramo"
+                                                ng-model="filtro.ramo"
+                                                ng-options="item._id as item.descripcion for item in ramos | orderBy:'descripcion'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">Asegurados </label>
+                                        <select class="form-control input-sm myinput-sm"
+                                                name="asegurado"
+                                                ng-model="filtro.asegurado"
+                                                ng-options="item._id as item.nombre for item in asegurados | orderBy:'nombre'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">Ajustadores </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                name="ajustador"
+                                                ng-model="filtro.ajustador"
+                                                ng-options="item._id as item.nombre for item in companias | filter:{tipo:'AJUST'} | orderBy:'nombre'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">Causas </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                name="causa"
+                                                ng-model="filtro.causa"
+                                                ng-options="item._id as item.descripcion for item in causasSiniestro | orderBy:'descripcion'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <label class="control-label input-label pull-left">Suscriptores </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                ng-model="filtro.suscriptor"
+                                                ng-options="item._id as item.nombre for item in suscriptores | orderBy:'nombre'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                        <label class="control-label input-label pull-left">Tipos </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                ng-model="filtro.tipo"
+                                                ng-options="item._id as item.descripcion for item in tiposSiniestro | orderBy:'descripcion'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </tab>
+                </tabset>
+
+ 
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="row">
+        <hr class="blueLine" />
+
+        <a href="#" ng-click="limpiarFiltro()" class="btn btn-default btn-sm pull-left" style="min-width: 100px; margin-left: 30px; ">
+            Limpiar filtro
+        </a>
+
+        <a href="#" ng-click="aplicarFiltroYAbrirLista()" class="btn btn-primary btn-sm pull-right" style="min-width: 80px; margin-left: 20px; ">
+            Aplicar filtro
+        </a>
+
+        <a href="#" ng-click="nuevo()" class="btn btn-default btn-sm pull-right" style="min-width: 80px; margin-right: 20px; " ng-if="origen == 'edicion'">
+            Nuevo
+        </a>
+    </div>
+</div>

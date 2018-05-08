@@ -1,0 +1,125 @@
+
+<div class="row">
+
+    <div class="col-sm-12 col-sm-offset-0">
+
+        <div class="row" style="background-color: #283F51; font-style: italic; color: #B8C0C6; padding-top: 8px; margin-bottom: 10px; margin-left: 3px; margin-right: 3px; ">
+            <div class="col-sm-6 col-sm-offset-0" style="text-align: left; ">
+                <p>
+                    Cuentas técnicas 
+                </p>
+            </div>
+
+            <div class="col-sm-6 col-sm-offset-0" style="text-align: right; ">
+                <p ng-if="definicionCuentaTecnicaSeleccionada_Info.numero">
+                    Cuenta (definición) seleccionada:
+                    {{ definicionCuentaTecnicaSeleccionada_Info.numero }} -
+                    {{ definicionCuentaTecnicaSeleccionada_Info.moneda }}  -
+                    {{ definicionCuentaTecnicaSeleccionada_Info.desde }}
+                </p>
+        
+                <p ng-if="!definicionCuentaTecnicaSeleccionada_Info.numero">
+                    Cuenta (definición) seleccionada: ninguna
+                </p>
+            </div>
+        </div>
+
+        <div style="text-align: left; ">
+            <p style="color: #428BCA; font-weight: bold; ">
+                1) Montos de prima y siniestros para la cuenta ténica
+            </p>
+            <p>
+                Estos son los montos de prima y siniestros separados por ramo y serie, para el período
+                de la cuenta técnica
+            </p>
+
+            <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Cuentas técnicas - Resumen de primas y siniestros</a></li>
+
+                            <li><a href="#" ng-click="leerTablaConfiguracion()" class="navbar_custom_xsmall_node">Leer tabla de configuración</a></li>
+                            <li><a href="#" ng-click="distribuirMontosPrSinEnCompanias()" class="navbar_custom_xsmall_node">Distribuir</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="cuentasTecnicas_resumenPrimasSiniestros_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide"
+                 style="height: 350px; ">
+            </div>
+
+            <hr>
+
+            <p style="color: #428BCA; font-weight: bold; ">
+                2) Distribución de montos en compañías
+            </p>
+            <p>
+                Aquí cada monto es distribuido en las compañías que participan en el contrato, de acuerdo al
+                porcentaje de orden de cada una. Además, los costos y el resultado final son calculados.
+            </p>
+
+            <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Cuentas técnicas - Distribución de primas y siniestros en compañías</a></li>
+
+                            <li><a href="#" ng-click="distribuirMontosPrSinEnCompanias_calcular()" class="navbar_custom_xsmall_node">Calcular</a></li>
+                            <li><a href="#" ng-click="distribuirMontosPrSinEnCompanias_obtenerSaldosFinales()" class="navbar_custom_xsmall_node">Determinar saldos finales</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide"
+                 style="height: 350px; ">
+            </div>
+
+            <hr>
+
+            <p style="color: #428BCA; font-weight: bold; ">
+                3) Saldos finales por compañía
+            </p>
+            <p>
+                Finalmente, todos los montos, para cada ramo y serie, son resumidos en un solo monto para cada
+                compañía. Este es el saldo de la cuenta técnica para cada compañía.
+            </p>
+
+            <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Cuentas técnicas - Saldos (finales) de compañías</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="cuentasTecnicas_Saldos_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide"
+                 style="height: 350px; ">
+            </div>
+        </div>
+    </div>
+</div>
+
+<br /><br />

@@ -1,0 +1,221 @@
+﻿
+<div class="ui-viewBorder">
+
+    <div class="row">
+
+        <div class="col-sm-10 col-sm-offset-1">
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Movimientos</a></li>
+
+                            <li><a href="#" ng-click="agregarMovimiento()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                            <li><a href="#" ng-click="eliminarMovimiento()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="movimientosCalcular()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="registroDocumentosMovimiento()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Documentos <i style="color: darkgray; " class="fa fa-file-text-o"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="movimientos_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 class="angularGrid_Wide">
+            </div>
+
+            <hr class="blueLine" />
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Compañías</a></li>
+
+                            <li><a href="#" ng-click="agregarCompania()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                            <li><a href="#" ng-click="eliminarCompania()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="refrescarGridCompanias()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'"> <i class="fa fa-refresh"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="companias_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 class="angularGrid_Wide">
+            </div>
+
+            <hr class="blueLine" />
+
+            <table style="color: #02008D; font-size: small; margin-bottom: 10px; width: 100%; ">
+                <col width="33%">
+                <col width="33%">
+                <col width="33%">
+                <tr>
+                    <td style="text-align: left; ">(siempre cifras al 100% ...)</td>
+                    <td>
+                        <span ng-if="numeroMovimientoSeleccionado() != -1" style="text-align: center; ">
+                            {{ 'Movimiento seleccionado: ' +  numeroMovimientoSeleccionado() }}
+                        </span>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Coberturas</a></li>
+
+                            <li><a href="#" ng-click="agregarCobertura()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                            <li><a href="#" ng-click="eliminarCobertura()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="refrescarGridCoberturas()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'"> <i class="fa fa-refresh"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+
+                            <li><a href="#" ng-click="coberturasCalcular()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="construirCifrasCoberturasParaCompanias()" class="importantLink navbar_custom_xsmall_node" ng-if="origen='edicion'">1) Determinar cifras por compañía</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="coberturas_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide">
+            </div>
+
+            <hr class="blueLine" />
+
+            <div>
+                <div style="width: 33%; ">
+
+                </div>
+                <div style="width: 33%; text-align: center; ">
+
+                </div>
+                <div style="width: 33%; ">
+                </div>
+            </div>
+
+            <table style="color: #02008D; font-size: small; margin-bottom: 10px; width: 100%; ">
+                <col width="33%">
+                <col width="33%">
+                <col width="33%">
+                <tr>
+                    <td style="text-align: left; ">(siempre cifras al 100% ...)</td>
+                    <td>
+                        <span ng-if="numeroMovimientoSeleccionado() != -1" style="text-align: center; ">
+                            {{ 'Movimiento seleccionado: ' +  numeroMovimientoSeleccionado() }}
+                        </span>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Coberturas por compañía</a></li>
+
+                            <li><a href="#" ng-click="eliminarCoberturaCompania()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="refrescarGridCoberturasCompanias()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'"> <i class="fa fa-refresh"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+
+                            <li><a href="#" ng-click="calcularCoberturasCompanias()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="construirPrimasParaCompanias()" class="importantLink navbar_custom_xsmall_node" ng-if="origen='edicion'">2) Determinar primas de compañías</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#" ng-click="prorratearPrimasBrutas()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Prorratear primas brutas</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="coberturasCompanias_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide"
+                 style="height: 280px;">
+            </div>
+
+            <hr class="blueLine" />
+
+            <table style="color: #02008D; font-size: small; margin-bottom: 10px; width: 100%; ">
+                <col width="33%">
+                <col width="33%">
+                <col width="33%">
+                <tr>
+                    <td></td>
+                    <td>
+                        <span ng-if="numeroMovimientoSeleccionado() != -1" style="text-align: center; ">
+                            {{ 'Movimiento seleccionado: ' +  numeroMovimientoSeleccionado() }}
+                        </span>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Primas</a></li>
+                            <li><a href="#" ng-click="prorratearPrimasBrutas()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Prorrata <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                            <li><a href="#" ng-click="calcularPrimas()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="construirCuotasMovimiento()" class="importantLink navbar_custom_xsmall_node" ng-if="origen='edicion'">3) Construir y registrar cuotas <i style="color: #719163; " class="fa fa-dollar"></i></a></li>
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                                <select ng-model="monedaGridPrimasValue"
+                                ng-change="gridPrimas_SeleccionarPorMoneda(monedaGridPrimasValue)"
+                                ng-options="item._id as item.simbolo for item in monedas | orderBy:'simbolo'"
+                                style="margin-top: 8px; font-size: x-small; ">
+                                <option value=""></option>
+                            </select>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="primas_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 ui-grid-pinning
+                 class="angularGrid_Wide"
+                 style="height: 200px;">
+            </div>
+
+            <hr class="blueLine" />
+
+        </div>
+    </div>
+</div>

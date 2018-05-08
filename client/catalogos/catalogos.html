@@ -1,0 +1,73 @@
+﻿
+ <nav class="navbar navbar-inverse navbar_custom_small_fullWidth" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+
+                <li><a href="#" class="navbar_custom_small_header">Catálogos</a></li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Riesgos <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ui-sref=".suscriptores" class="navbar_custom_small_node">Suscriptores</a></li>
+                        <li><a ui-sref=".monedas" class="navbar_custom_small_node">Monedas</a></li>
+                        <li><a ui-sref=".companias" class="navbar_custom_small_node">Compañías</a></li>
+                        <li><a ui-sref=".indoles" class="navbar_custom_small_node">Indoles</a></li>
+                        <li><a ui-sref=".ramos" class="navbar_custom_small_node">Ramos</a></li>
+                        <li><a ui-sref=".asegurados" class="navbar_custom_small_node">Asegurados</a></li>
+                        <li><a ui-sref=".coberturas" class="navbar_custom_small_node">Coberturas</a></li>
+                        <li><a ui-sref=".tiposFacultativo" class="navbar_custom_small_node">Tipos de facultativo</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Contratos <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ui-sref=".monedas" class="navbar_custom_small_node">Monedas</a></li>
+                        <li><a ui-sref=".companias" class="navbar_custom_small_node">Compañías</a></li>
+                        <li><a ui-sref=".tiposContrato" class="navbar_custom_small_node">Tipos de contrato</a></li>
+                        <li><a ui-sref=".contrProp_configuracion.contrProp_configuracion_lista" class="navbar_custom_small_node">Configuración de contratos proporcionales</a></li>
+                        <li><a ui-sref=".contratosParametros" class="navbar_custom_small_node">Contratos - Parámetros</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Siniestros <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ui-sref=".causasSiniestro" class="navbar_custom_small_node">Causas de siniestro</a></li>
+                        <li><a ui-sref=".tiposSiniestro" class="navbar_custom_small_node">Tipos de siniestro</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Cobranzas <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ui-sref=".bancos" class="navbar_custom_small_node">Bancos</a></li>
+                        <li><a ui-sref=".cuentasBancarias" class="navbar_custom_small_node">Cuentas bancarias</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Generales <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ui-sref=".cuentasContables" class="navbar_custom_small_node">Cuentas contables</a></li>
+                        <li><a ui-sref=".cuentasContablesAsociadas" class="navbar_custom_small_node">Cuentas contables asociadas</a></li>
+                        <li class="divider"></li>
+                        <li><a ui-sref=".ciasUsuarias" class="navbar_custom_small_node">Empresas usuarias</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown" ng-if="1 == 1 || userHasRole('admin')">
+                    <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Administración <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a ui-sref=".roles" class="navbar_custom_small_node">Roles</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<div ui-view class="ui-viewBorder"></div>

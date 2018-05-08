@@ -1,0 +1,108 @@
+
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+
+            <form role="form"
+                  name="riesgoForm"
+                  novalidate
+                  style="margin-top: 15px; font-size: small; ">
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group">
+                                <label for="lugar" class="pull-left">Lugar</label>
+                                <textarea name="lugar"
+                                           id="lugar"
+                                           class="form-control"
+                                           ng-model="siniestro.notas.lugar"
+                                           ng-change="setIsEdited()"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group">
+                                <label for="descripcion" class="pull-left">Descripción</label>
+                                <textarea name="descripcion"
+                                           id="descripcion"
+                                           class="form-control"
+                                           ng-model="siniestro.notas.descripcion"
+                                           ng-change="setIsEdited()"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group">
+                                <label for="descripcion" class="pull-left">Detalles</label>
+                                <textarea name="detalles"
+                                           id="detalles"
+                                           class="form-control"
+                                           ng-model="siniestro.notas.detalles"
+                                           ng-change="setIsEdited()"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group">
+                                <label for="descripcion" class="pull-left">Causa</label>
+                                <textarea name="causa"
+                                           id="causa"
+                                           class="form-control"
+                                           ng-model="siniestro.notas.causa"
+                                           ng-change="setIsEdited()"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group">
+                                <label for="consecuencias" class="pull-left">Consecuencias</label>
+                                <textarea name="consecuencias"
+                                           id="consecuencias"
+                                           class="form-control"
+                                           ng-model="siniestro.notas.consecuencias"
+                                           ng-change="setIsEdited()"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group">
+                                <label for="observaciones" class="pull-left">Observaciones</label>
+                                <textarea name="observaciones"
+                                           id="observaciones"
+                                           class="form-control"
+                                           ng-model="siniestro.notas.observaciones"
+                                           ng-change="setIsEdited()"
+                                           ng-model-options="{ updateOn: 'blur' }"
+                                           rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <hr class="blueLine" />
+        </div>
+    </div>
+</div>

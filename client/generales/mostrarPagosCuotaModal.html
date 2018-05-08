@@ -1,0 +1,58 @@
+﻿
+<div class="modal-header">
+    <h5 class="modal-title">
+        Pagos aplicados a la cuota seleccionada
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0">
+                
+                <table style="font-size: x-small; " class="table table-condensed table-striped table-bordered table-hover table-responsive">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; ">Remesa</th>
+                            <th style="text-align: center; ">Mon</th>
+                            <th style="text-align: left; ">Compañía</th>
+                            <th style="text-align: center; ">Fecha</th>
+                            <th style="text-align: right; ">Monto</th>
+                            <th style="text-align: center; ">Completo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="pago in cuota.pagos">
+                            <td style="text-align: left; ">
+                                <a href="#" ng-click="abrirPaginaRemesa(pago.remesaID)">{{ pago.remesaNumero }}</a>
+                            </td>
+                            <td style="text-align: center; white-space: nowrap; ">{{ pago.moneda | monedaSimboloFilter }}</td>
+                            <td style="text-align: left; white-space: nowrap; ">{{ cuota.compania | companiaAbreviaturaFilter }}</td>
+                            <td style="text-align: center; white-space: nowrap; ">{{ pago.fecha | date:'dd-MM-yyyy' }}</td>
+                            <td style="text-align: right; ">{{ pago.monto | currencyFilter }}</td>
+                            <td style="text-align: center; "><input type="checkbox" ng-model="pago.completo" ng-disabled="true"/></td>
+                        </tr>
+                    </tbody>
+                        <tr>
+                            <td style="text-align: left; "></td>
+                            <td style="text-align: center; white-space: nowrap; "></td>
+                            <td style="text-align: left; white-space: nowrap; "></td>
+                            <td style="text-align: center; white-space: nowrap; "></td>
+                            <td style="text-align: right; font-weight: bold; ">{{ montoTotalCobrosPagos | currencyFilter }}</td>
+                            <td style="text-align: center; "></td>
+                        </tr>
+                    <tfoot>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <!--<button class="btn btn-sm btn-primary" ng-click="ok()">OK</button>-->
+    <button class="btn btn-sm btn-warning" ng-click="cancel()">Cerrar</button>
+</div>

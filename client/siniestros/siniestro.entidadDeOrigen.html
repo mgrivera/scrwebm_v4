@@ -1,0 +1,27 @@
+
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+
+            <br><br>
+
+            <div ng-if="siniestro.source && siniestro.source.entityID">
+                Riesgo: {{ siniestro.source && siniestro.source.numero ? siniestro.source.numero.toString().split('-')[0] : 0 }}
+                &nbsp;&nbsp;&nbsp;
+                Movimiento: {{ siniestro.source && siniestro.source.numero ? siniestro.source.numero.toString().split('-')[1] : 0 }}
+
+                <br><br>
+
+                <button class="btn btn-sm btn-primary" ng-click="mostrarEntidadDeOrigen()">Consultar entidad de origen</button>
+            </div>
+
+            <div ng-if="!(siniestro.source && siniestro.source.entityID)">
+                <h3>El siniestro no fue agregado en base a alguna entidad (como el movimiento de un riesgo, etc.)</h3>
+            </div>
+
+            <br><br>
+            <hr class="blueLine" />
+        </div>
+    </div>
+</div>

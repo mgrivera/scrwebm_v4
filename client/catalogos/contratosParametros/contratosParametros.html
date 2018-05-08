@@ -1,0 +1,153 @@
+﻿
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+        <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+        <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+            <span ng-bind-html="alert.msg | unsafe"></span>
+        </alert>
+    </div>
+</div>
+
+<div class="row" style="text-align: center; ">
+    <div class="col-sm-12 col-sm-offset-0">
+
+        <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#" class="navbar_custom_small_header" ng-if="contratosParametros.docState"><em>Contratos - Parámetros</em> (<span class="fa fa-asterisk"></span>)</a></li>
+                        <li><a href="#" class="navbar_custom_small_header" ng-if="!contratosParametros.docState"><em>Contratos - Parámetros</em></a></li>
+                        <!-- <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li> -->
+                        <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+    </div>
+</div>
+
+<div class="row" style="text-align: left; ">
+    <div class="col-sm-12 col-sm-offset-0">
+
+        <form role="form"
+              name="contratosParametros_form"
+              ng-submit="contratosParametros_form_submit()"
+              novalidate
+              style="margin-top: 15px; ">
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-sm-4 col-sm-offset-0"
+                         style="text-align: center; background-color: #106CC8; color: #D9E8F4; background-clip: content-box; ">
+                        Impuesto #1
+                    </div>
+
+                    <div class="col-sm-4 col-sm-offset-0"
+                         style="text-align: center; background-color: #106CC8; color: #D9E8F4; background-clip: content-box; ">
+                        Impuesto #2
+                    </div>
+
+                    <div class="col-sm-4 col-sm-offset-0"
+                         style="text-align: center; background-color: #106CC8; color: #D9E8F4; background-clip: content-box; ">
+                        Impuesto s/pn
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-2 col-sm-offset-0">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label input-label">Descripción </label>
+                            <input type="text"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contratosParametros.imp1Descripcion"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-change="setIsEdited()" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 col-sm-offset-0">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label input-label">Porcentaje </label>
+                            <input type="number"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contratosParametros.imp1Porc"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-change="setIsEdited()" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 col-sm-offset-0">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label input-label">Descripción </label>
+                            <input type="text"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contratosParametros.imp2Descripcion"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-change="setIsEdited()" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 col-sm-offset-0">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label input-label">Porcentaje </label>
+                            <input type="number"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contratosParametros.imp2Porc"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-change="setIsEdited()" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 col-sm-offset-0">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label input-label">Descripción </label>
+                            <input type="text"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contratosParametros.impSPNDescripcion"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-change="setIsEdited()" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 col-sm-offset-0">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label input-label">Porcentaje </label>
+                            <input type="number"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contratosParametros.impSPNPorc"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-change="setIsEdited()" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <hr style="border: 1px solid #106CC8" />​
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-2 col-sm-offset-0">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label input-label">Corr(%)</label>
+                            <input type="number"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="contratosParametros.corrPorc"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   ng-change="setIsEdited()" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>

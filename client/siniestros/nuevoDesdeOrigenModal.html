@@ -1,0 +1,170 @@
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        Siniestros - Agregar un nuevo siniestro
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1" style="font-size: small; ">
+                <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1" style="font-size: small; ">
+                <p style="font-size: small; ">
+                    1) Indique los datos que corresponden al siniestro (ocurrencia, asegurado y compañía)<br />
+                    2) Haga un click en <em>Leer y mostrar riesgos</em><br />
+                    3) Seleccione el riesgo que Ud. considera que cubre el siniestro<br />
+                    4) Haga un click en <em>Ok</em>
+                </p>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 15px; ">
+            <div class="col-sm-10 col-sm-offset-1" style="font-size: small; ">
+                <form name="datosSiniestroForm"
+                      id="datosSiniestroForm"
+                      ng-submit="submitDatosSiniestroForm()"
+                      class="form-horizontal"
+                      role="form"
+                      novalidate>
+                          <table style="width:100%; ">
+                              <colgroup>
+                                  <col width="24%; " />
+                                  <col width="14%; " />
+                                  <col width="24%; " />
+                                  <col width="14%; " />
+                                  <col width="24%; " />
+                              </colgroup>
+                              <tr>
+                                  <td style="vertical-align: top; ">
+                                      <div class="form-group">
+                                          <label class="control-label input-label pull-left">F ocurrencia </label>
+                                          <input type="date"
+                                                 name="fechaOcurrencia"
+                                                 class="form-control"
+                                                 ng-model="filtro.fechaOcurrencia"
+                                                 ng-required="true" />
+                                          <div class="validation-message myinput-xsm"
+                                               ng-show="submitted && datosSiniestroForm.fechaOcurrencia.$error.required">
+                                              Ud. debe indicar un valor
+                                          </div>
+                                      </div>
+                                  </td>
+
+                                  <td></td>
+
+                                  <td>
+                                      <div class="form-group">
+                                          <label class="control-label input-label pull-left">Suscriptores </label>
+                                          <select class="form-control input-sm myinput-sm"
+                                                  ng-model="filtro.suscriptores"
+                                                  ng-options="item._id as item.abreviatura for item in suscriptores | orderBy:'abreviatura'"
+                                                  ng-model-options="{ updateOn: 'blur' }"
+                                                  size="8"
+                                                  multiple="multiple"></select>
+                                      </div>
+                                  </td>
+
+                                  <td></td>
+
+                                  <td>
+                                      <div class="form-group">
+                                          <label class="control-label input-label pull-left">Compañías </label>
+                                          <select class="form-control input-sm myinput-sm"
+                                                  ng-model="filtro.companias"
+                                                  name="compania"
+                                                  ng-options="item._id as item.abreviatura for item in companias | filter:{tipo:'SEG'} | orderBy:'abreviatura'"
+                                                  ng-model-options="{ updateOn: 'blur' }"
+                                                  size="8"
+                                                  ng-required="true"
+                                                  multiple="multiple"></select>
+                                          <div class="validation-message myinput-xsm"
+                                               ng-show="submitted && datosSiniestroForm.compania.$error.required">
+                                              Ud. debe indicar un valor
+                                          </div>
+                                      </div>
+                                  </td>
+                              </tr>
+
+                              <tr>
+                                  <td>
+                                      <div class="form-group">
+                                          <label class="control-label input-label pull-left">Asegurados </label>
+                                          <select class="form-control input-sm myinput-sm"
+                                                  ng-model="filtro.asegurados"
+                                                  ng-options="item._id as item.abreviatura for item in asegurados | orderBy:'abreviatura'"
+                                                  ng-model-options="{ updateOn: 'blur' }"
+                                                  size="8"
+                                                  ng-required="false"
+                                                  multiple="multiple"></select>
+                                      </div>
+                                  </td>
+
+                                  <td></td>
+
+                                  <td>
+                                      <div class="form-group">
+                                          <label class="control-label input-label pull-left">Mon </label>
+                                          <select class="form-control input-sm myinput-sm"
+                                                  ng-model="filtro.monedas"
+                                                  ng-options="item._id as item.simbolo for item in monedas | orderBy:'simbolo'"
+                                                  ng-model-options="{ updateOn: 'blur' }"
+                                                  size="8"
+                                                  multiple="multiple"></select>
+                                      </div>
+                                  </td>
+
+                                  <td></td>
+
+                                  <td>
+                                  </td>
+                              </tr>
+                          </table>
+                </form>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 15px; ">
+            <div class="col-sm-12 col-sm-offset-0">
+                <button type="submit"
+                        form="datosSiniestroForm"
+                        class="btn btn-sm btn-primary pull-right"
+                        style="margin-right: 15px; margin-top: 15px; ">
+                        Leer y mostrar riesgos ...
+                </button>
+            </div>
+        </div>
+
+        <br />
+
+        <div class="row" style="margin-top: 15px; ">
+            <div class="col-sm-12 col-sm-offset-0" style="font-size: small; ">
+                <div ui-grid="entidadesOriginales_ui_grid"
+                    ui-grid-resize-columns
+                    ui-grid-selection
+                    class="angularGrid_Wide">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0">
+                <button class="btn btn-sm btn-link " ng-click="cancel()" style="margin-right: 15px; ">Agregar siniestro en forma directa</button>
+                <button class="btn btn-sm btn-primary" ng-click="ok()" style="margin-right: 15px; min-width: 85px; ">Ok</button>
+                <button class="btn btn-sm btn-warning" ng-click="cancel('cancel')" style="min-width: 85px; ">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

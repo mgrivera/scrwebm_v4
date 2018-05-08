@@ -1,0 +1,58 @@
+﻿
+<div class="ui-viewBorder">
+
+    <div class="row">
+
+        <div class="col-sm-10 col-sm-offset-1">
+
+            <table style="color: #02008D; font-size: small; margin-bottom: 10px; width: 100%; ">
+                <col width="33%">
+                <col width="33%">
+                <col width="33%">
+                <tr>
+                    <td></td>
+                    <td>
+                        <span ng-if="numeroMovimientoSeleccionado() != -1" style="text-align: center; ">
+                            {{ 'Movimiento seleccionado: ' +  numeroMovimientoSeleccionado() }}
+                        </span>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Productores</a></li>
+
+                            <li><a href="#" ng-click="agregarProductor()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                            <li><a href="#" ng-click="eliminarProductor()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="refrescarGridProductores()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'"> <i class="fa fa-refresh"></i></a></li>
+                            <li class="divider-vertical-small"></li>
+
+                            <li><a href="#" ng-click="productoresCalcular()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
+                            <li><a href="#" ng-click="productoresDeterminarCorretaje()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Determinar corretaje </a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="determinarYRegistrarCuotasProductor()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Agregar cuotas <i style="color: #719163; " class="fa fa-dollar"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="productores_ui_grid"
+                 ui-grid-edit
+                 ui-grid-cellnav
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 class="angularGrid_Wide">
+            </div>
+
+            <hr class="blueLine" />
+        </div>
+
+    </div>
+
+</div>

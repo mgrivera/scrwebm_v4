@@ -1,0 +1,212 @@
+﻿
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div class="col-sm-6" style="text-align: left; ">
+            <h4>Consulta - Montos pendientes</h4>
+        </div>
+        <div class="col-sm-6" style="text-align: right; font-style: italic; ">
+            <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            <div ng-show="showProgress">
+                <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
+                    ({{ processProgress.current }}/{{ processProgress.max }} - {{ processProgress.progress }})
+                </div>
+                <div ng-show="processProgress.message" style="font-size: x-small; font-weight: bold; ">
+                    ({{ processProgress.message }})
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div class="row">
+        <form role="form"
+              name="construirFiltroForm"
+              id="construirFiltroForm"
+              ng-submit="submitConstruirFiltroForm()"
+              novalidate
+              style="margin-top: 15px; ">
+
+            <div class="container-fluid">
+
+                <tabset style="text-align: left; ">
+                    <tab heading="General">
+                        <div class="row" style="margin-top: 20px; ">
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Pendientes al </label>
+                                    <input type="date"
+                                            name="fechaPendientesAl"
+                                            id="fechaPendientesAl"
+                                            class="form-control input-sm myinput-sm"
+                                            required
+                                            ng-model="filtro.fechaPendientesAl" />
+                                    <div class="validation-message myinput-xsm"
+                                         ng-show="submitted && construirFiltroForm.fechaPendientesAl.$error.required">
+                                        Ud. debe indicar un valor en este campo
+                                    </div>
+                                    <div class="validation-message myinput-xsm"
+                                         ng-show="submitted && construirFiltroForm.fechaPendientesAl.$error.date">
+                                        El valor indicado no es válido
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div style="margin: 0 20px; ">
+                                    <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
+                                        <legend class="scheduler-border-radioButtons">Pendientes de: </legend>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="pendientesCobroPago" ng-model="filtro.pendientesDe" value='cobro'> cobro
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="pendientesCobroPago" ng-model="filtro.pendientesDe" value='pago'> pago
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="pendientesCobroPago" ng-model="filtro.pendientesDe" value='todo'> todo
+                                        </label>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div style="margin: 0 20px; ">
+                                    <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
+                                        <legend class="scheduler-border-radioButtons">Origen: </legend>
+
+                                        <div class="form-group">
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox"
+                                                       ng-model="filtro.origen.primasProporcional">
+                                                Primas proporcional
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox"
+                                                       ng-model="filtro.origen.primasNoProporcional">
+                                                Primas no proporcional
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox"
+                                                       ng-model="filtro.origen.primasFacultativo">
+                                                Primas facultativo
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox"
+                                                       ng-model="filtro.origen.siniestrosFacultativo">
+                                                Siniestros facultativo
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox"
+                                                       ng-model="filtro.origen.todo">
+                                                Todo
+                                            </label>
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </tab>
+
+                    <tab heading="Listas">
+                        <div class="row" style="margin-top: 20px; ">
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Compañías </label>
+                                    <select class=" form-control input-sm myinput-sm"
+                                        name="compania"
+                                        ng-model="filtro.compania"
+                                        ng-options="item._id as item.nombre for item in companias | orderBy:'nombre'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        size="8"
+                                        multiple="multiple"></select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Monedas </label>
+                                    <select class=" form-control input-sm myinput-sm"
+                                        name="moneda"
+                                        ng-model="filtro.moneda"
+                                        ng-options="item._id as item.descripcion for item in monedas | orderBy:'descripcion'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        size="8"
+                                        multiple="multiple"></select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Ramos </label>
+                                    <select class=" form-control input-sm myinput-sm"
+                                    name="ramo"
+                                    ng-model="filtro.ramo"
+                                    ng-options="item._id as item.descripcion for item in ramos | orderBy:'descripcion'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    size="8"
+                                    multiple="multiple"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Asegurados </label>
+                                    <select class="form-control input-sm myinput-sm"
+                                    name="asegurado"
+                                    ng-model="filtro.asegurado"
+                                    ng-options="item._id as item.nombre for item in asegurados | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    size="8"
+                                    multiple="multiple"></select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Suscriptores </label>
+                                    <select class=" form-control input-sm myinput-sm"
+                                    name="compania"
+                                    ng-model="filtro.suscriptor"
+                                    ng-options="item._id as item.nombre for item in suscriptores | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"
+                                    size="8"
+                                    multiple="multiple"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </tab>
+                </tabset>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <hr class="blueLine" />
+        <a href="#" ng-click="limpiarFiltro()" class="btn btn-default btn-sm pull-left" style="min-width: 100px; margin-left: 30px; ">
+            Limpiar filtro
+        </a>
+        <button type="submit" form="construirFiltroForm" class="btn btn-sm pull-right btn-primary" style="min-width: 80px; margin-right: 15px; ">Aplicar filtro</button>
+    </div>
+</div>

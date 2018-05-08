@@ -1,0 +1,46 @@
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        Riesgos - Prorratear primas brutas
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0">
+
+                <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                    <div class="container-fluid navbar-nopaddingleft">
+                        <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#" class="navbar_custom_small_header">Prorratear primas brutas</a></li>
+
+                                <li><a href="#" ng-click="determinarPrimasMovimientoAnterior()" class="navbar_custom_xsmall_node">1) Determinar primas mov anterior</a></li>
+                                <li><a href="#" ng-click="calcularProrrateoPrimasBrutas()" class="navbar_custom_xsmall_node">2) Prorratear primas brutas</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                <div ui-grid="coberturasCompaniasProrratearPrimas_ui_grid"
+                     ui-grid-edit
+                     ui-grid-cellnav
+                     ui-grid-resize-columns
+                     ui-grid-selection
+                     ui-grid-pinning
+                     class="angularGrid_Wide"
+                     style="height: 280px;">
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <!-- <button class="btn btn-sm btn-primary" ng-click="ok()" style="min-width: 80px; margin-right: 20px; ">Ok</button> -->
+    <button class="btn btn-sm btn-warning" ng-click="cancel()" style="min-width: 80px; margin-right: 20px; ">Cerrar</button>
+</div>

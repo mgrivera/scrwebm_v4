@@ -1,0 +1,2 @@
+
+RemesasCuadre_Methods = {}; 

@@ -1,0 +1,68 @@
+﻿
+<div class="ui-viewBorder">
+
+    <div style="text-align: right; font-style: italic; ">
+        <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+    </div>
+
+    <nav class="navbar navbar-inverse navbar_custom_small_fullWidth" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+
+                    <li><a href="#" class="navbar_custom_small_header" ng-if="remesa.docState && (origen == 'edicion')"><em>Remesas</em> (<span class="fa fa-asterisk"></span>)</a></li>
+                    <li><a href="#" class="navbar_custom_small_header" ng-if="!remesa.docState || (origen == 'consulta')"><em>Remesas</em></a></li>
+
+                    <li ng-if="origen=='edicion'"><a href="#" ng-click="grabar()" class="navbar_custom_small_node">Grabar&nbsp;&nbsp;<span class="fa fa-floppy-o"></span></a></li>
+                    <li><a href="#" ng-click="refresh()" class="navbar_custom_small_node">Refresh&nbsp;&nbsp;<span class="fa fa-refresh"></span></a></li>
+                    <li class="divider-vertical-small"></li>
+                    <!-- <li><a href="#" ng-click="imprimir()" class="navbar_custom_small_node">Imprimir&nbsp;&nbsp;<span class="fa fa-print"></span></a></li> -->
+                    <li ng-if="origen=='edicion'"><a href="#" ng-click="revertir()" class="navbar_custom_small_node">Revertir&nbsp;&nbsp;<span class="fa fa-undo"></span></a></li>
+
+                    <li ng-if="origen=='edicion'" class="divider-vertical-small"></li>
+
+                    <li ng-if="origen == 'edicion'"><a href="#"  ng-click="nuevo()" class="navbar_custom_small_node">Nuevo&nbsp;&nbsp;<span class="fa fa-file-o"></span></a></li>
+                    <li ng-if="origen == 'edicion'"><a href="#"  ng-click="eliminar()" class="navbar_custom_small_node">Eliminar&nbsp;&nbsp;<span class="fa fa-times"></span></a></li>
+
+                    <li ng-if="origen=='edicion'" class="divider-vertical-small"></li>
+
+                    <!-- nótese que con ng-class asignamos estilos al link (<a>) para que luzca como desabilitado; sin embargo, el link
+                    como tal probablemente funcione; no nos importa pues, simplemente, iría al mismo state al cual ya está ...  -->
+
+                    <li><a href="#" class="navbar_custom_small_node">Secciones:</a></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">{{ currentStateName}} <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" ng-click="goToState('generales')" class="navbar_custom_small_node" ng-class="currentStateName === 'Generales' ? 'disabled' : ''">Generales</a></li>
+                            <li><a href="#" ng-click="goToState('detalle')" class="navbar_custom_small_node" ng-class="currentStateName === 'Detalle' ? 'disabled' : ''">Detalle</a></li>
+                            <li><a href="#" ng-click="goToState('cuadre')" class="navbar_custom_small_node" ng-class="currentStateName === 'Cuadre' ? 'disabled' : ''">Cuadre</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li ng-if="!vieneDeAfuera"><a href="#" ng-click="regresarALista()" class="navbar_custom_small_node">Regresar ...</a></li>
+                    <li ng-if="vieneDeAfuera"><a href="#" ng-click="windowClose()" class="navbar_custom_small_node_red">Cerrar <span class="fa fa-times-circle"></span></a></li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div ui-view></div>
+</div>

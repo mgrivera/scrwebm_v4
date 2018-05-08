@@ -1,0 +1,107 @@
+
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Importar cuentas contables (desde Excel)</span>
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-6" style="text-align: right; font-style: italic; ">
+                    <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0">
+                <div class="col-sm-4 col-sm-offset-4" style="text-align: center; vertical-align: middle; ">
+                    <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-12" style="font-size: small; ">
+                <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12" style="font-size: small; ">
+                <br />
+                <p>
+                    Esta función le permite registrar cuentas contables desde un documento <em>Excel</em>.
+                </p>
+                <p>
+                    Cada cuenta contable debe ocupar una fila en el documento <em>Excel</em>. 
+                    Ud. debe indicar la ubicación, en su PC, del documento <em>Excel</em> a este proceso. Luego
+                    hacer un <em>click</em> en el botón que permite importar las cuentas contables desde el documento.
+                </p>
+                <p>
+                    Si el documento <em>Excel</em> está bien construido, las cuentas contables serán agregadas a la lista,
+                    tal como si las hubiera registrado, una a una, Ud. mismo.
+                </p>
+                <p>
+                    El documento Excel debe contener <b>tres</b> columnas: una que contenga la cuenta contable 
+                    (en esta forma: 1 001 001 07); la otra con la descripción de la misma (ej: Banco Provincial - cuenta corriente); 
+                    finalmente, una columna que indique si la cuenta es de tipo total o detalle. El encabezado de esta última columna 
+                    debe ser: <em>Tot/Det</em> y debe contener los valores: T o D. 
+                </p>
+                <p>
+                    De acuerdo a lo anterior, la 1ra. linea en el documento debe ser un encabezado con, en forma exacta, 
+                    estas palabras: Cuenta - Descripción - TotDet. 
+                </p>
+                <p>
+                    Una vez importadas las cuentas contables, este diálogo se cerrará y Ud. debe hacer un <em>click</em> en 
+                    <em>Grabar</em> para registrar las cuentas contables en la base de datos. 
+                </p>
+                <p>
+                    Ud. puede revisar, en la lista, los datos que conforman las cuentas contables a registrar, antes
+                    de intentar <em>Grabar</em> las mismas.
+                </p>
+
+                <form id="tratarFiles_Form"
+                        name="tratarFiles_Form"
+                        role="form"
+                        novalidate
+                        style="margin-top: 15px; "
+                        ng-submit="submit_TratarFiles_Form()" >
+
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-6 col-sm-offset-0">
+                                    <div class="form-group form-group-sm">
+                                        <label  for="fileInputControl" class="control-label input-label pull-left">&nbsp;&nbsp;</label>
+                                        <br />
+                                        <input type="file"
+                                               id="fileInputControl"
+                                               name="fileInputControl"
+                                               accept="xlsx"
+                                               onchange="angular.element(this).scope().uploadFile(this.files)" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="submit" class="btn btn-sm btn-primary" form="tratarFiles_Form" style="min-width: 80px; ">
+        2) Leer el documento Excel indicado
+    </button>
+
+    <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; min-width: 80px; ">
+        Cerrar
+    </button>
+</div>

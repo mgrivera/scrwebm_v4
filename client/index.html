@@ -1,0 +1,180 @@
+
+<head>
+    <title>scrwebM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+</head>
+
+<!-- el navbar (navbar-fixed-top) en bootstrap (3.0) necesita un padding-top de 70px; sin embargo, cuando
+una página 'viene de afuera',  intentamos siempre no mostrar el navbar (principal). Por eso, el padding-top
+de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
+
+<body ng-app="scrwebM" ng-controller="MainController" ng-style="vieneDeAfuera ? { 'padding-top': '25px' } : { 'padding-top': '70px' }">
+    <div>
+        <!-- nótese como mostramos el navbar solo cuando la página no viene de afuera ...
+             vieneDeAfuera es true cuando una página, como factura, es abierta desde otro módulo en contab, como pagos ...  -->﻿
+        <div class="navbar navbar-fixed-top navbar-default" ng-hide="vieneDeAfuera">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/" style="font-style: italic; color: #02008D; ">scrwebm</a>
+                </div>
+
+                <div class="navbar-collapse collapse" ng-show="userAuthenticated">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/catalogos" ng-if="userHasRole_catalogos">Catálogos</a></li>
+
+                        <li class="dropdown"
+                            ng-show="userHasRole_riesgos || userHasRole_riesgos_consulta || userHasRole_contratos || userHasRole_contratos_consulta || userHasRole_notasdbcr || userHasRole_notasdbcr_consulta || userHasRole_siniestros || userHasRole_siniestros_consulta">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                Emisión <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+
+                                <li class="dropdown dropdown-submenu" ng-show="userHasRole_riesgos || userHasRole_riesgos_consulta">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Riesgos</a>
+                                    <ul class="dropdown-menu">
+                                        <li ng-if="userHasRole_riesgos"><a href="/riesgos/filtro?origen=edicion">Registro</a></li>
+                                        <li ng-if="userHasRole_riesgos_consulta"><a href="/riesgos/filtro?origen=consulta">Consulta</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown dropdown-submenu" ng-show="userHasRole_contratos || userHasRole_contratos_consulta">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Contratos</a>
+                                    <ul class="dropdown-menu">
+                                        <li ng-if="userHasRole_contratos"><a href="/contratos/filtro?origen=edicion">Registro</a></li>
+                                        <li ng-if="userHasRole_contratos_consulta"><a href='/contratos/filtro?origen=consulta'>Consulta</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown dropdown-submenu" ng-show="userHasRole_notasdbcr || userHasRole_notasdbcr_consulta">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Notas cr/Notas db</a>
+                                    <ul class="dropdown-menu">
+                                        <li ng-if="userHasRole_notasdbcr"><a href="/NotaCrDb/Edicion">Registro</a></li>
+                                        <li ng-if="userHasRole_notasdbcr_consulta"><a href='/NotaCrDb/Consulta'>Consulta</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown dropdown-submenu" ng-show="userHasRole_siniestros || userHasRole_siniestros_consulta">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Siniestros</a>
+                                    <ul class="dropdown-menu">
+                                        <li ng-if="userHasRole_siniestros"><a href='/siniestros/filtro?origen=edicion'>Registro</a></li>
+                                        <li ng-if="userHasRole_siniestros_consulta"><a href='/siniestros/filtro?origen=consulta'>Consulta</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown" ng-show="userHasRole_remesas || userHasRole_remesas_consulta || userHasRole_cobranzas || userHasRole_cierre">
+                            <a href=" #" class="dropdown-toggle" data-toggle="dropdown">
+                                Cobranzas <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li ng-if="userHasRole_remesas"><a href="/remesas/filtro?origen=edicion">Remesas</a></li>
+                                <li ng-if="userHasRole_remesas_consulta"><a href="/remesas/filtro?origien=consulta">Remesas - consulta</a></li>
+                                <li class="divider"></li>
+                                <li ng-if="userHasRole_cobranzas"><a href="/cobranzas">Cobranza</a></li>
+                                <li class="divider"></li>
+                                <li ng-if="userHasRole_cierre"><a href="/cobranzas/cierre">Cierre del mes</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown" ng-show="userHasRole_consultas">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Consultas <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/consultas/pendientes/filtro">Montos pendientes</a></li>
+                                <li><a ui-sref="pendientesCobro_vencimientos_consulta">Montos por cobrar - vencimientos</a></li>
+                                <li><a ui-sref="pendientesPago_vencimientos_consulta">Montos por pagar - vencimientos</a></li>
+                                <li class="divider"></li>
+                                <li><a ui-sref="corretaje_consulta_filter">Corretaje</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown" ng-show="userHasRole_cierre">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Cierre <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a ui-sref="cierre.cierre">Cierre</a></li>
+                                <li><a ui-sref="cierre.registro">Registro</a></li>
+                                <li><a ui-sref="cierre.consulta">Consulta</a></li>
+                                <li class="divider"></li>
+                                <li><a ui-sref="cierre.periodosDeCierre">Períodos de cierre</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Generales <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/generales/seleccionarCiaUsuaria">Seleccionar una compañía</a></li>
+                                <li><a ui-sref="registrarArchivos">Registrar archivos</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown" ng-show="userHasRole_utilitarios">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Utilitarios <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a ui-sref="utilitarios_tablaNumerosReferencia">Tabla de números de referencia</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown" ng-show="userHasRole_admin">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Administración <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a ui-sref="usuarios">Usuarios</a></li>
+                                <li><a href="/administracion/usuariosYRoles">Usuarios y roles</a></li>
+                            </ul>
+                        </li>
+
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" ng-click="mostrarHelp()"> <i class="fa fa-question fa-lg"></i></a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container body-content">
+
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+                    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                        <!--<span ng-bind-html="alert.msg | unsafe"></span>-->
+                        <span ng-bind-html="alert.msg"></span>
+                    </alert>
+                </div>
+            </div>
+
+            <div class="row" ui-view></div>
+
+            <br /><br />
+
+            <div class="navbar navbar-default">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <p class="navbar-text">
+                                &copy; 2015 -
+                                <em>scrwebM ...</em>
+                            </p>
+                        </div>
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-3 col-sm-offset-1">
+                            <p class="navbar-text">
+                                <!-- <blaze-template name="loginButtons"></blaze-template> -->
+                                <login-buttons></login-buttons>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>

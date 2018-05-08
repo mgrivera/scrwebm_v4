@@ -1,0 +1,41 @@
+
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <!-- <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i> -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0">
+
+            <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                <div class="container-fluid navbar-nopaddingleft">
+                    <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Cuadre de la remesa</a></li>
+
+                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="obtenerCuadreRemesa()" class="navbar_custom_xsmall_node">Obtener <i class="fa fa-gears"></i></a></li>
+                            <li><a href="#" ng-click="exportarCuadreRemesaMicrosoftExcel()" class="navbar_custom_xsmall_node">Exportar <i class="fa fa-file-excel-o"></i></a></li>
+                            <li><a href="#" ng-click="construirAsientoContable()" class="navbar_custom_xsmall_node">Asiento contable <i class="fa fa-file-text-o"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div ui-grid="cuadreRemesas_ui_grid"
+            ui-grid-edit
+            ui-grid-cellnav
+            ui-grid-resize-columns
+            ui-grid-selection
+            ui-grid-grouping
+            class="angularGrid_Wide" style="height: 300px; ">
+        </div>
+    </div>
+
+</div>

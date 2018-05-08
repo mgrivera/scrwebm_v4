@@ -1,0 +1,41 @@
+
+
+<div class="row">
+    <div class="col-sm-11 col-sm-offset-0">
+        <div class="col-sm-2 col-sm-offset-0" style="text-align: left; vertical-align: middle; ">
+            <a href="#" ng-click="exportarDatosConsulta()">Exportar</a>
+        </div>
+
+        <div class="col-sm-2 col-sm-offset-0" style="text-align: left; vertical-align: middle; ">
+                <a href="#" ng-click="reporteOpcionesModal()" class="navbar_custom_small_node">Reporte&nbsp;&nbsp;<span class="fa fa-print"></span></a>
+        </div>
+
+        <div class="col-sm-4 col-sm-offset-0" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+    <div class="col-sm-1" style="text-align: right; ">
+        <a href="#" ng-click="regresar()">Regresar</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+            <span ng-bind-html="alert.msg | unsafe"></span>
+        </alert>
+    </div>
+</div>
+
+<div class="row" style="text-align: center; ">
+    <div class="col-sm-12 col-sm-offset-0">
+
+        <div ui-grid="items_ui_grid"
+             ui-grid-resize-columns
+             ui-grid-selection
+             ui-grid-pinning
+             class="angularGrid"
+             style="height: 250px; width: 100%; ">
+        </div>
+    </div>
+</div>

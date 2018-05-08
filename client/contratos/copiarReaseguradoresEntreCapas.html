@@ -1,0 +1,46 @@
+﻿
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Contratos - Copiar reaseguradores entre capas</span>
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+                <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-1">
+
+                <div ui-grid="capasSource_ui_grid_Options"
+                     ui-grid-selection
+                     class="angularGrid_Short">
+                </div>
+
+            </div>
+
+            <div class="col-sm-4 col-sm-offset-1">
+
+                <div ui-grid="capasTarget_ui_grid_Options"
+                     ui-grid-selection
+                     class="angularGrid_Short">
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-sm btn-primary" ng-click="ok()" style="min-width: 80px; ">OK</button>
+    <button class="btn btn-sm btn-warning" ng-click="cancel()" style="min-width: 80px; ">Cerrar</button>
+</div>

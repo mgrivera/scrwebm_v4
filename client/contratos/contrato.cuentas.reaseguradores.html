@@ -1,0 +1,33 @@
+﻿
+
+<div class="row">
+
+    <div class="col-sm-12 col-sm-offset-0">
+
+        <nav class="navbar navbar-default navbar_custom_small" role="navigation" style="width: 100%; ">
+            <div class="container-fluid navbar-nopaddingleft">
+                <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#" class="navbar_custom_small_header">Reaseguradores </a></li>
+
+                        <li><a href="#" ng-click="agregarCuentaReasegurador()" class="navbar_custom_xsmall_node">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                        <li><a href="#" ng-click="eliminarCuentaReasegurador()" class="navbar_custom_xsmall_node">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
+
+                        <li class="divider-vertical-small"></li>
+                        <li><a href="#" ng-click="refrescarGridCuentasReaseguradores()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'"> <i class="fa fa-refresh"></i></a></li>
+                        <li class="divider-vertical-small"></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div ui-grid="cuentasReaseguradores_ui_grid"
+             ui-grid-edit
+             ui-grid-cellnav
+             ui-grid-resize-columns
+             ui-grid-selection
+             class="angularGrid_Wide"
+             style="height: 150px; ">
+        </div>
+    </div>
+</div>

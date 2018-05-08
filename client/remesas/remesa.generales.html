@@ -1,0 +1,293 @@
+﻿
+<div class="ui-viewBorder">
+
+    <form class="form-horizontal" role="form" name="remesaForm" ng-submit="remesaFormSubmit()" novalidate style="margin-top: 15px; ">
+
+        <div class="container-fluid">
+
+            <div class="row">
+                            
+                <!-- mostramos si la remesa está protegida (ej: cerrada) -->
+                    <div class="col-sm-5 col-sm-offset-1">
+                    </div>
+
+                    <!-- Fecha -->
+                    <div class="col-sm-5 col-sm-offset-0" style="text-align: right; ">
+                        <span ng-show="remesa.protegida.protegida" style="color: red; font-style: italic; ">*Remesa protegida - período cerrado*</span>
+                    </div>
+            </div>
+
+            <div class="row">
+
+                <!-- número -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-2 control-label input-label">Número: </label>
+                        <div class="col-sm-9" style="color: #337AB7; padding-left: 30px; ">
+                            <p class="form-control-static pull-left">{{ remesa.numero }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fecha -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Fecha: </label>
+                        <div class="col-sm-9">
+                            <input type="date"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="remesa.fecha"
+                                   ng-change="setIsEdited('fechaRemesa')" 
+                                   ng-model-options="{ updateOn: 'blur' }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- compañía -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Compañía: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    ng-model="remesa.compania"
+                                    ng-change="setIsEdited('compania')"
+                                    ng-options="item._id as item.nombre for item in companias | orderBy:'nombre'"
+                                    ng-model-options="{ updateOn: 'blur' }"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Moneda -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Moneda: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    ng-model="remesa.moneda"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item._id as item.descripcion for item in monedas"
+                                    ng-model-options="{ updateOn: 'blur' }"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- mi/su -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Mi/Su: </label>
+                        <div class="col-sm-9">
+                            <select class="form-control input-sm myinput-sm"
+                                    ng-model="remesa.miSu"
+                                    ng-change="setIsEdited()"
+                                    ng-options="item as item for item in miSu_List"
+                                    ng-model-options="{ updateOn: 'blur' }"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- factor de cambio -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">F cambio: </label>
+                        <div class="col-sm-9">
+                            <input type="number"
+                                   class="form-control input-sm myinput-sm"
+                                   ng-model="remesa.factorCambio"
+                                   ng-change="setIsEdited()" 
+                                   ng-model-options="{ updateOn: 'blur' }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-sm-5 col-sm-offset-1">
+                </div>
+
+                <!-- Fecha de cierre -->
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Cerrada: </label>
+                        <div class="col-sm-9" style="padding-left: 10px; ">
+                            <p class="form-control-static pull-left">{{ remesa.fechaCerrada | dateTimeFilter }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <!-- Observaciones -->
+                <div class="col-sm-10 col-sm-offset-1">
+                    <div class="form-group form-group-sm">
+                        <span class="col-sm-12 textarea-label">Observaciones: </span>
+                        <br />
+                        <div class="col-sm-12">
+                            <textarea class="input-sm myinput-sm wide-textarea"
+                                      ng-model="remesa.observaciones"
+                                      ng-change="setIsEdited()"
+                                      ng-model-options="{ updateOn: 'blur' }"
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1">
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Instrumento de pago: </legend>
+
+                        <div class="row">
+
+                            <!-- número -->
+                            <div class="col-sm-5 col-sm-offset-1">
+                                <div class="form-group form-group-sm">
+                                    <label class="col-sm-3 control-label input-label">Numero: </label>
+                                    <div class="col-sm-9">
+                                        <input type="text"
+                                               class="form-control input-sm myinput-sm"
+                                               ng-model="remesa.instrumentoPago.numero"
+                                               ng-change="setIsEdited()" 
+                                               ng-model-options="{ updateOn: 'blur' }" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- tipo -->
+                            <div class="col-sm-5 col-sm-offset-0">
+                                <div class="form-group form-group-sm">
+                                    <label class="col-sm-3 control-label input-label">Tipo: </label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control input-sm myinput-sm"
+                                                ng-model="remesa.instrumentoPago.tipo"
+                                                ng-change="setIsEdited()"
+                                                ng-options="item.tipo as item.descripcion for item in tiposInstrumentoPago_List"
+                                                ng-model-options="{ updateOn: 'blur' }"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+
+                            <!-- banco -->
+                            <div class="col-sm-5 col-sm-offset-1">
+                                <div class="form-group form-group-sm">
+                                    <label class="col-sm-3 control-label input-label">Banco: </label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control input-sm myinput-sm"
+                                                ng-model="remesa.instrumentoPago.banco"
+                                                ng-change="setIsEdited('banco')"
+                                                ng-options="item._id as item.nombre for item in bancos"
+                                                ng-model-options="{ updateOn: 'blur' }"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- fecha -->
+                            <div class="col-sm-5 col-sm-offset-0">
+                                <div class="form-group form-group-sm">
+                                    <label class="col-sm-3 control-label input-label">Fecha: </label>
+                                    <div class="col-sm-9">
+                                        <input type="date"
+                                               class="form-control input-sm myinput-sm"
+                                               ng-model="remesa.instrumentoPago.fecha"
+                                               ng-change="setIsEdited()" 
+                                               ng-model-options="{ updateOn: 'blur' }" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <!-- cuentaBancaria -->
+                            <div class="col-sm-5 col-sm-offset-1">
+                                <div class="form-group form-group-sm">
+                                    <label class="col-sm-3 control-label input-label">Cuenta: </label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control input-sm myinput-sm"
+                                                ng-model="remesa.instrumentoPago.cuentaBancaria"
+                                                ng-change="setIsEdited('cuentaBancaria')"
+                                                ng-options="item._id as item.descripcion for item in listaCuentasBancarias"
+                                                ng-model-options="{ updateOn: 'blur' }"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- monto -->
+                            <div class="col-sm-5 col-sm-offset-0">
+                                <div class="form-group form-group-sm">
+                                    <label class="col-sm-3 control-label input-label">Monto: </label>
+                                    <div class="col-sm-9">
+                                        <input type="number"
+                                               class="form-control input-sm myinput-sm"
+                                               ng-model="remesa.instrumentoPago.monto"
+                                               ng-change="setIsEdited()" 
+                                               ng-model-options="{ updateOn: 'blur' }" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-sm-5 col-sm-offset-1">
+                </div>
+
+                <div class="col-sm-5 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-3 control-label input-label">Cia: </label>
+                        <div class="col-sm-9" style="padding-left: 10px; ">
+                            <p class="form-control-static pull-left">{{ remesa.cia | empresaUsuariaSeleccionadaFilter }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1" style="background-color: #F2F2F2; border: 1px solid darkgray; font-size: x-small; ">
+
+                    <!-- ingreso, ult actualización y usuario  -->
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ingreso: </label>
+                        <br />
+                        <span>{{ remesa.ingreso | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ remesa.usuario | userNameOrEmailFilter }} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Ult act: </label>
+                        <br />
+                        <span>{{ remesa.ultAct | date:'dd-MM-yyyy hh:mm a'}} </span>
+                    </div>
+                    <div class="col-sm-3" style="text-align: center; ">
+                        <label style="font-size: x-small; ">Usuario: </label>
+                        <br />
+                        <span>{{ remesa.ultUsuario | userNameOrEmailFilter }} </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>

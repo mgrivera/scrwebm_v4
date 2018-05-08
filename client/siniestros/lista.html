@@ -1,0 +1,112 @@
+
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div class="col-sm-11 col-sm-offset-0">
+            <div class="col-sm-4 col-sm-offset-4" style="text-align: center; vertical-align: middle; ">
+                <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            </div>
+
+            <div class="col-sm-4" style="text-align: right; font-style: italic; ">
+                <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+            </div>
+        </div>
+        <div class="col-sm-1" style="text-align: right; ">
+            <a href="#" ng-click="regresar()">Regresar</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0">
+            <div class="col-sm-8" style="padding-left: 0; ">
+                <dir-pagination-controls class="navigation-bar pull-left" boundary-links="true"></dir-pagination-controls>
+            </div>
+
+            <div class="col-sm-4" style="padding-right: 0; ">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0">
+            <table style="font-size: x-small; " class="table table-condensed table-striped table-bordered table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th colspan="11"></th>
+                        <th style="text-align: center; " colspan="3">Fechas</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; ">#</th>
+                        <th style="text-align: left; ">Referencia</th>
+                        <th style="text-align: left; ">Código</th>
+                        <th style="text-align: left; ">Compañía</th>
+                        <th style="text-align: center; ">Moneda</th>
+                        <th style="text-align: center; ">Susc</th>
+                        <th style="text-align: left; ">Ramo</th>
+                        <th style="text-align: left; ">Asegurado</th>
+                        <th style="text-align: left; ">Ajustador</th>
+                        <th style="text-align: left; ">Causa</th>
+                        <th style="text-align: left; ">Tipo</th>
+                        <th style="text-align: center; ">Emisión</th>
+                        <th style="text-align: center; ">Ocurrencia</th>
+                        <th style="text-align: center; ">Noficación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr dir-paginate="siniestro in siniestros | orderBy:'numero' | itemsPerPage: pageSize" current-page="currentPage">
+
+                        <td style="text-align: center; white-space: nowrap; ">
+                            <a href="#" ng-click="abrirPaginaDetalles(siniestro._id)">
+                                {{ siniestro.numero }}
+                            </a>
+                        </td>
+                        <td style="text-align: left; ">{{ siniestro.referencia }}</td>
+                        <td style="text-align: left; ">{{ siniestro.codigo }}</td>
+                        
+                        <td style="text-align: left; white-space: nowrap; ">
+                            <a href="#" ng-click="abrirPaginaDetalles(siniestro._id)">
+                                {{ siniestro.compania | companiaAbreviaturaFilter }}
+                            </a>
+                        </td>
+
+                        <td style="text-align: center; white-space: nowrap; ">{{ siniestro.moneda | monedaSimboloFilter }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ siniestro.suscriptor | suscriptorAbreviaturaFilter }}</td>
+                        <td style="text-align: left; white-space: nowrap; ">{{ siniestro.ramo | ramoAbreviaturaFilter }}</td>
+
+                        <td style="text-align: left; white-space: nowrap; ">
+                            <a href="#" ng-click="abrirPaginaDetalles(siniestro._id)">
+                                {{ siniestro.asegurado | aseguradoAbreviaturaFilter }}
+                            </a>
+                        </td>
+
+                        <td style="text-align: left; white-space: nowrap; ">{{ siniestro.ajustador | companiaAbreviaturaFilter }}</td>
+                        <td style="text-align: left; white-space: nowrap; ">{{ siniestro.causa | causaSiniestroAbreviaturaFilter }}</td>
+                        <td style="text-align: left; white-space: nowrap; ">{{ siniestro.tipo | tipoSiniestroFilter }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ siniestro.fechaEmision | date:'dd-MM-yyyy' }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ siniestro.fechaOcurrencia | date:'dd-MM-yyyy' }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ siniestro.fechaNotificacion | date:'dd-MM-yyyy' }}</td>
+
+                    </tr>
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="row" ng-if="origen == 'edicion'">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: right; ">
+            <button class="btn btn-default btn-sm" style="min-width: 80px; " ng-click="nuevo()">
+                Nuevo
+            </button>
+        </div>
+    </div>
+</div>

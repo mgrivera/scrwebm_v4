@@ -1,0 +1,104 @@
+﻿
+<div class="ui-viewBorder">
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <div class="col-sm-4 col-sm-offset-4" style="text-align: center; vertical-align: middle; ">
+                <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            </div>
+
+            <div class="col-sm-4" style="text-align: right; font-style: italic; ">
+                <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+            </div>
+        </div>
+        <div class="col-sm-1" style="text-align: right; ">
+            <a href="#" ng-click="regresar()">Regresar</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <div class="col-sm-8" style="padding-left: 0; ">
+                <dir-pagination-controls class="navigation-bar pull-left" boundary-links="true"></dir-pagination-controls>
+            </div>
+
+            <div class="col-sm-4" style="padding-right: 0; ">
+                <div class="input-group input-group-sm pull-right">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </span>
+                    <input ng-model="filterUser"
+                           class="form-control"
+                           type="text"
+                           placeholder="buscar ..." />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+
+            <table style="font-size: x-small; " class="table table-condensed table-striped table-bordered table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; ">Número</th>
+                        <th style="text-align: center; ">Fecha</th>
+                        <th style="text-align: left; ">Compañía</th>
+                        <th style="text-align: center; ">Mi/Su</th>
+                        <th style="text-align: center; ">Moneda</th>
+                        <th style="text-align: right; ">Monto</th>
+                        <th style="text-align: center; ">F cerrada</th>
+                        <th style="text-align: left; ">Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr dir-paginate="remesa in remesas | filter:filterUser | itemsPerPage: pageSize" current-page="currentPage">
+
+                        <td style="text-align: left; white-space: nowrap; ">
+                            <a href="#" ng-click="abrirRemesaPage(remesa.id)">
+                                {{ remesa.numero }}
+                            </a>
+                        </td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ remesa.fecha | date:'dd-MM-yyyy' }}</td>
+
+                        <td style="text-align: left; white-space: nowrap; ">
+                            <a href="#" ng-click="abrirRemesaPage(remesa.id)">
+                                {{ remesa.compania }}
+                            </a>
+                        </td>
+
+                        <td style="text-align: center; ">{{ remesa.miSu }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ remesa.moneda }}</td>
+                        <td style="text-align: right; ">{{ remesa.instrumentoPago.monto | currencyFilter }}</td>
+                        <td style="text-align: center; white-space: nowrap; ">{{ remesa.fechaCerrada | date:'dd-MM-yyyy' }}</td>
+                        
+                        <td style="text-align: left; ">
+                            <a href="#" ng-click="abrirRemesaPage(remesa.id)">
+                                {{ remesa.observaciones }}
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="row" ng-if="origen == 'edicion'">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: right; ">
+            <button class="btn btn-default btn-sm" style="min-width: 80px; " ng-click="nuevo()">
+                Nuevo
+            </button>
+        </div>
+    </div>
+</div>

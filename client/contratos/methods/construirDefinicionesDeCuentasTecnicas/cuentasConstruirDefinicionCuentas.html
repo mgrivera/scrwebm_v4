@@ -1,0 +1,170 @@
+﻿
+
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Contratos - Construir una definición de cuentas para el contrato</span>
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0" style="font-size: small; ">
+                <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 15px; ">
+            <div class="col-sm-10 col-sm-offset-1">
+
+                <form name="construirDefinicionCuentasForm"
+                      id="construirDefinicionCuentasForm"
+                      ng-submit="submitConstruirDefinicionCuentasForm()"
+                      role="form"
+                      novalidate>
+
+                    <div class="row">
+                        <div class="form-group col-sm-5 col-sm-offset-1">
+                            <label class="control-label myinput-xsm">Moneda: </label>
+                            <select class="form-control input-sm myinput-xsm"
+                                    name="moneda"
+                                    ng-model="parametros.moneda"
+                                    ng-options="item._id as item.descripcion for item in monedas"
+                                    required></select>
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirDefinicionCuentasForm.moneda.$error.required">
+                                Indique un valor.
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-5 col-sm-offset-1">
+                            <label class="control-label myinput-xsm">Cantidad: </label>
+                            <input type="number"
+                                   name="cantidad"
+                                   min="1" max="25"
+                                   class="form-control input-sm myinput-xsm"
+                                   ng-model="parametros.cantidad"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   required
+                                   style="width: 100px; " />
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirDefinicionCuentasForm.cantidad.$error.required">
+                                Indique un valor.
+                            </div>
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirDefinicionCuentasForm.cantidad.$error.number">
+                                Valor inválido.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-sm-5 col-sm-offset-1">
+                            <label class="control-label myinput-xsm">F 1ra cuenta: </label>
+                            <input type="date"
+                                   name="fecha"
+                                   class="form-control input-sm myinput-xsm"
+                                   ng-model="parametros.fecha"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   required
+                                   style="width: 140px; " />
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirDefinicionCuentasForm.fecha.$error.required">
+                                Indique un valor.
+                            </div>
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirDefinicionCuentasForm.fecha.$error.date">
+                                Valor inválido.
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-5 col-sm-offset-1">
+                            <label class="control-label myinput-xsm">Días de vencimiento: </label>
+                            <input type="number"
+                                   name="diasVencimiento"
+                                   class="form-control input-sm myinput-xsm"
+                                   ng-model="parametros.diasVencimiento"
+                                   ng-model-options="{ updateOn: 'blur' }"
+                                   required
+                                   style="width: 100px; " />
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirDefinicionCuentasForm.diasVencimiento.$error.required">
+                                Indique un valor.
+                            </div>
+
+                            <div class="validation-message myinput-xsm"
+                                 ng-show="submitted && construirDefinicionCuentasForm.diasVencimiento.$error.number">
+                                Valor inválido.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10 col-lg-offset-1">
+                            <fieldset class="scheduler-border" style="font-size: x-small; ">
+                                <legend class="scheduler-border-xsm">Cantidad de días (o meses) entre cuentas: </legend>
+                                <div class="form-group col-sm-5 col-offset-1">
+                                    <label class="control-label myinput-xsm">Días: </label>
+                                    <div>
+                                        <input type="number"
+                                               name="cantidadDias"
+                                               class="form-control input-sm myinput-xsm"
+                                               ng-model="parametros.cantidadDias"
+                                               ng-model-options="{ updateOn: 'blur' }"
+                                               style="width: 100px; " />
+
+                                        <div class="validation-message myinput-xsm"
+                                             ng-show="submitted && construirDefinicionCuentasForm.cantidadDias.$error.number">
+                                            Valor inválido.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-sm-5 col-offset-1">
+                                    <label class="control-label myinput-xsm">Meses: </label>
+                                    <div>
+                                        <input type="number"
+                                               name="cantidadMeses"
+                                               class="form-control input-sm myinput-xsm"
+                                               ng-model="parametros.cantidadMeses"
+                                               ng-model-options="{ updateOn: 'blur' }"
+                                               style="width: 100px; " />
+
+                                        <div class="validation-message myinput-xsm"
+                                             ng-show="submitted && construirDefinicionCuentasForm.cantidadMeses.$error.number">
+                                            Valor inválido.
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1" style="font-size: small; ">
+                <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">Cerrar</button>
+                <button type="submit" form="construirDefinicionCuentasForm" class="btn btn-sm pull-right btn-primary" style="margin-right: 15px; ">Constrir y registrar cuentas</button>
+            </div>
+        </div>
+    </div>
+</div>
