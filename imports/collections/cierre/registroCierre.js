@@ -24,6 +24,7 @@ var schema = new SimpleSchema({
     fecha: { type: Date, label: "Fecha", optional: false, },
     moneda: { type: String, label: "Moneda", optional: false, },
     compania: { type: String, label: "Compania", optional: false, },
+    cedente: { type: String, label: "Cedente", optional: true, },
     tipo: { type: String, label: "Tipo (Manual/Automático)", optional: false, },
     origen: { type: String, label: "Origen", optional: true, },
     referencia: { type: String, label: "Referencia", optional: true, },

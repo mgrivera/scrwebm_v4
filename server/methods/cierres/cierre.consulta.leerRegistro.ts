@@ -74,6 +74,7 @@ Meteor.methods({
 
             let moneda = monedas.find((x) => { return x._id === item.moneda; }); 
             let compania = companias.find((x) => { return x._id === item.compania; }); 
+            let cedente = companias.find((x) => { return x._id === item.cedente; });    // aunque viene casi siempre, puede no venir
 
             if (!moneda) { 
                 throw new Meteor.Error('error-base-datos', `Error inesperado: no hemos podido leer un registro para la moneda 
@@ -137,6 +138,12 @@ Meteor.methods({
                             nombre: compania.nombre,
                             abreviatura: compania.abreviatura,
                         }, 
+
+                        cedente: { 
+                            cedente: cedente ? cedente._id : "",
+                            nombre: cedente ? cedente.nombre : "",
+                            abreviatura: cedente ? cedente.abreviatura : "",
+                        }, 
                         
                         tipo: item.tipo === "A" ? "Auto" : "Man",
                         origen: item.origen,
@@ -198,6 +205,12 @@ Meteor.methods({
                                 nombre: compania.nombre,
                                 abreviatura: compania.abreviatura,
                             }, 
+
+                            cedente: { 
+                                cedente: cedente ? cedente._id : "",
+                                nombre: cedente ? cedente.nombre : "",
+                                abreviatura: cedente ? cedente.abreviatura : "",
+                            }, 
                             
                             tipo: item.tipo === "A" ? "Auto" : "Man",
                             origen: item.origen,
@@ -244,6 +257,12 @@ Meteor.methods({
                         compania: compania._id,
                         nombre: compania.nombre,
                         abreviatura: compania.abreviatura,
+                    }, 
+
+                    cedente: { 
+                        cedente: cedente ? cedente._id : "",
+                        nombre: cedente ? cedente.nombre : "",
+                        abreviatura: cedente ? cedente.abreviatura : "",
                     }, 
                     
                     tipo: item.tipo === "A" ? "Auto" : "Man",

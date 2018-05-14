@@ -75,6 +75,9 @@ angular.module("scrwebM").controller("Cierre.Registro.Controller",
         companias: () => {
             return Companias.find({}, { sort: { nombre: 1 } });
         },
+        cedentes: () => {
+            return Companias.find({ tipo: "SEG", }, { sort: { nombre: 1 } });
+        },
         monedas: () => {
             return Monedas.find({}, { sort: { descripcion: 1 } });
         },
@@ -206,6 +209,27 @@ angular.module("scrwebM").controller("Cierre.Registro.Controller",
             name: 'compania',
             field: 'compania',
             displayName: 'Compañía',
+            width: 100,
+            enableFiltering: true,
+            enableCellEdit: true,
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: '_id',
+            editDropdownValueLabel: 'abreviatura',
+            editDropdownOptionsArray: $scope.companias,
+            cellFilter: 'mapDropdown:row.grid.appScope.companias:"_id":"abreviatura"',
+
+            enableColumnMenu: false,
+            enableSorting: true,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'cedente',
+            field: 'cedente',
+            displayName: 'Cedente',
             width: 100,
             enableFiltering: true,
             enableCellEdit: true,
@@ -509,7 +533,7 @@ angular.module("scrwebM").controller("Cierre.Registro.Controller",
             $scope.alerts.push({
                 type: 'info',
                 msg: `${numeral($scope.registro.length).format('0,0')} registros
-                    (de ${numeral(recordCount).format('0,0')}) han sido seleccionados ...`
+                    (<b>de ${numeral(recordCount).format('0,0')}</b>) han sido seleccionados ...`
             });
 
             $scope.showProgress = false;
@@ -730,6 +754,11 @@ function construirFiltro(criterioSeleccion) {
     if (criterioSeleccion.compania && Array.isArray(criterioSeleccion.compania) && criterioSeleccion.compania.length) {
         var array = lodash.clone(criterioSeleccion.compania);
         filtro.compania = { $in: array };
+    }
+
+    if (criterioSeleccion.cedente && Array.isArray(criterioSeleccion.cedente) && criterioSeleccion.cedente.length) {
+        var array = lodash.clone(criterioSeleccion.cedente);
+        filtro.cedente = { $in: array };
     }
 
     if (criterioSeleccion.moneda && Array.isArray(criterioSeleccion.moneda) && criterioSeleccion.moneda.length) {

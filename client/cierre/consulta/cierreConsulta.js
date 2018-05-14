@@ -74,6 +74,9 @@ angular.module("scrwebM").controller("Cierre.Consulta.Controller",
         companias: () => {
             return Companias.find({}, { sort: { nombre: 1 } });
         },
+        cedentes: () => {
+            return Companias.find({ tipo: "SEG", }, { sort: { nombre: 1 } });
+        },
         monedas: () => {
             return Monedas.find({}, { sort: { descripcion: 1 } });
         },
@@ -158,7 +161,20 @@ angular.module("scrwebM").controller("Cierre.Consulta.Controller",
             name: 'compania.abreviatura',
             field: 'compania.abreviatura',
             displayName: 'Compañía',
-            width: 100,
+            width: 80,
+            enableFiltering: true,
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableSorting: true,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'cedente.abreviatura',
+            field: 'cedente.abreviatura',
+            displayName: 'Cedente',
+            width: 80,
             enableFiltering: true,
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
@@ -504,7 +520,7 @@ angular.module("scrwebM").controller("Cierre.Consulta.Controller",
             $scope.alerts.push({
                 type: 'info',
                 msg: `${numeral($scope.temp_consulta_cierreRegistro.length).format('0,0')} registros
-                    (de ${numeral(recordCount).format('0,0')}) han sido seleccionados ...`
+                    (<b>de ${numeral(recordCount).format('0,0')}</b>) han sido seleccionados ...`
             });
 
             $scope.showProgress = false;
@@ -599,17 +615,22 @@ function construirFiltro(criterioSeleccion) {
         }
     }
 
-    if (criterioSeleccion.compania) {
+    if (criterioSeleccion.compania && Array.isArray(criterioSeleccion.compania) && criterioSeleccion.compania.length) {
         var array = lodash.clone(criterioSeleccion.compania);
         filtro.compania = { $in: array };
     }
 
-    if (criterioSeleccion.moneda) {
+    if (criterioSeleccion.cedente && Array.isArray(criterioSeleccion.cedente) && criterioSeleccion.cedente.length) {
+        var array = lodash.clone(criterioSeleccion.cedente);
+        filtro.cedente = { $in: array };
+    }
+
+    if (criterioSeleccion.moneda && Array.isArray(criterioSeleccion.moneda) && criterioSeleccion.moneda.length) {
         var array = lodash.clone(criterioSeleccion.moneda);
         filtro.moneda = { $in: array };
     }
 
-    if (criterioSeleccion.tipoNegocio) {
+    if (criterioSeleccion.tipoNegocio && Array.isArray(criterioSeleccion.tipoNegocio) && criterioSeleccion.tipoNegocio.length) {
         var array = lodash.clone(criterioSeleccion.tipoNegocio);
         filtro.tipoNegocio = { $in: array };
     }

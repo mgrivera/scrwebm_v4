@@ -94,11 +94,13 @@ Meteor.methods({
             let tipoNegocio: string = ""; 
             let categoria: string = ""; 
             let origen_keys: string[] = []; 
+            let cedente = ""; 
 
             switch(cuota.source.origen) { 
                 case 'fac': { 
-                    let riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, }}); 
+                    let riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                     if (riesgo) { 
+                        cedente = riesgo.compania; 
                         let asegurado = Asegurados.findOne({ _id: riesgo.asegurado }, { fields: { abreviatura: true, }}); 
                         if (asegurado) { 
                             referenciaEntidadOrigen = asegurado.abreviatura; 
@@ -114,8 +116,9 @@ Meteor.methods({
                     break; 
                 }
                 case 'capa': { 
-                    let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, }}); 
+                    let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
                     if (contrato) { 
+                        cedente = contrato.compania; 
                         referenciaEntidadOrigen = contrato.codigo ? contrato.codigo : "Indefinida"; 
                     }
                     tipoNegocio = "NoProp"; 
@@ -126,8 +129,9 @@ Meteor.methods({
                     break; 
                 }
                 case 'sinFac': { 
-                    let siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, }}); 
+                    let siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                     if (siniestro) { 
+                        cedente = siniestro.compania; 
                         let asegurado = Asegurados.findOne({ _id: siniestro.asegurado }, { fields: { abreviatura: true, }}); 
                         if (asegurado) { 
                             referenciaEntidadOrigen = asegurado.abreviatura; 
@@ -152,6 +156,7 @@ Meteor.methods({
                 fecha: cuota.fecha,
                 moneda: cuota.moneda,
                 compania: cuota.compania,
+                cedente: cedente, 
                 tipo: "A",
                 origen: `${cuota.source.origen} ${cuota.source.numero}`,
                 referencia: referenciaEntidadOrigen,
@@ -233,7 +238,7 @@ Meteor.methods({
         let contratosProporcionales = Contratos.find({ 
             'cuentasTecnicas_definicion.desde': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, 
             cia: periodoCierre.cia, 
-        }, { fields: { _id: 1, numero: 1, codigo: 1, cuentasTecnicas_definicion: 1, }}).fetch(); 
+        }, { fields: { _id: 1, numero: 1, codigo: 1, cuentasTecnicas_definicion: 1, compania: 1, }}).fetch(); 
 
         cantidadRecs = contratosProporcionales.length;
 
@@ -259,7 +264,8 @@ Meteor.methods({
                 
                         fecha: definicion.desde,
                         moneda: cuenta.moneda,
-                        compania: cuenta.compania,
+                        compania: cuenta.nosotros ? contrato.compania : cuenta.compania,   // nosotros: usamos el cedente 
+                        cedente: contrato.compania, 
                         tipo: "A",
                         origen: `cuenta ${contrato.numero}-${definicion.numero.toString()}`,
                         referencia: contrato.codigo ? contrato.codigo : "Indefinida",
@@ -406,11 +412,13 @@ Meteor.methods({
                 let tipoNegocio = ""; 
                 let categoria = ""; 
                 let origen_keys: string[] = []; 
+                let cedente = ""; 
 
                 switch(cuota.source.origen) { 
                     case 'fac': { 
-                        let riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, }}); 
+                        let riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                         if (riesgo) { 
+                            cedente = riesgo.compania; 
                             let asegurado = Asegurados.findOne({ _id: riesgo.asegurado }, { fields: { abreviatura: true, }}); 
                             if (asegurado) { 
                                 referenciaEntidadOrigen = asegurado.abreviatura; 
@@ -426,8 +434,9 @@ Meteor.methods({
                         break; 
                     }
                     case 'cuenta':  // la verdad es que éstas ahora no se leen 
-                        let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, }}); 
+                        let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
                         if (contrato) { 
+                            cedente = contrato.compania; 
                             referenciaEntidadOrigen = contrato.codigo ? contrato.codigo : "Indefinida"; 
                         }
                         tipoNegocio = "Prop"; 
@@ -439,8 +448,9 @@ Meteor.methods({
 
                         break; 
                     case 'capa': { 
-                        let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, }}); 
+                        let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
                         if (contrato) { 
+                            cedente = contrato.compania; 
                             referenciaEntidadOrigen = contrato.codigo ? contrato.codigo : "Indefinida"; 
                         }
                         tipoNegocio = "NoProp"; 
@@ -453,8 +463,9 @@ Meteor.methods({
                         break; 
                     }
                     case 'sinFac': { 
-                        let siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, }}); 
+                        let siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                         if (siniestro) { 
+                            cedente = siniestro.compania; 
                             let asegurado = Asegurados.findOne({ _id: siniestro.asegurado }, { fields: { abreviatura: true, }}); 
                             if (asegurado) { 
                                 referenciaEntidadOrigen = asegurado.abreviatura; 
@@ -482,6 +493,7 @@ Meteor.methods({
                     fecha: p.fecha,
                     moneda: p.moneda,
                     compania: cuota.compania,
+                    cedente: cedente, 
                     tipo: "A",
                     origen: `Rem ${remesa.numero.toString()} ${remesa.miSu}`,
                     referencia: referenciaEntidadOrigen,
@@ -669,7 +681,8 @@ function grabarAlCierreRegistrosComplementario(tipoComplementario, contrato, def
 
             fecha: definicion.desde,
             moneda: complementario.moneda,
-            compania: complementario.compania,
+            compania: complementario.nosotros ? contrato.compania : complementario.compania,    // nosotros: usamos el cedente en el contrato
+            cedente: contrato.compania, 
             tipo: "A",
             origen: `cuenta ${contrato.numero}-${definicion.numero.toString()}`,
             referencia: contrato.codigo ? contrato.codigo : "Indefinida",
