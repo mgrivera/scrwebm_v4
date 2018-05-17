@@ -180,6 +180,7 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('contrato.cuentas.definiciones', {
             templateUrl: 'client/contratos/contratos.cuentas/contrato.cuentas.definiciones.html',
+            controller: 'Contrato_Cuentas_Definiciones_Controller', 
             parent: 'contrato.cuentas'
         })
         .state('contrato.cuentas.cuentasTecnicas', {

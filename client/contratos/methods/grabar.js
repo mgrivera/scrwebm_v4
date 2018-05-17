@@ -244,15 +244,6 @@ let grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
                 $scope.capasCuotas_ui_grid.data = $scope.cuotas.filter((c) => { return c.source.origen === 'capa'; });
             }
 
-            if ($scope.contrato && $scope.contrato.cuentasTecnicas_definicion &&
-                lodash.isArray($scope.contrato.cuentasTecnicas_definicion)) {
-                $scope.cuentasTecnicas_definiciones_ui_grid.data = $scope.contrato.cuentasTecnicas_definicion;
-            }
-
-            // grid de cuotas de contratos proporcionales; solo se muestran cuando el
-            // usuario selecciona una definición de cuenta técnica ...
-            $scope.cuentasCuotas_ui_grid.data = [];
-
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'info',

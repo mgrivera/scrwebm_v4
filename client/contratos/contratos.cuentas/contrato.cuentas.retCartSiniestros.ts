@@ -26,6 +26,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartSn_Controller",
     $scope.contrato = $scope.$parent.$parent.contrato; 
     $scope.companiaSeleccionada = $scope.$parent.$parent.companiaSeleccionada; 
     $scope.definicionCuentaTecnicaSeleccionada = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada; 
+    $scope.definicionCuentaTecnicaSeleccionada_Info = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada_Info;
 
     let contratoProp_retCartSn_resumen_itemSeleccionado = {};
 
@@ -222,32 +223,39 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartSn_Controller",
                     return; 
                 }
                 
-                var func = x => x * x;      
+                // en la lista pueden haber items; agregamos *solo* los que no existen (mon/ram/tipo/serie) y dejamos los que 
+                // existen ... 
+                let yaExistian = 0; 
+                let agregados = 0; 
 
-                $scope.contratosProp_retCartSn_resumen
-                    .filter(x => x.definicionID === definicionSeleccionadaID)
-                    .forEach((x) => { 
-                        if (x.docState && x.docState === 1) { 
-                            lodash.remove($scope.contratosProp_retCartSn_resumen, (y: any) => { return y._id === x._id; });
-                        } else { 
-                            $scope.contratosProp_retCartSn_resumen.find(y => y._id === x._id).docState = 3; 
-                        }
-                    })
+                yaExistian = $scope.contratosProp_retCartSn_resumen.filter(x => x.definicionID === definicionSeleccionadaID).length;
 
                 result.resumenPrimasSiniestros_array.forEach((x) => {
-                    let resumenRetCartSn_item = {
-                        _id: new Mongo.ObjectID()._str,
-                        contratoID: contratoID, 
-                        definicionID: definicionSeleccionadaID,
-                        moneda: x.moneda,
-                        ramo: x.ramo,
-                        tipoContrato: x.tipo,
-                        serie: parseInt(x.serie),
-                        monto: null,
-                        docState: 1, 
-                    }
 
-                    $scope.contratosProp_retCartSn_resumen.push(resumenRetCartSn_item);
+                    let existeEnLaLista = $scope.contratosProp_retCartSn_resumen.find(y => 
+                        y.definicionID === definicionSeleccionadaID && 
+                        y.moneda === x.moneda && 
+                        y.ramo === x.ramo && 
+                        y.tipoContrato === x.tipo && 
+                        y.serie === parseInt(x.serie)
+                    )
+
+                    if (!existeEnLaLista) { 
+                        let resumenPrimaSiniestros_item = {
+                            _id: new Mongo.ObjectID()._str,
+                            contratoID: contratoID, 
+                            definicionID: definicionSeleccionadaID,
+                            moneda: x.moneda,
+                            ramo: x.ramo,
+                            tipoContrato: x.tipo,
+                            serie: parseInt(x.serie),
+                            monto: null,
+                            docState: 1, 
+                        }
+    
+                        $scope.contratosProp_retCartSn_resumen.push(resumenPrimaSiniestros_item);
+                        agregados++; 
+                    }
                 })
 
                 $scope.contratoProp_retCartSn_resumen_ui_grid.data = [];
@@ -257,10 +265,12 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartSn_Controller",
                 $scope.$parent.$parent.dataHasBeenEdited = true; 
 
                 $scope.$parent.alerts.length = 0;
-                $scope.$parent.alerts.push({
-                    type: 'info',
-                    msg: result.message
-                });
+                
+                DialogModal($modal, "<em>Contratos proporcionales</em>",
+                    `Resumen de primas y siniestros.<br /><br />
+                     <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
+                     <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`,
+                    false).then();
             },
             (error) => {
                 $scope.$parent.alerts.length = 0;

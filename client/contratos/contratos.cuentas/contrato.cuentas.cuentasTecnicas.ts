@@ -26,7 +26,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.contrato = $scope.$parent.$parent.contrato; 
     $scope.companiaSeleccionada = $scope.$parent.$parent.companiaSeleccionada; 
     $scope.definicionCuentaTecnicaSeleccionada = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada; 
-
+    $scope.definicionCuentaTecnicaSeleccionada_Info = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada_Info;
    
     // ui-grid para el registro del resumen de primas y siniestros para la cuenta técnica
     let contProp_resumenPrimasSiniestros_seleccionado = {};
@@ -237,32 +237,40 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                     return; 
                 }
 
-                // recorremos los items en el array y los agregamos al array correspondiente en el contrato ...
-                $scope.contratosProp_cuentas_resumen
-                    .filter(x => x.definicionID === definicionSeleccionadaID)
-                    .forEach((x) => { 
-                        if (x.docState && x.docState === 1) { 
-                            lodash.remove($scope.contratosProp_cuentas_resumen, (y: any) => { return y._id === x._id; });
-                        } else { 
-                            $scope.contratosProp_cuentas_resumen.find(y => y._id === x._id).docState = 3; 
-                        }
-                    })
+                // en la lista pueden haber items; agregamos *solo* los que no existen (mon/ram/tipo/serie) y dejamos los que 
+                // existen ... 
+                let yaExistian = 0; 
+                let agregados = 0; 
+
+                yaExistian = $scope.contratosProp_cuentas_resumen.filter(x => x.definicionID === definicionSeleccionadaID).length; 
 
                 result.resumenPrimasSiniestros_array.forEach((x) => {
-                    let resumenPrimaSiniestros_item = {
-                        _id: new Mongo.ObjectID()._str,
-                        contratoID: contratoID, 
-                        definicionID: definicionSeleccionadaID,
-                        moneda: x.moneda,
-                        ramo: x.ramo,
-                        tipoContrato: x.tipo,
-                        serie: parseInt(x.serie),
-                        primas: null,
-                        siniestros: null,
-                        docState: 1, 
-                    }
 
-                    $scope.contratosProp_cuentas_resumen.push(resumenPrimaSiniestros_item);
+                    let existeEnLaLista = $scope.contratosProp_cuentas_resumen.find(y => 
+                        y.definicionID === definicionSeleccionadaID && 
+                        y.moneda === x.moneda && 
+                        y.ramo === x.ramo && 
+                        y.tipoContrato === x.tipo && 
+                        y.serie === parseInt(x.serie)
+                    )
+
+                    if (!existeEnLaLista) { 
+                        let resumenPrimaSiniestros_item = {
+                            _id: new Mongo.ObjectID()._str,
+                            contratoID: contratoID, 
+                            definicionID: definicionSeleccionadaID,
+                            moneda: x.moneda,
+                            ramo: x.ramo,
+                            tipoContrato: x.tipo,
+                            serie: parseInt(x.serie),
+                            primas: null,
+                            siniestros: null,
+                            docState: 1, 
+                        }
+    
+                        $scope.contratosProp_cuentas_resumen.push(resumenPrimaSiniestros_item);
+                        agregados++; 
+                    }
                 })
 
                 $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid.data = [];
@@ -272,10 +280,12 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                 $scope.$parent.$parent.dataHasBeenEdited = true; 
 
                 $scope.$parent.alerts.length = 0;
-                $scope.$parent.alerts.push({
-                    type: 'info',
-                    msg: result.message
-                });
+                
+                DialogModal($modal, "<em>Contratos proporcionales</em>",
+                    `Resumen de primas y siniestros.<br /><br />
+                     <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
+                     <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`,
+                    false).then();
             },
             (error) => {
                 $scope.alerts.length = 0;
