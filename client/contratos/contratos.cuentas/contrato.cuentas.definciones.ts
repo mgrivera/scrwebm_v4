@@ -76,11 +76,15 @@ angular.module("scrwebM").controller("Contrato_Cuentas_Definiciones_Controller",
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
                 if (newValue != oldValue) { 
-                    if (!$scope.contrato.docState) { 
-                        $scope.contrato.docState = 2;   
-                        $scope.dataHasBeenEdited = true;       
+                    if (!$scope.$parent.$parent.contrato.docState) { 
+                        // al menos por ahora, las definiciones (períodos) son un array en el contrato. Puede ser que 
+                        // en un futuro las separemos en una sola tabla, sin embargo, por ahora no es así. Debemos marcar 
+                        // el contrato para que Grabar lo modifique y registre las modificaciones que el usuario 
+                        // pueda haber hecho en los períodos ... 
+                        $scope.$parent.$parent.contrato.docState = 2;
+                        $scope.$parent.$parent.dataHasBeenEdited = true; 
                     }
-                }          
+                }    
             })
         },
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
@@ -188,10 +192,11 @@ angular.module("scrwebM").controller("Contrato_Cuentas_Definiciones_Controller",
             definicionCuentaTecnicaSeleccionada = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada;
             // intentamos seleccionar la definición en el ui-grid, tal como lo hubiera hecho el usuario haciendo un click 
             // en el row para seleccionarlo 
+            // por alguna razón, al regresar luego de Grabar la instrucción que selecciona el row no se ejecuta correctamente
+            $scope.cuentasTecnicas_definiciones_gridApi.core.refresh();  
             $scope.cuentasTecnicas_definiciones_gridApi.selection.selectRow(definicionCuentaTecnicaSeleccionada);
-            // $scope.cuentasTecnicas_definiciones_gridApi.selection.selectRow($scope.cuentasTecnicas_definiciones_ui_grid.data[0]);
         }
-    }, 0, 1);
+    }, 500, 1);
 
 
     $scope.agregarCuenta = function () {
@@ -221,10 +226,14 @@ angular.module("scrwebM").controller("Contrato_Cuentas_Definiciones_Controller",
         $scope.contrato.cuentasTecnicas_definicion.push(cuenta);
         $scope.cuentasTecnicas_definiciones_ui_grid.data = $scope.contrato.cuentasTecnicas_definicion;
 
-        if (!$scope.contrato.docState) { 
-            $scope.contrato.docState = 2;
-            $scope.dataHasBeenEdited = true; 
-        }   
+        if (!$scope.$parent.$parent.contrato.docState) { 
+            // al menos por ahora, las definiciones (períodos) son un array en el contrato. Puede ser que 
+            // en un futuro las separemos en una sola tabla, sin embargo, por ahora no es así. Debemos marcar 
+            // el contrato para que Grabar lo modifique y registre las modificaciones que el usuario 
+            // pueda haber hecho en los períodos ... 
+            $scope.$parent.$parent.contrato.docState = 2;
+            $scope.$parent.$parent.dataHasBeenEdited = true; 
+        }
     }
 
     $scope.eliminarCuenta = function () {
@@ -233,16 +242,20 @@ angular.module("scrwebM").controller("Contrato_Cuentas_Definiciones_Controller",
             lodash.remove($scope.contrato.cuentasTecnicas_definicion, (c: any) => { return c._id === definicionCuentaTecnicaSeleccionada._id; });
             $scope.cuentasTecnicas_definiciones_ui_grid.data = $scope.contrato.cuentasTecnicas_definicion;
 
-            if (!$scope.contrato.docState) { 
-                $scope.contrato.docState = 2;
-                $scope.dataHasBeenEdited = true; 
-            }    
+            if (!$scope.$parent.$parent.contrato.docState) { 
+                // al menos por ahora, las definiciones (períodos) son un array en el contrato. Puede ser que 
+                // en un futuro las separemos en una sola tabla, sin embargo, por ahora no es así. Debemos marcar 
+                // el contrato para que Grabar lo modifique y registre las modificaciones que el usuario 
+                // pueda haber hecho en los períodos ... 
+                $scope.$parent.$parent.contrato.docState = 2;
+                $scope.$parent.$parent.dataHasBeenEdited = true; 
+            }
         }
     }
 
     $scope.generarCuentas_definiciones = function () {
         // pasamos el ui-grid para que se haga el binding para ésta cuando el usuario cierra el modal ...
-        Contratos_Methods.construirDefinicionCuentas($scope, $scope.contrato, $scope.monedas, $scope.cuentasTecnicas_definiciones_ui_grid, $modal);
+        Contratos_Methods.construirDefinicionCuentas($scope, $scope.contrato, $scope.monedas, $scope.cuentasTecnicas_definiciones_ui_grid, $modal, $scope.$parent.$parent);
     }
 
     $scope.generarCuotasCuentaTecnica = () => {

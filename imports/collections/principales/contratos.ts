@@ -444,7 +444,7 @@ let ContratoCuentasDefiniciones_SimpleSchema = new SimpleSchema({
     desde: { type: Date, optional: false, },
     hasta: { type: Date, optional: false, },
     fechaVencimiento: { type: Date, optional: false, },
-    fechaRecepcion: { type: Date, optional: true },
+    fechaRecepcion: { type: Date, optional: true }, 
 })
 
 // -----------------------------------------------------------------------

@@ -62,7 +62,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_EntCartPr_Controller",
                         rowEntity.docState = 2; 
                         $scope.$parent.$parent.dataHasBeenEdited = true; 
                     }
-                }         
+                }          
             })
         },
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...

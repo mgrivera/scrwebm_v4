@@ -59,11 +59,12 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
 
-                if (newValue != oldValue)
-                    if (!$scope.contrato.docState) { 
-                        $scope.contrato.docState = 2;
+                if (newValue != oldValue) { 
+                    if (!rowEntity.docState) { 
+                        rowEntity.docState = 2; 
                         $scope.$parent.$parent.dataHasBeenEdited = true; 
                     }
+                }    
             })
         },
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...

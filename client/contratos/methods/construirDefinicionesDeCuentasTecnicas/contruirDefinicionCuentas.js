@@ -5,7 +5,7 @@ import moment from 'moment';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
-let construirDefinicionCuentas = function ($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal) {
+let construirDefinicionCuentas = function ($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal, parentScope) {
 
     if (contrato && contrato.cuentasTecnicas_definicion && contrato.cuentasTecnicas_definicion.length > 0) {
 
@@ -18,7 +18,7 @@ let construirDefinicionCuentas = function ($scope, contrato, monedas, cuentasTec
 
         DialogModal(modal, mensajeAlUsuarioModel.titulo, mensajeAlUsuarioModel.mensaje, true).then(
             function () {
-                generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal);
+                generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal, parentScope);
             },
             function () {
                 DialogModal($modal,
@@ -30,14 +30,14 @@ let construirDefinicionCuentas = function ($scope, contrato, monedas, cuentasTec
         return;
     }
     else {
-        generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal);
+        generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal, parentScope);
     }
 }
 
 // --------------------------------------------------------------------
 // para generar la definición de cuentas técnicas
 
-function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal) {
+function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal, parentScope) {
 
     var modalInstance = modal.open({
         templateUrl: 'client/contratos/methods/construirDefinicionesDeCuentasTecnicas/cuentasConstruirDefinicionCuentas.html',
@@ -49,31 +49,30 @@ function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecn
             },
             monedas: function () {
                 return monedas;
+            }, 
+            parentScope: function () { 
+                return parentScope; 
             }
         }
     }).result.then(
-      function (resolve) {
-          return true;
-      },
-      function (cancel) {
-          // al regresar, asociamos las cuentas recién agregadas al ui-grid
-          if (contrato.cuentasTecnicas_definicion) {
-              // nótese que el ui-grid es pasado a esta función como un parámetro desde el código principal que
-              // maneja las funciones generales del registro del contrato ...
-              cuentasTecnicas_definiciones_ui_grid.data = contrato.cuentasTecnicas_definicion;
-          }
+        function (resolve) {
+            return true;
+        },
+        function (cancel) {
+            // al regresar, asociamos las cuentas recién agregadas al ui-grid
+            if (contrato.cuentasTecnicas_definicion) {
+                // nótese que el ui-grid es pasado a esta función como un parámetro desde el código principal que
+                // maneja las funciones generales del registro del contrato ...
+                cuentasTecnicas_definiciones_ui_grid.data = contrato.cuentasTecnicas_definicion;
+            }
 
-          if ($scope.contrato.docState) { 
-              $scope.dataHasBeenEdited = true; 
-          }
-
-          return true;
-      });
+            return true;
+      })
 }
 
 angular.module("scrwebM").controller('CuentasConstruirDefinicionCuentasController',
-['$scope', '$modalInstance', 'contrato', 'monedas',
-function ($scope, $modalInstance, contrato, monedas) {
+['$scope', '$modalInstance', 'contrato', 'monedas', 'parentScope', 
+function ($scope, $modalInstance, contrato, monedas, parentScope) {
 
     $scope.contrato = contrato;
     $scope.monedas = monedas;
@@ -129,8 +128,11 @@ function ($scope, $modalInstance, contrato, monedas) {
 
             construirDefinicionCuentas2(contrato, $scope.parametros);
 
-            if (!contrato.docState) { 
-                contrato.docState = 2;
+            if (!parentScope.contrato.docState) { 
+                // recibimos desde el state de definiciones el 'parent' scope. La idea es poder acceder desde aquí para 
+                // inicializar la variable 'dataHasBeenEdited' ... 
+                parentScope.contrato.docState = 2;
+                parentScope.dataHasBeenEdited = true; 
             }
                 
             $scope.alerts.length = 0;
