@@ -997,6 +997,22 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
+    // flags para que el usuario muestre/oculte nuestra parte en los grids de: distribución y saldos 
+    $scope.distribuirMontos_mostrarNuestraParte_flag = true; 
+
+    $scope.distribuirMontosPrSinEnCompanias_mostrarNuestraParte = function () { 
+        // solo para permitir al usuario mostrar/oculatar nuestra parte en el grid 
+        $scope.distribuirMontos_mostrarNuestraParte_flag = !$scope.distribuirMontos_mostrarNuestraParte_flag; 
+
+        if ($scope.distribuirMontos_mostrarNuestraParte_flag) { 
+            $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = 
+                    $scope.contratosProp_cuentas_distribucion.filter(x => x.definicionID === definicionSeleccionadaID); 
+        } else { 
+            $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = 
+                    $scope.contratosProp_cuentas_distribucion.filter(x => x.definicionID === definicionSeleccionadaID && !x.nosotros); 
+        }
+    }
+
 
     // --------------------------------------------------------------------------------------
     // ui-grid para el registro de la distribución de primas y siniestros en las compañías
@@ -1362,6 +1378,24 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                 $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID); 
         
         $scope.$parent.$parent.dataHasBeenEdited = true; 
+    }
+
+
+    // flags para que el usuario muestre/oculte nuestra parte en los grids de: distribución y saldos 
+    $scope.saldos_mostrarNuestraParte_flag = true; 
+
+    $scope.saldos_mostrarNuestraParte = function () { 
+        // solo para permitir al usuario mostrar/oculatar nuestra parte en el grid 
+        $scope.saldos_mostrarNuestraParte_flag = !$scope.saldos_mostrarNuestraParte_flag; 
+        $scope.cuentasTecnicas_Saldos_ui_grid.data = [];
+
+        if ($scope.saldos_mostrarNuestraParte_flag) { 
+            $scope.cuentasTecnicas_Saldos_ui_grid.data = 
+                    $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID); 
+        } else { 
+            $scope.cuentasTecnicas_Saldos_ui_grid.data = 
+                    $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID && !x.nosotros); 
+        }
     }
 
     // hacemos el binding entre los arrays en el contrato y los ui-grids 
