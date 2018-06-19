@@ -1,5 +1,6 @@
 
 import lodash from 'lodash';
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 // para asignar el número de referencia (interno) a: riesgos, contratos, ...
 let calcularNumeroReferencia = function(origen, tipoID, ano, ciaID) {

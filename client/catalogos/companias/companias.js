@@ -39,7 +39,7 @@ angular.module("scrwebM").controller("CompaniasController",
         // Grid de compañpias
         // -----------------------------------------------------------------
         $scope.companiaSeleccionada = {};
-        let gridApi: any = null;
+        let gridApi = null;
 
         $scope.companias_ui_grid = {
             enableSorting: true,

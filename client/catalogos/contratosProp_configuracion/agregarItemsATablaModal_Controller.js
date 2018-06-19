@@ -4,6 +4,7 @@ import lodash from 'lodash';
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 

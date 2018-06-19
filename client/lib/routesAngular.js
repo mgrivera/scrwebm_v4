@@ -39,6 +39,13 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
             params: { codigoContrato: null, },
             parent: 'catalogos.contrProp_configuracion',
         })
+        .state('catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla_construir', {
+            url: '/tabla_construir?codigoContrato',
+            templateUrl: 'client/catalogos/contratosProp_configuracion/tabla_construir.html',
+            controller: 'ContratosProp_Configuracion_Tabla_Construir_Controller',
+            params: { codigoContrato: null, },
+            parent: 'catalogos.contrProp_configuracion',
+        })
 
         .state('catalogos.companias', {
             url: '/companias',

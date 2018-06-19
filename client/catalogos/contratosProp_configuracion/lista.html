@@ -1,5 +1,12 @@
 
 <div>
+
+    <div class="row">
+        <div class="col-sm-6" style="text-align: left; color: #3E627E; ">
+            <h5 style="margin-top: 0; ">Lista de códigos de contrato</h5>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
@@ -35,9 +42,11 @@
     </div>
 
     <div class="row">
-        <hr class="blueLine" />
-        <button class="btn btn-sm pull-right btn-primary"
-                ng-click="leerTablaConfiguracionContrato()"
-                style="min-width: 80px; margin-right: 15px; ">Tabla de configuración del contrato</button>
+        <div class="col-sm-10 col-sm-offset-1">
+            <hr class="blueLine" />
+            <button class="btn btn-sm pull-right btn-primary"
+                    ng-click="leerTablaConfiguracionContrato()"
+                    style="min-width: 80px; margin-right: 15px; ">Tabla de configuración del contrato</button>
+        </div>
     </div>
 </div>

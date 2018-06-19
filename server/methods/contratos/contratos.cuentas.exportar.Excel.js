@@ -16,6 +16,7 @@ import { Contratos } from '/imports/collections/principales/contratos';
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos'; 
 

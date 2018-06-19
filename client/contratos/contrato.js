@@ -4,6 +4,7 @@ import lodash from 'lodash';
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
@@ -14,6 +15,7 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
 // siguen todos las tablas (collections) para el registro de contratos proporcionales 
 import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos'; 

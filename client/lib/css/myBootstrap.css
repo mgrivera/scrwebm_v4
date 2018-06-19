@@ -309,3 +309,10 @@ border-right: 0 solid #9D9D9D;
 .row-m-b{
   margin-bottom : 20px
 }
+
+/* to force an element, ex: a bootstrap button, to bottm of container */
+.force-to-bottom {
+    position:absolute;
+    bottom: 5%;
+    width: 100%;
+}

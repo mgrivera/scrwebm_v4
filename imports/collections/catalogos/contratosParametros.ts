@@ -18,5 +18,5 @@ var schema = new SimpleSchema({
     docState: { type: Number, optional: true, }
 });
 
-ContratosParametros = new Mongo.Collection("contratosParametros");
+export const ContratosParametros:any = new Mongo.Collection("contratosParametros");
 ContratosParametros.attachSchema(schema);

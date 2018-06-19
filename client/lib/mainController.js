@@ -5,6 +5,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 

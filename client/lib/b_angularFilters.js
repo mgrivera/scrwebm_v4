@@ -8,6 +8,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 // ---------------------------------------------------------------------------------------
 // ui-grid: para formatear fields numéricos y dates

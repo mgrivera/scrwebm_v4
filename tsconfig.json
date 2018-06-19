@@ -1,7 +1,7 @@
 
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6", 
     "module": "commonjs",
     "moduleResolution": "node",
     "alwaysStrict": true,
@@ -9,7 +9,8 @@
     "jsx": "react",
     "allowJs": true,
     "noImplicitAny": false,
-    "strictNullChecks": true
+    "strictNullChecks": true, 
+    "baseUrl": "."
   },
   "include": [
     "client/**/*",

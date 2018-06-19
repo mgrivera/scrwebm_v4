@@ -1,5 +1,6 @@
 ﻿
 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 angular.module("scrwebM").controller("TiposContratoController",
  ['$scope', '$stateParams', '$meteor',

@@ -1,4 +1,6 @@
 
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
+
 Meteor.methods(
 {
     contratosParametrosSave: function (contratosParametros) {

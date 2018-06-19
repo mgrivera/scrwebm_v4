@@ -1,0 +1,168 @@
+
+
+<div>
+
+    <div class="row">
+        <div class="col-sm-6" style="text-align: left; color: #3E627E; ">
+            <h5 style="margin-top: 0; ">Construcción de registros para la tabla - {{ codigoContrato }}</h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            <div ng-show="showProgress">
+                <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
+                    ({{ processProgress.current }}/{{ processProgress.max }} - {{ processProgress.progress }})
+                </div>
+                <div ng-show="processProgress.message" style="font-size: x-small; font-weight: bold; ">
+                    ({{ processProgress.message }})
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <div class="row" style="text-align: center; ">
+
+        <tabset style="text-align: left; ">
+            <tab heading="Configuración" active="activeTab.tab1">
+                <br /> 
+
+                <div class="row row-centered">
+                    <div class="col-sm-12 col-centered">
+                        <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                            <div class="container-fluid">
+                                <div class="navbar-collapse collapse">
+                                    <ul class="nav navbar-nav navbar-right">
+                                        <li><a href="#" ng-click="regresarATablaPermanente()" class="navbar_custom_small_node">Regresar ...</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>  
+                </div>  
+
+                <div class="row row-centered">
+
+                    <div class="col-sm-4 col-centered">
+
+                        <div ui-grid="anos_ui_grid"
+                            ui-grid-cellnav
+                            ui-grid-resize-columns
+                            ui-grid-selection
+                            class="angularGrid"
+                            style="height: 300px; width: 100%; ">
+                       </div>
+
+                    </div>
+
+                    <div class="col-sm-4 col-centered">
+
+                        <div ui-grid="monedas_ui_grid"
+                            ui-grid-cellnav
+                            ui-grid-resize-columns
+                            ui-grid-selection
+                            class="angularGrid"
+                            style="height: 300px; width: 100%; ">
+                       </div>
+
+                    </div>
+
+                    <div class="col-sm-4 col-centered">
+
+                        <div ui-grid="ramos_ui_grid"
+                            ui-grid-cellnav
+                            ui-grid-resize-columns
+                            ui-grid-selection
+                            class="angularGrid"
+                            style="height: 300px; width: 100%; ">
+                       </div>
+
+                    </div>
+                </div>
+                <br /> 
+                <div class="row row-centered">
+
+                    <div class="col-sm-4 col-centered">
+
+                        <div ui-grid="tiposContrato_ui_grid"
+                            ui-grid-cellnav
+                            ui-grid-resize-columns
+                            ui-grid-selection
+                            class="angularGrid"
+                            style="height: 300px; width: 100%; ">
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-4 col-centered">
+
+                        <div ui-grid="companias_ui_grid"
+                            ui-grid-cellnav
+                            ui-grid-resize-columns
+                            ui-grid-selection
+                            class="angularGrid"
+                            style="height: 300px; width: 100%; ">
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-4 col-centered">
+
+                        <div class="row force-to-bottom text-center">
+                            <button class="btn btn-sm pull-right btn-warning"
+                                ng-click="construirTablaConfiguracionContrato()"
+                                style="min-width: 80px; margin-right: 30px; margin-bottom: 30px; ">
+                                Crear registros y mostrar tabla ... 
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </tab>
+            <tab heading="Tabla" active="activeTab.tab2">
+
+                <div class="row row-centered">
+                    <div class="col-sm-12 col-centered">
+        
+                        <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                            <div class="container-fluid">
+                                <div class="navbar-collapse collapse">
+                                    <ul class="nav navbar-nav">
+                                        <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="propagarCifras()">Propagar&nbsp;<span class="fa fa-gears"></span></a></li>
+                                        <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="agregarRegistrosDeConfiguracion()">Agregar a tabla permanente</a></li>
+                                    </ul>
+                                    <ul class="nav navbar-nav navbar-right">
+                                        <li><a href="#" ng-click="regresarATablaPermanente()" class="navbar_custom_small_node">Regresar ...</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+        
+                        <div ui-grid="registrosConfiguracion_ui_grid"
+                             ui-grid-edit
+                             ui-grid-cellnav
+                             ui-grid-resize-columns
+                             ui-grid-selection
+                             ui-grid-pinning
+                             class="angularGrid_Auto" 
+                             style="height: 480px; width: 100%; text-align: center; ">
+                        </div> 
+                    </div>
+                </div>
+
+            </tab>
+        </tabSet>
+
+    </div>
+</div>
+    

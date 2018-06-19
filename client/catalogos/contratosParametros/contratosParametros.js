@@ -1,5 +1,5 @@
 ﻿
-
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
 angular.module("scrwebM").controller("ContratosParametrosController",
  ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {

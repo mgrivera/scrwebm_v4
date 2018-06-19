@@ -7,6 +7,7 @@ import SimpleSchema from 'simpl-schema';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Contratos } from '/imports/collections/principales/contratos'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 Meteor.methods(
 {

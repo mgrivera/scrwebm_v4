@@ -1,6 +1,7 @@
 
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 TiposContrato.before.remove(function (userId, doc) {
 

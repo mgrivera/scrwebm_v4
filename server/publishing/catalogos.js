@@ -11,6 +11,8 @@ import { Asegurados } from '/imports/collections/catalogos/asegurados';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
 Meteor.publish("empresasUsuarias", function () {
     return EmpresasUsuarias.find({});

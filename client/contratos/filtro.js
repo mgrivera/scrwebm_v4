@@ -1,6 +1,7 @@
 ﻿
 
 import { Companias } from '/imports/collections/catalogos/companias'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 

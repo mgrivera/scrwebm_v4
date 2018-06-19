@@ -2,25 +2,41 @@
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
 angular.module("scrwebM").controller("ContratosProp_Configuracion_Controller",
-  ['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+  ['$scope', '$state', '$stateParams', '$meteor', function ($scope, $state, $stateParams, $meteor) {
 
-      // ------------------------------------------------------------------------------------------------
-      // leemos la compañía seleccionada
-      let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-      let companiaSeleccionadaDoc = {};
+    $scope.showProgress = true;
 
-      if (companiaSeleccionada)
-          companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+    // ------------------------------------------------------------------------------------------------
+    // leemos la compañía seleccionada
+    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = {};
 
-      $scope.companiaSeleccionada = {};
+    if (companiaSeleccionada) { 
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+    } 
 
-      if (companiaSeleccionadaDoc)
-          $scope.companiaSeleccionada = companiaSeleccionadaDoc;
-      else
-          $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
-      // ------------------------------------------------------------------------------------------------
+    $scope.companiaSeleccionada = {};
+
+    if (companiaSeleccionadaDoc) { 
+        $scope.companiaSeleccionada = companiaSeleccionadaDoc;
+    }  
+    else { 
+        $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
+    }
+    // ------------------------------------------------------------------------------------------------
+
+    Meteor.subscribe('contratosParametros', () => {
+
+        $scope.helpers({
+            contratosParametros: () => {
+                return ContratosParametros.findOne();
+            },
+        });
+
+        $scope.showProgress = false;
+    })
   }
 ]);

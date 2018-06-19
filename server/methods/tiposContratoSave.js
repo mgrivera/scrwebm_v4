@@ -1,4 +1,5 @@
 ﻿
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 Meteor.methods(
 {
