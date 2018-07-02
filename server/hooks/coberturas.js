@@ -1,4 +1,5 @@
 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 import { Riesgos } from '/imports/collections/principales/riesgos';   
 
 Coberturas.before.remove(function (userId, doc) {

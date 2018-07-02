@@ -333,7 +333,6 @@ angular.module("scrwebM").controller("Contrato_Cuentas_Definiciones_Controller",
         // pasamos al modal todos los arrays que contienen las: 1) cuentas; 2) complementarios (6) 
         let definicionID = definicionCuentaTecnicaSeleccionada._id; 
 
-        // si no hay saldos de cuentas técnicas ni de complementarios (ent cart de primas, etc.), notificamos al usuario 
         let cuentas_saldos = $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionID); 
         let comAdic_montosFinales = $scope.contratosProp_comAdic_montosFinales.filter(x => x.definicionID === definicionID);
         let entCartPr_montosFinales = $scope.contratosProp_entCartPr_montosFinales.filter(x => x.definicionID === definicionID);
@@ -391,7 +390,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_Definiciones_Controller",
                             });
 
                         if (arrayCuotasDefinicion && Array.isArray(arrayCuotasDefinicion) && arrayCuotasDefinicion.length) { 
-                            $scope.dataHasBeenEdited = true; 
+                            // pueda haber hecho en los períodos ... 
+                            $scope.$parent.$parent.dataHasBeenEdited = true; 
                         }
                     }
 

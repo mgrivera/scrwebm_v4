@@ -10,9 +10,11 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalogos/ContratosProp_Configuracion';
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
+import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
@@ -39,6 +41,23 @@ angular.module("scrwebM").controller("ContratoController",
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     }
+
+
+    // para reportar el progreso de la aplicación al usuario 
+    $scope.processProgress = {
+        progress: 0,
+    };
+
+    // -------------------------------------------------------------------------------------------------------
+    // para recibir los eventos desde la tarea en el servidor ...
+    EventDDP.setClient({ myuserId: Meteor.userId(), app: 'scrwebm', process: 'contratos_grabar' });
+    EventDDP.addListener('contratos_grabar_reportProgress', function(process) {
+        $scope.processProgress.progress = process.progress;
+        // if we don't call this method, angular wont refresh the view each time the progress changes ...
+        // until, of course, the above process ends ...
+        $scope.$apply();
+    });
+    // -------------------------------------------------------------------------------------------------------
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
@@ -178,6 +197,12 @@ angular.module("scrwebM").controller("ContratoController",
     // ---------------------------------------------------------------
 
     $scope.grabar = function () {
+        // para medir y mostrar el progreso de la tarea ...
+        $scope.processProgress.current = 0;
+        $scope.processProgress.max = 0;
+        $scope.processProgress.progress = 0;
+        $scope.processProgress.message = "";
+
         Contratos_Methods.grabar($state, $scope, $modal, $meteor, uiGridConstants);
     }
 
@@ -319,273 +344,279 @@ angular.module("scrwebM").controller("ContratoController",
     }
 
 
-      $scope.registrarPersonasCompanias = () => {
-          if (!$scope.contrato || !$scope.contrato.compania) {
-              DialogModal($modal, "<em>Contratos</em>",
-              "Aparentemente, Ud. no ha seleccionado una compañía como cedente para el contrato.<br />" +
-              "El contrato debe tener una compañía (cedente) antes de intentar registrar sus personas.",
-              false).then();
+    $scope.registrarPersonasCompanias = () => {
+        if (!$scope.contrato || !$scope.contrato.compania) {
+            DialogModal($modal, "<em>Contratos</em>",
+            "Aparentemente, Ud. no ha seleccionado una compañía como cedente para el contrato.<br />" +
+            "El contrato debe tener una compañía (cedente) antes de intentar registrar sus personas.",
+            false).then();
 
-              return;
-          };
+            return;
+        };
 
 
-          var modalInstance = $modal.open({
-              templateUrl: 'client/generales/registrarPersonas.html',
-              controller: 'RegistrarPersonasController',
-              size: 'lg',
-              resolve: {
-                  companias: function () {
-                    //   debugger;
-                      let contrato = $scope.contrato;
-                      let companias = [];
-
-                      if (Array.isArray(contrato.personas)) {
-                          contrato.personas.forEach(persona => {
-                              companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
-                          });
-                      };
-
-                      // ahora revisamos las compañías en el contrato (cedente, cuentas, caaps) y agregamos las que
-                      // *no* existan en el array de compañías
-
-                      if (!lodash.some(companias, c => { return c.compania == contrato.compania; } ))
-                         companias.push({ compania: contrato.compania });
-
-                      if (Array.isArray(contrato.capas)) {
-                          contrato.capas.forEach(capa => {
-                            if (Array.isArray(capa.reaseguradores)) {
-                                capa.reaseguradores.forEach(r => {
-                                    if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
-                                       companias.push({ compania: r.compania });
-                                });
-                            };
-                          });
-                      };
-
-                      if (contrato.cuentas && Array.isArray(contrato.cuentas.reaseguradores)) {
-                          contrato.cuentas.reaseguradores.forEach(r => {
-                            if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
-                               companias.push({ compania: r.compania });
-                          });
-                      };
-
-                      return companias;
-                  }
-              }
-          }).result.then(
-              function (resolve) {
-                  return true;
-              },
-              function (cancel) {
-                  // recuperamos las personas de compañías, según las indicó el usuario en el modal
+        var modalInstance = $modal.open({
+            templateUrl: 'client/generales/registrarPersonas.html',
+            controller: 'RegistrarPersonasController',
+            size: 'lg',
+            resolve: {
+                companias: function () {
                 //   debugger;
-                  if (cancel.entityUpdated) {
-                      let companias = cancel.companias;
-                      $scope.contrato.personas = [];
+                    let contrato = $scope.contrato;
+                    let companias = [];
 
-                      if (Array.isArray(companias)) {
-                          companias.forEach(c => {
-                               $scope.contrato.personas.push({
-                                   compania: c.compania,
-                                   titulo: c.titulo ? c.titulo : null,
-                                   nombre: c.nombre? c.nombre : null
-                               });
-                          });
-                      };
+                    if (Array.isArray(contrato.personas)) {
+                        contrato.personas.forEach(persona => {
+                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
+                        });
+                    };
 
-                    if (!$scope.contrato.docState)
-                        $scope.contrato.docState = 2;
-                        $scope.dataHasBeenEdited = true; 
-                  };
+                    // ahora revisamos las compañías en el contrato (cedente, cuentas, caaps) y agregamos las que
+                    // *no* existan en el array de compañías
 
-                  return true;
-              });
-      }
+                    if (!lodash.some(companias, c => { return c.compania == contrato.compania; } ))
+                        companias.push({ compania: contrato.compania });
 
-      // --------------------------------------------------------------------------------------
-      // ui-grid de Capas
-      // --------------------------------------------------------------------------------------
-      $scope.capaSeleccionada = {};
+                    if (Array.isArray(contrato.capas)) {
+                        contrato.capas.forEach(capa => {
+                        if (Array.isArray(capa.reaseguradores)) {
+                            capa.reaseguradores.forEach(r => {
+                                if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
+                                    companias.push({ compania: r.compania });
+                            });
+                        };
+                        });
+                    };
 
-      $scope.capas_ui_grid = {
-          enableSorting: false,
-          showColumnFooter: false,
-          enableCellEdit: false,
-          enableCellEditOnFocus: true,
-          enableRowSelection: true,
-          enableRowHeaderSelection: true,
-          multiSelect: false,
-          enableSelectAll: true,
-          selectionRowHeaderWidth: 35,
-          rowHeight: 25,
-          onRegisterApi: function (gridApi) {
-              $scope.capasGridApi = gridApi;
+                    if (contrato.cuentas && Array.isArray(contrato.cuentas.reaseguradores)) {
+                        contrato.cuentas.reaseguradores.forEach(r => {
+                        if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
+                            companias.push({ compania: r.compania });
+                        });
+                    };
 
-              // guardamos el row que el usuario seleccione
-              gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  //debugger;
-                  $scope.capaSeleccionada = {};
-
-                  if (row.isSelected)
-                      $scope.capaSeleccionada = row.entity;
-                  else
-                      return;
-
-
-                  $scope.capasReaseguradores_ui_grid.data = [];
-
-                  if ($scope.capaSeleccionada.reaseguradores)
-                      $scope.capasReaseguradores_ui_grid.data = $scope.capaSeleccionada.reaseguradores;
-              });
-
-              // marcamos el contrato como actualizado cuando el usuario edita un valor
-              gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-
-                  if (newValue != oldValue) { 
-                    if (!$scope.contrato.docState) { 
-                        $scope.contrato.docState = 2;
-                          $scope.dataHasBeenEdited = true; 
-                      }
-                  }         
-              })
-          },
-
-          rowIdentity: function (row) {
-              return row._id;
-          },
-          getRowIdentity: function (row) {
-              return row._id;
-          }
-      }
-
-      $scope.capas_ui_grid.columnDefs = [
-            {
-                name: 'numero',
-                field: 'numero',
-                displayName: '#',
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                width: 40,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'moneda',
-                field: 'moneda',
-                displayName: 'Moneda',
-                width: 80,
-                editableCellTemplate: 'ui-grid/dropdownEditor',
-                editDropdownIdLabel: '_id',
-                editDropdownValueLabel: 'descripcion',
-                editDropdownOptionsArray: $scope.monedas,
-                cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"descripcion"',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'string'
-            },
-            {
-                name: 'descripcion',
-                field: 'descripcion',
-                displayName: 'Descripción',
-                enableColumnMenu: false,
-                type: 'string',
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                width: 150,
-                enableCellEdit: true
-            },
-            {
-                name: 'pmd',
-                field: 'pmd',
-                displayName: 'PMD',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'nuestraOrdenPorc',
-                field: 'nuestraOrdenPorc',
-                displayName: 'N orden (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'imp1Porc',
-                field: 'imp1Porc',
-                displayName: 'Imp 1 (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'imp2Porc',
-                field: 'imp2Porc',
-                displayName: 'Imp 2 (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'corretajePorc',
-                field: 'corretajePorc',
-                displayName: 'Corretaje (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'impSPNPorc',
-                field: 'impSPNPorc',
-                displayName: 'Imp/pn (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            }, 
-            {
-                name: 'delButton',
-                displayName: '',
-                cellTemplate: '<span ng-click="grid.appScope.eliminarCapa(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
-                enableCellEdit: false,
-                enableSorting: false,
-                width: 25
+                    return companias;
+                }
             }
-      ]
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                // recuperamos las personas de compañías, según las indicó el usuario en el modal
+            //   debugger;
+                if (cancel.entityUpdated) {
+                    let companias = cancel.companias;
+                    $scope.contrato.personas = [];
+
+                    if (Array.isArray(companias)) {
+                        companias.forEach(c => {
+                            $scope.contrato.personas.push({
+                                compania: c.compania,
+                                titulo: c.titulo ? c.titulo : null,
+                                nombre: c.nombre? c.nombre : null
+                            });
+                        });
+                    };
+
+                if (!$scope.contrato.docState)
+                    $scope.contrato.docState = 2;
+                    $scope.dataHasBeenEdited = true; 
+                };
+
+                return true;
+            });
+    }
+
+    // --------------------------------------------------------------------------------------
+    // ui-grid de Capas
+    // --------------------------------------------------------------------------------------
+    $scope.capaSeleccionada = {};
+
+    $scope.capas_ui_grid = {
+        enableSorting: false,
+        showColumnFooter: true,
+        enableCellEdit: false,
+        enableCellEditOnFocus: true,
+        enableRowSelection: true,
+        enableRowHeaderSelection: true,
+        multiSelect: false,
+        enableSelectAll: true,
+        selectionRowHeaderWidth: 25, 
+        rowHeight: 25,
+        onRegisterApi: function (gridApi) {
+            $scope.capasGridApi = gridApi;
+
+            // guardamos el row que el usuario seleccione
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                //debugger;
+                $scope.capaSeleccionada = {};
+
+                if (row.isSelected)
+                    $scope.capaSeleccionada = row.entity;
+                else
+                    return;
 
 
-      $scope.agregarCapa = function () {
+                $scope.capasReaseguradores_ui_grid.data = [];
+
+                if ($scope.capaSeleccionada.reaseguradores)
+                    $scope.capasReaseguradores_ui_grid.data = $scope.capaSeleccionada.reaseguradores;
+            });
+
+            // marcamos el contrato como actualizado cuando el usuario edita un valor
+            gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
+
+                if (newValue != oldValue) { 
+                if (!$scope.contrato.docState) { 
+                    $scope.contrato.docState = 2;
+                        $scope.dataHasBeenEdited = true; 
+                    }
+                }         
+            })
+        },
+
+        rowIdentity: function (row) {
+            return row._id;
+        },
+        getRowIdentity: function (row) {
+            return row._id;
+        }
+    }
+
+    $scope.capas_ui_grid.columnDefs = [
+        {
+            name: 'numero',
+            field: 'numero',
+            displayName: '#',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            width: 40,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'moneda',
+            field: 'moneda',
+            displayName: 'Moneda',
+            width: 80,
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: '_id',
+            editDropdownValueLabel: 'descripcion',
+            editDropdownOptionsArray: $scope.monedas,
+            cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"descripcion"',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'string'
+        },
+        {
+            name: 'descripcion',
+            field: 'descripcion',
+            displayName: 'Descripción',
+            enableColumnMenu: false,
+            type: 'string',
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            width: 150,
+            enableCellEdit: true
+        },
+        {
+            name: 'pmd',
+            field: 'pmd',
+            displayName: 'PMD',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell', 
+
+            type: 'number'
+        },
+        {
+            name: 'nuestraOrdenPorc',
+            field: 'nuestraOrdenPorc',
+            displayName: 'N orden (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'imp1Porc',
+            field: 'imp1Porc',
+            displayName: 'Imp 1 (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'imp2Porc',
+            field: 'imp2Porc',
+            displayName: 'Imp 2 (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'corretajePorc',
+            field: 'corretajePorc',
+            displayName: 'Corretaje (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'impSPNPorc',
+            field: 'impSPNPorc',
+            displayName: 'Imp/pn (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        }, 
+        {
+            name: 'delButton',
+            displayName: '',
+            cellTemplate: '<span ng-click="grid.appScope.eliminarCapa(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+            enableCellEdit: false,
+            enableSorting: false,
+            width: 25
+        }
+    ]
+
+
+    $scope.agregarCapa = function () {
 
         if (!Array.isArray($scope.contrato.capas))  { 
             $scope.contrato.capas = [];
@@ -668,155 +699,163 @@ angular.module("scrwebM").controller("ContratoController",
         Contratos_Methods.capasDeterminarRegistrosPrimaCompanias($scope, $modal);
     }
 
-      // --------------------------------------------------------------------------------------
-      // ui-grid de Capas - Reaseguradores
-      // --------------------------------------------------------------------------------------
-      var companiasParaListaUIGrid =
-                 lodash.chain($scope.companias).
-                  filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
-                  sortBy(function(item) { return item.nombre; }).
-                  value();
+    // --------------------------------------------------------------------------------------
+    // ui-grid de Capas - Reaseguradores
+    // --------------------------------------------------------------------------------------
+    var companiasParaListaUIGrid =
+                lodash.chain($scope.companias).
+                filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
+                sortBy(function(item) { return item.nombre; }).
+                value();
 
-      $scope.capasReaseguradores_ui_grid_selectedRow = {};
+    $scope.capasReaseguradores_ui_grid_selectedRow = {};
 
-      $scope.capasReaseguradores_ui_grid = {
-          enableSorting: true,
-          showColumnFooter: true,
-          enableCellEdit: false,
-          enableCellEditOnFocus: true,
-          enableRowSelection: true,
-          enableRowHeaderSelection: true,
-          multiSelect: false,
-          enableSelectAll: true,
-          selectionRowHeaderWidth: 35,
-          rowHeight: 25,
-          onRegisterApi: function (gridApi) {
-              $scope.capasReaseguradoresGridApi = gridApi;
+    $scope.capasReaseguradores_ui_grid = {
 
-              // guardamos el row que el usuario seleccione
-              gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  $scope.capasReaseguradores_ui_grid_selectedRow = {};
+        enableSorting: true,
+        showColumnFooter: true,
+        enableCellEdit: false,
+        enableCellEditOnFocus: true,
+        enableRowSelection: true,
+        enableRowHeaderSelection: true,
+        multiSelect: false,
+        enableSelectAll: true,
+        selectionRowHeaderWidth: 25, 
+        rowHeight: 25,
 
-                  if (row.isSelected)
-                      $scope.capasReaseguradores_ui_grid_selectedRow = row.entity;
-                  else
-                      return;
-              });
+        onRegisterApi: function (gridApi) {
+            $scope.capasReaseguradoresGridApi = gridApi;
 
-              // marcamos el contrato como actualizado cuando el usuario edita un valor
-              gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                  if (newValue != oldValue) { 
-                    if (!$scope.contrato.docState) { 
-                        $scope.contrato.docState = 2;
-                        $scope.dataHasBeenEdited = true; 
-                      }
-                  }         
-              })
-          },
+            // guardamos el row que el usuario seleccione
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                $scope.capasReaseguradores_ui_grid_selectedRow = {};
 
-          rowIdentity: function (row) {
-              return row._id;
-          },
-          getRowIdentity: function (row) {
-              return row._id;
-          }
-      }
+                if (row.isSelected)
+                    $scope.capasReaseguradores_ui_grid_selectedRow = row.entity;
+                else
+                    return;
+            });
 
-      $scope.capasReaseguradores_ui_grid.columnDefs = [
-            {
-                name: 'compania',
-                field: 'compania',
-                displayName: 'Compañía',
-                width: 170,
-                editableCellTemplate: 'ui-grid/dropdownEditor',
-                editDropdownIdLabel: '_id',
-                editDropdownValueLabel: 'nombre',
-                editDropdownOptionsArray: companiasParaListaUIGrid,
-                cellFilter: 'mapDropdown:row.grid.appScope.companias:"_id":"nombre"',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                type: 'string'
-            },
-            {
-                name: 'ordenPorc',
-                field: 'ordenPorc',
-                displayName: 'Orden (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number',
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-centerCell'
-            },
-            {
-                name: 'imp1Porc',
-                field: 'imp1Porc',
-                displayName: 'Imp 1 (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'imp2Porc',
-                field: 'imp2Porc',
-                displayName: 'Imp 2 (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'corretajePorc',
-                field: 'corretajePorc',
-                displayName: 'Corretaje (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'impSPNPorc',
-                field: 'impSPNPorc',
-                displayName: 'Imp/pn (%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 90,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            }, 
-            {
-                name: 'delButton',
-                displayName: '',
-                cellTemplate: '<span ng-click="grid.appScope.eliminarCapaReasegurador(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
-                enableCellEdit: false,
-                enableSorting: false,
-                width: 25
-            }
-      ]
+            // marcamos el contrato como actualizado cuando el usuario edita un valor
+            gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
+                if (newValue != oldValue) { 
+                if (!$scope.contrato.docState) { 
+                    $scope.contrato.docState = 2;
+                    $scope.dataHasBeenEdited = true; 
+                    }
+                }         
+            })
+        },
+
+        rowIdentity: function (row) {
+            return row._id;
+        },
+        getRowIdentity: function (row) {
+            return row._id;
+        }
+    }
+
+    $scope.capasReaseguradores_ui_grid.columnDefs = [
+        {
+            name: 'compania',
+            field: 'compania',
+            displayName: 'Compañía',
+            width: 90,
+
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: '_id',
+            editDropdownValueLabel: 'abreviatura',
+            editDropdownOptionsArray: companiasParaListaUIGrid,
+            cellFilter: 'mapDropdown:row.grid.appScope.companias:"_id":"abreviatura"',
+
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+
+            sortingAlgorithm: ui_grid_sortBy_compania, 
+            type: 'string'
+        },
+        {
+            name: 'ordenPorc',
+            field: 'ordenPorc',
+            displayName: 'Orden (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-centerCell', 
+
+            type: 'number',
+        },
+        {
+            name: 'imp1Porc',
+            field: 'imp1Porc',
+            displayName: 'Imp 1 (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'imp2Porc',
+            field: 'imp2Porc',
+            displayName: 'Imp 2 (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'corretajePorc',
+            field: 'corretajePorc',
+            displayName: 'Corretaje (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'impSPNPorc',
+            field: 'impSPNPorc',
+            displayName: 'Imp/pn (%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 90,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        }, 
+        {
+            name: 'delButton',
+            displayName: '',
+            cellTemplate: '<span ng-click="grid.appScope.eliminarCapaReasegurador(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+            enableCellEdit: false,
+            enableSorting: false,
+            width: 25
+        }
+    ]
 
     $scope.agregarCapaReasegurador = function () {
         //debugger;
@@ -928,13 +967,14 @@ angular.module("scrwebM").controller("ContratoController",
     $scope.capasPrimasCompanias_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true,
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
         enableRowHeaderSelection: true,
         multiSelect: false,
         enableSelectAll: true,
-        selectionRowHeaderWidth: 35,
+        selectionRowHeaderWidth: 25, 
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
             capasPrimasCompaniasGridApi = gridApi;
@@ -985,11 +1025,19 @@ angular.module("scrwebM").controller("ContratoController",
             field: 'compania',
             displayName: 'Compañía',
             width: 90,
+
             editableCellTemplate: 'ui-grid/dropdownEditor',
             editDropdownIdLabel: '_id',
-            editDropdownValueLabel: 'nombre',
+            editDropdownValueLabel: 'abreviatura',
             editDropdownOptionsArray: companiasParaListaUIGrid,
             cellFilter: 'mapDropdown:row.grid.appScope.companias:"_id":"abreviatura"',
+
+            sortingAlgorithm: ui_grid_sortBy_compania, 
+
+            filter: {
+                condition: ui_grid_filterBy_compania, 
+            },
+
             enableColumnMenu: false,
             enableCellEdit: true,
             headerCellClass: 'ui-grid-leftCell',
@@ -1003,8 +1051,14 @@ angular.module("scrwebM").controller("ContratoController",
             displayName: 'Nosotros',
             cellFilter: 'boolFilter',
             width: 70,
+            toolTip: "(para filtrar) 'si': solo nosotros; 'no': sin nosotros.", 
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
+
+            filter: {
+                condition: ui_grid_filterBy_nosotros, 
+            },
+
             enableSorting: false,
             enableColumnMenu: false,
             enableCellEdit: false,
@@ -1016,11 +1070,13 @@ angular.module("scrwebM").controller("ContratoController",
             field: 'moneda',
             displayName: 'Mon',
             width: 50,
+
             editableCellTemplate: 'ui-grid/dropdownEditor',
             editDropdownIdLabel: '_id',
             editDropdownValueLabel: 'simbolo',
             editDropdownOptionsArray: $scope.monedas,
             cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"simbolo"',
+
             enableColumnMenu: false,
             enableCellEdit: true,
             pinnedLeft: true,
@@ -1345,13 +1401,14 @@ angular.module("scrwebM").controller("ContratoController",
     $scope.capasCuotas_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true, 
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
         enableRowHeaderSelection: true,
         multiSelect: false,
         enableSelectAll: true,
-        selectionRowHeaderWidth: 35,
+        selectionRowHeaderWidth: 25, 
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
             $scope.capasCuotasGridApi = gridApi;
@@ -1452,12 +1509,18 @@ angular.module("scrwebM").controller("ContratoController",
             field: 'compania',
             displayName: 'Compañía',
             width: 100,
+
             editableCellTemplate: 'ui-grid/dropdownEditor',
             editDropdownIdLabel: '_id',
-            editDropdownValueLabel: 'nombre',
+            editDropdownValueLabel: 'abreviatura',
             editDropdownOptionsArray: $scope.companias,
             cellFilter: 'mapDropdown:row.grid.appScope.companias:"_id":"abreviatura"',
             headerCellClass: 'ui-grid-leftCell',
+
+            sortingAlgorithm: ui_grid_sortBy_compania, 
+            filter: {
+                condition: ui_grid_filterBy_compania, 
+            },
             cellClass: 'ui-grid-leftCell',
             enableSorting: true,
             enableColumnMenu: false,
@@ -1469,12 +1532,14 @@ angular.module("scrwebM").controller("ContratoController",
             name: 'moneda',
             field: 'moneda',
             displayName: 'Mon',
-            width: 40,
+            width: 60,
+
             editableCellTemplate: 'ui-grid/dropdownEditor',
             editDropdownIdLabel: '_id',
             editDropdownValueLabel: 'simbolo',
             editDropdownOptionsArray: $scope.monedas,
             cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"simbolo"',
+
             headerCellClass: 'ui-centerCell-leftCell',
             cellClass: 'ui-grid-centerCell',
             enableSorting: true,
@@ -2058,4 +2123,58 @@ angular.module("scrwebM").controller("ContratoController",
     }
 
     inicializarItem();
+
+    function ui_grid_sortBy_compania(a, b, rowA, rowB, direction) {
+
+        // para poder ordenar el ui-grid por compañía una vez aplicado el filtro para el ddl
+        // Nota importante: aparentemetne, la opción 'sortCellFiltered' no funciona correctamente cuando la columna usa un ddl (???!!!) 
+
+        let compania_a = $scope.companias.find(x => x._id === a); 
+        let compania_b = $scope.companias.find(x => x._id === b); 
+
+        let nombre_a = compania_a && compania_a.abreviatura ? compania_a.abreviatura : a; 
+        let nombre_b = compania_b && compania_b.abreviatura ? compania_b.abreviatura : b; ; 
+
+        let x = nombre_a;
+        let y = nombre_b;
+
+        if (x < y) {return -1;}
+        if (x > y) {return 1;}
+        return 0;
+    }
+
+    function ui_grid_filterBy_compania(searchTerm, cellValue, row, column) {
+
+        // para poder filtrar el ui-grid por compañía una vez aplicado el filtro para el ddl
+        // Nota importante: aparentemetne, la opción 'filterCellFiltered' no funciona correctamente cuando la columna usa un ddl (???!!!) 
+
+        let compania = $scope.companias.find(x => x._id === cellValue); 
+
+        // ésto no debe ocurrir nunca ... 
+        if (!compania || !compania.abreviatura) { 
+            return true; 
+        }
+
+        let regexp = RegExp(searchTerm, 'gi');
+        let matches = compania.abreviatura.match(regexp);
+        
+        if (matches) { 
+            return true;
+        }
+        return false;
+    }
+
+    function ui_grid_filterBy_nosotros(searchTerm, cellValue, row, column) {
+
+        // para poder filtrar el ui-grid por nosotros una vez aplicado el filtro para el ddl
+        if (searchTerm.toLowerCase() === "si" && cellValue) { 
+            return true;
+        }
+
+        if (searchTerm.toLowerCase() === "no" && !cellValue) { 
+            return true;
+        }
+
+        return false;
+    }
 }])

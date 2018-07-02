@@ -7,6 +7,7 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 

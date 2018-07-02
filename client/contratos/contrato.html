@@ -5,6 +5,17 @@
         <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
     </div>
 
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            <div ng-show="showProgress">
+                <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
+                    ({{ processProgress.progress }}%)
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar navbar-inverse navbar_custom_small_fullWidth" role="navigation">
         <div class="container-fluid">
             <div class="navbar-collapse collapse">
@@ -54,12 +65,6 @@
             </div>
         </div>
     </nav>
-
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
-            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">

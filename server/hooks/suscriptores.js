@@ -2,6 +2,7 @@
 
 import { Riesgos } from '/imports/collections/principales/riesgos';   
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 Suscriptores.before.remove(function (userId, doc) {
 

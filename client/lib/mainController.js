@@ -8,6 +8,9 @@ import { Asegurados } from '/imports/collections/catalogos/asegurados';
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 
 import { userHasRole } from '/client/imports/generales/userHasRole'; 
 

@@ -13,6 +13,11 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
+import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
+import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 
 Meteor.publish("empresasUsuarias", function () {
     return EmpresasUsuarias.find({});

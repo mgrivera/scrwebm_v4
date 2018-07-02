@@ -1,5 +1,6 @@
 
 
+import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
 
 angular.module("scrwebM").controller("TiposSiniestroController", ['$scope', '$stateParams', '$meteor',
   function ($scope, $stateParams, $meteor) {

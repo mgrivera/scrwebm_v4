@@ -7,6 +7,8 @@ import { Asegurados } from '/imports/collections/catalogos/asegurados';
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 angular.module("scrwebM").controller("SiniestrosFiltroController",
 ['$scope', '$stateParams', '$state', '$meteor',

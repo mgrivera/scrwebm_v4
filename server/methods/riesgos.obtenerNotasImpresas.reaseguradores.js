@@ -20,6 +20,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
 Meteor.methods(
 {

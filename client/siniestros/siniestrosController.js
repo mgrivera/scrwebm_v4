@@ -1,6 +1,5 @@
 
 
-
 import lodash from 'lodash';
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
@@ -12,8 +11,11 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
+import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 angular.module("scrwebM").controller("SiniestroController",
 ['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',

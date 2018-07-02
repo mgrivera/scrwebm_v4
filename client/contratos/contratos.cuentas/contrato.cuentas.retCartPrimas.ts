@@ -33,6 +33,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
     $scope.contratoProp_retCartPr_resumen_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true,
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
@@ -98,6 +99,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Mon',
             width: 60,
             cellFilter: 'monedaSimboloFilter',
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             enableColumnMenu: false,
@@ -112,6 +115,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Ramo',
             width: 100,
             cellFilter: 'ramoAbreviaturaFilter',
+            sortCellFiltered: true,
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -125,6 +130,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Tipo',
             width: 100,
             cellFilter: 'tipoContratoAbreviaturaFilter',
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -266,11 +273,12 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
 
                 $scope.$parent.alerts.length = 0;
                 
-                DialogModal($modal, "<em>Contratos proporcionales</em>",
-                    `Resumen de primas y siniestros.<br /><br />
-                     <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
-                     <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`,
-                    false).then();
+                let message = `Resumen de primas y siniestros.<br /><br />
+                                <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
+                                <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`; 
+                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+                
+                DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
             },
             (error) => {
                 $scope.$parent.alerts.length = 0;
@@ -475,6 +483,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
     $scope.contratoProp_retCartPr_distribucion_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true,
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
@@ -539,6 +548,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Compañía',
             width: 100,
             cellFilter: 'companiaAbreviaturaFilter',
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -555,6 +566,11 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             cellFilter: 'boolFilter',
+
+            filter: {
+                condition: ui_grid_filterBy_nosotros, 
+            },
+
             enableColumnMenu: false,
             enableCellEdit: false,
             enableSorting: true,
@@ -567,6 +583,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Mon',
             width: 70,
             cellFilter: 'monedaSimboloFilter',
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             enableColumnMenu: false,
@@ -581,6 +599,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Ramo',
             width: 100,
             cellFilter: 'ramoAbreviaturaFilter',
+            sortCellFiltered: true,
+            filterCellFiltered: true,   
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -594,6 +614,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Tipo',
             width: 100,
             cellFilter: 'tipoContratoAbreviaturaFilter',
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -693,6 +715,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
     $scope.contratoProp_retCartPr_montosFinales_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true,
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
@@ -757,6 +780,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Compañía',
             width: 100,
             cellFilter: 'companiaAbreviaturaFilter',
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -773,6 +798,11 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             cellFilter: 'boolFilter',
+
+            filter: {
+                condition: ui_grid_filterBy_nosotros, 
+            },
+            
             enableColumnMenu: false,
             enableCellEdit: false,
             enableSorting: true,
@@ -785,6 +815,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
             displayName: 'Mon',
             width: 70,
             cellFilter: 'monedaSimboloFilter',
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             enableColumnMenu: false,
@@ -861,3 +893,17 @@ angular.module("scrwebM").controller("Contrato_Cuentas_RetCartPr_Controller",
     $scope.contratoProp_retCartPr_distribucion_ui_grid.data = $scope.contratosProp_retCartPr_distribucion.filter(x => x.definicionID === definicionSeleccionadaID);
     $scope.contratoProp_retCartPr_montosFinales_ui_grid.data = $scope.contratosProp_retCartPr_montosFinales.filter(x => x.definicionID === definicionSeleccionadaID);
 }])
+
+function ui_grid_filterBy_nosotros(searchTerm, cellValue, row, column) {
+
+    // para poder filtrar el ui-grid por nosotros una vez aplicado el filtro para el ddl
+    if (searchTerm.toLowerCase() === "si" && cellValue) { 
+        return true;
+    }
+
+    if (searchTerm.toLowerCase() === "no" && !cellValue) { 
+        return true;
+    }
+
+    return false;
+}

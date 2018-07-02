@@ -10,9 +10,11 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { Consulta_MontosPendientes } from '/imports/collections/consultas/consulta_MontosPendientes'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 angular.module("scrwebM").controller("ConsultaMontosPendientesListaController",
 ['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',

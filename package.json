@@ -29,9 +29,13 @@
     "numeral": "2.0.4",
     "papaparse": "4.1.1",
     "save-as": "0.1.8",
+    "selectize": "^0.12.5",
     "simpl-schema": "0.3.2",
     "xlsx": "0.9.13",
     "xlsx-injector": "0.0.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/jquery": "^3.3.4",
+    "@types/selectize": "^0.12.33"
+  }
 }

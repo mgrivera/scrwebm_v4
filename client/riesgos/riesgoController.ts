@@ -1,63 +1,122 @@
 
 
-import moment from 'moment';
-import lodash from 'lodash';
+import * as moment from 'moment';
+import * as lodash from 'lodash';
+import 'selectize'; 
+import * as angular from 'angular';
+
 import * as riesgos_funcionesGenerales from './riesgos_funcionesGenerales'; 
 
-import { Riesgos } from '/imports/collections/principales/riesgos'; 
-import { Monedas } from '/imports/collections/catalogos/monedas'; 
-import { Companias } from '/imports/collections/catalogos/companias'; 
-import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
-import { Ramos } from '/imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
-import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Riesgos } from 'imports/collections/principales/riesgos'; 
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
+import { Ramos } from 'imports/collections/catalogos/ramos'; 
+import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { TiposFacultativo } from 'imports/collections/catalogos/tiposFacultativo'; 
 
-import { determinarSiExistenCuotasConCobrosAplicados } from '/client/imports/generales/determinarSiExistenCuotasCobradas'; 
+import { Coberturas } from 'imports/collections/catalogos/coberturas'; 
+import { Indoles } from 'imports/collections/catalogos/indoles'; 
+import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
+
+import { determinarSiExistenCuotasConCobrosAplicados } from 'client/imports/generales/determinarSiExistenCuotasCobradas'; 
+import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { MostrarPagosEnCuotas } from 'client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 angular.module("scrwebM").controller("RiesgoController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants',
   function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants) {
 
-      $scope.showProgress = false;
+    $scope.showProgress = false;
 
-      // ui-bootstrap alerts ...
-      $scope.alerts = [];
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
 
-      $scope.closeAlert = function (index) {
-          $scope.alerts.splice(index, 1);
-      };
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
 
-      // ------------------------------------------------------------------------------------------------
-      // leemos la compañía seleccionada
-      var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-      if (companiaSeleccionada)
-          var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+    // ------------------------------------------------------------------------------------------------
+    // leemos la compañía seleccionada
+    let empresaUsuariaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    if (empresaUsuariaSeleccionada) { 
+        var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(empresaUsuariaSeleccionada.companiaID, { fields: { nombre: 1 } });
+    }
+        
+    $scope.companiaSeleccionada = {};
 
-      $scope.companiaSeleccionada = {};
+    if (companiaSeleccionadaDoc) { 
+        $scope.companiaSeleccionada = companiaSeleccionadaDoc;
+    }
+    else { 
+        $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
+    }
+    // ------------------------------------------------------------------------------------------------
 
-      if (companiaSeleccionadaDoc)
-          $scope.companiaSeleccionada = companiaSeleccionadaDoc;
-      else
-          $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
-      // ------------------------------------------------------------------------------------------------
+    $scope.goToState = function (state) {
+        // para abrir alguno de los 'children' states ...
+        if (state != 'cuotas')
+            $state.go("riesgo." + state);
+        else {
+            // el state 'cuotas' recibe, en $scope.parent, este scope ... nos aseguramos de pasar el movimiento seleccionado ...
 
-      $scope.goToState = function (state) {
-          // para abrir alguno de los 'children' states ...
-          if (state != 'cuotas')
-              $state.go("riesgo." + state);
-          else {
-              // el state 'cuotas' recibe, en $scope.parent, este scope ... nos aseguramos de pasar el movimiento seleccionado ...
+            if (movimientoSeleccionado)
+                $scope.movimientoSeleccionado = movimientoSeleccionado;
 
-              if (movimientoSeleccionado)
-                  $scope.movimientoSeleccionado = movimientoSeleccionado;
+            $state.go("riesgo.cuotas", {
+                'origen': $stateParams.origen,
+                'source': 'facXXX'
+            });
+        };
+    };
 
-              $state.go("riesgo.cuotas", {
-                  'origen': $stateParams.origen,
-                  'source': 'facXXX'
-              });
-          };
-      };
+      // -------------------------------------------------------------------------------------------
+    // leemos los catálogos en el $scope
+    $scope.helpers({
+        suscriptores: () => { return Suscriptores.find({}); },
+        monedas: () => { return Monedas.find({}); },
+        indoles: () => { return Indoles.find({}); },
+        companias: () => { return Companias.find({}); },
+        ramos: () => { return Ramos.find({}); },
+        coberturas: () => { return Coberturas.find({}); },
+        asegurados: () => { return Asegurados.find({}); },
+        tiposFacultativo: () => { return TiposFacultativo.find({}); },
+    })
+
+    // const jq14 = jQuery.noConflict(true); 
+
+    // (function ($) {
+        // $(document).ready(function () {
+        //     $(function() {
+        //         $("#asegurado").selectize({
+        //             options: $scope.asegurados, 
+        //         })
+        //     })
+
+        //     let aseguradoJQ = $("#asegurado"); 
+        //     aseguradoJQ.selectize({
+        //         options: $scope.asegurados, 
+        //         valueField: '_id',
+        //         labelField: 'nombre', 
+        //         searchField: ['nombre', ], 
+        //         maxItems: 3, 
+        //         openOnFocus: false, 
+        //     });
+        // });
+    // }(jq14));
+
+    // vinculamos el input definido para el asegurado con selectize 
+    // $('#asegurado').selectize({ 
+    //     options: $scope.asegurados, 
+    //     valueField: '_id',
+    //     labelField: 'nombre', 
+    //     searchField: ['nombre', ], 
+    //     placeHolder: 'Seleccione un asegurado', 
+    //     maxItems: 3, 
+    //     openOnFocus: false, 
+    // })
 
       $scope.estados = [
           { estado: 'CO', descripcion: 'Cotización' },
@@ -91,6 +150,8 @@ angular.module("scrwebM").controller("RiesgoController",
           else
               $scope.nuevo();
       };
+
+      let cuotasSubscriptionHandle: any = null;
 
       $scope.nuevo = function () {
           // $scope.riesgo fue inicializado a partir de un objeto Meteor (ie: $scope.meteorObject(coll, id)) ...
@@ -221,17 +282,6 @@ angular.module("scrwebM").controller("RiesgoController",
     // nótese que el boolean value viene, en realidad, como un string ...
     $scope.vieneDeAfuera = ($stateParams.vieneDeAfuera == "true");    // por ejemplo: cuando se abre desde siniestros ...
 
-    // -------------------------------------------------------------------------------------------
-    // leemos los catálogos en el $scope
-    $scope.suscriptores = $scope.$meteorCollection(Suscriptores, false);
-    $scope.monedas = $scope.$meteorCollection(Monedas, false);
-    $scope.indoles = $scope.$meteorCollection(Indoles, false);
-    $scope.companias = $scope.$meteorCollection(Companias, false);
-    $scope.ramos = $scope.$meteorCollection(Ramos, false);
-    $scope.coberturas = $scope.$meteorCollection(Coberturas, false);
-    $scope.asegurados = $scope.$meteorCollection(Asegurados, false);
-    $scope.tiposFacultativo = $scope.$meteorCollection(TiposFacultativo, false);
-
     // ---------------------------------------------------------------------------
     // para inicializar la fecha final cuando se indica la inicial ...
     $scope.$watch(
@@ -271,19 +321,21 @@ angular.module("scrwebM").controller("RiesgoController",
           var isValid = false;
           var errores = [];
 
-          var item = {};
+          var item = {} as any;
 
-          if ($scope.riesgo.getRawObject)               // getRawObject: solo cuando el riesgo viene de $meteorCollection ...
+          if ($scope.riesgo.getRawObject) {           // getRawObject: solo cuando el riesgo viene de $meteorCollection ...
               item = $scope.riesgo.getRawObject();
-          else
-              item = $scope.riesgo;
-
+          }
+          else { 
+            item = $scope.riesgo;
+          }
+              
           if (item.docState != 3) {
               isValid = Riesgos.simpleSchema().namedContext().validate(item);
 
               if (!isValid) {
                   Riesgos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                      errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgos.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'.");
+                      errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgos.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
                   })
               }
           }
@@ -309,7 +361,7 @@ angular.module("scrwebM").controller("RiesgoController",
 
           // ------------------------------------------------------------------------------------------
           // ahoa validamos las cuotas, las cuales son registradas en un collection diferente ...
-          var editedItems = _($scope.cuotas).
+          var editedItems = lodash($scope.cuotas).
                              filter(function (c) { return c.docState; }).
                              map(function (c) { delete c.$$hashKey; return c; }).
                              value();
@@ -320,7 +372,7 @@ angular.module("scrwebM").controller("RiesgoController",
 
                   if (!isValid) {
                       Cuotas.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Cuotas.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'.");
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Cuotas.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
                       });
                   }
               }
@@ -348,7 +400,7 @@ angular.module("scrwebM").controller("RiesgoController",
               function (resolve) {
                   // guardamos, separadamente, las cuotas (solo las que el usuario ha editado
                   // nota: eliminamos $$hashKey a cada row (agregado por ui-grid),  antes de grabar en mongo
-                  var cuotasArray = _($scope.cuotas).
+                  var cuotasArray = lodash($scope.cuotas).
                                      filter(function (c) { return c.docState; }).
                                      map(function (c) { delete c.$$hashKey; return c; }).
                                      value();
@@ -522,7 +574,7 @@ angular.module("scrwebM").controller("RiesgoController",
                   function (resolve) {
                       inicializarItem();
                   },
-                  function (err) {
+                  function () {
                       return true;
                   });
 
@@ -542,7 +594,7 @@ angular.module("scrwebM").controller("RiesgoController",
               return;
           };
 
-          var modalInstance = $modal.open({
+          $modal.open({
               templateUrl: 'client/riesgos/imprimirNotasModal.html',
               controller: 'ImprimirNotasRiesgosModalController',
               size: 'lg',
@@ -558,10 +610,10 @@ angular.module("scrwebM").controller("RiesgoController",
                 }
               }
           }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             })
       }
@@ -596,7 +648,7 @@ angular.module("scrwebM").controller("RiesgoController",
       // --------------------------------------------------------------------------------------
       // ui-grid de Movimientos
       // --------------------------------------------------------------------------------------
-      var movimientoSeleccionado = {};
+      var movimientoSeleccionado = {} as any;
 
       $scope.movimientos_ui_grid = {
           enableSorting: false,
@@ -778,7 +830,7 @@ angular.module("scrwebM").controller("RiesgoController",
           // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
           // justamente, tendrá 'nuestra orden'
 
-          companiaNosotros = {};
+          let companiaNosotros = {} as any;
 
           if (!$scope.riesgo.movimientos.length) {
               companiaNosotros = Companias.findOne({ nosotros: true }, { fields: { _id: 1 } });
@@ -799,7 +851,7 @@ angular.module("scrwebM").controller("RiesgoController",
 
               // para agregar un movimiento cuando ya existen otros, copiamos el último (lodash clone) y lo modificamos levemente ...
               var ultimoMovimiento = $scope.riesgo.movimientos[$scope.riesgo.movimientos.length - 1];
-              var nuevoMovimiento = lodash.clone(ultimoMovimiento, true);
+              var nuevoMovimiento = lodash.clone(ultimoMovimiento);
 
               if (nuevoMovimiento) {
 
@@ -855,7 +907,7 @@ angular.module("scrwebM").controller("RiesgoController",
               };
           }
           else {
-              var movimiento = {};
+              var movimiento = {} as any;
 
               movimiento._id = new Mongo.ObjectID()._str;
               movimiento.numero = 1;
@@ -866,9 +918,10 @@ angular.module("scrwebM").controller("RiesgoController",
               movimiento.cantidadDias = moment($scope.riesgo.hasta).diff(moment($scope.riesgo.desde), 'days');
 
               // redondemos, al menos por ahora, a 365 días
-              if (movimiento.cantidadDias == 366)
-                  movimiento.cantidadDias = 365;
-
+              if (movimiento.cantidadDias == 366) { 
+                movimiento.cantidadDias = 365;
+              }
+                  
               movimiento.factorProrrata = movimiento.cantidadDias / 365;
 
               // 1er. movimiento del riesgo; agregamos la compañía 'nosotros' en forma automática ...
@@ -897,7 +950,7 @@ angular.module("scrwebM").controller("RiesgoController",
       $scope.eliminarMovimiento = function () {
 
           if (movimientoSeleccionado && !lodash.isEmpty(movimientoSeleccionado)) {
-              lodash.remove($scope.riesgo.movimientos, function (movimiento) { return movimiento._id === movimientoSeleccionado._id; });
+              lodash.remove($scope.riesgo.movimientos, function (movimiento: any) { return movimiento._id === movimientoSeleccionado._id; });
 
               // para que los grids que siguen dejen de mostrar registros para el movimiento
               $scope.companias_ui_grid.data = [];
@@ -993,7 +1046,7 @@ angular.module("scrwebM").controller("RiesgoController",
       // --------------------------------------------------------------------------------------
       // ui-grid de Compañías
       // --------------------------------------------------------------------------------------
-      var companiaSeleccionada = {};
+      let companiaSeleccionada = {} as any;
 
       $scope.companias_ui_grid = {
           enableSorting: false,
@@ -1010,21 +1063,24 @@ angular.module("scrwebM").controller("RiesgoController",
 
               // guardamos el row que el usuario seleccione
               gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  //debugger;
                   companiaSeleccionada = {};
 
-                  if (row.isSelected)
-                      companiaSeleccionada = row.entity;
-                  else
-                      return;
+                  if (row.isSelected) { 
+                    companiaSeleccionada = row.entity;
+                  }
+                  else { 
+                    return;
+                  }
               });
 
               // marcamos el contrato como actualizado cuando el usuario edita un valor
               gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                  if (newValue != oldValue)
-                      if (!$scope.riesgo.docState)
-                          $scope.riesgo.docState = 2;
-              });
+                  if (newValue != oldValue) { 
+                    if (!$scope.riesgo.docState) { 
+                        $scope.riesgo.docState = 2;
+                      }
+                  }           
+              })
           }, 
 
           // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
@@ -1138,1265 +1194,750 @@ angular.module("scrwebM").controller("RiesgoController",
       ]
 
 
-      $scope.agregarCompania = function () {
+    $scope.agregarCompania = function () {
 
-          //debugger;
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos</em>",
+                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                                "Debe seleccionar un movimiento antes de intentar agregar una compañía.",
+                                false).then();
 
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-              DialogModal($modal, "<em>Riesgos</em>",
-                                  "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                                  "Debe seleccionar un movimiento antes de intentar agregar una compañía.",
-                                  false).then();
+            return;
+        };
 
-              return;
-          };
+        var companiaNosotros = lodash.find(movimientoSeleccionado.companias, function (c) { return c.nosotros; });
+        var companiaAnterior = (movimientoSeleccionado.companias && movimientoSeleccionado.companias.length) ? 
+                                movimientoSeleccionado.companias[movimientoSeleccionado.companias.length - 1] : 
+                                null;
+        
+        var reaseguradoresOrden = lodash(movimientoSeleccionado.companias).
+                                        filter(function(c: any) { return !c.nosotros; }).
+                                        sumBy(function(c: any) { return c.ordenPorc; });
 
-          var companiaNosotros = lodash.find(movimientoSeleccionado.companias, function (c) { return c.nosotros; });
-          var companiaAnterior = (movimientoSeleccionado.companias && movimientoSeleccionado.companias.length) ? movimientoSeleccionado.companias[movimientoSeleccionado.companias.length - 1] : null;
-          var reaseguradoresOrden = lodash.chain(movimientoSeleccionado.companias).
-                                      filter(function (c) { return !c.nosotros; }).
-                                      sum(function (c) { return c.ordenPorc; }).
-                                      value();
+        if (!reaseguradoresOrden) { 
+        reaseguradoresOrden = 0;
+        }
+            
+        let ordenPorc: any = null;
 
-          if (!reaseguradoresOrden)
-              reaseguradoresOrden = 0;
+        if (companiaNosotros) { 
+        ordenPorc = companiaNosotros.ordenPorc;
+        }
+            
+        if (ordenPorc && reaseguradoresOrden) { 
+        ordenPorc -= reaseguradoresOrden;
+        } 
+            
+        // cada compañía que agregamos, usa los 'defaults' de la compañía anterior
+        var compania = {
+            _id: new Mongo.ObjectID()._str,
+            nosotros: false,
+            comisionPorc: companiaAnterior ? companiaAnterior.comisionPorc : null,
+            impuestoPorc: companiaAnterior ? companiaAnterior.impuestoPorc : null,
+            corretajePorc: companiaAnterior ? companiaAnterior.corretajePorc : null,
+            impuestoSobrePNPorc: companiaAnterior ? companiaAnterior.impuestoSobrePNPorc : null,
+            ordenPorc: ordenPorc
+        };
 
-          var ordenPorc = null;
+        if (!movimientoSeleccionado.companias) { 
+        movimientoSeleccionado.companias = [];
+        }
+            
+        movimientoSeleccionado.companias.push(compania);
 
-          if (companiaNosotros)
-              ordenPorc = companiaNosotros.ordenPorc;
+        if (!$scope.riesgo.docState) { 
+        $scope.riesgo.docState = 2;
+        }
+    }
 
-          if (ordenPorc && reaseguradoresOrden)
-              ordenPorc -= reaseguradoresOrden;
+    $scope.eliminarCompania = function () {
+        //debugger;
+        // cada vez que el usuario selecciona un row, lo guardamos ...
+        if (movimientoSeleccionado && movimientoSeleccionado.companias && companiaSeleccionada) {
+            lodash.remove(movimientoSeleccionado.companias, function (compania: any) { return compania._id === companiaSeleccionada._id; });
 
-          // cada compañía que agregamos, usa los 'defaults' de la compañía anterior
-          var compania = {
-              _id: new Mongo.ObjectID()._str,
-              nosotros: false,
-              comisionPorc: companiaAnterior ? companiaAnterior.comisionPorc : null,
-              impuestoPorc: companiaAnterior ? companiaAnterior.impuestoPorc : null,
-              corretajePorc: companiaAnterior ? companiaAnterior.corretajePorc : null,
-              impuestoSobrePNPorc: companiaAnterior ? companiaAnterior.impuestoSobrePNPorc : null,
-              ordenPorc: ordenPorc
-          };
+            if (!$scope.riesgo.docState)
+                $scope.riesgo.docState = 2;
+        };
+    }
 
-          if (!movimientoSeleccionado.companias)
-              movimientoSeleccionado.companias = [];
+    $scope.refrescarGridCompanias = function() {
+        // para refrescar las listas que usan los Selects en el ui-grid
+        var companiasParaListaUIGrid = lodash.chain($scope.companias).
+                                    filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
+                                    sortBy(function(item) { return item.nombre; }).
+                                    value();
 
-          movimientoSeleccionado.companias.push(compania);
-
-          if (!$scope.riesgo.docState)
-              $scope.riesgo.docState = 2;
-      };
-
-      $scope.eliminarCompania = function () {
-          //debugger;
-          // cada vez que el usuario selecciona un row, lo guardamos ...
-          if (movimientoSeleccionado && movimientoSeleccionado.companias && companiaSeleccionada) {
-              lodash.remove(movimientoSeleccionado.companias, function (compania) { return compania._id === companiaSeleccionada._id; });
-
-              if (!$scope.riesgo.docState)
-                  $scope.riesgo.docState = 2;
-          };
-      };
-
-      $scope.refrescarGridCompanias = function() {
-          // para refrescar las listas que usan los Selects en el ui-grid
-          var companiasParaListaUIGrid = lodash.chain($scope.companias).
-                                      filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
-                                      sortBy(function(item) { return item.nombre; }).
-                                      value();
-
-          $scope.companias_ui_grid.columnDefs[0].editDropdownOptionsArray = companiasParaListaUIGrid;
-      };
-
-
-      $scope.registrarPersonasCompanias = function() {
-
-          if (!$scope.riesgo || !$scope.riesgo.compania) {
-              DialogModal($modal, "<em>Riesgos</em>",
-                                  "Aparentemente, Ud. no ha seleccionado una compañía como cedente para este riesgo.<br />" +
-                                  "El riesgo debe tener una compañía cedente antes de intentar registrar sus personas.",
-                                  false).then();
-
-              return;
-          };
+        $scope.companias_ui_grid.columnDefs[0].editDropdownOptionsArray = companiasParaListaUIGrid;
+    };
 
 
-          var modalInstance = $modal.open({
-              templateUrl: 'client/generales/registrarPersonas.html',
-              controller: 'RegistrarPersonasController',
-              size: 'lg',
-              resolve: {
-                  companias: function () {
-                    //   debugger;
-                      let riesgo = $scope.riesgo;
-                      let companias = [];
+    $scope.registrarPersonasCompanias = function() {
 
-                      if (lodash.isArray(riesgo.personas)) {
-                          riesgo.personas.forEach(persona => {
-                              companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
-                          });
-                      };
+        if (!$scope.riesgo || !$scope.riesgo.compania) {
+            DialogModal($modal, "<em>Riesgos</em>",
+                                "Aparentemente, Ud. no ha seleccionado una compañía como cedente para este riesgo.<br />" +
+                                "El riesgo debe tener una compañía cedente antes de intentar registrar sus personas.",
+                                false).then();
 
-                      // ahora revisamos las compañías en el riesgo y agregamos las que
-                      // *no* existan en el array de compañías
+            return;
+        };
 
-                      if (!lodash.some(companias, c => { return c.compania == riesgo.compania; } ))
-                         companias.push({ compania: riesgo.compania });
 
-                      if (lodash.isArray(riesgo.movimientos)) {
-                          riesgo.movimientos.forEach(movimiento => {
-                            if (lodash.isArray(movimiento.companias)) {
-                                movimiento.companias.forEach(r => {
-                                    if (!r.nosotros)
-                                        if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
-                                           companias.push({ compania: r.compania });
-                                });
-                            };
-                          });
-                      };
-
-                      return companias;
-                  }
-              }
-          }).result.then(
-              function (resolve) {
-                  return true;
-              },
-              function (cancel) {
-                  // recuperamos las personas de compañías, según las indicó el usuario en el modal
+        var modalInstance = $modal.open({
+            templateUrl: 'client/generales/registrarPersonas.html',
+            controller: 'RegistrarPersonasController',
+            size: 'lg',
+            resolve: {
+                companias: function () {
                 //   debugger;
-                  if (cancel.entityUpdated) {
-                      let companias = cancel.companias;
-                      $scope.riesgo.personas = [];
+                    let riesgo = $scope.riesgo;
+                    let companias = [];
 
-                      if (lodash.isArray(companias)) {
-                          companias.forEach(c => {
-                               $scope.riesgo.personas.push({
-                                   compania: c.compania,
-                                   titulo: c.titulo ? c.titulo : null,
-                                   nombre: c.nombre? c.nombre : null
-                               });
-                          });
-                      };
+                    if (lodash.isArray(riesgo.personas)) {
+                        riesgo.personas.forEach(persona => {
+                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre } as never);
+                        });
+                    };
+
+                    // ahora revisamos las compañías en el riesgo y agregamos las que
+                    // *no* existan en el array de compañías
+
+                    if (!lodash.some(companias, (c: any) => { return c.compania == riesgo.compania; } ))
+                        companias.push({ compania: riesgo.compania } as never);
+
+                    if (lodash.isArray(riesgo.movimientos)) {
+                        riesgo.movimientos.forEach(movimiento => {
+                        if (lodash.isArray(movimiento.companias)) {
+                            movimiento.companias.forEach(r => {
+                                if (!r.nosotros) { 
+                                    if (!lodash.some(companias, (c: any) => { return c.compania == r.compania; } )) { 
+                                        companias.push({ compania: r.compania } as never);
+                                    } 
+                                }
+                            })
+                        }
+                        })
+                    }
+
+                    return companias;
+                }
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                // recuperamos las personas de compañías, según las indicó el usuario en el modal
+                if (cancel.entityUpdated) {
+                    let companias = cancel.companias;
+                    $scope.riesgo.personas = [];
+
+                    if (lodash.isArray(companias)) {
+                        companias.forEach(c => {
+                            $scope.riesgo.personas.push({
+                                compania: c.compania,
+                                titulo: c.titulo ? c.titulo : null,
+                                nombre: c.nombre? c.nombre : null
+                            })
+                        })
+                    }
+
+                if (!$scope.riesgo.docState)
+                    $scope.riesgo.docState = 2;
+                };
+
+                return true;
+            });
+    };
+
+    // --------------------------------------------------------------------------------------
+    // ui-grid de Coberturas
+    // --------------------------------------------------------------------------------------
+    var coberturaSeleccionada = {} as any;
+
+    $scope.coberturas_ui_grid = {
+        enableSorting: false,
+        showColumnFooter: true,
+        enableCellEdit: false,
+        enableCellEditOnFocus: true,
+        enableRowSelection: true,
+        enableRowHeaderSelection: true,
+        multiSelect: false,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        rowHeight: 25,
+        onRegisterApi: function (gridApi) {
+
+            // guardamos el row que el usuario seleccione
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                //debugger;
+                coberturaSeleccionada = {};
+
+                if (row.isSelected)
+                    coberturaSeleccionada = row.entity;
+                else
+                    return;
+            });
+
+            // marcamos el contrato como actualizado cuando el usuario edita un valor
+            gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
+                //debugger;
+                if (newValue != oldValue) {
+
+                    switch (colDef.name) {
+
+                        case "valorARiesgo": {
+
+                            if (!rowEntity.sumaAsegurada && rowEntity.valorARiesgo)
+                                rowEntity.sumaAsegurada = rowEntity.valorARiesgo;
+
+                            if (rowEntity.valorARiesgo && rowEntity.tasa && !rowEntity.prima)
+                                rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
+
+                            break;
+                        };
+                        case "tasa": {
+
+                            if (rowEntity.valorARiesgo && rowEntity.tasa && !rowEntity.prima)
+                                rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
+
+                            break;
+                        };
+                        case "prima": {
+
+                            if (rowEntity.valorARiesgo && !rowEntity.tasa && rowEntity.prima)
+                                rowEntity.tasa = rowEntity.prima * 1000 / rowEntity.valorARiesgo;
+
+                            break;
+                        };
+
+                    };
 
                     if (!$scope.riesgo.docState)
                         $scope.riesgo.docState = 2;
-                  };
-
-                  return true;
-              });
-      };
-
-      // --------------------------------------------------------------------------------------
-      // ui-grid de Coberturas
-      // --------------------------------------------------------------------------------------
-      var coberturaSeleccionada = {};
-
-      $scope.coberturas_ui_grid = {
-          enableSorting: false,
-          showColumnFooter: true,
-          enableCellEdit: false,
-          enableCellEditOnFocus: true,
-          enableRowSelection: true,
-          enableRowHeaderSelection: true,
-          multiSelect: false,
-          enableSelectAll: false,
-          selectionRowHeaderWidth: 35,
-          rowHeight: 25,
-          onRegisterApi: function (gridApi) {
-
-              // guardamos el row que el usuario seleccione
-              gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  //debugger;
-                  coberturaSeleccionada = {};
-
-                  if (row.isSelected)
-                      coberturaSeleccionada = row.entity;
-                  else
-                      return;
-              });
-
-              // marcamos el contrato como actualizado cuando el usuario edita un valor
-              gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                  //debugger;
-                  if (newValue != oldValue) {
-
-                      switch (colDef.name) {
-
-                          case "valorARiesgo": {
-
-                              if (!rowEntity.sumaAsegurada && rowEntity.valorARiesgo)
-                                  rowEntity.sumaAsegurada = rowEntity.valorARiesgo;
-
-                              if (rowEntity.valorARiesgo && rowEntity.tasa && !rowEntity.prima)
-                                  rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
-
-                              break;
-                          };
-                          case "tasa": {
-
-                              if (rowEntity.valorARiesgo && rowEntity.tasa && !rowEntity.prima)
-                                  rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
-
-                              break;
-                          };
-                          case "prima": {
-
-                              if (rowEntity.valorARiesgo && !rowEntity.tasa && rowEntity.prima)
-                                  rowEntity.tasa = rowEntity.prima * 1000 / rowEntity.valorARiesgo;
-
-                              break;
-                          };
-
-                      };
-
-                      if (!$scope.riesgo.docState)
-                          $scope.riesgo.docState = 2;
-                  };
-              });
-          }, 
-
-          // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
-          rowIdentity: function (row) {
-                return row._id;
-            },
-
-            getRowIdentity: function (row) {
-                return row._id;
-            }
-      }
-
-      $scope.coberturas_ui_grid.columnDefs = [
-            {
-                name: 'cobertura',
-                field: 'cobertura',
-                displayName: 'Cobertura',
-                width: 180,
-                editableCellTemplate: 'ui-grid/dropdownEditor',
-                editDropdownIdLabel: '_id',
-                editDropdownValueLabel: 'descripcion',
-                editDropdownOptionsArray: lodash.sortBy($scope.coberturas, function(item) { return item.descripcion; }),
-                cellFilter: 'mapDropdown:row.grid.appScope.coberturas:"_id":"descripcion"',
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                pinnedLeft: true,
-                type: 'string'
-            },
-            {
-                name: 'moneda',
-                field: 'moneda',
-                displayName: 'Mon',
-                width: 40,
-                editableCellTemplate: 'ui-grid/dropdownEditor',
-                editDropdownIdLabel: '_id',
-                editDropdownValueLabel: 'simbolo',
-                editDropdownOptionsArray: lodash.sortBy($scope.monedas, function(item) { return item.simbolo; }),
-                cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"simbolo"',
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                pinnedLeft: true,
-                type: 'string'
-            },
-            {
-                name: 'valorARiesgo',
-                field: 'valorARiesgo',
-                displayName: 'Valor a riesgo',
-                cellFilter: 'currencyFilterAndNull',
-                width: 140,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'sumaAsegurada',
-                field: 'sumaAsegurada',
-                displayName: 'Suma asegurada',
-                cellFilter: 'currencyFilterAndNull',
-                width: 140,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'tasa',
-                field: 'tasa',
-                displayName: 'Tasa',
-                cellFilter: 'number8decimals',
-                width: 100,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'prima',
-                field: 'prima',
-                displayName: 'Prima',
-                cellFilter: 'currencyFilterAndNull',
-                width: 140,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            }
-      ]
-
-
-      $scope.agregarCobertura = function () {
-
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-              DialogModal($modal, "<em>Riesgos</em>",
-                                  "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                                  "Debe seleccionar un movimiento antes de intentar agregar una cobertura.",
-                                  false).then();
-
-              return;
-          };
-
-          var cobertura = {
-              _id: new Mongo.ObjectID()._str,
-              moneda: $scope.riesgo.moneda
-          };
-
-          if (!movimientoSeleccionado.coberturas)
-              movimientoSeleccionado.coberturas = [];
-
-          movimientoSeleccionado.coberturas.push(cobertura);
-
-          if (!$scope.riesgo.docState)
-              $scope.riesgo.docState = 2;
-      };
-
-      $scope.eliminarCobertura = function () {
-          //debugger;
-          // cada vez que el usuario selecciona un row, lo guardamos ...
-          if (movimientoSeleccionado && movimientoSeleccionado.coberturas && coberturaSeleccionada) {
-              lodash.remove(movimientoSeleccionado.coberturas, function (cobertura) { return cobertura._id === coberturaSeleccionada._id; });
-
-              if (!$scope.riesgo.docState)
-                  $scope.riesgo.docState = 2;
-          };
-      };
-
-      $scope.coberturasCalcular = function() {
-
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado))
-              return;
-
-          // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero.
-          // Si solo usamos "if (!var)" y la variable es 0, la condición será cierta ...
-
-          movimientoSeleccionado.coberturas.forEach(function(cobertura) {
-
-              if (lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.tasa))
-                  cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 1000;
-
-              if (!lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.prima) && cobertura.tasa)
-                  cobertura.valorARiesgo = cobertura.prima * 1000 * cobertura.tasa;
-
-              if (!lodash.isFinite(cobertura.tasa) && lodash.isFinite(cobertura.prima) && cobertura.valorARiesgo)
-                  cobertura.tasa = cobertura.prima * 1000 / cobertura.valorARiesgo;
-
-              if (lodash.isFinite(cobertura.valorARiesgo) && !lodash.isFinite(cobertura.sumaAsegurada))
-                  cobertura.sumaAsegurada = cobertura.valorARiesgo;
-          });
-      };
-
-      $scope.refrescarGridCoberturas = function() {
-          // para refrescar las listas que usan los Selects en el ui-grid
-          $scope.coberturas_ui_grid.columnDefs[0].editDropdownOptionsArray = lodash.sortBy($scope.coberturas, function(item) { return item.descripcion; });
-          $scope.coberturas_ui_grid.columnDefs[1].editDropdownOptionsArray = lodash.sortBy($scope.monedas, function(item) { return item.simbolo; });
-      };
-
-      // --------------------------------------------------------------------------------------------------
-      // para construir las coberturas para cada una de las compañías del movimiento
-      // --------------------------------------------------------------------------------------------------
-
-      $scope.construirCifrasCoberturasParaCompanias = function () {
-
-          //debugger;
-
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-              DialogModal($modal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
-                                  "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                                  "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
-                                  false).then();
-
-              return;
-          };
-
-          if (movimientoSeleccionado.coberturasCompanias && movimientoSeleccionado.coberturasCompanias.length > 0) {
-              DialogModal($modal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
-                                  "Ya existen cifras de coberturas para el movimiento seleccionado.<br />" +
-                                  "Si Ud. continúa y ejecuta esta función, estos registros <em>serán eliminados</em> antes de " +
-                                  "determinar y agregar unos nuevos.<br /><br />" +
-                                  "Aún así, desea continuar y eliminar los registros que ahora existen?",
-                    true).then(
-                    function() {
-                        construirCifrasCoberturasParaCompanias2();
-                        return;
-                    },
-                    function() {
-                        return;
-                    });
-            return;
-          };
-
-          construirCifrasCoberturasParaCompanias2();
-      };
-
-
-      var construirCifrasCoberturasParaCompanias2 = function () {
-
-          //debugger;
-
-          movimientoSeleccionado.coberturasCompanias = [];
-
-          var coberturaCompania = {};
-
-          movimientoSeleccionado.companias.forEach(function (compania) {
-              movimientoSeleccionado.coberturas.forEach(function (cobertura) {
-
-                  coberturaCompania = {};
-
-                  coberturaCompania._id = new Mongo.ObjectID()._str;
-                  coberturaCompania.compania = compania.compania;
-                  coberturaCompania.nosotros = compania.nosotros;
-                  coberturaCompania.cobertura = cobertura.cobertura;
-                  coberturaCompania.moneda = cobertura.moneda;
-
-                  coberturaCompania.valorARiesgo = cobertura.valorARiesgo;
-                  coberturaCompania.sumaAsegurada = cobertura.sumaAsegurada;
-                  coberturaCompania.tasa = cobertura.tasa;
-                  coberturaCompania.prima = cobertura.prima;
-                  coberturaCompania.ordenPorc = compania.ordenPorc;
-                  coberturaCompania.sumaReasegurada = cobertura.sumaAsegurada * compania.ordenPorc / 100;
-                  coberturaCompania.primaBrutaAntesProrrata = cobertura.prima * compania.ordenPorc / 100;
-                  coberturaCompania.primaBruta = coberturaCompania.primaBrutaAntesProrrata;
-
-                  movimientoSeleccionado.coberturasCompanias.push(coberturaCompania);
-              });
-          });
-
-          // mostramos los items recién agregados en el grid ...
-          $scope.coberturasCompanias_ui_grid.data = movimientoSeleccionado.coberturasCompanias;
-
-          if (!$scope.riesgo.docState)
-              $scope.riesgo.docState = 2;
-      };
-
-      // --------------------------------------------------------------------------------------
-      // ui-grid de Coberturas por compañía
-      // --------------------------------------------------------------------------------------
-      var coberturaCompaniaSeleccionada = {};
-
-      $scope.coberturasCompanias_ui_grid = {
-          enableSorting: false,
-          showColumnFooter: false,
-          enableCellEdit: false,
-          enableCellEditOnFocus: true,
-          enableRowSelection: true,
-          enableRowHeaderSelection: true,
-          multiSelect: false,
-          enableSelectAll: false,
-          selectionRowHeaderWidth: 35,
-          rowHeight: 25,
-          onRegisterApi: function (gridApi) {
-
-              // guardamos el row que el usuario seleccione
-              gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  //debugger;
-                  coberturaCompaniaSeleccionada = {};
-
-                  if (row.isSelected)
-                      coberturaCompaniaSeleccionada = row.entity;
-                  else
-                      return;
-              });
-
-              // marcamos el contrato como actualizado cuando el usuario edita un valor
-              gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                  //debugger;
-                  if (newValue != oldValue) {
-
-                      //switch (colDef.name) {
-
-                      //    case "valorARiesgo": {
-
-                      //        if (!rowEntity.sumaAsegurada && rowEntity.valorARiesgo)
-                      //            rowEntity.sumaAsegurada = rowEntity.valorARiesgo;
-
-                      //        if (rowEntity.valorARiesgo && rowEntity.tasa && !rowEntity.prima)
-                      //            rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
-
-                      //        break;
-                      //    };
-                      //    case "tasa": {
-
-                      //        if (rowEntity.valorARiesgo && rowEntity.tasa && !rowEntity.prima)
-                      //            rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
-
-                      //        break;
-                      //    };
-                      //    case "prima": {
-
-                      //        if (rowEntity.valorARiesgo && !rowEntity.tasa && rowEntity.prima)
-                      //            rowEntity.tasa = rowEntity.prima * 1000 / rowEntity.valorARiesgo;
-
-                      //        break;
-                      //    };
-
-                      //};
-
-                      if (!$scope.riesgo.docState)
-                          $scope.riesgo.docState = 2;
-                  };
-              });
-          }, 
-
-          // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
-          rowIdentity: function (row) {
-                return row._id;
-            },
-
-            getRowIdentity: function (row) {
-                return row._id;
-            }
-      }
-
-      $scope.coberturasCompanias_ui_grid.columnDefs = [
-            {
-                name: 'compania',
-                field: 'compania',
-                displayName: 'Compañía',
-                width: 80,
-                cellFilter: 'companiaAbreviaturaFilter',
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                enableColumnMenu: false,
-                enableCellEdit: false,
-                pinnedLeft: true,
-                type: 'string'
-            },
-            {
-                name: 'cobertura',
-                field: 'cobertura',
-                displayName: 'Cobertura',
-                width: 80,
-                cellFilter: 'coberturaAbreviaturaFilter',
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                enableColumnMenu: false,
-                enableCellEdit: false,
-                pinnedLeft: true,
-                type: 'string'
-            },
-            {
-                name: 'moneda',
-                field: 'moneda',
-                displayName: 'Mon',
-                width: 40,
-                editableCellTemplate: 'ui-grid/dropdownEditor',
-                editDropdownIdLabel: '_id',
-                editDropdownValueLabel: 'simbolo',
-                editDropdownOptionsArray: lodash.sortBy($scope.monedas, function(item) { return item.simbolo; }),
-                cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"simbolo"',
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                pinnedLeft: true,
-                type: 'string'
-            },
-            {
-                name: 'valorARiesgo',
-                field: 'valorARiesgo',
-                displayName: 'Valor a riesgo',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'sumaAsegurada',
-                field: 'sumaAsegurada',
-                displayName: 'Suma asegurada',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'tasa',
-                field: 'tasa',
-                displayName: 'Tasa',
-                cellFilter: 'number8decimals',
-                width: 80,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'prima',
-                field: 'prima',
-                displayName: 'Prima',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'ordenPorc',
-                field: 'ordenPorc',
-                displayName: 'Orden',
-                cellFilter: 'number6decimals',
-                width: 70,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'sumaReasegurada',
-                field: 'sumaReasegurada',
-                displayName: 'Suma reasegurada',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'primaBrutaAntesProrrata',
-                field: 'primaBrutaAntesProrrata',
-                displayName: 'PB antes prorrata',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'primaBruta',
-                field: 'primaBruta',
-                displayName: 'Prima bruta',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            }
-      ]
-
-
-      $scope.eliminarCoberturaCompania = function () {
-          //debugger;
-          // cada vez que el usuario selecciona un row, lo guardamos ...
-          if (movimientoSeleccionado && movimientoSeleccionado.coberturasCompanias && coberturaCompaniaSeleccionada) {
-              lodash.remove(movimientoSeleccionado.coberturasCompanias, function (coberturaCompania) { return coberturaCompania._id === coberturaCompaniaSeleccionada._id; });
-
-              if (!$scope.riesgo.docState)
-                  $scope.riesgo.docState = 2;
-          };
-      };
-
-      $scope.refrescarGridCoberturasCompanias = function() {
-          // para refrescar las listas que usan los Selects en el ui-grid
-          $scope.coberturasCompanias_ui_grid.columnDefs[2].editDropdownOptionsArray = lodash.sortBy($scope.monedas, function(item) { return item.simbolo; });
-      };
-
-      $scope.calcularCoberturasCompanias = function () {
-
-          // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero. Si solo usamos
-          // if (!var) y la variable es 0, la condición será cierta ...
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado) || !movimientoSeleccionado.coberturasCompanias ||
-              !movimientoSeleccionado.coberturasCompanias.length) {
-                  return;
-              }
-
-
-          movimientoSeleccionado.coberturasCompanias.forEach(function (cobertura) {
-
-              // prima (siempre)
-              if (lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.tasa))
-                  cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 1000;
-
-              // tasa (solo si es blanco)
-              if (!lodash.isFinite(cobertura.tasa) && cobertura.valorARiesgo && lodash.isFinite(cobertura.prima))
-                  cobertura.tasa = cobertura.prima / cobertura.valorARiesgo * 1000;
-
-              // suma reasegurada (siempre)
-              if (lodash.isFinite(cobertura.sumaAsegurada) && lodash.isFinite(cobertura.ordenPorc))
-                  cobertura.sumaReasegurada = cobertura.sumaAsegurada * cobertura.ordenPorc / 100;
-
-              // prima bruta (siempre)
-              if (lodash.isFinite(cobertura.prima) && lodash.isFinite(cobertura.ordenPorc)) {
-                  cobertura.primaBrutaAntesProrrata = cobertura.prima * cobertura.ordenPorc / 100;
-                  cobertura.primaBruta = cobertura.primaBrutaAntesProrrata;
-              }
-
-
-              // suma asegurada (solo si es blanco)
-              if (!lodash.isFinite(cobertura.sumaAsegurada) && lodash.isFinite(cobertura.sumaReasegurada) && cobertura.ordenPorc)
-                  cobertura.sumaAsegurada = cobertura.sumaReasegurada / cobertura.ordenPorc * 100;
-
-              // orden (solo si es blanco)
-              if (!lodash.isFinite(cobertura.ordenPorc) && lodash.isFinite(cobertura.sumaReasegurada) && cobertura.sumaAsegurada)
-                  cobertura.ordenPorc = cobertura.sumaReasegurada * 100 / cobertura.sumaAsegurada;
-
-              // prima (solo si es blanco)
-              if (!lodash.isFinite(cobertura.prima) && lodash.isFinite(cobertura.primaBrutaAntesProrrata) && cobertura.ordenPorc)
-                  cobertura.prima = cobertura.primaBrutaAntesProrrata * 100 / cobertura.ordenPorc;
-          });
-
-          if (!$scope.riesgo.docState) {
-              $scope.riesgo.docState = 2;
-          }
-      }
-
-      $scope.construirPrimasParaCompanias = function () {
-
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-              DialogModal($modal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
-                                  "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                                  "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
-                                  false).then();
-
-              return;
-          }
-
-          if (movimientoSeleccionado.primas && movimientoSeleccionado.primas.length > 0) {
-              DialogModal($modal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
-                                  "Ya existen registros de prima para cada compañía en el movimiento seleccionado.<br />" +
-                                  "Si Ud. continúa y ejecuta esta función, estos registros <em>serán eliminados</em> antes de " +
-                                  "ser construidos y agregados nuevamente.<br /><br />" +
-                                  "Aún así, desea continuar y eliminar (sustituir) los registros que ahora existen?",
-                    true).then(
-                    function () {
-                        construirPrimasParaCompanias();
-                        return;
-                    },
-                    function () {
-                        return;
-                    })
-              return;
-          }
-
-          construirPrimasParaCompanias();
-      }
-
-
-      function construirPrimasParaCompanias() {
-
-          movimientoSeleccionado.primas = [];
-
-          // usamos lodash para agrupar las primas brutas para cada compañía
-          var primasBrutasCompanias = lodash.groupBy(movimientoSeleccionado.coberturasCompanias, function (c) { return c.compania; });
-
-          var primaItem = {};
-
-          for (var compania in primasBrutasCompanias) {
-
-              // arriba agrupamos por compañía; ahora agrupamos por moneda
-              var primasBrutasMonedas = lodash.groupBy(primasBrutasCompanias[compania], function (c) { return c.moneda; });
-
-              for(var moneda in primasBrutasMonedas) {
-
-                  primaItem = {};
-
-                  primaItem._id = new Mongo.ObjectID()._str;
-
-                  primaItem.compania = compania;
-                  primaItem.moneda = moneda;
-
-                  primaItem.primaBruta = lodash.sumBy(primasBrutasMonedas[moneda], 'primaBruta');
-
-                  // leemos la compañía en el movimiento, para obtener sus porcentajes (defaults)
-
-                  var companiaItem = lodash.find(movimientoSeleccionado.companias, function (c) { return c.compania === compania; });
-
-                  primaItem.nosotros = companiaItem.nosotros;
-
-                  primaItem.comisionPorc = companiaItem.comisionPorc;
-                  primaItem.impuestoPorc = companiaItem.impuestoPorc;
-                  primaItem.corretajePorc = companiaItem.corretajePorc;
-                  primaItem.impuestoSobrePNPorc = companiaItem.impuestoSobrePNPorc;
-
-                  // nótese como, inicialmente, simplemente calculamos la prima bruta aplicando el factor prorrata;
-                  // luego habrá una función para calcular esta prorrata, usando, cuando el usuario lo indique, la prima
-                  // anterior.
-
-                  // además, si la compañía no es nosotros, multiplicamos por -1
-
-                  if (!primaItem.nosotros)
-                      primaItem.primaBruta *= -1;
-
-                  movimientoSeleccionado.primas.push(primaItem);
-              };
-          };
-
-          $scope.primas_ui_grid.data = movimientoSeleccionado.primas;
-
-          if (!$scope.riesgo.docState)
-              $scope.riesgo.docState = 2;
-      };
-
-      // para abrir un modal que permite al usuario calcular las primas prorrateadas del movimiento
-      // (casi siempre en base a las primas del movimiento anterior y las del actual)
-
-      $scope.prorratearPrimasBrutas = function() {
-
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-              DialogModal($modal, "<em>Riesgos - Prorratear primas brutas</em>",
-                                  "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                                  "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
-                                  false).then();
-
-              return;
-          };
-
-          var modalInstance = $modal.open({
-              templateUrl: 'client/riesgos/prorratearPrimasModal.html',
-              controller: 'Riesgos_ProrratearPrimasController',
-              size: 'lg',
-              resolve: {
-                  riesgo: function () {
-                      return $scope.riesgo;
-                  },
-                  movimiento: function () {
-                      return movimientoSeleccionado;
-                  }
-              }
-          }).result.then(
-                function (resolve) {
-                    return true;
-                },
-                function (cancel) {
-                    return true;
-                });
-      };
-      // --------------------------------------------------------------------------------------
-      // ui-grid de primas por compañía
-      // --------------------------------------------------------------------------------------
-      var primaSeleccionada = {};
-
-      $scope.primas_ui_grid = {
-          enableSorting: false,
-          showColumnFooter: true,
-          enableCellEdit: false,
-          enableCellEditOnFocus: true,
-          enableRowSelection: true,
-          enableRowHeaderSelection: true,
-          multiSelect: false,
-          enableSelectAll: false,
-          selectionRowHeaderWidth: 35,
-          rowHeight: 25,
-          onRegisterApi: function (gridApi) {
-
-              $scope.primas_ui_gridApi = gridApi;
-
-              // guardamos el row que el usuario seleccione
-              gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  primaSeleccionada = {};
-
-                  if (row.isSelected)
-                      primaSeleccionada = row.entity;
-                  else
-                      return;
-              });
-
-              // marcamos el contrato como actualizado cuando el usuario edita un valor
-              gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                  if (newValue != oldValue) {
-                      if (!$scope.riesgo.docState)
-                          $scope.riesgo.docState = 2;
-                  };
-              });
-          }, 
-          // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
-          rowIdentity: function (row) {
-                return row._id;
-            },
-
-            getRowIdentity: function (row) {
-                return row._id;
-            }
-      }
-
-      $scope.primas_ui_grid.columnDefs = [
-          {
-              name: 'compania',
-              field: 'compania',
-              displayName: 'Compañía',
-              width: 80,
-              cellFilter: 'companiaAbreviaturaFilter',
-              headerCellClass: 'ui-grid-leftCell',
-              cellClass: 'ui-grid-leftCell',
-              enableColumnMenu: false,
-              enableCellEdit: false,
-              pinnedLeft: true,
-              type: 'string'
-          },
-          {
-              name: 'moneda',
-              field: 'moneda',
-              displayName: 'Mon',
-              width: 40,
-              cellFilter: 'monedaSimboloFilter',
-              headerCellClass: 'ui-grid-centerCell',
-              cellClass: 'ui-grid-centerCell',
-              enableColumnMenu: false,
-              enableCellEdit: false,
-              pinnedLeft: true,
-              type: 'string'
-          },
-            {
-                name: 'primaBruta',
-                field: 'primaBruta',
-                displayName: 'Prima bruta',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'comisionPorc',
-                field: 'comisionPorc',
-                displayName: 'Com(%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 70,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'comision',
-                field: 'comision',
-                displayName: 'Comisión',
-                cellFilter: 'currencyFilterAndNull',
-                width: 100,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'impuestoPorc',
-                field: 'impuestoPorc',
-                displayName: 'Imp(%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 70,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'impuesto',
-                field: 'impuesto',
-                displayName: 'Impuesto',
-                cellFilter: 'currencyFilterAndNull',
-                width: 100,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'corretajePorc',
-                field: 'corretajePorc',
-                displayName: 'Corr(%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 70,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'corretaje',
-                field: 'corretaje',
-                displayName: 'Corretaje',
-                cellFilter: 'currencyFilterAndNull',
-                width: 100,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'primaNeta0',
-                field: 'primaNeta0',
-                displayName: 'Prima neta',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'impuestoSobrePNPorc',
-                field: 'impuestoSobrePNPorc',
-                displayName: 'Imp/pn(%)',
-                cellFilter: 'currencyFilterAndNull',
-                width: 70,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'impuestoSobrePN',
-                field: 'impuestoSobrePN',
-                displayName: 'Imp/pn',
-                cellFilter: 'currencyFilterAndNull',
-                width: 100,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            },
-            {
-                name: 'primaNeta',
-                field: 'primaNeta',
-                displayName: 'Prima neta',
-                cellFilter: 'currencyFilterAndNull',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                aggregationType: uiGridConstants.aggregationTypes.sum,
-                aggregationHideLabel: true,
-                footerCellFilter: 'currencyFilter',
-                footerCellClass: 'ui-grid-rightCell',
-                type: 'number'
-            }
-      ]
-
-      $scope.calcularPrimas = function () {
-
-          // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero. Si solo usamos
-          // if (!var) y el valor es 0, la condición será cierta ...
-          if (!movimientoSeleccionado || !movimientoSeleccionado.primas || !movimientoSeleccionado.primas.length) {
-              return;
-          }
-
-
-          movimientoSeleccionado.primas.forEach(function (p) {
-
-              // comision%
-              if (!lodash.isFinite(p.comisionPorc) && p.primaBruta && lodash.isFinite(p.comision)) {
-                  p.comisionPorc = Math.abs(p.comision / p.primaBruta * 100);
-              }
-
-              // comision
-              // nótese como, en adelante, los costos son calculados con signo contrario
-              if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.comisionPorc)) {
-                  p.comision = (p.primaBruta * p.comisionPorc / 100) * -1;
-              }
-
-              // impuesto%
-              if (!lodash.isFinite(p.impuestoPorc) && p.primaBruta && lodash.isFinite(p.impuesto)) {
-                  p.impuestoPorc = Math.abs(p.impuesto / p.primaBruta * 100);
-              }
-
-              // impuesto
-              if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.impuestoPorc)) {
-                  p.impuesto = (p.primaBruta * p.impuestoPorc / 100) * -1;
-              }
-
-              // corretaje%
-              if (!lodash.isFinite(p.corretajePorc) && p.primaBruta && lodash.isFinite(p.corretaje)) {
-                  p.corretajePorc = Math.abs(p.corretaje / p.primaBruta * 100);
-              }
-
-              // corretaje
-              if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.corretajePorc) && !p.nosotros) {
-                  p.corretaje = (p.primaBruta * p.corretajePorc / 100) * -1;
-              }
-
-
-              // prima neta
-              // como los 'costos' vienen ya con signo contrario, al sumar quitamos el costo al monto
-              if (lodash.isFinite(p.primaBruta)) {
-                  p.primaNeta0 = p.primaBruta;
-
-                  if (p.comision) {
-                      p.primaNeta0 += p.comision;
-                  }
-
-                  if (p.impuesto) {
-                      p.primaNeta0 += p.impuesto;
-                  }
-
-                  if (p.corretaje) {
-                      p.primaNeta0 += p.corretaje;
-                  }
-              }
-
-              // impuestoSobrePN%
-              if (!lodash.isFinite(p.impuestoSobrePNPorc) && p.primaNeta0 && lodash.isFinite(p.impuestoSobrePN)) {
-                  p.impuestoSobrePNPorc = Math.abs(p.impuestoSobrePN / p.primaNeta0 * 100);
-              }
-
-              // impuestoSobrePN
-              if (lodash.isFinite(p.primaNeta0) && lodash.isFinite(p.impuestoSobrePNPorc)) {
-                  p.impuestoSobrePN = (p.primaNeta0 * p.impuestoSobrePNPorc / 100) * -1;
-              }
-
-              // prima neta despues de impuesto/pn
-              if (lodash.isFinite(p.primaNeta0)) {
-                  p.primaNeta = p.primaNeta0;
-
-                  if (p.impuestoSobrePN)
-                    p.primaNeta += p.impuestoSobrePN;
-              }
-
-              // finalmente, el usuario puede indicar la prima neta más no la prima bruta
-              if (lodash.isFinite(p.primaNeta) && !lodash.isFinite(p.primaNeta0)) {
-                  p.primaNeta0 = p.primaNeta;
-
-                  // el impuesto viene con signo contrario; al restar, agregamos el monto a la pn
-                  if (p.impuestoSobrePN) {
-                      p.primaNeta0 -= p.impuestoSobrePN;
-                  }
-              }
-
-              if (lodash.isFinite(p.primaNeta0) && !lodash.isFinite(p.primaBruta)) {
-                  p.primaBruta = p.primaNeta0;
-
-                  // cómo los 'costos' ya vienen con signo diferente a la prima, al restar, agregamos el monto a la pb
-                  if (p.comision) {
-                      p.primaBruta -= p.comision;
-                  }
-
-                  if (p.impuesto) {
-                      p.primaBruta -= p.impuesto;
-                  }
-
-                  if (p.corretaje) {
-                      p.primaBruta -= p.corretaje;
-                  }
-              }
-          })
-
-          // nótese lo que hacemos para 'refrescar' el grid (solo hace falta, aparentemente, para los totales ...
-
-          //$scope.gridApi.core.refresh();
-          $scope.primas_ui_gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
-
-          if (!$scope.riesgo.docState)
-              $scope.riesgo.docState = 2;
-      }
-
-      $scope.construirCuotasMovimiento = function () {
+                };
+            });
+        }, 
+
+        // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
+        rowIdentity: function (row) {
+            return row._id;
+        },
+
+        getRowIdentity: function (row) {
+            return row._id;
+        }
+    }
+
+    $scope.coberturas_ui_grid.columnDefs = [
+        {
+            name: 'cobertura',
+            field: 'cobertura',
+            displayName: 'Cobertura',
+            width: 180,
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: '_id',
+            editDropdownValueLabel: 'descripcion',
+            editDropdownOptionsArray: lodash.sortBy($scope.coberturas, function(item) { return item.descripcion; }),
+            cellFilter: 'mapDropdown:row.grid.appScope.coberturas:"_id":"descripcion"',
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'moneda',
+            field: 'moneda',
+            displayName: 'Mon',
+            width: 40,
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: '_id',
+            editDropdownValueLabel: 'simbolo',
+            editDropdownOptionsArray: lodash.sortBy($scope.monedas, function(item) { return item.simbolo; }),
+            cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"simbolo"',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'valorARiesgo',
+            field: 'valorARiesgo',
+            displayName: 'Valor a riesgo',
+            cellFilter: 'currencyFilterAndNull',
+            width: 140,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'sumaAsegurada',
+            field: 'sumaAsegurada',
+            displayName: 'Suma asegurada',
+            cellFilter: 'currencyFilterAndNull',
+            width: 140,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'tasa',
+            field: 'tasa',
+            displayName: 'Tasa',
+            cellFilter: 'number8decimals',
+            width: 100,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'prima',
+            field: 'prima',
+            displayName: 'Prima',
+            cellFilter: 'currencyFilterAndNull',
+            width: 140,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        }
+    ]
+
+
+    $scope.agregarCobertura = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($modal, "<em>Riesgos</em>",
+                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                                "Debe seleccionar un movimiento antes de intentar agregar una cobertura.",
+                                false).then();
+
+            return;
+        };
+
+        var cobertura = {
+            _id: new Mongo.ObjectID()._str,
+            moneda: $scope.riesgo.moneda
+        };
+
+        if (!movimientoSeleccionado.coberturas)
+            movimientoSeleccionado.coberturas = [];
+
+        movimientoSeleccionado.coberturas.push(cobertura);
+
+        if (!$scope.riesgo.docState)
+            $scope.riesgo.docState = 2;
+    }
+
+    $scope.eliminarCobertura = function () {
+        //debugger;
+        // cada vez que el usuario selecciona un row, lo guardamos ...
+        if (movimientoSeleccionado && movimientoSeleccionado.coberturas && coberturaSeleccionada) {
+            lodash.remove(movimientoSeleccionado.coberturas, function (cobertura: any) { return cobertura._id === coberturaSeleccionada._id; });
+
+            if (!$scope.riesgo.docState)
+                $scope.riesgo.docState = 2;
+        };
+    }
+
+    $scope.coberturasCalcular = function() {
+
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado))
+            return;
+
+        // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero.
+        // Si solo usamos "if (!var)" y la variable es 0, la condición será cierta ...
+
+        movimientoSeleccionado.coberturas.forEach(function(cobertura) {
+
+            if (lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.tasa))
+                cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 1000;
+
+            if (!lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.prima) && cobertura.tasa)
+                cobertura.valorARiesgo = cobertura.prima * 1000 * cobertura.tasa;
+
+            if (!lodash.isFinite(cobertura.tasa) && lodash.isFinite(cobertura.prima) && cobertura.valorARiesgo)
+                cobertura.tasa = cobertura.prima * 1000 / cobertura.valorARiesgo;
+
+            if (lodash.isFinite(cobertura.valorARiesgo) && !lodash.isFinite(cobertura.sumaAsegurada))
+                cobertura.sumaAsegurada = cobertura.valorARiesgo;
+        });
+    }
+
+    $scope.refrescarGridCoberturas = function() {
+        // para refrescar las listas que usan los Selects en el ui-grid
+        $scope.coberturas_ui_grid.columnDefs[0].editDropdownOptionsArray = lodash.sortBy($scope.coberturas, function(item) { return item.descripcion; });
+        $scope.coberturas_ui_grid.columnDefs[1].editDropdownOptionsArray = lodash.sortBy($scope.monedas, function(item) { return item.simbolo; });
+    }
+
+    // --------------------------------------------------------------------------------------------------
+    // para construir las coberturas para cada una de las compañías del movimiento
+    // --------------------------------------------------------------------------------------------------
+    $scope.construirCifrasCoberturasParaCompanias = function () {
+
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
+                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                                "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
+                                false).then();
+
+            return;
+        };
+
+        if (movimientoSeleccionado.coberturasCompanias && movimientoSeleccionado.coberturasCompanias.length > 0) {
+            DialogModal($modal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
+                                "Ya existen cifras de coberturas para el movimiento seleccionado.<br />" +
+                                "Si Ud. continúa y ejecuta esta función, estos registros <em>serán eliminados</em> antes de " +
+                                "determinar y agregar unos nuevos.<br /><br />" +
+                                "Aún así, desea continuar y eliminar los registros que ahora existen?",
+                true).then(
+                function() {
+                    construirCifrasCoberturasParaCompanias2();
+                    return;
+                },
+                function() {
+                    return;
+                });
+        return;
+        };
+
+        construirCifrasCoberturasParaCompanias2();
+    }
+
+
+    let construirCifrasCoberturasParaCompanias2 = function () {
+
+        movimientoSeleccionado.coberturasCompanias = [];
+
+        let coberturaCompania = {} as any;
+
+        movimientoSeleccionado.companias.forEach(function (compania) {
+            movimientoSeleccionado.coberturas.forEach(function (cobertura) {
+
+                coberturaCompania = {};
+
+                coberturaCompania._id = new Mongo.ObjectID()._str;
+                coberturaCompania.compania = compania.compania;
+                coberturaCompania.nosotros = compania.nosotros;
+                coberturaCompania.cobertura = cobertura.cobertura;
+                coberturaCompania.moneda = cobertura.moneda;
+
+                coberturaCompania.valorARiesgo = cobertura.valorARiesgo;
+                coberturaCompania.sumaAsegurada = cobertura.sumaAsegurada;
+                coberturaCompania.tasa = cobertura.tasa;
+                coberturaCompania.prima = cobertura.prima;
+                coberturaCompania.ordenPorc = compania.ordenPorc;
+                coberturaCompania.sumaReasegurada = cobertura.sumaAsegurada * compania.ordenPorc / 100;
+                coberturaCompania.primaBrutaAntesProrrata = cobertura.prima * compania.ordenPorc / 100;
+                coberturaCompania.primaBruta = coberturaCompania.primaBrutaAntesProrrata;
+
+                movimientoSeleccionado.coberturasCompanias.push(coberturaCompania);
+            });
+        });
+
+        // mostramos los items recién agregados en el grid ...
+        $scope.coberturasCompanias_ui_grid.data = movimientoSeleccionado.coberturasCompanias;
+
+        if (!$scope.riesgo.docState) { 
+        $scope.riesgo.docState = 2;
+        }
+    }
+
+    // --------------------------------------------------------------------------------------
+    // ui-grid de Coberturas por compañía
+    // --------------------------------------------------------------------------------------
+    var coberturaCompaniaSeleccionada = {} as any;
+
+    $scope.coberturasCompanias_ui_grid = {
+        enableSorting: false,
+        showColumnFooter: false,
+        enableCellEdit: false,
+        enableCellEditOnFocus: true,
+        enableRowSelection: true,
+        enableRowHeaderSelection: true,
+        multiSelect: false,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        rowHeight: 25,
+        onRegisterApi: function (gridApi) {
+
+            // guardamos el row que el usuario seleccione
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                //debugger;
+                coberturaCompaniaSeleccionada = {};
+
+                if (row.isSelected)
+                    coberturaCompaniaSeleccionada = row.entity;
+                else
+                    return;
+            });
+
+            // marcamos el contrato como actualizado cuando el usuario edita un valor
+            gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
+                if (newValue != oldValue) {
+                    if (!$scope.riesgo.docState) { 
+                    $scope.riesgo.docState = 2;
+                    } 
+                }
+            })
+        }, 
+
+        // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
+        rowIdentity: function (row) {
+            return row._id;
+        },
+        getRowIdentity: function (row) {
+            return row._id;
+        }
+    }
+
+    $scope.coberturasCompanias_ui_grid.columnDefs = [
+        {
+            name: 'compania',
+            field: 'compania',
+            displayName: 'Compañía',
+            width: 80,
+            cellFilter: 'companiaAbreviaturaFilter',
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: false,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'cobertura',
+            field: 'cobertura',
+            displayName: 'Cobertura',
+            width: 80,
+            cellFilter: 'coberturaAbreviaturaFilter',
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: false,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'moneda',
+            field: 'moneda',
+            displayName: 'Mon',
+            width: 40,
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: '_id',
+            editDropdownValueLabel: 'simbolo',
+            editDropdownOptionsArray: lodash.sortBy($scope.monedas, function(item) { return item.simbolo; }),
+            cellFilter: 'mapDropdown:row.grid.appScope.monedas:"_id":"simbolo"',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'valorARiesgo',
+            field: 'valorARiesgo',
+            displayName: 'Valor a riesgo',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'sumaAsegurada',
+            field: 'sumaAsegurada',
+            displayName: 'Suma asegurada',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'tasa',
+            field: 'tasa',
+            displayName: 'Tasa',
+            cellFilter: 'number8decimals',
+            width: 80,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'prima',
+            field: 'prima',
+            displayName: 'Prima',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'ordenPorc',
+            field: 'ordenPorc',
+            displayName: 'Orden',
+            cellFilter: 'number6decimals',
+            width: 70,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'sumaReasegurada',
+            field: 'sumaReasegurada',
+            displayName: 'Suma reasegurada',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'primaBrutaAntesProrrata',
+            field: 'primaBrutaAntesProrrata',
+            displayName: 'PB antes prorrata',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'primaBruta',
+            field: 'primaBruta',
+            displayName: 'Prima bruta',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        }
+    ]
+
+
+    $scope.eliminarCoberturaCompania = function () {
+        // cada vez que el usuario selecciona un row, lo guardamos ...
+        if (movimientoSeleccionado && movimientoSeleccionado.coberturasCompanias && coberturaCompaniaSeleccionada) {
+            lodash.remove(movimientoSeleccionado.coberturasCompanias, function (coberturaCompania: any) { return coberturaCompania._id === coberturaCompaniaSeleccionada._id; });
+
+            if (!$scope.riesgo.docState)
+                $scope.riesgo.docState = 2;
+        }
+    }
+
+    $scope.refrescarGridCoberturasCompanias = function() {
+        // para refrescar las listas que usan los Selects en el ui-grid
+        $scope.coberturasCompanias_ui_grid.columnDefs[2].editDropdownOptionsArray = lodash.sortBy($scope.monedas, function(item) { return item.simbolo; });
+    }
+
+    $scope.calcularCoberturasCompanias = function () {
+
+        // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero. Si solo usamos
+        // if (!var) y la variable es 0, la condición será cierta ...
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado) || !movimientoSeleccionado.coberturasCompanias ||
+            !movimientoSeleccionado.coberturasCompanias.length) {
+                return;
+            }
+
+
+        movimientoSeleccionado.coberturasCompanias.forEach(function (cobertura) {
+
+            // prima (siempre)
+            if (lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.tasa))
+                cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 1000;
+
+            // tasa (solo si es blanco)
+            if (!lodash.isFinite(cobertura.tasa) && cobertura.valorARiesgo && lodash.isFinite(cobertura.prima))
+                cobertura.tasa = cobertura.prima / cobertura.valorARiesgo * 1000;
+
+            // suma reasegurada (siempre)
+            if (lodash.isFinite(cobertura.sumaAsegurada) && lodash.isFinite(cobertura.ordenPorc))
+                cobertura.sumaReasegurada = cobertura.sumaAsegurada * cobertura.ordenPorc / 100;
+
+            // prima bruta (siempre)
+            if (lodash.isFinite(cobertura.prima) && lodash.isFinite(cobertura.ordenPorc)) {
+                cobertura.primaBrutaAntesProrrata = cobertura.prima * cobertura.ordenPorc / 100;
+                cobertura.primaBruta = cobertura.primaBrutaAntesProrrata;
+            }
+
+
+            // suma asegurada (solo si es blanco)
+            if (!lodash.isFinite(cobertura.sumaAsegurada) && lodash.isFinite(cobertura.sumaReasegurada) && cobertura.ordenPorc)
+                cobertura.sumaAsegurada = cobertura.sumaReasegurada / cobertura.ordenPorc * 100;
+
+            // orden (solo si es blanco)
+            if (!lodash.isFinite(cobertura.ordenPorc) && lodash.isFinite(cobertura.sumaReasegurada) && cobertura.sumaAsegurada)
+                cobertura.ordenPorc = cobertura.sumaReasegurada * 100 / cobertura.sumaAsegurada;
+
+            // prima (solo si es blanco)
+            if (!lodash.isFinite(cobertura.prima) && lodash.isFinite(cobertura.primaBrutaAntesProrrata) && cobertura.ordenPorc)
+                cobertura.prima = cobertura.primaBrutaAntesProrrata * 100 / cobertura.ordenPorc;
+        });
+
+        if (!$scope.riesgo.docState) {
+            $scope.riesgo.docState = 2;
+        }
+    }
+
+    $scope.construirPrimasParaCompanias = function () {
+
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
@@ -2404,103 +1945,586 @@ angular.module("scrwebM").controller("RiesgoController",
             return;
         }
 
-        if (!movimientoSeleccionado.primas || !movimientoSeleccionado.primas.length) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
-                                "El movimiento seleccionado no tiene registros de prima registrados; debe tenerlos.<br />" +
-                                "Las cuotas se construyen en base a los registros de prima del movimiento. " +
-                                "El movimiento debe tener registros de prima registrados.",
+        if (movimientoSeleccionado.primas && movimientoSeleccionado.primas.length > 0) {
+            DialogModal($modal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
+                                "Ya existen registros de prima para cada compañía en el movimiento seleccionado.<br />" +
+                                "Si Ud. continúa y ejecuta esta función, estos registros <em>serán eliminados</em> antes de " +
+                                "ser construidos y agregados nuevamente.<br /><br />" +
+                                "Aún así, desea continuar y eliminar (sustituir) los registros que ahora existen?",
+                true).then(
+                function () {
+                    construirPrimasParaCompanias();
+                    return;
+                },
+                function () {
+                    return;
+                })
+            return;
+        }
+
+        construirPrimasParaCompanias();
+    }
+
+
+    function construirPrimasParaCompanias() {
+
+        movimientoSeleccionado.primas = [];
+
+        // usamos lodash para agrupar las primas brutas para cada compañía
+        var primasBrutasCompanias = lodash.groupBy(movimientoSeleccionado.coberturasCompanias, function (c) { return c.compania; });
+
+        let primaItem = {} as any;
+
+        for (var compania in primasBrutasCompanias) {
+
+            // arriba agrupamos por compañía; ahora agrupamos por moneda
+            var primasBrutasMonedas = lodash.groupBy(primasBrutasCompanias[compania], function (c: any) { return c.moneda; });
+
+            for(var moneda in primasBrutasMonedas) {
+
+                primaItem = {};
+
+                primaItem._id = new Mongo.ObjectID()._str;
+
+                primaItem.compania = compania;
+                primaItem.moneda = moneda;
+
+                primaItem.primaBruta = lodash.sumBy(primasBrutasMonedas[moneda], 'primaBruta');
+
+                // leemos la compañía en el movimiento, para obtener sus porcentajes (defaults)
+
+                var companiaItem = lodash.find(movimientoSeleccionado.companias, function (c) { return c.compania === compania; });
+
+                primaItem.nosotros = companiaItem.nosotros;
+
+                primaItem.comisionPorc = companiaItem.comisionPorc;
+                primaItem.impuestoPorc = companiaItem.impuestoPorc;
+                primaItem.corretajePorc = companiaItem.corretajePorc;
+                primaItem.impuestoSobrePNPorc = companiaItem.impuestoSobrePNPorc;
+
+                // nótese como, inicialmente, simplemente calculamos la prima bruta aplicando el factor prorrata;
+                // luego habrá una función para calcular esta prorrata, usando, cuando el usuario lo indique, la prima
+                // anterior.
+
+                // además, si la compañía no es nosotros, multiplicamos por -1
+
+                if (!primaItem.nosotros)
+                    primaItem.primaBruta *= -1;
+
+                movimientoSeleccionado.primas.push(primaItem);
+            };
+        };
+
+        $scope.primas_ui_grid.data = movimientoSeleccionado.primas;
+
+        if (!$scope.riesgo.docState)
+            $scope.riesgo.docState = 2;
+    }
+
+    // para abrir un modal que permite al usuario calcular las primas prorrateadas del movimiento
+    // (casi siempre en base a las primas del movimiento anterior y las del actual)
+
+    $scope.prorratearPrimasBrutas = function() {
+
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos - Prorratear primas brutas</em>",
+                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                                "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
 
             return;
+        };
+
+        var modalInstance = $modal.open({
+            templateUrl: 'client/riesgos/prorratearPrimasModal.html',
+            controller: 'Riesgos_ProrratearPrimasController',
+            size: 'lg',
+            resolve: {
+                riesgo: function () {
+                    return $scope.riesgo;
+                },
+                movimiento: function () {
+                    return movimientoSeleccionado;
+                }
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                return true;
+            });
+    }
+
+    // --------------------------------------------------------------------------------------
+    // ui-grid de primas por compañía
+    // --------------------------------------------------------------------------------------
+    var primaSeleccionada = {};
+
+    $scope.primas_ui_grid = {
+        enableSorting: false,
+        showColumnFooter: true,
+        enableCellEdit: false,
+        enableCellEditOnFocus: true,
+        enableRowSelection: true,
+        enableRowHeaderSelection: true,
+        multiSelect: false,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        rowHeight: 25,
+        onRegisterApi: function (gridApi) {
+
+            $scope.primas_ui_gridApi = gridApi;
+
+            // guardamos el row que el usuario seleccione
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                primaSeleccionada = {};
+
+                if (row.isSelected)
+                    primaSeleccionada = row.entity;
+                else
+                    return;
+            });
+
+            // marcamos el contrato como actualizado cuando el usuario edita un valor
+            gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
+                if (newValue != oldValue) {
+                    if (!$scope.riesgo.docState)
+                        $scope.riesgo.docState = 2;
+                };
+            });
+        }, 
+        // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
+        rowIdentity: function (row) {
+            return row._id;
+        },
+
+        getRowIdentity: function (row) {
+            return row._id;
         }
+    }
 
-        // ------------------------------------------------------------------------------------------------------------------------
-        // determinamos si las cuotas han recibido cobros; de ser así, impedimos editarlas ... 
-        // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
-        // usuario está tratando en ese momento ...  
-        // ------------------------------------------------------------------------------------------------------------------------
-        let cuotasMovimientoSeleccionado = lodash.filter($scope.cuotas, (c) => { 
-            return c.source.subEntityID === movimientoSeleccionado._id; }
-        )
+    $scope.primas_ui_grid.columnDefs = [
+        {
+            name: 'compania',
+            field: 'compania',
+            displayName: 'Compañía',
+            width: 80,
+            cellFilter: 'companiaAbreviaturaFilter',
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: false,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'moneda',
+            field: 'moneda',
+            displayName: 'Mon',
+            width: 40,
+            cellFilter: 'monedaSimboloFilter',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableColumnMenu: false,
+            enableCellEdit: false,
+            pinnedLeft: true,
+            type: 'string'
+        },
+        {
+            name: 'primaBruta',
+            field: 'primaBruta',
+            displayName: 'Prima bruta',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'comisionPorc',
+            field: 'comisionPorc',
+            displayName: 'Com(%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 70,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'comision',
+            field: 'comision',
+            displayName: 'Comisión',
+            cellFilter: 'currencyFilterAndNull',
+            width: 100,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'impuestoPorc',
+            field: 'impuestoPorc',
+            displayName: 'Imp(%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 70,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'impuesto',
+            field: 'impuesto',
+            displayName: 'Impuesto',
+            cellFilter: 'currencyFilterAndNull',
+            width: 100,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'corretajePorc',
+            field: 'corretajePorc',
+            displayName: 'Corr(%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 70,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'corretaje',
+            field: 'corretaje',
+            displayName: 'Corretaje',
+            cellFilter: 'currencyFilterAndNull',
+            width: 100,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'primaNeta0',
+            field: 'primaNeta0',
+            displayName: 'Prima neta',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'impuestoSobrePNPorc',
+            field: 'impuestoSobrePNPorc',
+            displayName: 'Imp/pn(%)',
+            cellFilter: 'currencyFilterAndNull',
+            width: 70,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'impuestoSobrePN',
+            field: 'impuestoSobrePN',
+            displayName: 'Imp/pn',
+            cellFilter: 'currencyFilterAndNull',
+            width: 100,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        },
+        {
+            name: 'primaNeta',
+            field: 'primaNeta',
+            displayName: 'Prima neta',
+            cellFilter: 'currencyFilterAndNull',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+            type: 'number'
+        }
+    ]
 
-        let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSeleccionado); 
-        if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
-            DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
+    $scope.calcularPrimas = function () {
+
+        // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero. Si solo usamos
+        // if (!var) y el valor es 0, la condición será cierta ...
+        if (!movimientoSeleccionado || !movimientoSeleccionado.primas || !movimientoSeleccionado.primas.length) {
             return;
         }
 
-        var cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { return c.source.subEntityID === movimientoSeleccionado._id; }).size();
 
-        if (cantidadCuotasMovimientoSeleccionado) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
-                                "Ya existen cuotas registradas para el movimiento seleccionado.<br />" +
-                                "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden al movimiento seleccionado <em>serán eliminadas</em> antes de " +
-                                "construirlas y agregarlas nuevamente.<br /><br />" +
-                                "Aún así, desea continuar y eliminar (sustituir) las cuotas que ahora existen?",
-                true).then(
-                function () {
-                    construirCuotasMovimiento();
-                    return;
-                },
-                function () {
-                    return;
-                });
+        movimientoSeleccionado.primas.forEach(function (p) {
+
+            // comision%
+            if (!lodash.isFinite(p.comisionPorc) && p.primaBruta && lodash.isFinite(p.comision)) {
+                p.comisionPorc = Math.abs(p.comision / p.primaBruta * 100);
+            }
+
+            // comision
+            // nótese como, en adelante, los costos son calculados con signo contrario
+            if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.comisionPorc)) {
+                p.comision = (p.primaBruta * p.comisionPorc / 100) * -1;
+            }
+
+            // impuesto%
+            if (!lodash.isFinite(p.impuestoPorc) && p.primaBruta && lodash.isFinite(p.impuesto)) {
+                p.impuestoPorc = Math.abs(p.impuesto / p.primaBruta * 100);
+            }
+
+            // impuesto
+            if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.impuestoPorc)) {
+                p.impuesto = (p.primaBruta * p.impuestoPorc / 100) * -1;
+            }
+
+            // corretaje%
+            if (!lodash.isFinite(p.corretajePorc) && p.primaBruta && lodash.isFinite(p.corretaje)) {
+                p.corretajePorc = Math.abs(p.corretaje / p.primaBruta * 100);
+            }
+
+            // corretaje
+            if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.corretajePorc) && !p.nosotros) {
+                p.corretaje = (p.primaBruta * p.corretajePorc / 100) * -1;
+            }
+
+
+            // prima neta
+            // como los 'costos' vienen ya con signo contrario, al sumar quitamos el costo al monto
+            if (lodash.isFinite(p.primaBruta)) {
+                p.primaNeta0 = p.primaBruta;
+
+                if (p.comision) {
+                    p.primaNeta0 += p.comision;
+                }
+
+                if (p.impuesto) {
+                    p.primaNeta0 += p.impuesto;
+                }
+
+                if (p.corretaje) {
+                    p.primaNeta0 += p.corretaje;
+                }
+            }
+
+            // impuestoSobrePN%
+            if (!lodash.isFinite(p.impuestoSobrePNPorc) && p.primaNeta0 && lodash.isFinite(p.impuestoSobrePN)) {
+                p.impuestoSobrePNPorc = Math.abs(p.impuestoSobrePN / p.primaNeta0 * 100);
+            }
+
+            // impuestoSobrePN
+            if (lodash.isFinite(p.primaNeta0) && lodash.isFinite(p.impuestoSobrePNPorc)) {
+                p.impuestoSobrePN = (p.primaNeta0 * p.impuestoSobrePNPorc / 100) * -1;
+            }
+
+            // prima neta despues de impuesto/pn
+            if (lodash.isFinite(p.primaNeta0)) {
+                p.primaNeta = p.primaNeta0;
+
+                if (p.impuestoSobrePN)
+                p.primaNeta += p.impuestoSobrePN;
+            }
+
+            // finalmente, el usuario puede indicar la prima neta más no la prima bruta
+            if (lodash.isFinite(p.primaNeta) && !lodash.isFinite(p.primaNeta0)) {
+                p.primaNeta0 = p.primaNeta;
+
+                // el impuesto viene con signo contrario; al restar, agregamos el monto a la pn
+                if (p.impuestoSobrePN) {
+                    p.primaNeta0 -= p.impuestoSobrePN;
+                }
+            }
+
+            if (lodash.isFinite(p.primaNeta0) && !lodash.isFinite(p.primaBruta)) {
+                p.primaBruta = p.primaNeta0;
+
+                // cómo los 'costos' ya vienen con signo diferente a la prima, al restar, agregamos el monto a la pb
+                if (p.comision) {
+                    p.primaBruta -= p.comision;
+                }
+
+                if (p.impuesto) {
+                    p.primaBruta -= p.impuesto;
+                }
+
+                if (p.corretaje) {
+                    p.primaBruta -= p.corretaje;
+                }
+            }
+        })
+
+        // nótese lo que hacemos para 'refrescar' el grid (solo hace falta, aparentemente, para los totales ...
+
+        //$scope.gridApi.core.refresh();
+        $scope.primas_ui_gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+
+        if (!$scope.riesgo.docState)
+            $scope.riesgo.docState = 2;
+    }
+
+    $scope.construirCuotasMovimiento = function () {
+
+    if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+        DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+                            "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                            "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
+                            false).then();
+
+        return;
+    }
+
+    if (!movimientoSeleccionado.primas || !movimientoSeleccionado.primas.length) {
+        DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+                            "El movimiento seleccionado no tiene registros de prima registrados; debe tenerlos.<br />" +
+                            "Las cuotas se construyen en base a los registros de prima del movimiento. " +
+                            "El movimiento debe tener registros de prima registrados.",
+                            false).then();
+
+        return;
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------
+    // determinamos si las cuotas han recibido cobros; de ser así, impedimos editarlas ... 
+    // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
+    // usuario está tratando en ese momento ...  
+    // ------------------------------------------------------------------------------------------------------------------------
+    let cuotasMovimientoSeleccionado = lodash.filter($scope.cuotas, (c) => { 
+        return c.source.subEntityID === movimientoSeleccionado._id; }
+    )
+
+    let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSeleccionado); 
+    if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
+        DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
+        return;
+    }
+
+    var cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { return c.source.subEntityID === movimientoSeleccionado._id; }).size();
+
+    if (cantidadCuotasMovimientoSeleccionado) {
+        DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+                            "Ya existen cuotas registradas para el movimiento seleccionado.<br />" +
+                            "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden al movimiento seleccionado <em>serán eliminadas</em> antes de " +
+                            "construirlas y agregarlas nuevamente.<br /><br />" +
+                            "Aún así, desea continuar y eliminar (sustituir) las cuotas que ahora existen?",
+            true).then(
+            function () {
+                construirCuotasMovimiento();
+                return;
+            },
+            function () {
+                return;
+            });
+        return;
+    }
+
+    construirCuotasMovimiento();
+    }
+
+    // si el usuario selecciona una moneda, intentamos mostrar solo items para la misma en el grid de primas ...
+    $scope.gridPrimas_SeleccionarPorMoneda = function(monedaSeleccionada) {
+
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado))
             return;
-        }
 
-        construirCuotasMovimiento();
-      }
+        if (!movimientoSeleccionado.primas || lodash.isEmpty(movimientoSeleccionado.primas))
+            return;
 
-      // si el usuario selecciona una moneda, intentamos mostrar solo items para la misma en el grid de primas ...
-      $scope.gridPrimas_SeleccionarPorMoneda = function(monedaSeleccionada) {
+        if (monedaSeleccionada)
+            $scope.primas_ui_grid.data = lodash.filter(movimientoSeleccionado.primas, function(item) { return item.moneda === monedaSeleccionada; });
+        else
+            $scope.primas_ui_grid.data = movimientoSeleccionado.primas;
+    }
 
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado))
-              return;
+    function construirCuotasMovimiento() {
 
-          if (!movimientoSeleccionado.primas || lodash.isEmpty(movimientoSeleccionado.primas))
-              return;
-
-          if (monedaSeleccionada)
-                $scope.primas_ui_grid.data = lodash.filter(movimientoSeleccionado.primas, function(item) { return item.moneda === monedaSeleccionada; });
-          else
-                $scope.primas_ui_grid.data = movimientoSeleccionado.primas;
-      }
-
-      function construirCuotasMovimiento() {
-
-          var modalInstance = $modal.open({
-              templateUrl: 'client/generales/construirCuotas.html',
-              controller: 'Riesgos_ConstruirCuotasController',
-              size: 'md',
-              resolve: {
-                  riesgo: function () {
-                      return $scope.riesgo;
-                  },
-                  movimiento: function () {
-                      return movimientoSeleccionado;
-                  },
-                  cuotas: function () {
-                      return $scope.cuotas;
-                  }
-              }
-          }).result.then(
-                function (resolve) {
-                    return true;
+        var modalInstance = $modal.open({
+            templateUrl: 'client/generales/construirCuotas.html',
+            controller: 'Riesgos_ConstruirCuotasController',
+            size: 'md',
+            resolve: {
+                riesgo: function () {
+                    return $scope.riesgo;
                 },
-                function (cancel) {
+                movimiento: function () {
+                    return movimientoSeleccionado;
+                },
+                cuotas: function () {
+                    return $scope.cuotas;
+                }
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                // en el controller que usa este modal se contruyen las cuotas; regresamos cuando en usuario hace click en Cancel para cerrar
+                // el diálogo. Si existen cuotas en el $scope, las mostramos en el grid que corresponde ...
 
-                    // en el controller que usa este modal se contruyen las cuotas; regresamos cuando en usuario hace click en Cancel para cerrar
-                    // el diálogo. Si existen cuotas en el $scope, las mostramos en el grid que corresponde ...
+                if ($scope.cuotas)
+                    $scope.cuotas_ui_grid.data = $scope.cuotas;
 
-                    // debugger;
+                return true;
+            });
 
-                    if ($scope.cuotas)
-                        $scope.cuotas_ui_grid.data = $scope.cuotas;
-
-                    return true;
-                });
-
-      };
+    }
 
 
     // ---------------------------------------------------------------------
@@ -2774,7 +2798,6 @@ angular.module("scrwebM").controller("RiesgoController",
             name: '',
             field: '_id',
             displayName: '',
-            cellTemplate: '<div class="ui-grid-cell-contents">ver</div>',
             cellTemplate: '<button class="btn btn-sm btn-link" type="button" ng-click="grid.appScope.mostrarPagosEnCuota(this.row.entity)">ver</button>',
             width: 50,
             headerCellClass: 'ui-grid-centerCell',
@@ -2808,7 +2831,7 @@ angular.module("scrwebM").controller("RiesgoController",
             $scope.cuotas = [];
         }
             
-        var cuota = {};
+        let cuota = {} as any;
 
         cuota._id = new Mongo.ObjectID()._str;
 
@@ -2836,7 +2859,7 @@ angular.module("scrwebM").controller("RiesgoController",
     $scope.eliminarCuota = function (cuota) {
 
         if (cuota.docState === 1) { 
-            lodash.remove($scope.cuotas, (c) => { return c._id === cuota._id; }); 
+            lodash.remove($scope.cuotas, (c: any) => { return c._id === cuota._id; }); 
         } else { 
             cuota.docState = 3;
         }
@@ -2866,7 +2889,7 @@ angular.module("scrwebM").controller("RiesgoController",
             return;
         }
             
-        var cuota = lodash.cloneDeep(cuotaSeleccionada);
+        let cuota: any = lodash.cloneDeep(cuotaSeleccionada);
 
         cuota._id = new Mongo.ObjectID()._str;
         cuota.docState = 1; 
@@ -2891,7 +2914,7 @@ angular.module("scrwebM").controller("RiesgoController",
             return;
         }
 
-        let c = cuotaSeleccionada; 
+        let c: any = cuotaSeleccionada; 
 
         if (!c.fechaEmision) { 
             c.fechaEmision = new Date(); 
@@ -2958,14 +2981,15 @@ angular.module("scrwebM").controller("RiesgoController",
     $scope.mostrarPagosEnCuota = function (cuota) {
         // mostramos los pagos aplicados a la cuota, en un modal ...
 
-        // es una función que está en client/generales y que es llamada desde varios 'registros' de cuotas (fac, contratos, sntros, etc.)
+        // es una función que está en client/generales y que es llamada desde varios 'registros' (ui-grids) de cuotas 
+        // (fac, contratos, sntros, etc.)
         MostrarPagosEnCuotas($modal, cuota, $stateParams.origen);
     }
 
     // -------------------------------------------------------------------------
     // grid de productores
     // -------------------------------------------------------------------------
-    var productorSeleccionado = {};
+    let productorSeleccionado = {} as any;
 
     $scope.productores_ui_grid = {
         enableSorting: false,
@@ -3115,21 +3139,23 @@ angular.module("scrwebM").controller("RiesgoController",
             moneda: $scope.riesgo.moneda
         };
 
-        if (!movimientoSeleccionado.productores)
+        if (!movimientoSeleccionado.productores) { 
             movimientoSeleccionado.productores = [];
-
+        }
+            
         movimientoSeleccionado.productores.push(productor);
         $scope.productores_ui_grid.data = movimientoSeleccionado.productores;
 
-        if (!$scope.riesgo.docState)
+        if (!$scope.riesgo.docState) { 
             $scope.riesgo.docState = 2;
+        }    
     }
 
     $scope.eliminarProductor = function () {
         //debugger;
         // cada vez que el usuario selecciona un row, lo guardamos ...
         if (movimientoSeleccionado && movimientoSeleccionado.productores && productorSeleccionado) {
-            lodash.remove(movimientoSeleccionado.productores, function (productor) { return productor._id === productorSeleccionado._id; });
+            lodash.remove(movimientoSeleccionado.productores, function (productor: any) { return productor._id === productorSeleccionado._id; });
 
             if (!$scope.riesgo.docState) {
                 $scope.riesgo.docState = 2;
@@ -3257,7 +3283,7 @@ angular.module("scrwebM").controller("RiesgoController",
             return;
         }
 
-        var cantidadCuotasMovimientoSeleccionado = _($scope.cuotas).filter(function (c) { 
+        var cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { 
             return c.compania === productorSeleccionado.compania && c.source.subEntityID === movimientoSeleccionado._id; })
             .size();
 
@@ -3355,9 +3381,6 @@ angular.module("scrwebM").controller("RiesgoController",
       // -------------------------------------------------------------------------
       // para inicializar el item (en el $scope) cuando el usuario abre la página
       // -------------------------------------------------------------------------
-
-      let cuotasSubscriptionHandle = null;
-
       function inicializarItem() {
           if ($scope.id == "0") {
               // el id viene en '0' cuando el usuario hace un click en Nuevo ...

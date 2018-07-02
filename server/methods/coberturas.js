@@ -1,4 +1,5 @@
 ﻿
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 
 Meteor.methods(
 {

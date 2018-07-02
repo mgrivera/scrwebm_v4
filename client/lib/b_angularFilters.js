@@ -9,6 +9,9 @@ import { Ramos } from '/imports/collections/catalogos/ramos';
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
+import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 
 // ---------------------------------------------------------------------------------------
 // ui-grid: para formatear fields numéricos y dates

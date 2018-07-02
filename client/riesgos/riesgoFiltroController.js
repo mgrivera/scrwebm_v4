@@ -6,6 +6,9 @@ import { Ramos } from '/imports/collections/catalogos/ramos';
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
 angular.module("scrwebM").controller("RiesgosFiltroController",
 ['$scope', '$state', '$stateParams', '$meteor', function ($scope, $state, $stateParams, $meteor) {

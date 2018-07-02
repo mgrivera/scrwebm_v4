@@ -1,4 +1,6 @@
 
+
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
 import { Riesgos } from '/imports/collections/principales/riesgos';   
 
 Indoles.before.remove(function (userId, doc) {

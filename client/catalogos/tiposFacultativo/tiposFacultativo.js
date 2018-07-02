@@ -1,5 +1,5 @@
 
-
+import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
 
 angular.module("scrwebM").controller("TiposFacultativoController", ['$scope', '$stateParams', '$meteor',
   function ($scope, $stateParams, $meteor) {

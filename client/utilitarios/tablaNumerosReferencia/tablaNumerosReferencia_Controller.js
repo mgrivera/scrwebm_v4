@@ -3,6 +3,7 @@
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Referencias } from '/imports/collections/principales/referencias'; 
 
 angular.module("scrwebM").controller("Utilitarios_TablaNumerosReferencia_Controller",
  ['$scope', '$stateParams', '$meteor',

@@ -1,5 +1,6 @@
 ﻿
 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
 angular.module("scrwebM").controller("IndolesController",
  ['$scope', '$stateParams', '$meteor',

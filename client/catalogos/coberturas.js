@@ -1,5 +1,6 @@
 ﻿
 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 
 angular.module("scrwebM").controller("CoberturasController",
  ['$scope', '$stateParams', '$meteor',

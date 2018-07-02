@@ -1,5 +1,7 @@
 ﻿
 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+
 Meteor.methods(
 {
     suscriptoresSave: function (suscriptores) {

@@ -8,6 +8,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
 

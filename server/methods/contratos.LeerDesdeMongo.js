@@ -8,6 +8,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 Meteor.methods(
 {

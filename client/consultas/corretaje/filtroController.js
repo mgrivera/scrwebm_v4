@@ -7,6 +7,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { Consulta_Corretaje } from '/imports/collections/consultas/consulta_corretaje'; 
 

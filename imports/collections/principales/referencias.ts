@@ -13,5 +13,5 @@ let mySimpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true, },
 })
 
-Referencias = new Mongo.Collection("referencias");
+export const Referencias: any = new Mongo.Collection("referencias");
 Referencias.attachSchema(mySimpleSchema);

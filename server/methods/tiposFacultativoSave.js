@@ -1,4 +1,5 @@
 
+import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
 
 Meteor.methods(
 {

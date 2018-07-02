@@ -10,6 +10,7 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
 

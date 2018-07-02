@@ -1,5 +1,7 @@
 ﻿
 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
+
 Meteor.methods(
 {
     indolesSave: function (indoles) {

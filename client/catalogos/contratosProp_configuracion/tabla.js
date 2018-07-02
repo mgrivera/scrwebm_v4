@@ -6,6 +6,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalogos/ContratosProp_Configuracion';
 import { ContProp_tablaConf } from '/client/lib/forerunnerDB'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
@@ -129,6 +130,7 @@ angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Controll
                 displayName: 'Compañía',
                 width: 100,
                 cellFilter: 'companiaAbreviaturaFilter',
+                sortCellFiltered: true, 
                 headerCellClass: 'ui-grid-leftCell',
                 cellClass: 'ui-grid-leftCell',
                 enableColumnMenu: false,
@@ -157,6 +159,7 @@ angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Controll
                 displayName: 'Mon',
                 width: 60,
                 cellFilter: 'monedaSimboloFilter',
+                sortCellFiltered: true, 
                 headerCellClass: 'ui-grid-centerCell',
                 cellClass: 'ui-grid-centerCell',
                 enableColumnMenu: false,
@@ -171,6 +174,7 @@ angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Controll
                 displayName: 'Ramo',
                 width: 100,
                 cellFilter: 'ramoAbreviaturaFilter',
+                sortCellFiltered: true, 
                 headerCellClass: 'ui-grid-leftCell',
                 cellClass: 'ui-grid-leftCell',
                 enableColumnMenu: false,
@@ -184,6 +188,7 @@ angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Controll
                 field: 'tipoContrato',
                 displayName: 'Tipo',
                 cellFilter: 'tipoContratoAbreviaturaFilter',
+                sortCellFiltered: true, 
                 width: 100,
                 headerCellClass: 'ui-grid-leftCell',
                 cellClass: 'ui-grid-leftCell',

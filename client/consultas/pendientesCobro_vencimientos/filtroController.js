@@ -6,6 +6,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 angular.module("scrwebM").controller("ConsultasMontosPendientesCobroVencimientos_Filtro_Controller",
 ['$scope', '$state', '$stateParams', '$meteor',

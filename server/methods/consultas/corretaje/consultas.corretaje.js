@@ -11,6 +11,7 @@ import { Asegurados } from '/imports/collections/catalogos/asegurados';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { Consulta_Corretaje } from '/imports/collections/consultas/consulta_corretaje'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 Meteor.methods(
 {

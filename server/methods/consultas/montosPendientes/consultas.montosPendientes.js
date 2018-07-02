@@ -6,6 +6,7 @@ import { Contratos } from '/imports/collections/principales/contratos';
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 import { Consulta_MontosPendientes } from '/imports/collections/consultas/consulta_MontosPendientes'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { Monedas } from "/imports/collections/catalogos/monedas"; 
 import { Companias } from "/imports/collections/catalogos/companias"; 

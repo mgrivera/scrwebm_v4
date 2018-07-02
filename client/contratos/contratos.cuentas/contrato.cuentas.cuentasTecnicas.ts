@@ -2,6 +2,7 @@
 
 import * as moment from 'moment';
 import * as lodash from 'lodash';
+import * as numeral from 'numeral'; 
 import * as angular from 'angular';
 
 import { Meteor } from 'meteor/meteor';
@@ -16,6 +17,7 @@ import { ContratosProp_Configuracion_Tablas } from '../../../imports/collections
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
+
 
 angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
@@ -34,6 +36,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true,
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
@@ -99,6 +102,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Mon',
             width: 60,
             cellFilter: 'monedaSimboloFilter',
+
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             enableColumnMenu: false,
@@ -113,6 +120,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Ramo',
             width: 100,
             cellFilter: 'ramoAbreviaturaFilter',
+            
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -126,6 +137,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Tipo',
             width: 100,
             cellFilter: 'tipoContratoAbreviaturaFilter',
+            
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -281,12 +296,13 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                 $scope.$parent.$parent.dataHasBeenEdited = true; 
 
                 $scope.$parent.alerts.length = 0;
+
+                let message = `Resumen de primas y siniestros.<br /><br />
+                                <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
+                                <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`; 
+                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
                 
-                DialogModal($modal, "<em>Contratos proporcionales</em>",
-                    `Resumen de primas y siniestros.<br /><br />
-                     <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
-                     <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`,
-                    false).then();
+                DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
             },
             (error) => {
                 $scope.alerts.length = 0;
@@ -306,6 +322,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true, 
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
@@ -369,6 +386,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Compañía',
             width: 100,
             cellFilter: 'companiaAbreviaturaFilter',
+
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -385,6 +406,11 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             cellFilter: 'boolFilter',
+
+            filter: {
+                condition: ui_grid_filterBy_nosotros, 
+            },
+
             enableColumnMenu: false,
             enableCellEdit: false,
             enableSorting: true,
@@ -397,6 +423,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Mon',
             width: 70,
             cellFilter: 'monedaSimboloFilter',
+            
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             enableColumnMenu: false,
@@ -411,6 +441,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Ramo',
             width: 100,
             cellFilter: 'ramoAbreviaturaFilter',
+            
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -424,6 +458,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Tipo',
             width: 100,
             cellFilter: 'tipoContratoAbreviaturaFilter',
+            
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -738,6 +776,25 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             type: 'number'
         },
         {
+            name: 'resultadoTecnico',
+            field: 'resultadoTecnico',
+            displayName: 'Res técnico',
+            cellFilter: 'currencyFilterAndNull',        
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+
+            type: 'number'
+        },
+        {
             name: 'delButton',
             displayName: '',
             cellClass: 'ui-grid-centerCell',
@@ -747,6 +804,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             width: 25
         },
     ]
+
 
     $scope.deleteItem_distribucionPrimasSiniestros = (entity) => {
 
@@ -914,6 +972,8 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             x.saldo += x.primaNeta ? x.primaNeta : 0;
             x.saldo += x.siniestros_suParte;
 
+            x.resultadoTecnico = x.saldo + (x.corretaje ? -x.corretaje : 0);         // el corretaje es, normalmente, de signo contrario al saldo 
+
             if (!x.docState) { 
                 x.docState = 2; 
             }
@@ -979,11 +1039,12 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                 siniestros: lodash.sumBy(saldosArray, 'siniestros'),
                 siniestros_suParte: lodash.sumBy(saldosArray, 'siniestros_suParte'),
                 saldo: lodash.sumBy(saldosArray, 'saldo'),
+                resultadoTecnico: lodash.sumBy(saldosArray, 'resultadoTecnico'),
                 docState: 1, 
             } as never;         // solo para que la instrucción que sigue compile en ts ... 
             
             saldosPorCompania_array.push(saldo);
-        }
+        }   
 
         saldosPorCompania_array.forEach((x) => {
             $scope.contratosProp_cuentas_saldos.push(x);
@@ -997,23 +1058,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-    // flags para que el usuario muestre/oculte nuestra parte en los grids de: distribución y saldos 
-    $scope.distribuirMontos_mostrarNuestraParte_flag = true; 
-
-    $scope.distribuirMontosPrSinEnCompanias_mostrarNuestraParte = function () { 
-        // solo para permitir al usuario mostrar/oculatar nuestra parte en el grid 
-        $scope.distribuirMontos_mostrarNuestraParte_flag = !$scope.distribuirMontos_mostrarNuestraParte_flag; 
-
-        if ($scope.distribuirMontos_mostrarNuestraParte_flag) { 
-            $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = 
-                    $scope.contratosProp_cuentas_distribucion.filter(x => x.definicionID === definicionSeleccionadaID); 
-        } else { 
-            $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = 
-                    $scope.contratosProp_cuentas_distribucion.filter(x => x.definicionID === definicionSeleccionadaID && !x.nosotros); 
-        }
-    }
-
-
+    
     // --------------------------------------------------------------------------------------
     // ui-grid para el registro de la distribución de primas y siniestros en las compañías
     // del contrato (ie: cifras detalladas *antes* de saldos) ...
@@ -1022,6 +1067,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.cuentasTecnicas_Saldos_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
+        enableFiltering: true, 
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: true,
@@ -1086,6 +1132,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Compañía',
             width: 100,
             cellFilter: 'companiaAbreviaturaFilter',
+            
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -1102,6 +1152,11 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             cellFilter: 'boolFilter',
+
+            filter: {
+                condition: ui_grid_filterBy_nosotros, 
+            },
+
             enableColumnMenu: false,
             enableCellEdit: false,
             enableSorting: true,
@@ -1114,6 +1169,10 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             displayName: 'Mon',
             width: 70,
             cellFilter: 'monedaSimboloFilter',
+            
+            sortCellFiltered: true, 
+            filterCellFiltered: true, 
+ 
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
             enableColumnMenu: false,
@@ -1351,6 +1410,25 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             type: 'number'
         },
         {
+            name: 'resultadoTecnico',
+            field: 'resultadoTecnico',
+            displayName: 'Res técnico',
+            cellFilter: 'currencyFilterAndNull',        
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+
+            aggregationType: uiGridConstants.aggregationTypes.sum,
+            aggregationHideLabel: true,
+            footerCellFilter: 'currencyFilter',
+            footerCellClass: 'ui-grid-rightCell',
+
+            type: 'number'
+        },
+        {
             name: 'delButton',
             displayName: ' ',
             cellClass: 'ui-grid-centerCell',
@@ -1380,24 +1458,6 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-
-    // flags para que el usuario muestre/oculte nuestra parte en los grids de: distribución y saldos 
-    $scope.saldos_mostrarNuestraParte_flag = true; 
-
-    $scope.saldos_mostrarNuestraParte = function () { 
-        // solo para permitir al usuario mostrar/oculatar nuestra parte en el grid 
-        $scope.saldos_mostrarNuestraParte_flag = !$scope.saldos_mostrarNuestraParte_flag; 
-        $scope.cuentasTecnicas_Saldos_ui_grid.data = [];
-
-        if ($scope.saldos_mostrarNuestraParte_flag) { 
-            $scope.cuentasTecnicas_Saldos_ui_grid.data = 
-                    $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID); 
-        } else { 
-            $scope.cuentasTecnicas_Saldos_ui_grid.data = 
-                    $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID && !x.nosotros); 
-        }
-    }
-
     // hacemos el binding entre los arrays en el contrato y los ui-grids 
     let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
@@ -1405,3 +1465,32 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = $scope.contratosProp_cuentas_distribucion.filter(x => x.definicionID === definicionSeleccionadaID );
     $scope.cuentasTecnicas_Saldos_ui_grid.data = $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID );
 }])
+
+angular.module("scrwebM").filter('contPr_cuentas_resultadoTecnico', function () {
+    return function (value, scope) {
+        // este filtro recibe el row y regresa el resultado técnico. Como el corretaje es restado de la prima antes de restar 
+        // siniestros, es dificil mostrar este en el grid. Aquí, simplemente, agregamos el corretaje al saldo del row, para 
+        // obtener, de la forma más simple, el resultado técnico ... 
+
+        let row = scope.row.entity;
+
+        // normalmente, el corretaje viene con un signo diferente al saldo; por eso basta con sumar para que el corretaje se reste al saldo 
+        let resultadoTecnico = (row.saldo ? row.saldo : 0) + (row.corretaje ? row.corretaje : 0); 
+
+        return numeral(resultadoTecnico).format('0,0.00');
+    };
+})
+
+function ui_grid_filterBy_nosotros(searchTerm, cellValue, row, column) {
+
+    // para poder filtrar el ui-grid por nosotros una vez aplicado el filtro para el ddl
+    if (searchTerm.toLowerCase() === "si" && cellValue) { 
+        return true;
+    }
+
+    if (searchTerm.toLowerCase() === "no" && !cellValue) { 
+        return true;
+    }
+
+    return false;
+}

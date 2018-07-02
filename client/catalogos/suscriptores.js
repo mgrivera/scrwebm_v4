@@ -1,6 +1,6 @@
 ﻿
 
-
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 angular.module("scrwebM").controller("SuscriptoresController", ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {
 

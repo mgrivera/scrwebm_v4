@@ -16,6 +16,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Ramos } from '/imports/collections/catalogos/ramos';   
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 // para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
 // para poder hacer un download (usando el url) desde el client ...

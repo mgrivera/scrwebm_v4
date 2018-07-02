@@ -2,8 +2,6 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-TiposFacultativo = new Mongo.Collection("tiposFacultativo");
-
 var schema = new SimpleSchema({
     _id: { type: String, optional: false, },
     descripcion: { type: String, label: "Descripción", min: 1, max: 120, optional: false, },
@@ -12,4 +10,5 @@ var schema = new SimpleSchema({
     docState: { type: Number, optional: true, }
 });
 
+export const TiposFacultativo: any = new Mongo.Collection("tiposFacultativo");
 TiposFacultativo.attachSchema(schema);

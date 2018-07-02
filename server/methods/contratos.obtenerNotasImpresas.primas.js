@@ -214,7 +214,7 @@ Meteor.methods(
             doc.render();
         }
         catch (error) {
-            var e: {
+            var e = {
                 message: error.message,
                 name: error.name,
                 stack: error.stack,

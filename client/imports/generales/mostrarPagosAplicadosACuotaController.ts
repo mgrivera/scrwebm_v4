@@ -1,14 +1,19 @@
 ﻿
-import lodash from 'lodash';
-import { userHasRole } from '/client/imports/generales/userHasRole';  
 
-import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import * as lodash from 'lodash';
+import * as angular from 'angular';
+
+import { userHasRole } from 'client/imports/generales/userHasRole';  
+
+import { Cuotas } from 'imports/collections/principales/cuotas'; 
+
+// nótese como importamos la plantilla (html) para que browser la encuentre cuando se indique más abajo
+import './mostrarPagosCuotaModal.html';         
 
 // -----------------------------------------------------------------------------
 // para mostrar los pagos aplicados a una cuota en particular
 // -----------------------------------------------------------------------------
-
-MostrarPagosEnCuotas = function ($modal, cuota, origen, cuotaID = null) {
+export function MostrarPagosEnCuotas($modal, cuota, origen, cuotaID = null) {
 
     // si esta función no recibe una cuota, pero si una cuotaID, la idea es leer la cuota y
     // continuar con el proceso ...
@@ -23,15 +28,15 @@ MostrarPagosEnCuotas = function ($modal, cuota, origen, cuotaID = null) {
           function() {
               cuota = Cuotas.findOne(cuotaID);
               mostrarPagosEnCuotas2($modal, cuota, origen);
-          });
-    };
-};
+          })
+    }
+}
 
 
 function mostrarPagosEnCuotas2($modal, cuota, origen) {
 
     var modalInstance = $modal.open({
-        templateUrl: 'client/generales/mostrarPagosCuotaModal.html',
+        templateUrl: 'client/imports/generales/mostrarPagosCuotaModal.html',
         controller: 'MostrarPagosAplicadosACuotaController',
         size: 'md',
         resolve: {
@@ -45,7 +50,7 @@ function mostrarPagosEnCuotas2($modal, cuota, origen) {
        function (cancel) {
            return true;
        });
-};
+}
 
 
 angular.module("scrwebM").controller('MostrarPagosAplicadosACuotaController',

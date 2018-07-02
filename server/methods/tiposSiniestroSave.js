@@ -1,4 +1,5 @@
 
+import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
 
 Meteor.methods(
 {

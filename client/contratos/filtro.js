@@ -5,6 +5,7 @@ import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 angular.module("scrwebM").controller("ContratosFiltroController",
 ['$scope', '$state', '$stateParams', '$meteor',

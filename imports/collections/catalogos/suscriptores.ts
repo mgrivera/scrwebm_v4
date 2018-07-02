@@ -1,8 +1,6 @@
 
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
-﻿
-Suscriptores = new Mongo.Collection("suscriptores");
 
 var schema = new SimpleSchema({
     _id: {
@@ -29,4 +27,5 @@ var schema = new SimpleSchema({
     }
 });
 
+export const Suscriptores: any = new Mongo.Collection("suscriptores");
 Suscriptores.attachSchema(schema);

@@ -1,3 +1,0 @@
-
-// funciones globales a cualquier código en server ...
-ServerGlobal_Methods = {};

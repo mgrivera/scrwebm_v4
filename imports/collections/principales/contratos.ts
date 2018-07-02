@@ -393,6 +393,7 @@ let ContratoProp_cuentas_distribucion_simpleSchema = new SimpleSchema({
     siniestros_suParte: { type: Number, optional: true, },
 
     saldo: { type: Number, optional: false, },
+    resultadoTecnico: { type: Number, optional: true, },        // mismo saldo, pero sin agregar corretaje al cálculo 
     docState: { type: Number, optional: true }, 
 })
 
@@ -421,6 +422,7 @@ let ContratoProp_cuentas_saldos_simpleSchema = new SimpleSchema({
     siniestros: { type: Number, optional: true, },
     siniestros_suParte: { type: Number, optional: true, },
     saldo: { type: Number, optional: false, },
+    resultadoTecnico: { type: Number, optional: true, },        // mismo saldo, pero sin agregar corretaje al cálculo 
     docState: { type: Number, optional: true }, 
 })
 
