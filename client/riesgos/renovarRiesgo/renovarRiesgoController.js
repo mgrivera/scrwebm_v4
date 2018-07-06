@@ -1,5 +1,6 @@
 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('RenovarRiesgo_ModalController',
 ['$scope', '$modalInstance', 'riesgoOriginal', 'companiaSeleccionada',
@@ -37,7 +38,7 @@ function ($scope, $modalInstance, riesgoOriginal, companiaSeleccionada) {
             Meteor.call('riesgos.renovar', riesgoOriginal, $scope.parametros, function (err, result) {
 
                 if (err) {
-                    let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
                     
                     $scope.alerts.length = 0;
                     $scope.alerts.push({ type: 'danger', msg: errorMessage, });

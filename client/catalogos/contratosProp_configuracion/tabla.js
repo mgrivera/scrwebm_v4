@@ -9,6 +9,7 @@ import { ContProp_tablaConf } from '/client/lib/forerunnerDB';
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal',
@@ -439,7 +440,7 @@ angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Controll
              Meteor.call('contratosProp_configuracion_tablas_Save', editedItems, function (error, result) {
                if (error) {
 
-                   let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(error);
+                   let errorMessage = mensajeErrorDesdeMethod_preparar(error);
 
                    $scope.alerts.length = 0;
                    $scope.alerts.push({

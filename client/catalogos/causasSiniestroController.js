@@ -1,5 +1,7 @@
 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 angular.module("scrwebM").controller("CausasSiniestroController",
   function ($scope, $stateParams, $meteor) {
 
@@ -176,7 +178,7 @@ angular.module("scrwebM").controller("CausasSiniestroController",
           Meteor.call('causasSiniestroSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

@@ -4,6 +4,7 @@
 import moment from 'moment';
 import lodash from 'lodash';
 import numeral from 'numeral';
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
@@ -144,7 +145,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
                             $scope.showProgress = false;
                         },
                         function() {
-                            let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                             $scope.alerts.length = 0;
                             $scope.alerts.push({
@@ -157,7 +158,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
                     );
                 },
                 function (err) {
-                    let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
@@ -286,7 +287,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
            },
            function (err) {
 
-               let errMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+               let errMessage = mensajeErrorDesdeMethod_preparar(err);
 
                $scope.alerts.length = 0;
                $scope.alerts.push({
@@ -383,7 +384,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
              $scope.showProgress = false;
           },
           function (err) {
-              let errMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+              let errMessage = mensajeErrorDesdeMethod_preparar(err);
 
               $scope.alerts.length = 0;
               $scope.alerts.push({

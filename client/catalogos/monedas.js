@@ -1,6 +1,6 @@
 ﻿
 
-
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 
 angular.module("scrwebM").controller("MonedasController",
@@ -189,7 +189,7 @@ function ($scope, $stateParams, $meteor) {
           Meteor.call('monedasSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

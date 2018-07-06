@@ -1,4 +1,5 @@
 
+
 import lodash from 'lodash'; 
 
 import { ProtegerEntidades } from '../imports/generales/protegerEntidades'; 
@@ -14,6 +15,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("RemesaController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', 'uiGridGroupingConstants', 'uiGridConstants',
@@ -242,7 +244,7 @@ angular.module("scrwebM").controller("RemesaController",
     Meteor.call('remesasSave', item, (err, result)  => {
         
         if (err) {
-            let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -411,7 +413,7 @@ angular.module("scrwebM").controller("RemesaController",
                 Meteor.call('remesas.leerFactorCambioRemesaReciente', $scope.remesa.fecha, (err, result) => {
 
                     if (err) {
-                        let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                        let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                         $scope.alerts.length = 0;
                         $scope.alerts.push({
@@ -958,7 +960,7 @@ angular.module("scrwebM").controller("RemesaController",
         Meteor.call('remesas.revertir', $scope.remesa._id, (err, result)  => {
         
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

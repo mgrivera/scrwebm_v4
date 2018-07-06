@@ -1,4 +1,6 @@
 
+
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
 
 angular.module("scrwebM").controller("TiposFacultativoController", ['$scope', '$stateParams', '$meteor',
@@ -180,7 +182,7 @@ angular.module("scrwebM").controller("TiposFacultativoController", ['$scope', '$
           Meteor.call('tiposFacultativoSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

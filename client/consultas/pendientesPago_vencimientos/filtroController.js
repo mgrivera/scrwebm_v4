@@ -1,6 +1,7 @@
 ﻿
 
 import lodash from 'lodash'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -171,7 +172,7 @@ angular.module("scrwebM").controller("ConsultasMontosPendientesPagoVencimientos_
                     },
                     function (err) {
 
-                        let errMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                        let errMessage = mensajeErrorDesdeMethod_preparar(err);
 
                         $scope.alerts.length = 0;
                         $scope.alerts.push({
@@ -185,7 +186,7 @@ angular.module("scrwebM").controller("ConsultasMontosPendientesPagoVencimientos_
         },
         function (err) {
 
-            let errMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+            let errMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({

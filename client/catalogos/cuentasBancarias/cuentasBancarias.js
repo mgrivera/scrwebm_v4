@@ -1,5 +1,7 @@
 ﻿
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
@@ -287,7 +289,7 @@ angular.module("scrwebM").controller("CuentasBancariasController",
         Meteor.call('cuentasBancariasSave', editedItems, (err, result) => {
 
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

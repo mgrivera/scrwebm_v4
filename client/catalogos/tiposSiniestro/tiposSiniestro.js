@@ -1,5 +1,6 @@
 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
 
 angular.module("scrwebM").controller("TiposSiniestroController", ['$scope', '$stateParams', '$meteor',
@@ -182,7 +183,7 @@ angular.module("scrwebM").controller("TiposSiniestroController", ['$scope', '$st
           Meteor.call('tiposSiniestroSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

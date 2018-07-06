@@ -206,42 +206,9 @@
 
             <div class="row">
 
-                <!--
-                    TODO: usar para agregar 'selectize' como planificamos hacer, pero no pudimos. Tendremos que analizar la opción 
-                          desde Atmosphere, solo que no queremos pues preferimos npm. Ya veremos .... 
-                <div class="col-sm-5 col-sm-offset-1">
-                    <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Asegurado: </label>
-                        <div class="col-sm-9">
-                            <input id="asegurado" type="text" 
-                                    class="form-control input-sm myinput-sm" />
-                        </div>
-                    </div>
-                </div> -->
+                <!-- OKEY: este es el original ... 
 
-                <!-- asegurado
-                <div class="col-sm-5 col-sm-offset-1">
-                    <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Asegurado x: </label>
-                        <div class="col-sm-9">
-                            <input type="text" 
-                                   list="aseguradosList"
-                                   class="form-control input-sm myinput-sm"
-                                   ng-model="asegurado.nombre"
-                                   ng-change="setIsEdited('asegurado')"
-                                   ng-model-options="{ updateOn: 'blur' }" />
-
-                            <datalist id="aseguradosList">
-                                <option ng-repeat="asegurado in asegurados" value="{{asegurado.nombre}}">{{asegurado.nombre}}</option>
-                            </datalist>
-                        </div>
-                    </div>
-                </div>
-                </div> -->
-
-
-                <!-- asegurado -->
-                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="col-sm-5 col-sm-offset-1">
                     <div class="form-group form-group-sm">
                         <label class="col-sm-3 control-label input-label">Asegurado: </label>
                         <div class="col-sm-9">
@@ -255,6 +222,23 @@
                         </div>
                     </div>
                 </div> 
+                
+                -->
+
+
+                <!-- asegurado -->
+                <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group form-group-sm" style="text-align: left; ">
+                        <label class="col-sm-3 control-label input-label">Asegurado: </label>
+                        <div class="col-sm-9">
+                            <select name="asegurado" 
+                                    id="asegurado" 
+                                    class="form-control input-sm myinput-sm">
+                            </select>
+                        </div>
+                    </div>
+                </div> 
+                
 
                 <!-- corredor -->
                 <div class="col-sm-5 col-sm-offset-0">

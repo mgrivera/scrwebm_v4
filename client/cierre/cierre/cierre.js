@@ -2,6 +2,7 @@
 
 import lodash from 'lodash'; 
 import moment from 'moment'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Cierre } from '/imports/collections/cierre/cierre'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
@@ -189,7 +190,7 @@ angular.module("scrwebM").controller("Cierre.Cierre.Controller",
         Meteor.call('cierre.cerrarPeriodo', itemSeleccionado, (err, result)  => {
         
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

@@ -1,4 +1,7 @@
 ﻿
+
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
 angular.module("scrwebM").controller("ContratosParametrosController",
@@ -71,7 +74,7 @@ angular.module("scrwebM").controller("ContratosParametrosController",
           Meteor.call('contratosParametrosSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

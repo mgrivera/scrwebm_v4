@@ -6,6 +6,7 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('ImprimirNotasRiesgosModalController',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'riesgo', 'cuotas', 'tiposMovimiento',
@@ -164,7 +165,7 @@ function ($scope, $modalInstance, $modal, $meteor, riesgo, cuotas, tiposMovimien
                          $scope.parametros.fecha, (err, result) => {
 
                      if (err) {
-                         let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                         let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                          $scope.alerts.length = 0;
                          $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -200,7 +201,7 @@ function ($scope, $modalInstance, $modal, $meteor, riesgo, cuotas, tiposMovimien
                          $scope.parametros.fecha, (err, result) => {
 
                  if (err) {
-                     let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                     let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                      $scope.alerts.length = 0;
                      $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -236,7 +237,7 @@ function ($scope, $modalInstance, $modal, $meteor, riesgo, cuotas, tiposMovimien
                          $scope.parametros.fecha, (err, result) => {
 
                  if (err) {
-                     let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                     let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                      $scope.alerts.length = 0;
                      $scope.alerts.push({ type: 'danger', msg: errorMessage });

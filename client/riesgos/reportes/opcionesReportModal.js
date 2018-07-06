@@ -1,6 +1,6 @@
 
 
-
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('Riesgos_opcionesReportController',
 ['$scope', '$modalInstance', '$meteor', 'companiaSeleccionada', function ($scope, $modalInstance, $meteor, companiaSeleccionada) {
@@ -47,7 +47,7 @@ angular.module("scrwebM").controller('Riesgos_opcionesReportController',
             (err, result) => {
 
                 if (err) {
-                    let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({

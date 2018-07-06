@@ -9,6 +9,8 @@ import { Temp_Consulta_Remesas } from '/imports/collections/consultas/tempConsul
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 angular.module("scrwebM").controller("RemesasFiltroController",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
@@ -85,7 +87,7 @@ angular.module("scrwebM").controller("RemesasFiltroController",
         Meteor.call('remesas.leerDesdeMongo', JSON.stringify(filtro), (err, result)  => {
         
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

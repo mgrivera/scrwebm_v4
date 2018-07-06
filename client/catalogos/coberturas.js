@@ -1,5 +1,6 @@
 ﻿
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 
 angular.module("scrwebM").controller("CoberturasController",
@@ -174,7 +175,7 @@ angular.module("scrwebM").controller("CoberturasController",
           Meteor.call('coberturasSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

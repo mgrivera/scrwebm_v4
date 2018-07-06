@@ -1,5 +1,7 @@
 ﻿
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
@@ -55,7 +57,7 @@ angular.module("scrwebM").controller("ContratosFiltroController",
           Meteor.call('contratos.leerDesdeMongo', JSON.stringify($scope.filtro), $scope.companiaSeleccionada._id, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

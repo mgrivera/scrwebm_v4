@@ -1,5 +1,6 @@
 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('RemesaCuadreObtener_Modal_Controller',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'remesaID', 'ciaSeleccionada',
@@ -43,7 +44,7 @@ function ($scope, $modalInstance, $modal, $meteor, remesaID, ciaSeleccionada) {
             Meteor.call('remesasObtenerCuadre', remesaID, $scope.parametros, (err, result) => {
                 
                 if (err) {
-                    let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
     
                     $scope.alerts.length = 0;
                     $scope.alerts.push({

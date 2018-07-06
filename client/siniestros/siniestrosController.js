@@ -16,6 +16,7 @@ import { Suscriptores } from '/imports/collections/catalogos/suscriptores';
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("SiniestroController",
 ['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',
@@ -1547,7 +1548,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
         Meteor.call('siniestrosSave', item, (err, result)  => {
             
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -1573,7 +1574,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
             Meteor.call('cuotasSave', cuotasArray, (err, result)  => {
             
                 if (err) {
-                    let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({

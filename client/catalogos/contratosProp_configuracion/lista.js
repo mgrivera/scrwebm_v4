@@ -1,6 +1,7 @@
 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { ContratosProp_Configuracion_ListaCodigos } from '/imports/collections/catalogos/ContratosProp_Configuracion'; 
 import { ContProp_tablaConf } from '/client/lib/forerunnerDB'; 
@@ -28,7 +29,7 @@ angular.module("scrwebM").controller("ContratosProp_Configuracion_Lista_Controll
     Meteor.call('contratosProporcionales.configuracion.leerCodigosContrato', companiaSeleccionada._id, (err, result)  => {
 
         if (err) {
-            let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -205,7 +206,7 @@ angular.module("scrwebM").controller("ContratosProp_Configuracion_Lista_Controll
             Meteor.call('contratosProp_configuracion_listaCodigos_Save', editedItems, function (error, result) {
             if (error) {
 
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(error);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(error);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

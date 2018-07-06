@@ -3,6 +3,7 @@
 import numeral from 'numeral';
 import moment from 'moment';
 import lodash from 'lodash';
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Temp_consulta_cierreRegistro } from '/imports/collections/consultas/temp_consulta_cierreRegistro'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
@@ -398,7 +399,7 @@ angular.module("scrwebM").controller("Cierre.Consulta.Controller",
                                                     (err, result) => {
 
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -459,7 +460,7 @@ angular.module("scrwebM").controller("Cierre.Consulta.Controller",
         Meteor.call('getCollectionCount', 'Temp_consulta_cierreRegistro', (err, result) => {
 
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

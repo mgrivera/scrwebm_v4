@@ -1,4 +1,6 @@
 ﻿
+
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
 
 angular.module("scrwebM").controller("BancosController",
@@ -176,7 +178,7 @@ angular.module("scrwebM").controller("BancosController",
           Meteor.call('bancosSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

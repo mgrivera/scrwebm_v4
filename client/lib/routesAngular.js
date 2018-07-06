@@ -54,7 +54,7 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('catalogos.asegurados', {
             url: '/asegurados',
-            templateUrl: 'client/catalogos/asegurados.html',
+            templateUrl: 'client/catalogos/asegurados/asegurados.html',
             controller: 'AseguradosController'
         })
         .state('catalogos.monedas', {

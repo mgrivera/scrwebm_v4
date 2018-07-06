@@ -12,7 +12,7 @@ import { EmpresasUsuarias } from '../../../imports/collections/catalogos/empresa
 import { CompaniaSeleccionada } from '../../../imports/collections/catalogos/companiaSeleccionada'; 
 
 import { DialogModal } from '../../../client/imports/generales/angularGenericModal'; 
-import { MensajeErrorDesdeMethod_preparar } from '../../imports/clientGlobalMethods/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("Cierre.periodosDeCierre.Controller",
 ['$stateParams', '$scope', '$meteor', '$modal', function ($stateParams, $scope, $meteor, $modal) {
@@ -233,7 +233,7 @@ angular.module("scrwebM").controller("Cierre.periodosDeCierre.Controller",
         Meteor.call('getCollectionCount', 'Cierre', filtro, (err, result) => {
 
             if (err) {
-                let errorMessage = MensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -393,7 +393,7 @@ angular.module("scrwebM").controller("Cierre.periodosDeCierre.Controller",
         Meteor.call('cierre.periodosCierre.save', editedItems, (err, result) => {
 
             if (err) {
-                let errorMessage = MensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

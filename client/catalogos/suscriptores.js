@@ -1,5 +1,6 @@
 ﻿
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 angular.module("scrwebM").controller("SuscriptoresController", ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {
@@ -173,7 +174,7 @@ angular.module("scrwebM").controller("SuscriptoresController", ['$scope', '$stat
           Meteor.call('suscriptoresSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

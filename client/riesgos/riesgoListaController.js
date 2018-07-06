@@ -1,11 +1,12 @@
 
 
-
 import numeral from 'numeral';
 
 import { Temp_Consulta_Riesgos } from '/imports/collections/consultas/tempConsultaRiesgos'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("RiesgosListaController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal',
@@ -331,7 +332,7 @@ angular.module("scrwebM").controller("RiesgosListaController",
     Meteor.call('getCollectionCount', 'Temp_Consulta_Riesgos', (err, result) => {
 
         if (err) {
-            let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({

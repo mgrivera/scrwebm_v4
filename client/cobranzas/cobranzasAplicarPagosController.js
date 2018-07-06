@@ -3,6 +3,7 @@
 import lodash from 'lodash'; 
 import numeral from 'numeral'; 
 import moment from 'moment'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -36,7 +37,7 @@ angular.module("scrwebM").controller("CobranzasAplicarPagosController",
         Meteor.call('cobranzas.determinarCuotasPendientesCompaniaRemesaSeleccionada', remesaSeleccionada._id, (err, result)  => {
 
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -142,7 +143,7 @@ angular.module("scrwebM").controller("CobranzasAplicarPagosController",
         Meteor.call('cobranzas.grabarPagosIndicadosParaCuotasSeleccionadas', remesaSeleccionada._id, pagosAAplicar2, (err, result)  => {
 
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

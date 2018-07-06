@@ -1,7 +1,8 @@
 
 
 
-export function MensajeErrorDesdeMethod_preparar(errorFromMeteorMethod) {
+// before, this was called: MensajeErrorDesdeMethod_preparar
+export function mensajeErrorDesdeMethod_preparar(errorFromMeteorMethod) {
     // preparamos el mensaje de error que debe ser mostrado al usuario, cuando un Meteor Method falla
     // con un objeto 'error' ...
     let err = errorFromMeteorMethod;
@@ -29,7 +30,13 @@ export function MensajeErrorDesdeMethod_preparar(errorFromMeteorMethod) {
 
     if (err.details) {
         if (algo) errorMessage += ` - `;
-        errorMessage += `${err.details}`;
+        if (Array.isArray(err.details)) { 
+            err.details.forEach(d => { errorMessage += `<br />${d.message ? d.message : 'sin mensaje(??)'}`; }); 
+        } else { 
+            errorMessage += `${err.details}`;
+        }
+        
+        errorMessage += `<br />`;
         algo = true;
     }
 

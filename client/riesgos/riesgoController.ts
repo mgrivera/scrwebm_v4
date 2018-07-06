@@ -2,7 +2,6 @@
 
 import * as moment from 'moment';
 import * as lodash from 'lodash';
-import 'selectize'; 
 import * as angular from 'angular';
 
 import * as riesgos_funcionesGenerales from './riesgos_funcionesGenerales'; 
@@ -57,14 +56,20 @@ angular.module("scrwebM").controller("RiesgoController",
 
     $scope.goToState = function (state) {
         // para abrir alguno de los 'children' states ...
-        if (state != 'cuotas')
+        if (state != 'cuotas') { 
             $state.go("riesgo." + state);
+
+            if (state === 'generales') { 
+                // para inicializar el Select asegurado con selectize ... 
+                aseguradoSetSelectize($modal, $scope); 
+            }
+        }
         else {
             // el state 'cuotas' recibe, en $scope.parent, este scope ... nos aseguramos de pasar el movimiento seleccionado ...
-
-            if (movimientoSeleccionado)
+            if (movimientoSeleccionado) { 
                 $scope.movimientoSeleccionado = movimientoSeleccionado;
-
+            }
+                
             $state.go("riesgo.cuotas", {
                 'origen': $stateParams.origen,
                 'source': 'facXXX'
@@ -85,101 +90,68 @@ angular.module("scrwebM").controller("RiesgoController",
         tiposFacultativo: () => { return TiposFacultativo.find({}); },
     })
 
-    // const jq14 = jQuery.noConflict(true); 
+    $scope.estados = [
+        { estado: 'CO', descripcion: 'Cotización' },
+        { estado: 'AC', descripcion: 'Aceptado' },
+        { estado: 'EM', descripcion: 'Emitido' },
+        { estado: 'RE', descripcion: 'Renovación' },
+        { estado: 'RV', descripcion: 'Renovado' },
+        { estado: 'AN', descripcion: 'Anulado' },
+        { estado: 'DE', descripcion: 'Declinado' },
+    ];
 
-    // (function ($) {
-        // $(document).ready(function () {
-        //     $(function() {
-        //         $("#asegurado").selectize({
-        //             options: $scope.asegurados, 
-        //         })
-        //     })
+    $scope.nuevo0 = function () {
 
-        //     let aseguradoJQ = $("#asegurado"); 
-        //     aseguradoJQ.selectize({
-        //         options: $scope.asegurados, 
-        //         valueField: '_id',
-        //         labelField: 'nombre', 
-        //         searchField: ['nombre', ], 
-        //         maxItems: 3, 
-        //         openOnFocus: false, 
-        //     });
-        // });
-    // }(jq14));
+        if ($scope.riesgo.docState && $scope.origen == 'edicion') {
+            var promise = DialogModal($modal,
+                                    "<em>Riesgos</em>",
+                                    "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa para agregar un nuevo registro, " +
+                                    "los cambios se perderán.<br /><br />Desea continuar y perder los cambios efectuados al registro actual?",
+                                    true);
 
-    // vinculamos el input definido para el asegurado con selectize 
-    // $('#asegurado').selectize({ 
-    //     options: $scope.asegurados, 
-    //     valueField: '_id',
-    //     labelField: 'nombre', 
-    //     searchField: ['nombre', ], 
-    //     placeHolder: 'Seleccione un asegurado', 
-    //     maxItems: 3, 
-    //     openOnFocus: false, 
-    // })
+            promise.then(
+                function (resolve) {
+                    $scope.nuevo();
+                },
+                function (err) {
+                    return true;
+                });
 
-      $scope.estados = [
-          { estado: 'CO', descripcion: 'Cotización' },
-          { estado: 'AC', descripcion: 'Aceptado' },
-          { estado: 'EM', descripcion: 'Emitido' },
-          { estado: 'RE', descripcion: 'Renovación' },
-          { estado: 'RV', descripcion: 'Renovado' },
-          { estado: 'AN', descripcion: 'Anulado' },
-          { estado: 'DE', descripcion: 'Declinado' },
-      ];
+            return;
+        }
+        else
+            $scope.nuevo();
+    };
 
-      $scope.nuevo0 = function () {
+    let cuotasSubscriptionHandle: any = null;
 
-          if ($scope.riesgo.docState && $scope.origen == 'edicion') {
-              var promise = DialogModal($modal,
-                                        "<em>Riesgos</em>",
-                                        "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa para agregar un nuevo registro, " +
-                                        "los cambios se perderán.<br /><br />Desea continuar y perder los cambios efectuados al registro actual?",
-                                        true);
+    $scope.nuevo = function () {
+        // $scope.riesgo fue inicializado a partir de un objeto Meteor (ie: $scope.meteorObject(coll, id)) ...
+        // stop() lo 'desconcta' del objeto Meteor
+        if ($scope.riesgo && $scope.riesgo.stop)
+            $scope.riesgo.stop();
 
-              promise.then(
-                  function (resolve) {
-                      $scope.nuevo();
-                  },
-                  function (err) {
-                      return true;
-                  });
+        $scope.riesgo = {};
+        $scope.riesgo = {
+            _id: new Mongo.ObjectID()._str,
+            numero: 0,
+            ingreso: new Date(),
+            usuario: Meteor.userId(),
+            cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
+            docState: 1
+        };
 
-              return;
-          }
-          else
-              $scope.nuevo();
-      };
+        // si existen algunas cuotas en minimongo, detenemos el subscription
+        if (cuotasSubscriptionHandle) {
+            cuotasSubscriptionHandle.stop();
+        }
 
-      let cuotasSubscriptionHandle: any = null;
+        $scope.cuotas = [];
+        $scope.cuotas_ui_grid.data = $scope.cuotas;
 
-      $scope.nuevo = function () {
-          // $scope.riesgo fue inicializado a partir de un objeto Meteor (ie: $scope.meteorObject(coll, id)) ...
-          // stop() lo 'desconcta' del objeto Meteor
-          if ($scope.riesgo && $scope.riesgo.stop)
-              $scope.riesgo.stop();
-
-          $scope.riesgo = {};
-          $scope.riesgo = {
-              _id: new Mongo.ObjectID()._str,
-              numero: 0,
-              ingreso: new Date(),
-              usuario: Meteor.userId(),
-              cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
-              docState: 1
-          };
-
-          // si existen algunas cuotas en minimongo, detenemos el subscription
-          if (cuotasSubscriptionHandle) {
-              cuotasSubscriptionHandle.stop();
-          }
-
-          $scope.cuotas = [];
-          $scope.cuotas_ui_grid.data = $scope.cuotas;
-
-          // inicialmente, mostramos el state 'generales'
-          $scope.goToState('generales');
-      };
+        // inicialmente, mostramos el state 'generales'
+        $scope.goToState('generales');
+    };
 
 
     // para copiar el riesgo seleccionado en uno nuevo que el usuario pueda editar y grabar como uno diferente
@@ -3006,23 +2978,24 @@ angular.module("scrwebM").controller("RiesgoController",
 
             // guardamos el row que el usuario seleccione
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                //debugger;
                 productorSeleccionado = {};
 
-                if (row.isSelected)
+                if (row.isSelected) { 
                     productorSeleccionado = row.entity;
-                else
+                }
+                else { 
                     return;
-            });
+                } 
+            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                //debugger;
                 if (newValue != oldValue) {
-                    if (!$scope.riesgo.docState)
+                    if (!$scope.riesgo.docState) { 
                         $scope.riesgo.docState = 2;
-                };
-            });
+                    }  
+                }
+            })
         }, 
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
         rowIdentity: function (row) {
@@ -3411,6 +3384,7 @@ angular.module("scrwebM").controller("RiesgoController",
                     $scope.alerts.length = 0;
 
                     $scope.goToState('generales');
+
                     $scope.showProgress = false;
                 })
               })
@@ -3446,6 +3420,7 @@ angular.module("scrwebM").controller("RiesgoController",
                         
                         $scope.alerts.length = 0;
                         $scope.goToState('generales');
+
                         $scope.showProgress = false;
                     })
                   })
@@ -3494,6 +3469,7 @@ angular.module("scrwebM").controller("RiesgoController",
                             
                             $scope.alerts.length = 0;
                             $scope.goToState('generales');
+
                             $scope.showProgress = false;
                         })
                   })
@@ -3504,3 +3480,109 @@ angular.module("scrwebM").controller("RiesgoController",
       inicializarItem();
   }
 ])
+
+// para establecer las opciones del select asegurado ... 
+// nótese como usamos selectize, debemos usar un $apply ... 
+function aseguradoSetSelectize($modal, $scope) {
+    setTimeout(function () {
+        $scope.$apply(function () {
+
+            let items = []; 
+
+            if ($scope.riesgo && !$scope.riesgo.asegurado) { 
+                $scope.riesgo.asegurado = null; 
+            }
+
+            if ($scope.riesgo && $scope.riesgo.asegurado) { 
+                items.push($scope.riesgo.asegurado as never); 
+            }
+            
+            let asegurado = $("#asegurado"); 
+            asegurado.selectize({
+                options: $scope.asegurados, 
+                valueField: '_id',
+                labelField: 'nombre', 
+                searchField: ['nombre', ], 
+                sortField: 'nombre', 
+                items: items, 
+                maxItems: 1, 
+                selectOnTab: false, 
+                openOnFocus: false, 
+
+                onItemAdd: function(value) { 
+
+                    // this way you can have the whole item 
+                    // var data = this.options[value];
+                    if ($scope.riesgo.asegurado != value) { 
+                        $scope.riesgo.asegurado = value;
+
+                        if (!$scope.riesgo.docState) { 
+                            $scope.riesgo.docState = 2;
+                        } 
+                    }
+                }, 
+
+                create:function (input, callback) {
+
+                    agregarAsegurado_desdeInput($modal, input).then((result) => {
+
+                        // Ok, el usuario agregó el asegurado desde el modal; regresamos el item para que selectize lo 
+                        // agregue a sus choices 
+
+                        // solo si el usuario cancela, intentamos regresar el asegurado que ya existía 
+                        if (!result && $scope.riesgo.asegurado) { 
+                            let asegurado = Asegurados.findOne($scope.riesgo.asegurado); 
+
+                            // nota: si no se encuentra un asegurado, pasamos undefined y el Select debe quedar en blanco 
+                            // (sin selección) 
+                            callback(asegurado); 
+                        } else { 
+
+                            if (!$scope.riesgo.docState) { 
+                                $scope.riesgo.docState = 2;
+                            }  
+
+                            // en result viene el asegurado, como un object, que se agrega como un choice en selectize
+                            callback(result); 
+                        }
+                        
+                    }).catch((error) => {
+                        // error ocurred!
+                        // no esperamos nunca un error, pues siempre resolvemos los erroes en el modal ... 
+                    })
+                }, 
+            });
+        });
+    }, 0);
+  }
+
+
+
+
+const agregarAsegurado_desdeInput = ($modal, nombre) => {
+    return new Promise((resolve, reject) => {
+      
+        var modalInstance = $modal.open({
+            templateUrl: 'client/generales/agregarNuevoAsegurado/agregarNuevoAsegurado.html',
+            controller: 'AgregarNuevoAsegurado_ModalController',
+            size: 'md',
+            resolve: {
+                nombre: function () {
+                    return nombre;
+                },
+            }
+        }).result.then(
+              function (result) {
+                  // en resolve viene el nuevo asegurado 
+                  resolve(result);
+              },
+              function (cancel) {
+                  // el usuario canceló y *no* agregó el nuevo asseguado a la base de datos ... 
+                  resolve(undefined);
+              }
+        )
+  
+        // nunca regeresamos un error pues siempre resolvemos cualquier error en el modal 
+        // reject(Error("It broke"));
+    })
+  }

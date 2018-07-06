@@ -5,12 +5,7 @@ import { Riesgos } from '/imports/collections/principales/riesgos';
 Asegurados.before.remove(function (userId, doc) {
     // ------------------------------------------------------------------------
     // riesgos
-    let riesgo = Riesgos.findOne({
-        $or: [
-            { 'asegurado': doc._id },
-        ]
-    },
-        { fields: { numero: true } });
+    let riesgo = Riesgos.findOne({ $or: [ { 'asegurado': doc._id }, ] }, { fields: { numero: true } });
 
     if (riesgo) {
         throw new Meteor.Error("dataBaseError",

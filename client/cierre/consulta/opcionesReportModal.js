@@ -1,5 +1,6 @@
 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('Cierre_opcionesReportController',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'companiaSeleccionada', 'fechaInicialPeriodo', 'fechaFinalPeriodo', 'cuentasCorrientes', 
@@ -48,7 +49,7 @@ function ($scope, $modalInstance, $modal, $meteor, companiaSeleccionada, fechaIn
             (err, result) => {
 
                 if (err) {
-                    let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({

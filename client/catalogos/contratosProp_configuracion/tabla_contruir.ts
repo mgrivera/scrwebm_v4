@@ -5,8 +5,7 @@ import * as lodash from 'lodash';
 import { Monedas } from '../../../imports/collections/catalogos/monedas'; 
 import { Companias } from '../../../imports/collections/catalogos/companias'; 
 import { Ramos } from '../../../imports/collections/catalogos/ramos'; 
-import { TiposContrato } from 'imports/collections/catalogos/tiposContrato'; 
-import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
+import { TiposContrato } from 'imports/collections/catalogos/tiposContrato';  
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { ContProp_tablaConf } from 'client/lib/forerunnerDB'; 

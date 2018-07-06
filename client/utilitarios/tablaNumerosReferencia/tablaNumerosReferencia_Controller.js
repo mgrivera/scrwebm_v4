@@ -5,6 +5,8 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Referencias } from '/imports/collections/principales/referencias'; 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 angular.module("scrwebM").controller("Utilitarios_TablaNumerosReferencia_Controller",
  ['$scope', '$stateParams', '$meteor',
   function ($scope, $stateParams, $meteor) {
@@ -223,7 +225,7 @@ angular.module("scrwebM").controller("Utilitarios_TablaNumerosReferencia_Control
           Meteor.call('referenciasSave', editedItems, (err, result) => {
 
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

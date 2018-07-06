@@ -1,5 +1,6 @@
 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('RemesaCuadreExportarExcel_Modal_Controller',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'remesa', 'ciaSeleccionada',
@@ -33,7 +34,7 @@ function ($scope, $modalInstance, $modal, $meteor, remesa, ciaSeleccionada) {
         Meteor.call('remesas.cuadre.exportar.Excel', remesa._id, ciaSeleccionada, (err, result) => {
 
             if (err) {
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({ type: 'danger', msg: errorMessage });

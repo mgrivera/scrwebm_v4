@@ -1,5 +1,7 @@
 ﻿
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
 angular.module("scrwebM").controller("IndolesController",
@@ -178,7 +180,7 @@ angular.module("scrwebM").controller("IndolesController",
           Meteor.call('indolesSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

@@ -1,6 +1,9 @@
 
+
 import lodash from 'lodash';
+
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("UsuariosDatosPersonalesController",
  ['$scope', '$stateParams', '$meteor', '$modal',
@@ -152,7 +155,7 @@ angular.module("scrwebM").controller("UsuariosDatosPersonalesController",
             },
             function (err) {
 
-                let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

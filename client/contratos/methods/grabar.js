@@ -1,6 +1,7 @@
 
 
 import lodash from 'lodash';
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
@@ -127,7 +128,7 @@ let grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
                                 (err, contratoSave_result) => {
 
         if (err) {
-            let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({

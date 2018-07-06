@@ -9,6 +9,7 @@ import { Remesas } from '/imports/collections/principales/remesas';
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('RemesaExportarArchivoTexto_Modal_Controller',
 ['$scope', '$modalInstance', '$modal', 'remesa', 'tiposCuentaContable', 'cuentasContablesLista', 'cuentasContables', 'ciaSeleccionada', 'uiGridConstants',
@@ -52,7 +53,7 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
                 Meteor.call('remesas.obtenerAsientoContable', remesa._id, ciaSeleccionada, resolve, (err, result) => {
             
                     if (err) {
-                        let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                        let errorMessage = mensajeErrorDesdeMethod_preparar(err);
         
                         $scope.alerts.length = 0;
                         $scope.alerts.push({

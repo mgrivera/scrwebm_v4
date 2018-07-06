@@ -1,6 +1,6 @@
 ﻿
 
-
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 
 angular.module("scrwebM").controller("RamosController", ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {
@@ -172,7 +172,7 @@ angular.module("scrwebM").controller("RamosController", ['$scope', '$stateParams
           Meteor.call('ramosSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

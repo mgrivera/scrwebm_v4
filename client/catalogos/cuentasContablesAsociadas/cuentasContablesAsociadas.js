@@ -1,5 +1,7 @@
 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { CuentasContables } from '/imports/collections/catalogos/cuentasContables';
@@ -71,6 +73,7 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
         enableSorting: true,
         showColumnFooter: false,
         showGridFooter: true, 
+        enableFiltering: true,
         enableCellEdit: false,
         enableCellEditOnFocus: true,
         enableRowSelection: false,
@@ -128,6 +131,11 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
+
+            filter: {
+                condition: ui_grid_filterBy_tipoCuentaContable, 
+            },
+
             type: 'number'
         },
         {
@@ -147,6 +155,11 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
+
+            filter: {
+                condition: ui_grid_filterBy_moneda, 
+            },
+
             type: 'number'
         },
         {
@@ -166,6 +179,11 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
+
+            filter: {
+                condition: ui_grid_filterBy_compania, 
+            },
+
             type: 'number'
         },
         {
@@ -185,6 +203,11 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
+
+            filter: {
+                condition: ui_grid_filterBy_origen, 
+            },
+
             type: 'string'
         },
         {
@@ -204,6 +227,11 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
+
+            filter: {
+                condition: ui_grid_filterBy_cuentaContable, 
+            },
+
             type: 'string'
         },
         {
@@ -322,7 +350,7 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
         Meteor.call('cuentasContablesAsociadas.save', editedItems, (err, result) => {
 
         if (err) {
-            let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -354,5 +382,137 @@ angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$
         $scope.$apply();
         })
     }
+
+    // ------------------------------------------------------------------------------------
+    // para filtrar desde el ui-grid por tipo de cuenta ... 
+    function ui_grid_filterBy_tipoCuentaContable(searchTerm, cellValue, row, column) {
+
+        // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
+
+        if (!cellValue) { 
+            // el cell no contiene un valor (ie: está vacío) 
+            return false; 
+        }
+
+        let tipoCuentaContable = $scope.tiposCuentaContable.find(x => x.tipo === cellValue); 
+    
+        // ésto no debe ocurrir nunca ... 
+        if (!tipoCuentaContable || !tipoCuentaContable.descripcion) { 
+            return true; 
+        }
+    
+        let regexp = RegExp(searchTerm, 'gi');
+        let matches = tipoCuentaContable.descripcion.match(regexp);
+        
+        if (matches) { 
+            return true;
+        }
+    
+        return false;
+    }
+
+    function ui_grid_filterBy_moneda(searchTerm, cellValue, row, column) {
+
+        // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
+
+        if (!cellValue) { 
+            // el cell no contiene un valor (ie: está vacío) 
+            return false; 
+        }
+
+        let moneda = $scope.monedas.find(x => x._id === cellValue); 
+    
+        // ésto no debe ocurrir nunca ... 
+        if (!moneda || !moneda.simbolo) { 
+            return true; 
+        }
+    
+        let regexp = RegExp(searchTerm, 'gi');
+        let matches = moneda.simbolo.match(regexp);
+        
+        if (matches) { 
+            return true;
+        }
+    
+        return false;
+    }
+
+    function ui_grid_filterBy_compania(searchTerm, cellValue, row, column) {
+
+        // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
+
+        if (!cellValue) { 
+            // el cell no contiene un valor (ie: está vacío) 
+            return false; 
+        }
+
+        let compania = $scope.companias.find(x => x._id === cellValue); 
+    
+        // ésto no debe ocurrir nunca ... 
+        if (!compania || !compania.abreviatura) { 
+            return true; 
+        }
+    
+        let regexp = RegExp(searchTerm, 'gi');
+        let matches = compania.abreviatura.match(regexp);
+        
+        if (matches) { 
+            return true;
+        }
+    
+        return false;
+    }
+
+    function ui_grid_filterBy_origen(searchTerm, cellValue, row, column) {
+
+        // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
+
+        if (!cellValue) { 
+            // el cell no contiene un valor (ie: está vacío) 
+            return false; 
+        }
+
+        let origen = $scope.origenes.find(x => x.origen === cellValue); 
+    
+        // ésto no debe ocurrir nunca ... 
+        if (!origen || !origen.descripcion) { 
+            return true; 
+        }
+    
+        let regexp = RegExp(searchTerm, 'gi');
+        let matches = origen.descripcion.match(regexp);
+        
+        if (matches) { 
+            return true;
+        }
+    
+        return false;
+    }
+
+    function ui_grid_filterBy_cuentaContable(searchTerm, cellValue, row, column) {
+
+        // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
+
+        if (!cellValue) { 
+            // el cell no contiene un valor (ie: está vacío) 
+            return false; 
+        }
+
+        let cuentaContable = $scope.cuentasContablesLista.find(x => x.cuenta === cellValue); 
+    
+        // ésto no debe ocurrir nunca ... 
+        if (!cuentaContable || !cuentaContable.descripcion) { 
+            return true; 
+        }
+    
+        let regexp = RegExp(searchTerm, 'gi');
+        let matches = cuentaContable.descripcion.match(regexp);
+        
+        if (matches) { 
+            return true;
+        }
+    
+        return false;
+    }
 }
-]);
+])

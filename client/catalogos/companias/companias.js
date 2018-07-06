@@ -1,6 +1,8 @@
 
 
 import lodash from 'lodash';
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
@@ -420,7 +422,7 @@ angular.module("scrwebM").controller("CompaniasController",
           Meteor.call('companiasSave', editedItems, (err, result)  => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

@@ -10,6 +10,8 @@ import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativ
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
 angular.module("scrwebM").controller("RiesgosFiltroController",
 ['$scope', '$state', '$stateParams', '$meteor', function ($scope, $state, $stateParams, $meteor) {
 
@@ -80,7 +82,7 @@ angular.module("scrwebM").controller("RiesgosFiltroController",
           Meteor.call('riesgos.leerDesdeMongo', JSON.stringify($scope.filtro), $scope.companiaSeleccionada._id, (err, result) => {
 
               if (err) {
-                  let errorMessage = ClientGlobal_Methods.mensajeErrorDesdeMethod_preparar(err);
+                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({
