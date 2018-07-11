@@ -194,6 +194,23 @@ Meteor.methods(
                 cuotas.push(cuota);
             });
 
+            // determinamos una especie de corretaje para el reasegurador; este corretaje no tiene que ser correcto; es, simplemente, la 
+            // diferencia entre su pb y su pn ... 
+            let corretajeReasegurador = 0; 
+            let corretajePorc = 0; 
+
+            if (primas && primas.primaBruta) { 
+                corretajeReasegurador = primas.primaBruta; 
+            }
+
+            if (primas && primas.primaNeta) { 
+                corretajeReasegurador -= primas.primaNeta; 
+            }
+
+            if (primas && primas.primaBruta) { 
+                corretajePorc = corretajeReasegurador * 100 / primas.primaBruta; 
+            }
+
             reaseguradorItem = {
                 nombreReasegurador: reaseguradorItem && reaseguradorItem.nombre ? reaseguradorItem.nombre : 'Indefinido',
                 atencion: persona ? persona : "",
@@ -230,6 +247,8 @@ Meteor.methods(
                 impuestoPorc: primas && primas.impuestoPorc ? `${numeral(abs(primas.impuestoPorc)).format('0,0.00')}%` : numeral(0).format('0,0.00'),
                 impuesto: primas && primas.impuesto ? numeral(abs(primas.impuesto)).format('0,0.00'): numeral(0).format('0,0.00'),
                 primaNeta: primas && primas.primaNeta ? numeral(abs(primas.primaNeta)).format('0,0.00'): numeral(0).format('0,0.00'),
+                corretajeReasegurador: numeral(abs(corretajeReasegurador)).format('0,0.00'),
+                corretajePorc: numeral(abs(corretajePorc)).format('0.00'),
 
                 cuotas: cuotas,
             };
