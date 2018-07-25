@@ -1,4 +1,5 @@
 
+
 import { Cierre } from '../../../imports/collections/cierre/cierre'; 
 
 export class ProtegerEntidades { 

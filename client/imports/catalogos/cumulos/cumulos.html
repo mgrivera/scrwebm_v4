@@ -1,0 +1,77 @@
+
+
+
+<div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+    
+    <div class="row" style="text-align: left; ">
+        <div class="col-sm-10 col-sm-offset-1">
+            <p> 
+                (Ejemplos de tipos de cúmulo: inundación, motín, terremoto, etc.)
+            </p>
+        </div>
+    </div>
+    
+    <div class="row" style="text-align: center; ">
+        <div class="col-sm-5 col-sm-offset-1">
+            <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Tipos de cúmulo</a></li>
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li>
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="col-sm-5 col-sm-offset-0">
+            <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Zonas (para el cúmulo seleccionado)</a></li>
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="agregarZona()">Nuevo <span class="fa fa-file-o"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row" style="text-align: center; ">
+        <div class="col-sm-5 col-sm-offset-1">
+            <div ui-grid="list_ui_grid"
+                    ui-grid-edit
+                    ui-grid-selection
+                    ui-grid-cellnav
+                    ui-grid-resize-columns
+                    class="angularGrid"
+                    style="height: 250px; width: 100%; ">
+            </div>
+        </div>
+
+        <div class="col-sm-5 col-sm-offset-0">
+            <div ui-grid="zonas_ui_grid"
+                ui-grid-edit
+                ui-grid-cellnav
+                ui-grid-resize-columns
+                class="angularGrid"
+                style="height: 250px; width: 100%; ">
+            </div>
+        </div>
+    </div>
+    

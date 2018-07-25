@@ -7,7 +7,7 @@ import * as angular from 'angular';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
-import { Cierre, Cierre_schema } from 'imports/collections/cierre/cierre'; 
+import { Cierre, Cierre_schema } from '../../../imports/collections/cierre/cierre'; 
 import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 

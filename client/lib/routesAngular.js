@@ -15,7 +15,8 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('catalogos', {
             url: '/catalogos',
-            templateUrl: 'client/catalogos/catalogos.html'
+            templateUrl: 'client/catalogos/catalogos.html', 
+            controller: 'Catalogos_Controller'
         })
 
         // configuración de contratos proporcionales
@@ -90,6 +91,16 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
             url: '/indoles',
             templateUrl: 'client/catalogos/indoles.html',
             controller: 'IndolesController'
+        })
+        .state('catalogos.tiposObjetoAsegurado', {
+            url: '/tiposObjetoAsegurado',
+            templateUrl: 'client/imports/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado.html',
+            controller: 'TiposObjetoAseguradoController'
+        })
+        .state('catalogos.cumulos', {
+            url: '/cumulos',
+            templateUrl: 'client/imports/catalogos/cumulos/cumulos.html',
+            controller: 'CumulosController'
         })
         .state('catalogos.suscriptores', {
             url: '/suscriptores',

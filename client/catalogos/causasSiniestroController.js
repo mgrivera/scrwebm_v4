@@ -2,8 +2,7 @@
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("CausasSiniestroController",
-  function ($scope, $stateParams, $meteor) {
+angular.module("scrwebM").controller("CausasSiniestroController", function ($scope) {
 
       $scope.showProgress = false;
 
