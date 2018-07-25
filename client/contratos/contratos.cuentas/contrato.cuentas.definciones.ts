@@ -7,7 +7,7 @@ import * as angular from 'angular';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
-import { Monedas } from '../../../imports/collections/catalogos/monedas'; 
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 

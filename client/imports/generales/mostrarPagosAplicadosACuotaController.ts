@@ -3,7 +3,7 @@
 import * as lodash from 'lodash';
 import * as angular from 'angular';
 
-import { userHasRole } from 'client/imports/generales/userHasRole';  
+import { userHasRole } from './userHasRole';  
 
 import { Cuotas } from 'imports/collections/principales/cuotas'; 
 

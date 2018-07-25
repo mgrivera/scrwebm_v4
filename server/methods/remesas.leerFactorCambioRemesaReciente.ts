@@ -3,7 +3,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 
-import { Remesas } from '../../imports/collections/principales/remesas'; 
+import { Remesas } from 'imports/collections/principales/remesas'; 
 
 Meteor.methods({
     'remesas.leerFactorCambioRemesaReciente': function (fecha) {

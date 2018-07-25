@@ -7,27 +7,27 @@ import * as moment from 'moment';
 import * as numeral from 'numeral'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import { CierreRegistro } from '../../../imports/collections/cierre/registroCierre'; 
-import { Cierre, Cierre_schema } from '../../../imports/collections/cierre/cierre'; 
-import { Riesgos } from '../../../imports/collections/principales/riesgos';  
-import { Siniestros } from '../../../imports/collections/principales/siniestros'; 
-import { Contratos } from '../../../imports/collections/principales/contratos'; 
-import { Remesas } from '../../../imports/collections/principales/remesas';  
-import { Monedas } from '../../../imports/collections/catalogos/monedas'; 
-import { Bancos } from '../../../imports/collections/catalogos/bancos'; 
-import { CuentasBancarias } from '../../../imports/collections/catalogos/cuentasBancarias'; 
-import { Companias } from '../../../imports/collections/catalogos/companias'; 
-import { Asegurados } from '../../../imports/collections/catalogos/asegurados'; 
-import { Cuotas } from '../../../imports/collections/principales/cuotas'; 
+import { CierreRegistro } from 'imports/collections/cierre/registroCierre'; 
+import { Cierre, Cierre_schema } from 'imports/collections/cierre/cierre'; 
+import { Riesgos } from 'imports/collections/principales/riesgos';  
+import { Siniestros } from 'imports/collections/principales/siniestros'; 
+import { Contratos } from 'imports/collections/principales/contratos'; 
+import { Remesas } from 'imports/collections/principales/remesas';  
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Bancos } from 'imports/collections/catalogos/bancos'; 
+import { CuentasBancarias } from 'imports/collections/catalogos/cuentasBancarias'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
+import { Cuotas } from 'imports/collections/principales/cuotas'; 
 
 // siguen todos las tablas (collections) para el registro de contratos proporcionales 
-import { ContratosProp_cuentas_saldos, } from '../../../imports/collections/principales/contratos'; 
-import { ContratosProp_comAdic_montosFinales, } from '../../../imports/collections/principales/contratos'; 
-import { ContratosProp_partBeneficios_montosFinales, } from '../../../imports/collections/principales/contratos'; 
-import { ContratosProp_entCartPr_montosFinales, } from '../../../imports/collections/principales/contratos'; 
-import { ContratosProp_entCartSn_montosFinales, } from '../../../imports/collections/principales/contratos'; 
-import { ContratosProp_retCartPr_montosFinales, } from '../../../imports/collections/principales/contratos'; 
-import { ContratosProp_retCartSn_montosFinales, } from '../../../imports/collections/principales/contratos'; 
+import { ContratosProp_cuentas_saldos, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_comAdic_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_partBeneficios_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_entCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_entCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_retCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_retCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
 
 Meteor.methods({
 
@@ -53,6 +53,7 @@ Meteor.methods({
         // -----------------------------------------------------------------------------------------------------------------
         // leemos la cuotas para el período y las grabamos al registro
         let userEmail = Meteor.user().emails[0].address;
+        
         let cuotasAgregadas = 0; 
 
         // -------------------------------------------------------------------------------------------------------------
@@ -624,7 +625,6 @@ function grabarAlCierreRegistrosComplementario(tipoComplementario, contrato, def
     // en esta función leemos registros de un complementario en particular, comAdic, partBenef, entCartPr, etc., y los grabamos a 
     // la tabla de registros del cierre. Como son hasta seis tipos de complementario diferentes, centralizamos este código en esta
     // función para no repetirlo por cada tipo de complementario 
-
     let userEmail = Meteor.user().emails[0].address;
     let descripcion: string = ""; 
     let categoria = ""; 

@@ -7,10 +7,10 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import { Remesas } from '../../imports/collections/principales/remesas';  
-import { Temp_Consulta_Remesas } from '../../imports/collections/consultas/tempConsultaRemesas'; 
-import { Monedas } from '../../imports/collections/catalogos/monedas'; 
-import { Companias } from '../../imports/collections/catalogos/companias'; 
+import { Remesas } from 'imports/collections/principales/remesas';  
+import { Temp_Consulta_Remesas } from 'imports/collections/consultas/tempConsultaRemesas'; 
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
 
 Meteor.methods(
 {

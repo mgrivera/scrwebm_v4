@@ -3,7 +3,7 @@
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 
-import { Consulta_MontosPendientesPago_Vencimientos_config } from '../../../../imports/collections/consultas/consultas_MontosPendientesPago_Vencimientos'; 
+import { Consulta_MontosPendientesPago_Vencimientos_config } from 'imports/collections/consultas/consultas_MontosPendientesPago_Vencimientos'; 
 
 Meteor.methods(
 {

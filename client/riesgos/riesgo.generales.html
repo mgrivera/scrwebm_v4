@@ -110,6 +110,7 @@
                                    class="form-control input-sm myinput-sm"
                                    ng-model="riesgo.desde"
                                    ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }"
                                    ng-required="true"
                                    style="max-width: 150px; " />
                         </div>
@@ -126,6 +127,7 @@
                                    class="form-control input-sm myinput-sm"
                                    ng-model="riesgo.hasta"
                                    ng-change="setIsEdited()"
+                                   ng-model-options="{ updateOn: 'blur' }"
                                    ng-required="true"
                                    style="max-width: 150px; " />
                         </div>
@@ -205,26 +207,6 @@
             </div>
 
             <div class="row">
-
-                <!-- OKEY: este es el original ... 
-
-                    <div class="col-sm-5 col-sm-offset-1">
-                    <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Asegurado: </label>
-                        <div class="col-sm-9">
-                            <select class="form-control input-sm myinput-sm"
-                                    name="asegurado"
-                                    ng-model="riesgo.asegurado"
-                                    ng-change="setIsEdited()"
-                                    ng-options="item._id as item.nombre for item in asegurados | orderBy:'nombre'"
-                                    ng-model-options="{ updateOn: 'blur' }"
-                                    required></select>
-                        </div>
-                    </div>
-                </div> 
-                
-                -->
-
 
                 <!-- asegurado -->
                 <div class="col-sm-5 col-sm-offset-1">

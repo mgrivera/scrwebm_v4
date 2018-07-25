@@ -2,13 +2,13 @@
 
 import * as angular from 'angular'; 
 import * as lodash from 'lodash';
-import { Monedas } from '../../../imports/collections/catalogos/monedas'; 
-import { Companias } from '../../../imports/collections/catalogos/companias'; 
-import { Ramos } from '../../../imports/collections/catalogos/ramos'; 
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Ramos } from 'imports/collections/catalogos/ramos'; 
 import { TiposContrato } from 'imports/collections/catalogos/tiposContrato';  
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
-import { ContProp_tablaConf } from 'client/lib/forerunnerDB'; 
+import { ContProp_tablaConf } from '../../lib/forerunnerDB'; 
 
 angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Construir_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', '$interval', 

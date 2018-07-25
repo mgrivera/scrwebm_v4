@@ -7,12 +7,12 @@ import * as angular from 'angular';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
-import { Monedas } from '../../../imports/collections/catalogos/monedas'; 
-import { Companias } from '../../../imports/collections/catalogos/companias'; 
-import { Ramos } from '../../../imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from '../../../imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from '../../../imports/collections/catalogos/companiaSeleccionada'; 
-import { ContratosProp_Configuracion_Tablas } from '../../../imports/collections/catalogos/ContratosProp_Configuracion';
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Ramos } from 'imports/collections/catalogos/ramos'; 
+import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { ContratosProp_Configuracion_Tablas } from 'imports/collections/catalogos/ContratosProp_Configuracion';
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 

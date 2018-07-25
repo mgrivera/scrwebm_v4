@@ -1,6 +1,5 @@
 
 
-
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
@@ -27,5 +26,5 @@ export const Cierre_schema = new SimpleSchema({
     docState: { type: Number, optional: true, }, 
 })
 
-export const Cierre = new Mongo.Collection("cierre");
+export const Cierre: any = new Mongo.Collection("cierre");
 Cierre.attachSchema(Cierre_schema);

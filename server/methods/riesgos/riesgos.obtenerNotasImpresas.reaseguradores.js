@@ -12,8 +12,9 @@ import SimpleSchema from 'simpl-schema';
 // para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
 // para poder hacer un download (usando el url) desde el client ...
 import { grabarDatosACollectionFS_regresarUrl } from '/server/imports/general/grabarDatosACollectionFS_regresarUrl';
-import { Riesgos } from '/imports/collections/principales/riesgos'; 
+import { leerInfoAutos } from '/server/imports/general/riesgos_leerInfoAutos'; 
 
+import { Riesgos } from '/imports/collections/principales/riesgos'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -211,6 +212,12 @@ Meteor.methods(
                 corretajePorc = corretajeReasegurador * 100 / primas.primaBruta; 
             }
 
+            // leemos los datos del auto, si el ramo es automovil y si se han registrado ... 
+            let infoAutos = {}; 
+            if (ramo.tipoRamo && ramo.tipoRamo === 'automovil') { 
+                infoAutos = leerInfoAutos(riesgoID, movimientoID); 
+            }
+
             reaseguradorItem = {
                 nombreReasegurador: reaseguradorItem && reaseguradorItem.nombre ? reaseguradorItem.nombre : 'Indefinido',
                 atencion: persona ? persona : "",
@@ -235,6 +242,13 @@ Meteor.methods(
                 vigPolHasta: riesgo.hasta ? moment(riesgo.hasta).format('DD-MMM-YYYY') : '',
                 vigCesDesde: movimiento.desde ? moment(movimiento.desde).format('DD-MMM-YYYY') : '',
                 vigCesHasta: movimiento.hasta ? moment(movimiento.hasta).format('DD-MMM-YYYY') : '',
+
+                // infoAutos: solo viene para ramo automovil ... 
+                marca: infoAutos.marca ? infoAutos.marca : "", 
+                modelo: infoAutos.modelo ? infoAutos.modelo : "", 
+                año: infoAutos.año ? infoAutos.año : "", 
+                placa: infoAutos.placa ? infoAutos.placa : "", 
+                serialCarroceria: infoAutos.serialCarroceria ? infoAutos.serialCarroceria : "",
 
                 valoresARiesgo: numeral(abs(valoresARiesgo)).format('0,0.00'),
                 sumaAsegurada: numeral(abs(sumaAsegurada)).format('0,0.00'),

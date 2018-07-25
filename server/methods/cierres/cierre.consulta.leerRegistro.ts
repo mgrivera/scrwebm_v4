@@ -6,12 +6,12 @@ import * as numeral from 'numeral';
 import * as lodash from 'lodash'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import { CierreRegistro } from '../../../imports/collections/cierre/registroCierre'; 
-import { Temp_consulta_cierreRegistro } from '../../../imports/collections/consultas/temp_consulta_cierreRegistro'; 
-import { Monedas } from '../../../imports/collections/catalogos/monedas'; 
-import { Companias } from '../../../imports/collections/catalogos/companias'; 
-import { EmpresasUsuarias } from '../../../imports/collections/catalogos/empresasUsuarias';
-import { Contratos, ContratosProp_cuentas_saldos } from '../../../imports/collections/principales/contratos'; 
+import { CierreRegistro } from 'imports/collections/cierre/registroCierre'; 
+import { Temp_consulta_cierreRegistro } from 'imports/collections/consultas/temp_consulta_cierreRegistro'; 
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
+import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias';
+import { Contratos, ContratosProp_cuentas_saldos } from 'imports/collections/principales/contratos'; 
 
 Meteor.methods({
 

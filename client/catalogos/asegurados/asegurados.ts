@@ -3,11 +3,10 @@
 import * as angular from 'angular';
 import * as lodash from 'lodash'; 
 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
 
-angular.module("scrwebM").controller("AseguradosController",
-    ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {
+angular.module("scrwebM").controller("AseguradosController", ['$scope', function ($scope) {
 
     $scope.showProgress = false;
 
@@ -102,7 +101,8 @@ angular.module("scrwebM").controller("AseguradosController",
     // subscriptions ...
     $scope.showProgress = true;
 
-    $meteor.subscribe('asegurados').then(function (subscriptionHandle) {
+   
+    Meteor.subscribe('asegurados', () => {
 
         $scope.helpers({
             asegurados: () => {

@@ -1,6 +1,6 @@
 
 
-import { Consulta_MontosPendientes_config } from '../../../../imports/collections/consultas/consulta_MontosPendientes'; 
+import { Consulta_MontosPendientes_config } from 'imports/collections/consultas/consulta_MontosPendientes'; 
 
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 

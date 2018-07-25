@@ -216,3 +216,22 @@ let Riesgo_SimpleSchema = new SimpleSchema({
 
 export const Riesgos: any = new Mongo.Collection("riesgos");
 Riesgos.attachSchema(Riesgo_SimpleSchema);
+
+// Nota importante: aunque definimos este esquema, solo lo usamos para validar los registros que el usuario agregue para el 
+// ramo Autos; la idea es que en esta tabla existan registros de ramos diferentes; para cada ramo, la estructura del 
+// registro cambiará ... 
+export const Riesgo_InfoRamos_Autos_SimpleSchema = new SimpleSchema({
+    _id: { type: String, optional: false },
+    riesgoID: { type: String, optional: false },
+    movimientoID: { type: String, optional: false },
+
+    marca: { type: String, optional: false },
+    modelo: { type: String, optional: false },
+    ano: { type: SimpleSchema.Integer, optional: false },
+    placa: { type: String, optional: false },
+    serialCarroceria: { type: String, optional: true },
+    
+    docState: { type: Number, optional: true }
+})
+
+export const Riesgos_InfoRamo: any = new Mongo.Collection("riesgos_infoRamo");

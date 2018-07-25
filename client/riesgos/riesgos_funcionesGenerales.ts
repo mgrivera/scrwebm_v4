@@ -25,7 +25,7 @@ export let copiarRiesgoEnUnoNuevo = function (riesgoACopiar) {
     // nótese como reasignamos valores para campos _id, para que sean diferentes ...
     if (nuevoRiesgo.documentos) {
         nuevoRiesgo.documentos.forEach(function (x) { x._id = new Mongo.ObjectID()._str; });
-    };
+    }
 
 
     if (nuevoRiesgo.movimientos) {

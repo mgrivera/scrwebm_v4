@@ -7,12 +7,12 @@ import * as angular from 'angular';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
-import { Cierre, Cierre_schema } from '../../../imports/collections/cierre/cierre'; 
-import { EmpresasUsuarias } from '../../../imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from '../../../imports/collections/catalogos/companiaSeleccionada'; 
+import { Cierre, Cierre_schema } from 'imports/collections/cierre/cierre'; 
+import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 
-import { DialogModal } from '../../../client/imports/generales/angularGenericModal'; 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("Cierre.periodosDeCierre.Controller",
 ['$stateParams', '$scope', '$meteor', '$modal', function ($stateParams, $scope, $meteor, $modal) {

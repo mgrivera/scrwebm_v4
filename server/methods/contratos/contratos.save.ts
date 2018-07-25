@@ -14,8 +14,8 @@ import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, 
 import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
 import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
 
-import { mongoCollection_array_grabar } from 'server/imports/general/mongoCollection.grabar'; 
-import { calcularNumeroReferencia } from 'server/imports/general/calcularNumeroReferencia'; 
+import { mongoCollection_array_grabar } from '../../imports/general/mongoCollection.grabar'; 
+import { calcularNumeroReferencia } from '../../imports/general/calcularNumeroReferencia'; 
 
 Meteor.methods(
 {

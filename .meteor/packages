@@ -40,9 +40,9 @@ richsilv:dumb-collections@=1.1.5
 twbs:bootstrap@=3.3.5
 accounts-password@1.5.0
 check@1.2.5
-angular-templates
 dynamic-import@0.2.1
 meteorhacks:aggregate@=1.3.0
 aldeed:collection2-core@=2.0.1
 barbatus:typescript
 jamiecollinson:selectize-bootstrap
+angular-templates

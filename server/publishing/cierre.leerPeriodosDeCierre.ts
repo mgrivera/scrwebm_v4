@@ -1,9 +1,8 @@
 
-
-import { Cierre } from '../../imports/collections/cierre/cierre'; 
-
 import SimpleSchema from 'simpl-schema'; 
 import { Meteor } from 'meteor/meteor'; 
+
+import { Cierre } from '../../imports/collections/cierre/cierre'; 
 
 Meteor.publish("cierre.leerPeriodosDeCierre", function (filtro, cantRecords) {
 
@@ -14,5 +13,7 @@ Meteor.publish("cierre.leerPeriodosDeCierre", function (filtro, cantRecords) {
 
     const options = { sort: { desde: -1, }, limit: cantRecords, };
 
-    return Cierre.find(filtro, options);
+    return [ 
+        Cierre.find(filtro, options) 
+    ];
 })

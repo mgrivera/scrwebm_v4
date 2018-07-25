@@ -2,8 +2,10 @@
 
 
 import SimpleSchema from 'simpl-schema';
-import moment from 'moment'; 
-import { Riesgos } from '/imports/collections/principales/riesgos';  
+import * as moment from 'moment'; 
+import { Riesgos } from 'imports/collections/principales/riesgos';  
+
+import { calcularNumeroReferencia } from '../../imports/general/calcularNumeroReferencia'; 
 
 Meteor.methods({
     'riesgos.renovar': function (riesgoOriginal, parametros) {
@@ -60,7 +62,7 @@ Meteor.methods({
         if (riesgoOriginal.documentos && riesgoOriginal.documentos.length) { 
             riesgoOriginal.documentos.forEach((x) => { 
                 x._id = new Mongo.ObjectID()._str;          // asignamos un nuevo id al item
-                riesgoNuevo.documentos.push(x); 
+                riesgoNuevo.documentos.push(x as never); 
             })
         }
 
@@ -68,7 +70,7 @@ Meteor.methods({
         if (riesgoOriginal.personas && riesgoOriginal.personas.length) { 
             riesgoOriginal.personas.forEach((x) => { 
                 // los items en el array de personas no tienen un _id; creo que ésto se nos pasó en su momento (????)
-                riesgoNuevo.personas.push(x); 
+                riesgoNuevo.personas.push(x as never); 
             })
         }
 
@@ -83,20 +85,20 @@ Meteor.methods({
 
         // determinamos una referencia para el riesgo 
         let ano = parseInt(moment(riesgoNuevo.desde).format('YYYY'));
-        let result = ServerGlobal_Methods.calcularNumeroReferencia('fac', riesgoNuevo.tipo, ano, riesgoNuevo.cia);
+        let result = calcularNumeroReferencia('fac', riesgoNuevo.tipo, ano, riesgoNuevo.cia);
 
         if (result.error) {
             throw new Meteor.Error("error-asignar-referencia",
                 `Hemos obtenido un error al intentar asignar un número de referencia:<br />${result.message}`);
         }
-        riesgoNuevo.referencia = result.referencia;
+        riesgoNuevo.referencia = result.referencia as string;
 
         // leemos, y agregamos al nuevo riesgo, el último movimiento del riesgo original 
         if (riesgoOriginal.movimientos && riesgoOriginal.movimientos.length) { 
-            riesgoNuevo.movimientos.push(riesgoOriginal.movimientos[riesgoOriginal.movimientos.length - 1]); 
+            riesgoNuevo.movimientos.push(riesgoOriginal.movimientos[riesgoOriginal.movimientos.length - 1] as never); 
 
             // asignamos la nueva vigencia y determinamos la cantidad de días y el factor prorrata
-            let movimiento = riesgoNuevo.movimientos[0]; 
+            let movimiento: any = riesgoNuevo.movimientos[0]; 
 
             movimiento._id = new Mongo.ObjectID()._str; 
             movimiento.numero = 1; 

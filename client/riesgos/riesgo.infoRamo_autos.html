@@ -1,4 +1,6 @@
-﻿
+
+
+
 <div class="ui-viewBorder">
 
     <div class="row">
@@ -29,23 +31,14 @@
                         <ul class="nav navbar-nav">
                             <li><a href="#" class="navbar_custom_small_header">Productores</a></li>
 
-                            <li><a href="#" ng-click="agregarProductor()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
-                            <li><a href="#" ng-click="eliminarProductor()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Eliminar <i style="color: red; " class="fa fa-remove"></i></a></li>
-
-                            <li class="divider-vertical-small"></li>
-                            <li><a href="#" ng-click="refrescarGridProductores()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'"> <i class="fa fa-refresh"></i></a></li>
-                            <li class="divider-vertical-small"></li>
-
-                            <li><a href="#" ng-click="productoresCalcular()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Calcular <i style="color: darkgray; " class="fa fa-gears"></i></a></li>
-                            <li><a href="#" ng-click="productoresDeterminarCorretaje()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Determinar corretaje </a></li>
-                            <li class="divider-vertical-small"></li>
-                            <li><a href="#" ng-click="determinarYRegistrarCuotasProductor()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Agregar cuotas <i style="color: #719163; " class="fa fa-dollar"></i></a></li>
+                            <li><a href="#" ng-click="agregarInfoRamo()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Nuevo <i class="fa fa-plus-circle"></i></a></li>
+                            <li><a href="#" ng-click="editarInfoRamo()" class="navbar_custom_xsmall_node" ng-if="origen='edicion'">Editar <i class="fa fa-edit"></i></a></li>
                         </ul>
                     </div>
                 </div>
             </nav>
 
-            <div ui-grid="productores_ui_grid"
+            <div ui-grid="infoRamo_ui_grid"
                  ui-grid-edit
                  ui-grid-cellnav
                  ui-grid-resize-columns

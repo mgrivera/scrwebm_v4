@@ -1,6 +1,6 @@
 
 
-import { Consulta_Corretaje_config } from '../../../../imports/collections/consultas/consulta_corretaje'; 
+import { Consulta_Corretaje_config } from 'imports/collections/consultas/consulta_corretaje'; 
 
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 

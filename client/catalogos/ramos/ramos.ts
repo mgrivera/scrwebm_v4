@@ -1,18 +1,26 @@
 ﻿
 
-import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import * as angular from 'angular';
 
-angular.module("scrwebM").controller("RamosController", ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {
+import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { Ramos } from 'imports/collections/catalogos/ramos'; 
 
-      $scope.showProgress = false;
+angular.module("scrwebM").controller("RamosController", ['$scope', function ($scope) {
 
-      // ui-bootstrap alerts ...
-      $scope.alerts = [];
+    $scope.showProgress = false;
 
-      $scope.closeAlert = function (index) {
-          $scope.alerts.splice(index, 1);
-      };
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
+
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+    // para identificar el tipo de ramo y asociar información específica; por ejemplo, al ramo autos, se puede asociar 
+    // placa, marca, modelo, etc. Esto, cuando el usuario registra el riesgo ... 
+    $scope.tiposRamo = [
+        { tipo: 'automovil', descripcion: 'Automóvil' },
+    ]
 
       $scope.ramos_ui_grid = {
           enableSorting: true,
@@ -43,63 +51,78 @@ angular.module("scrwebM").controller("RamosController", ['$scope', '$stateParams
           getRowIdentity: function (row) {
               return row._id;
           }
-      };
+      }
 
       $scope.ramos_ui_grid.columnDefs = [
-               {
-                   name: 'docState',
-                   field: 'docState',
-                   displayName: '',
-                   cellTemplate:
-                        '<span ng-show="row.entity[col.field] == 1" class="fa fa-asterisk" style="color: blue; font: xx-small; padding-top: 8px; "></span>' +
-                        '<span ng-show="row.entity[col.field] == 2" class="fa fa-pencil" style="color: brown; font: xx-small; padding-top: 8px; "></span>' +
-                        '<span ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
-                   enableCellEdit: false,
-                   enableColumnMenu: false,
-                   enableSorting: false,
-                   width: 25
-               },
-              {
-                  name: 'descripcion',
-                  field: 'descripcion',
-                  displayName: 'Descripción',
-                  width: 250,
-                  headerCellClass: 'ui-grid-leftCell',
-                  cellClass: 'ui-grid-leftCell',
-                  enableColumnMenu: false,
-                  enableCellEdit: true,
-                  enableSorting: true,
-                  type: 'string'
-              },
-              {
-                  name: 'abreviatura',
-                  field: 'abreviatura',
-                  displayName: 'Abreviatura',
-                  width: 120,
-                  headerCellClass: 'ui-grid-leftCell',
-                  cellClass: 'ui-grid-leftCell',
-                  enableColumnMenu: false,
-                  enableCellEdit: true,
-                  enableSorting: true,
-                  type: 'string'
-              },
-              {
-                  name: 'delButton',
-                  displayName: '',
-                  cellTemplate: '<span ng-click="grid.appScope.deleteItem(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
-                  enableCellEdit: false,
-                  enableSorting: false,
-                  width: 25
-              }
-      ];
+            {
+                name: 'docState',
+                field: 'docState',
+                displayName: '',
+                cellTemplate:
+                    '<span ng-show="row.entity[col.field] == 1" class="fa fa-asterisk" style="color: blue; font: xx-small; padding-top: 8px; "></span>' +
+                    '<span ng-show="row.entity[col.field] == 2" class="fa fa-pencil" style="color: brown; font: xx-small; padding-top: 8px; "></span>' +
+                    '<span ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
+                enableCellEdit: false,
+                enableColumnMenu: false,
+                enableSorting: false,
+                width: 25
+            },
+            {
+                name: 'descripcion',
+                field: 'descripcion',
+                displayName: 'Descripción',
+                width: 250,
+                headerCellClass: 'ui-grid-leftCell',
+                cellClass: 'ui-grid-leftCell',
+                enableColumnMenu: false,
+                enableCellEdit: true,
+                enableSorting: true,
+                type: 'string'
+            },
+            {
+                name: 'abreviatura',
+                field: 'abreviatura',
+                displayName: 'Abreviatura',
+                width: 120,
+                headerCellClass: 'ui-grid-leftCell',
+                cellClass: 'ui-grid-leftCell',
+                enableColumnMenu: false,
+                enableCellEdit: true,
+                enableSorting: true,
+                type: 'string'
+            },
+            {
+                name: 'tipoRamo',
+                field: 'tipoRamo',
+                displayName: 'Tipo',
+                width: 120,
+                editableCellTemplate: 'ui-grid/dropdownEditor',
+                editDropdownIdLabel: 'tipo',
+                editDropdownValueLabel: 'descripcion',
+                editDropdownOptionsArray: $scope.tiposRamo,
+                cellFilter: 'mapDropdown:row.grid.appScope.tiposRamo:"tipo":"descripcion"',
+                headerCellClass: 'ui-grid-leftCell',
+                cellClass: 'ui-grid-leftCell',
+                enableColumnMenu: false,
+                enableCellEdit: true,
+                type: 'string'
+            },
+            {
+                name: 'delButton',
+                displayName: '',
+                cellTemplate: '<span ng-click="grid.appScope.deleteItem(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+                enableCellEdit: false,
+                enableSorting: false,
+                width: 25
+            }
+      ]
 
 
       // ---------------------------------------------------------
       // subscriptions ...
       $scope.showProgress = true;
 
-      $meteor.subscribe('ramos').then(function (subscriptionHandle) {
-
+      Meteor.subscribe('ramos', () => {
           $scope.helpers({
               ramos: () => {
                   return Ramos.find({}, { sort: { descripcion: 1 } });
@@ -127,7 +150,7 @@ angular.module("scrwebM").controller("RamosController", ['$scope', '$stateParams
           $scope.showProgress = true;
 
           // eliminamos los items eliminados; del $scope y del collection
-          var editedItems = _.filter($scope.ramos, function (item) { return item.docState; });
+          var editedItems = $scope.ramos.filter(x => x.docState);
 
           // nótese como validamos cada item antes de intentar guardar en el servidor
           var isValid = false;
@@ -139,7 +162,7 @@ angular.module("scrwebM").controller("RamosController", ['$scope', '$stateParams
 
                   if (!isValid) {
                       Ramos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
                       });
                   }
               }
@@ -205,4 +228,4 @@ angular.module("scrwebM").controller("RamosController", ['$scope', '$stateParams
             })
       }
   }
-]);
+])

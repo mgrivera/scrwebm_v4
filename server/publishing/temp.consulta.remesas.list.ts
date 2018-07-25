@@ -1,7 +1,7 @@
 
 
 import { Meteor } from 'meteor/meteor'; 
-import { Temp_Consulta_Remesas } from '../../imports/collections/consultas/tempConsultaRemesas'; 
+import { Temp_Consulta_Remesas } from 'imports/collections/consultas/tempConsultaRemesas'; 
 
 Meteor.publish("temp.consulta.remesas.list", function () {
 

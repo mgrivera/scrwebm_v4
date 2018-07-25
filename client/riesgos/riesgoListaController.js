@@ -8,9 +8,8 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("RiesgosListaController",
-['$scope', '$state', '$stateParams', '$meteor', '$modal',
-  function ($scope, $state, $stateParams, $meteor, $modal) {
+angular.module("scrwebM").controller("RiesgosLista_Controller",
+['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
 
     $scope.showProgress = false;
 
@@ -22,17 +21,21 @@ angular.module("scrwebM").controller("RiesgosListaController",
     };
 
     $scope.origen = $stateParams.origen;
-    let limit = parseInt($stateParams.limit);
+
+    let limit = 50; 
+
+    if (Number.isInteger(parseInt($stateParams.limit))) { 
+        limit = parseInt($stateParams.limit);
+    }
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
     var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = {};
     if (companiaSeleccionada) { 
-    companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
     }
         
-
     $scope.companiaSeleccionada = {};
 
     if (companiaSeleccionadaDoc) { 
@@ -43,8 +46,6 @@ angular.module("scrwebM").controller("RiesgosListaController",
         $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
     }
         
-    // ------------------------------------------------------------------------------------------------
-
     $scope.regresar = function () {
         $state.go('riesgosFiltro', { origen: $scope.origen });
     }
@@ -65,8 +66,8 @@ angular.module("scrwebM").controller("RiesgosListaController",
             },
             function (cancel) {
                 return true;
-            });
-    };
+            })
+    }
 
     $scope.nuevo = function () {
         $state.go('riesgo', {
@@ -75,7 +76,7 @@ angular.module("scrwebM").controller("RiesgosListaController",
             limit: limit,
             vieneDeAfuera: false
         });
-    };
+    }
 
 
     let list_ui_grid_api = null;
@@ -299,15 +300,11 @@ angular.module("scrwebM").controller("RiesgosListaController",
         // de los subscriptions también ...
         if (subscriptionHandle && subscriptionHandle.stop) {
             subscriptionHandle.stop();
-        };
+        }
 
-        subscriptionHandle =
-        Meteor.subscribe('temp.consulta.riesgos.list', limit, () => {
+        subscriptionHandle = Meteor.subscribe('temp.consulta.riesgos.list', limit, () => {
 
-            $scope.riesgos = Temp_Consulta_Riesgos.find({ user: Meteor.userId() },
-                                                                { sort: {
-                                                                        numero: 1,
-                                                                }}).fetch();
+            $scope.riesgos = Temp_Consulta_Riesgos.find({ user: Meteor.userId() }, { sort: { numero: 1, }}).fetch();
 
             $scope.list_ui_grid.data = $scope.riesgos;
 
@@ -320,8 +317,8 @@ angular.module("scrwebM").controller("RiesgosListaController",
 
             $scope.showProgress = false;
             $scope.$apply();
-        });
-    };
+        })
+    }
 
 
     // al abrir la página, mostramos los primeros 50 items
@@ -363,32 +360,30 @@ angular.module("scrwebM").controller("RiesgosListaController",
 
 
     $scope.reporteOpcionesModal = function() { 
-    
-    var modalInstance = $modal.open({
-        templateUrl: 'client/riesgos/reportes/opcionesReportModal.html',
-        controller: 'Riesgos_opcionesReportController',
-        size: 'md',
-        resolve: {
-            companiaSeleccionada: function () {
-                return $scope.companiaSeleccionada
+        $modal.open({
+            templateUrl: 'client/riesgos/reportes/opcionesReportModal.html',
+            controller: 'Riesgos_opcionesReportController',
+            size: 'md',
+            resolve: {
+                companiaSeleccionada: function () {
+                    return $scope.companiaSeleccionada
+                },
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
             },
-        }
-    }).result.then(
-        function (resolve) {
-            return true;
-        },
-        function (cancel) {
-            return true;
+            function (cancel) {
+                return true;
         });
     }
 
-      // ------------------------------------------------------------------------------------------------
-      // cuando el usuario sale de la página, nos aseguramos de detener (ie: stop) el subscription,
-      // para limpiar los items en minimongo ...
-      $scope.$on('$destroy', function() {
-          if (subscriptionHandle && subscriptionHandle.stop) {
-              subscriptionHandle.stop();
-          };
-      })
-  }
-]);
+    // ------------------------------------------------------------------------------------------------
+    // cuando el usuario sale de la página, nos aseguramos de detener (ie: stop) el subscription,
+    // para limpiar los items en minimongo ...
+    $scope.$on('$destroy', function() {
+        if (subscriptionHandle && subscriptionHandle.stop) {
+            subscriptionHandle.stop();
+        };
+    })
+}]);

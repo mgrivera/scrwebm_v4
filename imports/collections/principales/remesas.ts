@@ -1,7 +1,7 @@
 
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema'; 
-import { Cierre } from '../../../imports/collections/cierre/cierre'; 
+import { Cierre } from '../cierre/cierre'; 
 import * as moment from 'moment';
 
 

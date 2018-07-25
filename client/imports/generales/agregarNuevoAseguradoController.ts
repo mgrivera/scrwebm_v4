@@ -4,7 +4,7 @@ import * as angular from 'angular';
 
 import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from './mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('AgregarNuevoAsegurado_ModalController',
 ['$scope', '$modalInstance', 'nombre', function ($scope, $modalInstance, nombre) {

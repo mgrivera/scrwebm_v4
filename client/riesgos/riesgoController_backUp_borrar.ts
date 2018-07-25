@@ -20,9 +20,9 @@ import { Coberturas } from 'imports/collections/catalogos/coberturas';
 import { Indoles } from 'imports/collections/catalogos/indoles'; 
 import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
 
-import { determinarSiExistenCuotasConCobrosAplicados } from 'client/imports/generales/determinarSiExistenCuotasCobradas'; 
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
-import { MostrarPagosEnCuotas } from 'client/imports/generales/mostrarPagosAplicadosACuotaController'; 
+import { determinarSiExistenCuotasConCobrosAplicados } from '../imports/generales/determinarSiExistenCuotasCobradas'; 
+import { DialogModal } from '../imports/generales/angularGenericModal'; 
+import { MostrarPagosEnCuotas } from '../imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 angular.module("scrwebM").controller("RiesgoController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants',
@@ -268,902 +268,899 @@ angular.module("scrwebM").controller("RiesgoController",
             };
         }
     );
-    // ---------------------------------------------------------------------------
-
-
-      $scope.grabar = function () {
-
-          // lo primero que hacemos es intentar validar el item ...
-          if (!$scope.riesgo || !$scope.riesgo.docState) {
-              DialogModal($modal, "<em>Riesgos</em>",
-                                  "Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.",
-                                 false).then();
-              return;
-          }
-
-          // cuando el usuario deja la referencia vacía, la determinamos al grabar; nótese que debemos agregar algo,
-          // pues el campo es requerido
-          if (!$scope.riesgo.referencia) {
-              $scope.riesgo.referencia = '0';
-          }
-
-          $scope.showProgress = true;
-
-          // nótese como validamos antes de intentar guardar en el servidor
-          var isValid = false;
-          var errores = [];
-
-          var item = {} as any;
-
-          if ($scope.riesgo.getRawObject) {           // getRawObject: solo cuando el riesgo viene de $meteorCollection ...
-              item = $scope.riesgo.getRawObject();
-          }
-          else { 
-            item = $scope.riesgo;
-          }
-              
-          if (item.docState != 3) {
-              isValid = Riesgos.simpleSchema().namedContext().validate(item);
-
-              if (!isValid) {
-                  Riesgos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                      errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgos.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
-                  })
-              }
-          }
-
-          if (errores && errores.length) {
-              $scope.alerts.length = 0;
-              $scope.alerts.push({
-                  type: 'danger',
-                  msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
-                      errores.reduce(function (previous, current) {
-
-                          if (previous == "")
-                              // first value
-                              return current;
-                          else
-                              return previous + "<br />" + current;
-                      }, "")
-              });
-
-              $scope.showProgress = false;
-              return;
-          }
-
-          // ------------------------------------------------------------------------------------------
-          // ahoa validamos las cuotas, las cuales son registradas en un collection diferente ...
-          var editedItems = lodash($scope.cuotas).
-                             filter(function (c) { return c.docState; }).
-                             map(function (c) { delete c.$$hashKey; return c; }).
-                             value();
-
-          editedItems.forEach(function (item) {
-              if (item.docState != 3) {
-                  isValid = Cuotas.simpleSchema().namedContext().validate(item);
-
-                  if (!isValid) {
-                      Cuotas.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Cuotas.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
-                      });
-                  }
-              }
-          })
-
-          if (errores && errores.length) {
-              $scope.alerts.length = 0;
-              $scope.alerts.push({
-                  type: 'danger',
-                  msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
-                      errores.reduce(function (previous, current) {
-                          if (previous == "")
-                              // first value
-                              return current;
-                          else
-                              return previous + "<br />" + current;
-                      }, "")
-              })
-
-              $scope.showProgress = false;
-              return;
-          }
-
-          $meteor.call('riesgosSave', item).then(
-              function (resolve) {
-                  // guardamos, separadamente, las cuotas (solo las que el usuario ha editado
-                  // nota: eliminamos $$hashKey a cada row (agregado por ui-grid),  antes de grabar en mongo
-                  var cuotasArray = lodash($scope.cuotas).
-                                     filter(function (c) { return c.docState; }).
-                                     map(function (c) { delete c.$$hashKey; return c; }).
-                                     value();
-
-                  // antes de guardar las cuotas en mongo, 'detenemos' (stop) el binding entre meteor y el $scope ...
-                  if ($scope.cuotas && $scope.cuotas.stop)
-                      $scope.cuotas.stop();
-
-                  $meteor.call('cuotasSave', cuotasArray).then(
-                      function (resolveCuotas) {
-                          $scope.alerts.length = 0;
-                          $scope.alerts.push({
-                              type: 'info',
-                              msg: resolve
-                          });
-
-                          // cuando el usuario agrega un nuevo item, y viene desde un filtro, el item no estará en la lista (a menos que cumpla con el 'criterio'
-                          // de selección ???). Por eso, hacemos un subscription solo del nuevo item. Como no destruimos el 'handle' del subscription anterior
-                          // (que creó la lista), el nuevo item se agregará a la lista ....
-                          if (item.docState == 1) {
-                              $meteor.subscribe('riesgos', JSON.stringify({ _id: item._id })).then(
-                                  function (subscriptionHandle) {
-                                      $scope.riesgo = {};
-
-                                      $scope.riesgo = $scope.$meteorObject(Riesgos, item._id, false);   // luego del subscribe, el nuevo item estará en el collection
-                                      $scope.id = $scope.riesgo._id;
-
-                                      // asociamos los ui-grids a sus datos en el $scope
-                                      if ($scope.riesgo.movimientos)
-                                         $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
-
-                                      $scope.$meteorSubscribe('cuotas', JSON.stringify({ "source.entityID": $scope.id })).then(
-                                            function (subscriptionHandle) {
-                                                $scope.cuotas = Cuotas.find({ 'source.entityID': $scope.id }).fetch();
-
-                                                if ($scope.cuotas)
-                                                    $scope.cuotas_ui_grid.data = $scope.cuotas;
-
-                                                $scope.showProgress = false;
-                                            });
-                                  });
-                          }
-                          else {
-
-                              $scope.riesgo = {};
-
-                              $scope.riesgo = $scope.$meteorObject(Riesgos, item._id, false);
-                              $scope.id = $scope.riesgo._id;
-
-                              // asociamos los ui-grids a sus datos en el $scope
-                              $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
-
-                              $scope.$meteorSubscribe('cuotas', JSON.stringify({ "source.entityID": $scope.id })).then(
-                                    function (subscriptionHandle) {
-                                        $scope.cuotas = Cuotas.find({ 'source.entityID': $scope.id }).fetch();
-
-                                        if ($scope.cuotas)
-                                            $scope.cuotas_ui_grid.data = $scope.cuotas;
-
-                                        $scope.showProgress = false;
-                                    });
-                          }
-                      },
-                      function (err) {
-                          let errorMessage = "<b>Error:</b> se ha producido un error al intentar ejecutar la operación.<br />";
-                          if (err.errorType)
-                              errorMessage += err.errorType + " ";
-
-                          if (err.message)
-                              errorMessage += err.message + " ";
-
-                          if (err.reason)
-                              errorMessage += err.reason + " ";
-
-                          if (err.details)
-                              errorMessage += "<br />" + err.details;
-
-                          if (!err.message && !err.reason && !err.details)
-                              errorMessage += err.toString();
-
-                          $scope.alerts.length = 0;
-                          $scope.alerts.push({
-                              type: 'danger',
-                              msg: errorMessage
-                          });
-
-                          $scope.showProgress = false;
-                      });
-              },
-              function (err) {
-                  let errorMessage = "<b>Error:</b> se ha producido un error al intentar ejecutar la operación.<br />";
-                  if (err.errorType)
-                      errorMessage += err.errorType + " ";
-
-                  if (err.message)
-                      errorMessage += err.message + " ";
-
-                  if (err.reason)
-                      errorMessage += err.reason + " ";
-
-                  if (err.details)
-                      errorMessage += "<br />" + err.details;
-
-                  if (!err.message && !err.reason && !err.details)
-                      errorMessage += err.toString();
-
-                  $scope.alerts.length = 0;
-                  $scope.alerts.push({
-                      type: 'danger',
-                      msg: errorMessage
-                  });
-
-                  $scope.showProgress = false;
-              });
-      };
-
-      $scope.regresarALista = function () {
-
-          if ($scope.riesgo.docState && $scope.origen == 'edicion') {
-              var promise = DialogModal($modal,
-                                        "<em>Riesgos</em>",
-                                        "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
-                                        true).then(
-                  function (resolve) {
-                      $state.go('riesgosLista', { origen: $scope.origen, limit: $scope.limit });
-                  },
-                  function (err) {
-                      return true;
-                  })
-              return;
-          }
-          else { 
-            $state.go('riesgosLista', { origen: $scope.origen, limit: $scope.limit });
-          }
-      }
-
-
-      $scope.eliminar = function () {
-          if ($scope.riesgo.docState && $scope.riesgo.docState == 1) {
-              if ($scope.riesgo.docState) {
-                  var promise = DialogModal($modal,
-                                            "<em>Riesgos</em>",
-                                            "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
-                                            false);
-
-                  promise.then(
-                      function (resolve) {
-                          return;
-                      },
-                      function (err) {
-                          return;
-                      });
-
-                  return;
-              }
-          };
-
-          // simplemente, ponemos el docState en 3 para que se elimine al Grabar ...
-          $scope.riesgo.docState = 3;
-      };
-
-      $scope.refresh = function () {
-          if ($scope.riesgo.docState) {
-              var promise = DialogModal($modal,
-                                        "<em>Riesgos</em>",
-                                        "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa y refresca el registro, " +
-                                        "los cambios se perderán.<br /><br />Desea continuar y perder los cambios?",
-                                        true);
-
-              promise.then(
-                  function (resolve) {
-                      inicializarItem();
-                  },
-                  function () {
-                      return true;
-                  });
-
-              return;
-          }
-          else {
-              inicializarItem();
-          }
-      }
-
-
-      $scope.imprimir = function() {
-          if (!$scope.riesgo || !$scope.riesgo.movimientos || lodash.isEmpty($scope.riesgo.movimientos)) {
-              DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
-                          "Aparentemente, el riesgo para el cual Ud. desea construir las notas de cobertura, no tiene movimientos registrados.",
-                          false).then();
-              return;
-          };
-
-          $modal.open({
-              templateUrl: 'client/riesgos/imprimirNotasModal.html',
-              controller: 'ImprimirNotasRiesgosModalController',
-              size: 'lg',
-              resolve: {
-                riesgo: function () {
-                  return $scope.riesgo;
-                },
-                cuotas: function() {
-                    return $scope.cuotas;
-                },
-                tiposMovimiento: function() {
-                    return $scope.tiposMovimiento;
-                }
-              }
-          }).result.then(
-            function () {
-                return true;
-            },
-            function () {
-                return true;
-            })
-      }
-
-
-      $scope.setIsEdited = function () {
-          if ($scope.riesgo.docState)
-              return;
-
-          $scope.riesgo.docState = 2;
-      }
-
-      $scope.tiposMovimiento = [
-          { tipo: 'OR', descripcion: 'Original' },
-          { tipo: 'AS', descripcion: 'Aumento de Suma Asegurada' },
-          { tipo: 'DS', descripcion: 'Disminución de Suma Asegurada' },
-          { tipo: 'COAD', descripcion: 'Cobro Adicional de Prima' },
-          { tipo: 'DP', descripcion: 'Devolucion de Prima' },
-          { tipo: 'EC', descripcion: 'Extensión de Cobertura' },
-          { tipo: 'CR', descripcion: 'Cambio de Reasegurador' },
-          { tipo: 'SE', descripcion: 'Sin Efecto' },
-          { tipo: 'AN', descripcion: 'Anulación' },
-          { tipo: 'AE', descripcion: 'Anulación de Endoso' },
-          { tipo: 'CAPA', descripcion: 'Cambio de Participación' },
-          { tipo: 'PRAJ', descripcion: 'Prima de Ajuste' },
-          { tipo: 'AJPR', descripcion: 'Ajuste de Prima' },
-          { tipo: 'FRPR', descripcion: 'Fraccionamiento de Prima' },
-          { tipo: 'DE', descripcion: 'Endoso declarativo' },
-          { tipo: 'IncCob', descripcion: 'Inclusión de Cobertura' }
-      ]
-
-      // --------------------------------------------------------------------------------------
-      // ui-grid de Movimientos
-      // --------------------------------------------------------------------------------------
-      var movimientoSeleccionado = {} as any;
-
-      $scope.movimientos_ui_grid = {
-          enableSorting: false,
-          showColumnFooter: false,
-          enableCellEdit: false,
-          enableCellEditOnFocus: true,
-          enableRowSelection: true,
-          enableRowHeaderSelection: true,
-          multiSelect: false,
-          enableSelectAll: false,
-          selectionRowHeaderWidth: 35,
-          rowHeight: 25,
-          onRegisterApi: function (gridApi) {
-
-              // guardamos el row que el usuario seleccione
-              gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  //debugger;
-                  movimientoSeleccionado = {};
-
-                  if (row.isSelected) {
-
-                      movimientoSeleccionado = row.entity;
-
-                      $scope.companias_ui_grid.data = [];
-                      $scope.coberturas_ui_grid.data = [];
-                      $scope.coberturasCompanias_ui_grid.data = [];
-                      $scope.primas_ui_grid.data = [];
-                      $scope.productores_ui_grid.data = [];
-
-                      if (movimientoSeleccionado.companias) { 
-                        $scope.companias_ui_grid.data = movimientoSeleccionado.companias;
-                      }
-                          
-                      if (movimientoSeleccionado.coberturas) { 
-                        $scope.coberturas_ui_grid.data = movimientoSeleccionado.coberturas;
-                      }
-                          
-
-                      if (movimientoSeleccionado.coberturasCompanias) { 
-                        $scope.coberturasCompanias_ui_grid.data = movimientoSeleccionado.coberturasCompanias;
-                        
-                      }
-                          
-                      if (movimientoSeleccionado.primas) { 
-                        $scope.primas_ui_grid.data = movimientoSeleccionado.primas;
-                      }
-                          
-                      if (movimientoSeleccionado.productores) { 
-                        $scope.productores_ui_grid.data = movimientoSeleccionado.productores;
-                      }
-                  }
-                  else
-                      return;
-              });
-
-              // marcamos el contrato como actualizado cuando el usuario edita un valor
-              gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                  if (newValue != oldValue)
-                      if (!$scope.riesgo.docState)
-                          $scope.riesgo.docState = 2;
-              });
-          },
-
-          // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
-          rowIdentity: function (row) {
-              return row._id;
-          },
-
-          getRowIdentity: function (row) {
-              return row._id;
-          }
-      }
-
-      $scope.movimientos_ui_grid.columnDefs = [
-            {
-                name: 'numero',
-                field: 'numero',
-                displayName: '#',
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                width: 40,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'tipo',
-                field: 'tipo',
-                displayName: 'Tipo',
-                width: 180,
-                editableCellTemplate: 'ui-grid/dropdownEditor',
-                editDropdownIdLabel: 'tipo',
-                editDropdownValueLabel: 'descripcion',
-                editDropdownOptionsArray: $scope.tiposMovimiento,
-                cellFilter: 'mapDropdown:row.grid.appScope.tiposMovimiento:"tipo":"descripcion"',
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'string'
-            },
-            {
-                name: 'fechaEmision',
-                field: 'fechaEmision',
-                displayName: 'F emisión',
-                cellFilter: 'dateFilter',
-                width: 100,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'date'
-            },
-            {
-                name: 'desde',
-                field: 'desde',
-                displayName: 'Desde',
-                cellFilter: 'dateFilter',
-                width: 100,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'date'
-            },
-            {
-                name: 'hasta',
-                field: 'hasta',
-                displayName: 'Hasta',
-                cellFilter: 'dateFilter',
-                width: 100,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'date'
-            },
-            {
-                name: 'cantidadDias',
-                field: 'cantidadDias',
-                displayName: 'Cant días',
-                width: 120,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'factorProrrata',
-                field: 'factorProrrata',
-                displayName: 'Factor prorrata',
-                cellFilter: 'number8decimals',
-                width: 120,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
+    
+
+    $scope.grabar = function () {
+
+        // lo primero que hacemos es intentar validar el item ...
+        if (!$scope.riesgo || !$scope.riesgo.docState) {
+            DialogModal($modal, "<em>Riesgos</em>",
+                                "Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.",
+                                false).then();
+            return;
+        }
+
+        // cuando el usuario deja la referencia vacía, la determinamos al grabar; nótese que debemos agregar algo,
+        // pues el campo es requerido
+        if (!$scope.riesgo.referencia) {
+            $scope.riesgo.referencia = '0';
+        }
+
+        $scope.showProgress = true;
+
+        // nótese como validamos antes de intentar guardar en el servidor
+        var isValid = false;
+        var errores = [];
+
+        var item = {} as any;
+
+        if ($scope.riesgo.getRawObject) {           // getRawObject: solo cuando el riesgo viene de $meteorCollection ...
+            item = $scope.riesgo.getRawObject();
+        }
+        else { 
+        item = $scope.riesgo;
+        }
+            
+        if (item.docState != 3) {
+            isValid = Riesgos.simpleSchema().namedContext().validate(item);
+
+            if (!isValid) {
+                Riesgos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgos.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
+                })
             }
-      ]
+        }
 
+        if (errores && errores.length) {
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
+                    errores.reduce(function (previous, current) {
 
-      $scope.numeroMovimientoSeleccionado = function() {
-          return (movimientoSeleccionado && !lodash.isEmpty(movimientoSeleccionado)) ? movimientoSeleccionado.numero : -1;
-      }
+                        if (previous == "")
+                            // first value
+                            return current;
+                        else
+                            return previous + "<br />" + current;
+                    }, "")
+            });
 
+            $scope.showProgress = false;
+            return;
+        }
 
-      $scope.agregarMovimiento = function () {
+        // ------------------------------------------------------------------------------------------
+        // ahoa validamos las cuotas, las cuales son registradas en un collection diferente ...
+        var editedItems = lodash($scope.cuotas).
+                            filter(function (c) { return c.docState; }).
+                            map(function (c) { delete c.$$hashKey; return c; }).
+                            value();
 
-          if (!lodash.isArray($scope.riesgo.movimientos))
-              $scope.riesgo.movimientos = [];
+        editedItems.forEach(function (item) {
+            if (item.docState != 3) {
+                isValid = Cuotas.simpleSchema().namedContext().validate(item);
 
-          // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
-          // justamente, tendrá 'nuestra orden'
+                if (!isValid) {
+                    Cuotas.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Cuotas.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
+                    });
+                }
+            }
+        })
 
-          let companiaNosotros = {} as any;
+        if (errores && errores.length) {
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
+                    errores.reduce(function (previous, current) {
+                        if (previous == "")
+                            // first value
+                            return current;
+                        else
+                            return previous + "<br />" + current;
+                    }, "")
+            })
 
-          if (!$scope.riesgo.movimientos.length) {
-              companiaNosotros = Companias.findOne({ nosotros: true }, { fields: { _id: 1 } });
+            $scope.showProgress = false;
+            return;
+        }
 
-              if (!companiaNosotros) {
-                  DialogModal($modal, "<em>Riesgos</em>",
-                              "No hemos encotrado una compañía del tipo 'nosotros', la cual represente, justemente, nuestra compañía.<br />" +
-                              "En el catálogo <em>Compañías</em> debe existir una compañía del tipo <em>nosotros</em>.<br />" +
-                              "Por favor revise esta situación antes de continuar.",
-                              false).then();
+        $meteor.call('riesgosSave', item).then(
+            function (resolve) {
+                // guardamos, separadamente, las cuotas (solo las que el usuario ha editado
+                // nota: eliminamos $$hashKey a cada row (agregado por ui-grid),  antes de grabar en mongo
+                var cuotasArray = lodash($scope.cuotas).
+                                    filter(function (c) { return c.docState; }).
+                                    map(function (c) { delete c.$$hashKey; return c; }).
+                                    value();
 
-                  return;
-              }
-          }
+                // antes de guardar las cuotas en mongo, 'detenemos' (stop) el binding entre meteor y el $scope ...
+                if ($scope.cuotas && $scope.cuotas.stop)
+                    $scope.cuotas.stop();
 
+                $meteor.call('cuotasSave', cuotasArray).then(
+                    function (resolveCuotas) {
+                        $scope.alerts.length = 0;
+                        $scope.alerts.push({
+                            type: 'info',
+                            msg: resolve
+                        });
 
-          if ($scope.riesgo.movimientos.length > 0) {
+                        // cuando el usuario agrega un nuevo item, y viene desde un filtro, el item no estará en la lista (a menos que cumpla con el 'criterio'
+                        // de selección ???). Por eso, hacemos un subscription solo del nuevo item. Como no destruimos el 'handle' del subscription anterior
+                        // (que creó la lista), el nuevo item se agregará a la lista ....
+                        if (item.docState == 1) {
+                            $meteor.subscribe('riesgos', JSON.stringify({ _id: item._id })).then(
+                                function (subscriptionHandle) {
+                                    $scope.riesgo = {};
 
-              // para agregar un movimiento cuando ya existen otros, copiamos el último (lodash clone) y lo modificamos levemente ...
-              var ultimoMovimiento = $scope.riesgo.movimientos[$scope.riesgo.movimientos.length - 1];
-              var nuevoMovimiento = lodash.clone(ultimoMovimiento);
+                                    $scope.riesgo = $scope.$meteorObject(Riesgos, item._id, false);   // luego del subscribe, el nuevo item estará en el collection
+                                    $scope.id = $scope.riesgo._id;
 
-              if (nuevoMovimiento) {
+                                    // asociamos los ui-grids a sus datos en el $scope
+                                    if ($scope.riesgo.movimientos)
+                                        $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
 
-                  nuevoMovimiento._id = new Mongo.ObjectID()._str;
-                  nuevoMovimiento.numero++;
-                  nuevoMovimiento.tipo = null;
-                  nuevoMovimiento.fechaEmision = new Date();
-                  delete nuevoMovimiento.$$hashKey;
+                                    $scope.$meteorSubscribe('cuotas', JSON.stringify({ "source.entityID": $scope.id })).then(
+                                        function (subscriptionHandle) {
+                                            $scope.cuotas = Cuotas.find({ 'source.entityID': $scope.id }).fetch();
 
-                  // nótese como eliminamos los arrays de coberturas por compañía y primas
-                  nuevoMovimiento.coberturasCompanias = [];
-                  nuevoMovimiento.primas = [];
+                                            if ($scope.cuotas)
+                                                $scope.cuotas_ui_grid.data = $scope.cuotas;
 
-                  // recorremos los arrays en el nuevo movimiento, para asignar nuevos _ids y eliminar $$hashkey ...
-                  nuevoMovimiento.coberturas.map(function(c) {
-                      if (c.$$hashKey)
-                          delete c.$$hashKey;
+                                            $scope.showProgress = false;
+                                        });
+                                });
+                        }
+                        else {
 
-                      c._id = new Mongo.ObjectID()._str;
-                  });
+                            $scope.riesgo = {};
 
-                  nuevoMovimiento.companias.map(function(c) {
-                      if (c.$$hashKey)
-                          delete c.$$hashKey;
+                            $scope.riesgo = $scope.$meteorObject(Riesgos, item._id, false);
+                            $scope.id = $scope.riesgo._id;
 
-                      c._id = new Mongo.ObjectID()._str;
-                  });
+                            // asociamos los ui-grids a sus datos en el $scope
+                            $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
 
-                  $scope.riesgo.movimientos.push(nuevoMovimiento);
+                            $scope.$meteorSubscribe('cuotas', JSON.stringify({ "source.entityID": $scope.id })).then(
+                                function (subscriptionHandle) {
+                                    $scope.cuotas = Cuotas.find({ 'source.entityID': $scope.id }).fetch();
 
-                  if (!$scope.riesgo.docState)
-                      $scope.riesgo.docState = 2;
+                                    if ($scope.cuotas)
+                                        $scope.cuotas_ui_grid.data = $scope.cuotas;
 
-                  nuevoMovimiento = {};
+                                    $scope.showProgress = false;
+                                });
+                        }
+                    },
+                    function (err) {
+                        let errorMessage = "<b>Error:</b> se ha producido un error al intentar ejecutar la operación.<br />";
+                        if (err.errorType)
+                            errorMessage += err.errorType + " ";
 
-                  DialogModal($modal,
-                              "<em>Riesgos - Nuevo movimiento</em>",
-                              "Ok, un nuevo movimiento ha sido agregado al riesgo. " +
-                              "Nóte que el nuevo movimiento es, simplemente, una copia del movimiento anterior.<br /><br />" +
-                              "Ud. debe seleccionarlo en la lista y asignarle un tipo. Luego debe hacer las " +
-                              "modificaciones que le parezca adecuadas.<br /><br />" +
-                              "Recuerde que las cifras que indique para el nuevo movimiento, deben corresponder <em>siempre al " +
-                              "100%</em> de la orden y a la totalidad del período; es derir, no al período que corresponde a " +
-                              "la modificación.<br /><br />" +
-                              "Posteriormente, y si es adecuado, Ud. podrá prorratear la prima para obtener solo la " +
-                              "parte que corresponde al período.",
-                              false).then();
+                        if (err.message)
+                            errorMessage += err.message + " ";
 
-                  $scope.movimientos_ui_grid.data = [];
-                  $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
+                        if (err.reason)
+                            errorMessage += err.reason + " ";
 
-                  return;
-              };
-          }
-          else {
-              var movimiento = {} as any;
+                        if (err.details)
+                            errorMessage += "<br />" + err.details;
 
-              movimiento._id = new Mongo.ObjectID()._str;
-              movimiento.numero = 1;
-              movimiento.fechaEmision = new Date();
-              movimiento.desde = $scope.riesgo.desde;
-              movimiento.hasta = $scope.riesgo.hasta;
-              movimiento.tipo = "OR";
-              movimiento.cantidadDias = moment($scope.riesgo.hasta).diff(moment($scope.riesgo.desde), 'days');
+                        if (!err.message && !err.reason && !err.details)
+                            errorMessage += err.toString();
 
-              // redondemos, al menos por ahora, a 365 días
-              if (movimiento.cantidadDias == 366) { 
-                movimiento.cantidadDias = 365;
-              }
-                  
-              movimiento.factorProrrata = movimiento.cantidadDias / 365;
+                        $scope.alerts.length = 0;
+                        $scope.alerts.push({
+                            type: 'danger',
+                            msg: errorMessage
+                        });
 
-              // 1er. movimiento del riesgo; agregamos la compañía 'nosotros' en forma automática ...
+                        $scope.showProgress = false;
+                    });
+            },
+            function (err) {
+                let errorMessage = "<b>Error:</b> se ha producido un error al intentar ejecutar la operación.<br />";
+                if (err.errorType)
+                    errorMessage += err.errorType + " ";
 
-              movimiento.companias = [];
-              movimiento.coberturas = [];
+                if (err.message)
+                    errorMessage += err.message + " ";
 
-              movimiento.companias.push({
-                  _id: new Mongo.ObjectID()._str,
-                  compania: companiaNosotros._id,
-                  nosotros: true
-              });
+                if (err.reason)
+                    errorMessage += err.reason + " ";
 
-              $scope.riesgo.movimientos.push(movimiento);
+                if (err.details)
+                    errorMessage += "<br />" + err.details;
 
-              if (!$scope.riesgo.docState)
-                  $scope.riesgo.docState = 2;
+                if (!err.message && !err.reason && !err.details)
+                    errorMessage += err.toString();
 
-              movimiento = {};
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: errorMessage
+                });
 
-              $scope.movimientos_ui_grid.data = [];
-              $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
-          }
-      }
+                $scope.showProgress = false;
+            });
+    }
 
-      $scope.eliminarMovimiento = function () {
+    $scope.regresarALista = function () {
 
-          if (movimientoSeleccionado && !lodash.isEmpty(movimientoSeleccionado)) {
-              lodash.remove($scope.riesgo.movimientos, function (movimiento: any) { return movimiento._id === movimientoSeleccionado._id; });
-
-              // para que los grids que siguen dejen de mostrar registros para el movimiento
-              $scope.companias_ui_grid.data = [];
-              $scope.coberturas_ui_grid.data = [];
-              $scope.coberturasCompanias_ui_grid.data = [];
-              $scope.primas_ui_grid.data = [];
-
-              if (!$scope.riesgo.docState)
-                  $scope.riesgo.docState = 2;
-          }
-          else {
-              DialogModal($modal, "<em>Riesgos</em>",
-                          "Ud. debe seleccionar un movimiento antes de intentar eliminarlo.",
-                          false).then();
-              return;
-          };
-      };
-
-      $scope.movimientosCalcular = function() {
-
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-              DialogModal($modal, "<em>Riesgos</em>",
-                                  "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                                  "Debe seleccionar un movimiento antes de intentar calcular sus valores.",
-                                  false).then();
-
-              return;
-          };
-
-          if (movimientoSeleccionado.desde && movimientoSeleccionado.hasta)
-              movimientoSeleccionado.cantidadDias = moment(movimientoSeleccionado.hasta).diff(moment(movimientoSeleccionado.desde), 'days');
-
-          if (movimientoSeleccionado.desde && !movimientoSeleccionado.hasta && lodash.isFinite(movimientoSeleccionado.cantidadDias))
-              // tenemos la fecha inicial y la cantidad de días; calculamos la fecha final agregando los días a la fecha inicial
-              moment(movimientoSeleccionado.desde).add(movimientoSeleccionado.cantidadDias, 'months');
-
-          if (!movimientoSeleccionado.desde && movimientoSeleccionado.hasta && lodash.isFinite(movimientoSeleccionado.cantidadDias))
-              // tenemos la fecha final y la cantidad de días; calculamos la fecha incial restando la cantidad de días a la fecha final
-              moment(movimientoSeleccionado.hasta).subtract(movimientoSeleccionado.cantidadDias, 'months');
-
-          // redondemos, al menos por ahora, a 365 días
-
-          if (movimientoSeleccionado.cantidadDias == 366)
-              movimientoSeleccionado.cantidadDias = 365;
-
-          movimientoSeleccionado.factorProrrata = movimientoSeleccionado.cantidadDias / 365;
-      }
-
-      // ---------------------------------------------------------------------
-      // para registrar los documentos de cada movimiento (cesión y recibo)
-      // ---------------------------------------------------------------------
-
-      $scope.registroDocumentosMovimiento = function() {
-
-          if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-              DialogModal($modal, "<em>Riesgos - Documentos</em>",
-                          "Ud. debe seleccionar un movimiento antes de intentar registrar sus documentos.",
-                          false).then();
-
-              return;
-          };
-
-          var modalInstance = $modal.open({
-              templateUrl: 'client/generales/registroDocumentos.html',
-              controller: 'RegistroDocumentosController',
-              size: 'md',
-              resolve: {
-                  entidad: function () {
-                      // pasamos la entidad (puede ser: contratos, siniestros, ...) solo para marcar docState si se agrega/eliminar
-                      // un documento (y no se había 'marcado' esta propiedad antes)...
-                      return $scope.riesgo;
-                  },
-                  documentos: function () {
-                      if (!lodash.isArray(movimientoSeleccionado.documentos))
-                        movimientoSeleccionado.documentos = [];
-
-                      return movimientoSeleccionado.documentos;
-                  },
-                  tiposDocumentoLista: function () {
-                      return [ { tipo: 'CES', descripcion: 'Cesión' }, { tipo: 'REC', descripcion: 'Recibo' } ];
-                  }
-              }
-          }).result.then(
+        if ($scope.riesgo.docState && $scope.origen == 'edicion') {
+            var promise = DialogModal($modal,
+                                    "<em>Riesgos</em>",
+                                    "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
+                                    true).then(
                 function (resolve) {
-                    return true;
+                    $state.go('riesgosLista', { origen: $scope.origen, limit: $scope.limit });
                 },
-                function (cancel) {
+                function (err) {
+                    return true;
+                })
+            return;
+        }
+        else { 
+        $state.go('riesgosLista', { origen: $scope.origen, limit: $scope.limit });
+        }
+    }
+
+
+    $scope.eliminar = function () {
+        if ($scope.riesgo.docState && $scope.riesgo.docState == 1) {
+            if ($scope.riesgo.docState) {
+                var promise = DialogModal($modal,
+                                        "<em>Riesgos</em>",
+                                        "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
+                                        false);
+
+                promise.then(
+                    function (resolve) {
+                        return;
+                    },
+                    function (err) {
+                        return;
+                    });
+
+                return;
+            }
+        };
+
+        // simplemente, ponemos el docState en 3 para que se elimine al Grabar ...
+        $scope.riesgo.docState = 3;
+    }
+
+    $scope.refresh = function () {
+        if ($scope.riesgo.docState) {
+            var promise = DialogModal($modal,
+                                    "<em>Riesgos</em>",
+                                    "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa y refresca el registro, " +
+                                    "los cambios se perderán.<br /><br />Desea continuar y perder los cambios?",
+                                    true);
+
+            promise.then(
+                function (resolve) {
+                    inicializarItem();
+                },
+                function () {
                     return true;
                 });
-      };
+
+            return;
+        }
+        else {
+            inicializarItem();
+        }
+    }
 
 
-      // --------------------------------------------------------------------------------------
-      // ui-grid de Compañías
-      // --------------------------------------------------------------------------------------
-      let companiaSeleccionada = {} as any;
+    $scope.imprimir = function() {
+        if (!$scope.riesgo || !$scope.riesgo.movimientos || lodash.isEmpty($scope.riesgo.movimientos)) {
+            DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
+                        "Aparentemente, el riesgo para el cual Ud. desea construir las notas de cobertura, no tiene movimientos registrados.",
+                        false).then();
+            return;
+        };
 
-      $scope.companias_ui_grid = {
-          enableSorting: false,
-          showColumnFooter: false,
-          enableCellEdit: false,
-          enableCellEditOnFocus: true,
-          enableRowSelection: true,
-          enableRowHeaderSelection: true,
-          multiSelect: false,
-          enableSelectAll: false,
-          selectionRowHeaderWidth: 35,
-          rowHeight: 25,
-          onRegisterApi: function (gridApi) {
+        $modal.open({
+            templateUrl: 'client/riesgos/imprimirNotasModal.html',
+            controller: 'ImprimirNotasRiesgosModalController',
+            size: 'lg',
+            resolve: {
+            riesgo: function () {
+                return $scope.riesgo;
+            },
+            cuotas: function() {
+                return $scope.cuotas;
+            },
+            tiposMovimiento: function() {
+                return $scope.tiposMovimiento;
+            }
+            }
+        }).result.then(
+        function () {
+            return true;
+        },
+        function () {
+            return true;
+        })
+    }
 
-              // guardamos el row que el usuario seleccione
-              gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                  companiaSeleccionada = {};
+    $scope.setIsEdited = function () {
+        if ($scope.riesgo.docState)
+            return;
 
-                  if (row.isSelected) { 
-                    companiaSeleccionada = row.entity;
-                  }
-                  else { 
+        $scope.riesgo.docState = 2;
+    }
+
+    $scope.tiposMovimiento = [
+        { tipo: 'OR', descripcion: 'Original' },
+        { tipo: 'AS', descripcion: 'Aumento de Suma Asegurada' },
+        { tipo: 'DS', descripcion: 'Disminución de Suma Asegurada' },
+        { tipo: 'COAD', descripcion: 'Cobro Adicional de Prima' },
+        { tipo: 'DP', descripcion: 'Devolucion de Prima' },
+        { tipo: 'EC', descripcion: 'Extensión de Cobertura' },
+        { tipo: 'CR', descripcion: 'Cambio de Reasegurador' },
+        { tipo: 'SE', descripcion: 'Sin Efecto' },
+        { tipo: 'AN', descripcion: 'Anulación' },
+        { tipo: 'AE', descripcion: 'Anulación de Endoso' },
+        { tipo: 'CAPA', descripcion: 'Cambio de Participación' },
+        { tipo: 'PRAJ', descripcion: 'Prima de Ajuste' },
+        { tipo: 'AJPR', descripcion: 'Ajuste de Prima' },
+        { tipo: 'FRPR', descripcion: 'Fraccionamiento de Prima' },
+        { tipo: 'DE', descripcion: 'Endoso declarativo' },
+        { tipo: 'IncCob', descripcion: 'Inclusión de Cobertura' }
+    ]
+
+    // --------------------------------------------------------------------------------------
+    // ui-grid de Movimientos
+    // --------------------------------------------------------------------------------------
+    var movimientoSeleccionado = {} as any;
+
+    $scope.movimientos_ui_grid = {
+        enableSorting: false,
+        showColumnFooter: false,
+        enableCellEdit: false,
+        enableCellEditOnFocus: true,
+        enableRowSelection: true,
+        enableRowHeaderSelection: true,
+        multiSelect: false,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        rowHeight: 25,
+        onRegisterApi: function (gridApi) {
+
+            // guardamos el row que el usuario seleccione
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                //debugger;
+                movimientoSeleccionado = {};
+
+                if (row.isSelected) {
+
+                    movimientoSeleccionado = row.entity;
+
+                    $scope.companias_ui_grid.data = [];
+                    $scope.coberturas_ui_grid.data = [];
+                    $scope.coberturasCompanias_ui_grid.data = [];
+                    $scope.primas_ui_grid.data = [];
+                    $scope.productores_ui_grid.data = [];
+
+                    if (movimientoSeleccionado.companias) { 
+                    $scope.companias_ui_grid.data = movimientoSeleccionado.companias;
+                    }
+                        
+                    if (movimientoSeleccionado.coberturas) { 
+                    $scope.coberturas_ui_grid.data = movimientoSeleccionado.coberturas;
+                    }
+                        
+
+                    if (movimientoSeleccionado.coberturasCompanias) { 
+                    $scope.coberturasCompanias_ui_grid.data = movimientoSeleccionado.coberturasCompanias;
+                    
+                    }
+                        
+                    if (movimientoSeleccionado.primas) { 
+                    $scope.primas_ui_grid.data = movimientoSeleccionado.primas;
+                    }
+                        
+                    if (movimientoSeleccionado.productores) { 
+                    $scope.productores_ui_grid.data = movimientoSeleccionado.productores;
+                    }
+                }
+                else
                     return;
-                  }
-              });
+            });
 
-              // marcamos el contrato como actualizado cuando el usuario edita un valor
-              gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
-                  if (newValue != oldValue) { 
-                    if (!$scope.riesgo.docState) { 
+            // marcamos el contrato como actualizado cuando el usuario edita un valor
+            gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
+                if (newValue != oldValue)
+                    if (!$scope.riesgo.docState)
                         $scope.riesgo.docState = 2;
-                      }
-                  }           
-              })
-          }, 
+            });
+        },
 
-          // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
-          rowIdentity: function (row) {
-                return row._id;
-            },
+        // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
+        rowIdentity: function (row) {
+            return row._id;
+        },
 
-            getRowIdentity: function (row) {
-                return row._id;
+        getRowIdentity: function (row) {
+            return row._id;
+        }
+    }
+
+    $scope.movimientos_ui_grid.columnDefs = [
+        {
+            name: 'numero',
+            field: 'numero',
+            displayName: '#',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            width: 40,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'tipo',
+            field: 'tipo',
+            displayName: 'Tipo',
+            width: 180,
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: 'tipo',
+            editDropdownValueLabel: 'descripcion',
+            editDropdownOptionsArray: $scope.tiposMovimiento,
+            cellFilter: 'mapDropdown:row.grid.appScope.tiposMovimiento:"tipo":"descripcion"',
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'string'
+        },
+        {
+            name: 'fechaEmision',
+            field: 'fechaEmision',
+            displayName: 'F emisión',
+            cellFilter: 'dateFilter',
+            width: 100,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'date'
+        },
+        {
+            name: 'desde',
+            field: 'desde',
+            displayName: 'Desde',
+            cellFilter: 'dateFilter',
+            width: 100,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'date'
+        },
+        {
+            name: 'hasta',
+            field: 'hasta',
+            displayName: 'Hasta',
+            cellFilter: 'dateFilter',
+            width: 100,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'date'
+        },
+        {
+            name: 'cantidadDias',
+            field: 'cantidadDias',
+            displayName: 'Cant días',
+            width: 120,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'factorProrrata',
+            field: 'factorProrrata',
+            displayName: 'Factor prorrata',
+            cellFilter: 'number8decimals',
+            width: 120,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        }
+    ]
+
+
+    $scope.numeroMovimientoSeleccionado = function() {
+        return (movimientoSeleccionado && !lodash.isEmpty(movimientoSeleccionado)) ? movimientoSeleccionado.numero : -1;
+    }
+
+
+    $scope.agregarMovimiento = function () {
+
+        if (!lodash.isArray($scope.riesgo.movimientos))
+            $scope.riesgo.movimientos = [];
+
+        // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
+        // justamente, tendrá 'nuestra orden'
+
+        let companiaNosotros = {} as any;
+
+        if (!$scope.riesgo.movimientos.length) {
+            companiaNosotros = Companias.findOne({ nosotros: true }, { fields: { _id: 1 } });
+
+            if (!companiaNosotros) {
+                DialogModal($modal, "<em>Riesgos</em>",
+                            "No hemos encotrado una compañía del tipo 'nosotros', la cual represente, justemente, nuestra compañía.<br />" +
+                            "En el catálogo <em>Compañías</em> debe existir una compañía del tipo <em>nosotros</em>.<br />" +
+                            "Por favor revise esta situación antes de continuar.",
+                            false).then();
+
+                return;
             }
-      }
+        }
 
-      $scope.companias_ui_grid.columnDefs = [
-            {
-                name: 'compania',
-                field: 'compania',
-                displayName: 'Compañía',
-                width: 180,
-                editableCellTemplate: 'ui-grid/dropdownEditor',
-                editDropdownIdLabel: '_id',
-                editDropdownValueLabel: 'nombre',
-                editDropdownOptionsArray: lodash.chain($scope.companias).
-                                            filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
-                                            sortBy(function(item) { return item.nombre; }).
-                                            value(),
-                cellFilter: 'mapDropdown:row.grid.appScope.companias:"_id":"nombre"',
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'string'
-            },
-            {
-                name: 'nosotros',
-                field: 'nosotros',
-                displayName: 'Nosotros',
-                cellFilter: 'boolFilter',
-                width: 100,
-                headerCellClass: 'ui-grid-centerCell',
-                cellClass: 'ui-grid-centerCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: false,
-                type: 'boolean'
-            },
-            {
-                name: 'ordenPorc',
-                field: 'ordenPorc',
-                displayName: 'Orden',
-                cellFilter: 'number6decimals',
-                width: 80,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'comisionPorc',
-                field: 'comisionPorc',
-                displayName: 'Com(%)',
-                cellFilter: 'number6decimals',
-                width: 80,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'impuestoPorc',
-                field: 'impuestoPorc',
-                displayName: 'Imp(%)',
-                cellFilter: 'number6decimals',
-                width: 80,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'corretajePorc',
-                field: 'corretajePorc',
-                displayName: 'Corr(%)',
-                cellFilter: 'number6decimals',
-                width: 80,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
-            },
-            {
-                name: 'impuestoSobrePNPorc',
-                field: 'impuestoSobrePNPorc',
-                displayName: 'Imp/pn(%)',
-                cellFilter: 'number6decimals',
-                width: 80,
-                headerCellClass: 'ui-grid-rightCell',
-                cellClass: 'ui-grid-rightCell',
-                enableSorting: false,
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                type: 'number'
+
+        if ($scope.riesgo.movimientos.length > 0) {
+
+            // para agregar un movimiento cuando ya existen otros, copiamos el último (lodash clone) y lo modificamos levemente ...
+            var ultimoMovimiento = $scope.riesgo.movimientos[$scope.riesgo.movimientos.length - 1];
+            var nuevoMovimiento = lodash.clone(ultimoMovimiento);
+
+            if (nuevoMovimiento) {
+
+                nuevoMovimiento._id = new Mongo.ObjectID()._str;
+                nuevoMovimiento.numero++;
+                nuevoMovimiento.tipo = null;
+                nuevoMovimiento.fechaEmision = new Date();
+                delete nuevoMovimiento.$$hashKey;
+
+                // nótese como eliminamos los arrays de coberturas por compañía y primas
+                nuevoMovimiento.coberturasCompanias = [];
+                nuevoMovimiento.primas = [];
+
+                // recorremos los arrays en el nuevo movimiento, para asignar nuevos _ids y eliminar $$hashkey ...
+                nuevoMovimiento.coberturas.map(function(c) {
+                    if (c.$$hashKey)
+                        delete c.$$hashKey;
+
+                    c._id = new Mongo.ObjectID()._str;
+                });
+
+                nuevoMovimiento.companias.map(function(c) {
+                    if (c.$$hashKey)
+                        delete c.$$hashKey;
+
+                    c._id = new Mongo.ObjectID()._str;
+                });
+
+                $scope.riesgo.movimientos.push(nuevoMovimiento);
+
+                if (!$scope.riesgo.docState)
+                    $scope.riesgo.docState = 2;
+
+                nuevoMovimiento = {};
+
+                DialogModal($modal,
+                            "<em>Riesgos - Nuevo movimiento</em>",
+                            "Ok, un nuevo movimiento ha sido agregado al riesgo. " +
+                            "Nóte que el nuevo movimiento es, simplemente, una copia del movimiento anterior.<br /><br />" +
+                            "Ud. debe seleccionarlo en la lista y asignarle un tipo. Luego debe hacer las " +
+                            "modificaciones que le parezca adecuadas.<br /><br />" +
+                            "Recuerde que las cifras que indique para el nuevo movimiento, deben corresponder <em>siempre al " +
+                            "100%</em> de la orden y a la totalidad del período; es derir, no al período que corresponde a " +
+                            "la modificación.<br /><br />" +
+                            "Posteriormente, y si es adecuado, Ud. podrá prorratear la prima para obtener solo la " +
+                            "parte que corresponde al período.",
+                            false).then();
+
+                $scope.movimientos_ui_grid.data = [];
+                $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
+
+                return;
+            };
+        }
+        else {
+            var movimiento = {} as any;
+
+            movimiento._id = new Mongo.ObjectID()._str;
+            movimiento.numero = 1;
+            movimiento.fechaEmision = new Date();
+            movimiento.desde = $scope.riesgo.desde;
+            movimiento.hasta = $scope.riesgo.hasta;
+            movimiento.tipo = "OR";
+            movimiento.cantidadDias = moment($scope.riesgo.hasta).diff(moment($scope.riesgo.desde), 'days');
+
+            // redondemos, al menos por ahora, a 365 días
+            if (movimiento.cantidadDias == 366) { 
+            movimiento.cantidadDias = 365;
             }
-      ]
+                
+            movimiento.factorProrrata = movimiento.cantidadDias / 365;
+
+            // 1er. movimiento del riesgo; agregamos la compañía 'nosotros' en forma automática ...
+
+            movimiento.companias = [];
+            movimiento.coberturas = [];
+
+            movimiento.companias.push({
+                _id: new Mongo.ObjectID()._str,
+                compania: companiaNosotros._id,
+                nosotros: true
+            });
+
+            $scope.riesgo.movimientos.push(movimiento);
+
+            if (!$scope.riesgo.docState)
+                $scope.riesgo.docState = 2;
+
+            movimiento = {};
+
+            $scope.movimientos_ui_grid.data = [];
+            $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
+        }
+    }
+
+    $scope.eliminarMovimiento = function () {
+
+        if (movimientoSeleccionado && !lodash.isEmpty(movimientoSeleccionado)) {
+            lodash.remove($scope.riesgo.movimientos, function (movimiento: any) { return movimiento._id === movimientoSeleccionado._id; });
+
+            // para que los grids que siguen dejen de mostrar registros para el movimiento
+            $scope.companias_ui_grid.data = [];
+            $scope.coberturas_ui_grid.data = [];
+            $scope.coberturasCompanias_ui_grid.data = [];
+            $scope.primas_ui_grid.data = [];
+
+            if (!$scope.riesgo.docState)
+                $scope.riesgo.docState = 2;
+        }
+        else {
+            DialogModal($modal, "<em>Riesgos</em>",
+                        "Ud. debe seleccionar un movimiento antes de intentar eliminarlo.",
+                        false).then();
+            return;
+        };
+    };
+
+    $scope.movimientosCalcular = function() {
+
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos</em>",
+                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                                "Debe seleccionar un movimiento antes de intentar calcular sus valores.",
+                                false).then();
+
+            return;
+        };
+
+        if (movimientoSeleccionado.desde && movimientoSeleccionado.hasta)
+            movimientoSeleccionado.cantidadDias = moment(movimientoSeleccionado.hasta).diff(moment(movimientoSeleccionado.desde), 'days');
+
+        if (movimientoSeleccionado.desde && !movimientoSeleccionado.hasta && lodash.isFinite(movimientoSeleccionado.cantidadDias))
+            // tenemos la fecha inicial y la cantidad de días; calculamos la fecha final agregando los días a la fecha inicial
+            moment(movimientoSeleccionado.desde).add(movimientoSeleccionado.cantidadDias, 'months');
+
+        if (!movimientoSeleccionado.desde && movimientoSeleccionado.hasta && lodash.isFinite(movimientoSeleccionado.cantidadDias))
+            // tenemos la fecha final y la cantidad de días; calculamos la fecha incial restando la cantidad de días a la fecha final
+            moment(movimientoSeleccionado.hasta).subtract(movimientoSeleccionado.cantidadDias, 'months');
+
+        // redondemos, al menos por ahora, a 365 días
+
+        if (movimientoSeleccionado.cantidadDias == 366)
+            movimientoSeleccionado.cantidadDias = 365;
+
+        movimientoSeleccionado.factorProrrata = movimientoSeleccionado.cantidadDias / 365;
+    }
+
+    // ---------------------------------------------------------------------
+    // para registrar los documentos de cada movimiento (cesión y recibo)
+    // ---------------------------------------------------------------------
+    $scope.registroDocumentosMovimiento = function() {
+
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos - Documentos</em>",
+                        "Ud. debe seleccionar un movimiento antes de intentar registrar sus documentos.",
+                        false).then();
+
+            return;
+        };
+
+        var modalInstance = $modal.open({
+            templateUrl: 'client/generales/registroDocumentos.html',
+            controller: 'RegistroDocumentosController',
+            size: 'md',
+            resolve: {
+                entidad: function () {
+                    // pasamos la entidad (puede ser: contratos, siniestros, ...) solo para marcar docState si se agrega/eliminar
+                    // un documento (y no se había 'marcado' esta propiedad antes)...
+                    return $scope.riesgo;
+                },
+                documentos: function () {
+                    if (!lodash.isArray(movimientoSeleccionado.documentos))
+                    movimientoSeleccionado.documentos = [];
+
+                    return movimientoSeleccionado.documentos;
+                },
+                tiposDocumentoLista: function () {
+                    return [ { tipo: 'CES', descripcion: 'Cesión' }, { tipo: 'REC', descripcion: 'Recibo' } ];
+                }
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                return true;
+            });
+    }
+
+
+    // --------------------------------------------------------------------------------------
+    // ui-grid de Compañías
+    // --------------------------------------------------------------------------------------
+    let companiaSeleccionada = {} as any;
+
+    $scope.companias_ui_grid = {
+        enableSorting: false,
+        showColumnFooter: false,
+        enableCellEdit: false,
+        enableCellEditOnFocus: true,
+        enableRowSelection: true,
+        enableRowHeaderSelection: true,
+        multiSelect: false,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        rowHeight: 25,
+        onRegisterApi: function (gridApi) {
+
+            // guardamos el row que el usuario seleccione
+            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                companiaSeleccionada = {};
+
+                if (row.isSelected) { 
+                companiaSeleccionada = row.entity;
+                }
+                else { 
+                return;
+                }
+            });
+
+            // marcamos el contrato como actualizado cuando el usuario edita un valor
+            gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
+                if (newValue != oldValue) { 
+                if (!$scope.riesgo.docState) { 
+                    $scope.riesgo.docState = 2;
+                    }
+                }           
+            })
+        }, 
+
+        // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
+        rowIdentity: function (row) {
+            return row._id;
+        },
+
+        getRowIdentity: function (row) {
+            return row._id;
+        }
+    }
+
+    $scope.companias_ui_grid.columnDefs = [
+        {
+            name: 'compania',
+            field: 'compania',
+            displayName: 'Compañía',
+            width: 180,
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: '_id',
+            editDropdownValueLabel: 'nombre',
+            editDropdownOptionsArray: lodash.chain($scope.companias).
+                                        filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
+                                        sortBy(function(item) { return item.nombre; }).
+                                        value(),
+            cellFilter: 'mapDropdown:row.grid.appScope.companias:"_id":"nombre"',
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'string'
+        },
+        {
+            name: 'nosotros',
+            field: 'nosotros',
+            displayName: 'Nosotros',
+            cellFilter: 'boolFilter',
+            width: 100,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: false,
+            type: 'boolean'
+        },
+        {
+            name: 'ordenPorc',
+            field: 'ordenPorc',
+            displayName: 'Orden',
+            cellFilter: 'number6decimals',
+            width: 80,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'comisionPorc',
+            field: 'comisionPorc',
+            displayName: 'Com(%)',
+            cellFilter: 'number6decimals',
+            width: 80,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'impuestoPorc',
+            field: 'impuestoPorc',
+            displayName: 'Imp(%)',
+            cellFilter: 'number6decimals',
+            width: 80,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'corretajePorc',
+            field: 'corretajePorc',
+            displayName: 'Corr(%)',
+            cellFilter: 'number6decimals',
+            width: 80,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        },
+        {
+            name: 'impuestoSobrePNPorc',
+            field: 'impuestoSobrePNPorc',
+            displayName: 'Imp/pn(%)',
+            cellFilter: 'number6decimals',
+            width: 80,
+            headerCellClass: 'ui-grid-rightCell',
+            cellClass: 'ui-grid-rightCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'number'
+        }
+    ]
 
 
     $scope.agregarCompania = function () {
@@ -1321,7 +1318,7 @@ angular.module("scrwebM").controller("RiesgoController",
 
                 return true;
             });
-    };
+    }
 
     // --------------------------------------------------------------------------------------
     // ui-grid de Coberturas
@@ -2284,7 +2281,6 @@ angular.module("scrwebM").controller("RiesgoController",
             return;
         }
 
-
         movimientoSeleccionado.primas.forEach(function (p) {
 
             // comision%
@@ -2394,60 +2390,60 @@ angular.module("scrwebM").controller("RiesgoController",
 
     $scope.construirCuotasMovimiento = function () {
 
-    if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-        DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
-                            "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                            "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
-                            false).then();
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                                "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
+                                false).then();
 
-        return;
-    }
+            return;
+        }
 
-    if (!movimientoSeleccionado.primas || !movimientoSeleccionado.primas.length) {
-        DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
-                            "El movimiento seleccionado no tiene registros de prima registrados; debe tenerlos.<br />" +
-                            "Las cuotas se construyen en base a los registros de prima del movimiento. " +
-                            "El movimiento debe tener registros de prima registrados.",
-                            false).then();
+        if (!movimientoSeleccionado.primas || !movimientoSeleccionado.primas.length) {
+            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+                                "El movimiento seleccionado no tiene registros de prima registrados; debe tenerlos.<br />" +
+                                "Las cuotas se construyen en base a los registros de prima del movimiento. " +
+                                "El movimiento debe tener registros de prima registrados.",
+                                false).then();
 
-        return;
-    }
+            return;
+        }
 
-    // ------------------------------------------------------------------------------------------------------------------------
-    // determinamos si las cuotas han recibido cobros; de ser así, impedimos editarlas ... 
-    // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
-    // usuario está tratando en ese momento ...  
-    // ------------------------------------------------------------------------------------------------------------------------
-    let cuotasMovimientoSeleccionado = lodash.filter($scope.cuotas, (c) => { 
-        return c.source.subEntityID === movimientoSeleccionado._id; }
-    )
+        // ------------------------------------------------------------------------------------------------------------------------
+        // determinamos si las cuotas han recibido cobros; de ser así, impedimos editarlas ... 
+        // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
+        // usuario está tratando en ese momento ...  
+        // ------------------------------------------------------------------------------------------------------------------------
+        let cuotasMovimientoSeleccionado = lodash.filter($scope.cuotas, (c) => { 
+            return c.source.subEntityID === movimientoSeleccionado._id; }
+        )
 
-    let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSeleccionado); 
-    if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
-        DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
-        return;
-    }
+        let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSeleccionado); 
+        if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
+            DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
+            return;
+        }
 
-    var cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { return c.source.subEntityID === movimientoSeleccionado._id; }).size();
+        var cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { return c.source.subEntityID === movimientoSeleccionado._id; }).size();
 
-    if (cantidadCuotasMovimientoSeleccionado) {
-        DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
-                            "Ya existen cuotas registradas para el movimiento seleccionado.<br />" +
-                            "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden al movimiento seleccionado <em>serán eliminadas</em> antes de " +
-                            "construirlas y agregarlas nuevamente.<br /><br />" +
-                            "Aún así, desea continuar y eliminar (sustituir) las cuotas que ahora existen?",
-            true).then(
-            function () {
-                construirCuotasMovimiento();
-                return;
-            },
-            function () {
-                return;
-            });
-        return;
-    }
+        if (cantidadCuotasMovimientoSeleccionado) {
+            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+                                "Ya existen cuotas registradas para el movimiento seleccionado.<br />" +
+                                "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden al movimiento seleccionado <em>serán eliminadas</em> antes de " +
+                                "construirlas y agregarlas nuevamente.<br /><br />" +
+                                "Aún así, desea continuar y eliminar (sustituir) las cuotas que ahora existen?",
+                true).then(
+                function () {
+                    construirCuotasMovimiento();
+                    return;
+                },
+                function () {
+                    return;
+                });
+            return;
+        }
 
-    construirCuotasMovimiento();
+        construirCuotasMovimiento();
     }
 
     // si el usuario selecciona una moneda, intentamos mostrar solo items para la misma en el grid de primas ...
@@ -2494,8 +2490,7 @@ angular.module("scrwebM").controller("RiesgoController",
                     $scope.cuotas_ui_grid.data = $scope.cuotas;
 
                 return true;
-            });
-
+            })
     }
 
 
@@ -3315,40 +3310,40 @@ angular.module("scrwebM").controller("RiesgoController",
 
                 return true;
             });
-    };
+    }
 
-      // ---------------------------------------------------------------------
-      // para registrar los documentos (ej: póliza) del riesgo
-      // ---------------------------------------------------------------------
+    // ---------------------------------------------------------------------
+    // para registrar los documentos (ej: póliza) del riesgo
+    // ---------------------------------------------------------------------
 
-      $scope.registroDocumentos = function() {
+    $scope.registroDocumentos = function() {
 
-          var modalInstance = $modal.open({
-              templateUrl: 'client/generales/registroDocumentos.html',
-              controller: 'RegistroDocumentosController',
-              size: 'md',
-              resolve: {
-                  entidad: function () {
-                      return $scope.riesgo;
-                  },
-                  documentos: function () {
-                      if (!lodash.isArray($scope.riesgo.documentos))
-                        $scope.riesgo.documentos = [];
-
-                      return $scope.riesgo.documentos;
-                  },
-                  tiposDocumentoLista: function () {
-                      return [ { tipo: 'POL', descripcion: 'Póliza'} ];
-                  }
-              }
-          }).result.then(
-                function (resolve) {
-                    return true;
+        var modalInstance = $modal.open({
+            templateUrl: 'client/generales/registroDocumentos.html',
+            controller: 'RegistroDocumentosController',
+            size: 'md',
+            resolve: {
+                entidad: function () {
+                    return $scope.riesgo;
                 },
-                function (cancel) {
-                    return true;
-                });
-      };
+                documentos: function () {
+                    if (!lodash.isArray($scope.riesgo.documentos))
+                    $scope.riesgo.documentos = [];
+
+                    return $scope.riesgo.documentos;
+                },
+                tiposDocumentoLista: function () {
+                    return [ { tipo: 'POL', descripcion: 'Póliza'} ];
+                }
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                return true;
+            });
+    }
 
 
       // -------------------------------------------------------------------------
@@ -3555,9 +3550,6 @@ function aseguradoSetSelectize($modal, $scope) {
         });
     }, 0);
   }
-
-
-
 
 const agregarAsegurado_desdeInput = ($modal, nombre) => {
     return new Promise((resolve, reject) => {
