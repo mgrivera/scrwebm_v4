@@ -1,6 +1,6 @@
 
 
-import { Cierre } from '../../imports/collections/cierre/cierre'; 
+import { Cierre } from 'imports/collections/cierre/cierre'; 
 
 Meteor.publish("cierres", function (companiaSeleccionadaID) {
 

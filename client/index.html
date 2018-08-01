@@ -9,7 +9,9 @@
 una página 'viene de afuera',  intentamos siempre no mostrar el navbar (principal). Por eso, el padding-top
 de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
 
-<body ng-app="scrwebM" ng-controller="MainController" ng-style="vieneDeAfuera ? { 'padding-top': '25px' } : { 'padding-top': '70px' }">
+<body ng-app="scrwebM" 
+      ng-controller="MainController" 
+      ng-style="vieneDeAfuera ? { 'padding-top': '25px' } : { 'padding-top': '70px' }">
     <div>
         <!-- nótese como mostramos el navbar solo cuando la página no viene de afuera ...
              vieneDeAfuera es true cuando una página, como factura, es abierta desde otro módulo en contab, como pagos ...  -->﻿

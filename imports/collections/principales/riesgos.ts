@@ -106,7 +106,7 @@ var productores_SimpleSchema = new SimpleSchema({
 
 
 // -----------------------------------------------------------------------
-// Documenos (riesgo y movimientos sub-document)
+// Documentos (riesgo y movimientos sub-document)
 // -----------------------------------------------------------------------
 var documentos_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
@@ -159,7 +159,6 @@ var movimientos_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Compañías (movimiento sub-document)
 // -----------------------------------------------------------------------
-
 var persona_SimpleSchema = new SimpleSchema({
     compania: { type: String, optional: false },
     titulo: { type: String, optional: false, min: 1, max: 8 },

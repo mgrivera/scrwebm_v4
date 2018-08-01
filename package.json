@@ -24,7 +24,7 @@
     "forerunnerdb": "^2.0.22",
     "jszip": "2.0.0",
     "lodash": "4.6.1",
-    "meteor-node-stubs": "^0.3.2",
+    "meteor-node-stubs": "0.3.2",
     "moment": "^2.22.1",
     "numeral": "2.0.4",
     "papaparse": "4.1.1",

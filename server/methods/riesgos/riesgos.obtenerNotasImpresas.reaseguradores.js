@@ -195,22 +195,40 @@ Meteor.methods(
                 cuotas.push(cuota);
             });
 
-            // determinamos una especie de corretaje para el reasegurador; este corretaje no tiene que ser correcto; es, simplemente, la 
-            // diferencia entre su pb y su pn ... 
+            // -------------------------------------------------------------------------------------------------------------------------------
+            // determinamos una especie de corretaje para el reasegurador; este corretaje no será perfecto; para calcularlo, determinamos la 
+            // sumatoria (nuestra vs reasseguradores) de las primas netas; este es el corretaje; luego multiplizamos por su orden ... 
+            let corretaje = 0; 
+            
+            if (movimiento.primas) { 
+                corretaje = lodash(movimiento.primas).sumBy('primaNeta');
+            }
+
+            // para calcular la proporción del corretaje que corresponde al reasegurador, obtenemos la proporción que existe entre las 
+            // primas de reaseguradores y la prima de este reasegurador 
+            let primaNetaReaseguradores = 0; 
+            let primaNetaEsteReasegurador = 0; 
+
+            if (movimiento.primas) { 
+                primaNetaReaseguradores = lodash(movimiento.primas).filter(x => !x.nosotros).sumBy('primaNeta');
+                primaNetaEsteReasegurador = movimiento.primas.find(x => x.compania === reasegurador.compania).primaNeta;
+            }
+
             let corretajeReasegurador = 0; 
             let corretajePorc = 0; 
 
-            if (primas && primas.primaBruta) { 
-                corretajeReasegurador = primas.primaBruta; 
-            }
+            if (primaNetaReaseguradores) { 
+                let proporcionReasegurador = primaNetaEsteReasegurador * 100 / primaNetaReaseguradores; 
+                corretajeReasegurador = corretaje * proporcionReasegurador / 100; 
 
-            if (primas && primas.primaNeta) { 
-                corretajeReasegurador -= primas.primaNeta; 
-            }
+                // finalmente, calculamos el %corretaje como la proporción entre el corretaje y la prima bruta del reasegurador 
+                let primaBrutaEsteReasegurador = movimiento.primas.find(x => x.compania === reasegurador.compania).primaBruta;
 
-            if (primas && primas.primaBruta) { 
-                corretajePorc = corretajeReasegurador * 100 / primas.primaBruta; 
+                if (primaBrutaEsteReasegurador) { 
+                    corretajePorc = corretajeReasegurador * 100 / primaBrutaEsteReasegurador; 
+                }
             }
+            // -------------------------------------------------------------------------------------------------------------------------------
 
             // leemos los datos del auto, si el ramo es automovil y si se han registrado ... 
             let infoAutos = {}; 

@@ -9,8 +9,8 @@ import { DialogModal } from '../imports/generales/angularGenericModal';
 import { MostrarPagosEnCuotas } from '../imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 angular.module("scrwebM").controller("RiesgoCuotas_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', 
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants) {
+['$scope', '$state', '$stateParams', '$modal', 'uiGridConstants', 
+  function ($scope, $state, $stateParams, $modal, uiGridConstants) {
 
     $scope.showProgress = true; 
 

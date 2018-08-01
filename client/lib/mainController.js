@@ -1,5 +1,7 @@
 
 
+import angular from 'angular'; 
+
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
@@ -15,8 +17,8 @@ import { Coberturas } from '/imports/collections/catalogos/coberturas';
 import { userHasRole } from '/client/imports/generales/userHasRole'; 
 
 // Este controller se carga con la página primera del programa; es decir, la que muestra el menú (navBar) principal
-angular.module("scrwebM").controller("MainController", ['$rootScope', '$scope', '$meteor', '$modal', '$location', 
-function ($rootScope, $scope, $meteor, $modal, $location) {
+angular.module("scrwebM").controller("MainController", ['$rootScope', '$scope', '$modal', '$location', 
+function ($rootScope, $scope, $modal, $location) {
 
     // este código jQuery permite que los 'subMenu' se muestren con un click en el Bootstrap navBar
     (function($){

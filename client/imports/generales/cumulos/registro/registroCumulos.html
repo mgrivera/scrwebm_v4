@@ -1,0 +1,297 @@
+
+
+<div class="modal-header">
+        <h5 class="modal-title">
+            <span href="#" class="navbar_custom_small_header" ng-show="cumulo.docState && (origen == 'edicion')"><em>Cúmulos - Registro</em> (<span class="fa fa-asterisk"></span>)</span>
+            <span href="#" class="navbar_custom_small_header" ng-show="!cumulo.docState || (origen == 'consulta')"><em>Cúmulos - Registro</em></span>
+        </h5>
+    </div>
+    
+    <div class="modal-body">
+        <div class="container-fluid">
+    
+            <div class="row">
+                <div class="col-sm-12 col-sm-offset-0">
+                    <div class="col-sm-4 col-sm-offset-4" style="text-align: center; vertical-align: middle; ">
+                        <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+                    </div>
+    
+                    <div class="col-sm-4" style="text-align: right; font-style: italic; ">
+                        <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="row">
+                <div class="col-sm-12 col-sm-offset-0" style="font-size: small; ">
+                    <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                        <span ng-bind-html="alert.msg | unsafe"></span>
+                    </alert>
+                </div>
+            </div>
+    
+            <div class="row">
+                <div class="col-sm-12" style="font-size: small; ">
+                    <p>
+                        Ud. debe registrar la información de cúmulos que corresponde a este riesgo/movimiento o contrato. 
+                    </p>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 15px; ">
+                <div class="col-sm-12 col-sm-offset-0">
+            
+                    <form name="cumulosRegistro_form" 
+                          id="infoRamo_editarItem_form" 
+                          ng-submit="infoRamo_editarItem_form_submit()"
+                          role="form" novalidate>
+
+                          <div class="row" style="padding-right: 20px; padding-left: 20px; ">
+                                <span style="color: #004776; font-size: medium; ">Identificación y vigencia: </span>
+                                <hr style="margin-top: 0; " class="blueLine">
+                            </div>
+            
+                          <div class="row">
+
+                            <div class="form-group form-group-sm col-sm-2">
+                                <label class="control-label myinput-xsm">Origen: </label>
+                                <p class="form-control-static" style="font-weight: bold; ">{{ cumulo.source.origen + " " + cumulo.source.numero }}</p>
+                            </div>
+            
+                            <div class="form-group form-group-sm col-sm-3">
+                                <label class="control-label myinput-xsm">Desde: </label>
+                                <input type="date" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.desde" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-3">
+                                <label class="control-label myinput-xsm">Hasta: </label>
+                                <input type="date" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.hasta" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+
+                            <div class="form-group form-group-sm col-sm-2">
+                                <label class="control-label myinput-xsm">Tipo cúmulo: </label>
+                                <select ng-model="cumulo.tipoCumulo"
+                                        ng-change="setIsEdited('cumulo')"
+                                        ng-options="item._id as item.abreviatura for item in cumulos | orderBy:'abreviatura'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        class="form-control input-sm myinput-sm">
+                                </select>
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-2">
+                                <label class="control-label myinput-xsm">Zona: </label>
+                                <select ng-model="cumulo.zona"
+                                        ng-change="setIsEdited()"
+                                        ng-options="item._id as item.descripcion for item in zonas | orderBy:'descripcion'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        class="form-control input-sm myinput-sm">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row" style="padding-right: 20px; padding-left: 20px; ">
+                            <span style="color: #004776; font-size: medium; ">Generales: </span>
+                            <hr style="margin-top: 0; " class="blueLine">
+                        </div>
+
+                        <div class="row row-centered" style="text-align: left; ">
+    
+                            <div class="form-group form-group-sm col-sm-2 col-sm-offset-1 col-centered">
+                                <label class="control-label myinput-xsm">Moneda: </label>
+                                <select ng-model="cumulo.moneda"
+                                        ng-change="setIsEdited()"
+                                        ng-options="item._id as item.simbolo for item in monedas | orderBy:'simbolo'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        class="form-control input-sm myinput-sm">
+                                </select>
+                            </div>
+            
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Cedente: </label>
+                                <select ng-model="cumulo.cedente"
+                                        ng-change="setIsEdited()"
+                                        ng-options="item._id as item.abreviatura for item in companias | orderBy:'abreviatura'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        class="form-control input-sm myinput-sm">
+                                </select>
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Indole: </label>
+                                <select ng-model="cumulo.indole"
+                                        ng-change="setIsEdited()"
+                                        ng-options="item._id as item.abreviatura for item in indoles | orderBy:'abreviatura'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        class="form-control input-sm myinput-sm">
+                                </select>
+                            </div>
+
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Ramo: </label>
+                                <select ng-model="cumulo.ramo"
+                                        ng-change="setIsEdited()"
+                                        ng-options="item._id as item.abreviatura for item in ramos | orderBy:'abreviatura'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        class="form-control input-sm myinput-sm">
+                                </select>
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Objeto asegurado: </label>
+                                <select ng-model="cumulo.tipoObjetoAsegurado"
+                                        ng-change="setIsEdited()"
+                                        ng-options="item._id as item.abreviatura for item in tiposObjetoAsegurado | orderBy:'abreviatura'"
+                                        ng-model-options="{ updateOn: 'blur' }"
+                                        class="form-control input-sm myinput-sm">
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="row" style="padding-right: 20px; padding-left: 20px; ">
+                            <span style="color: #004776; font-size: medium; ">Cifras: </span>
+                            <hr style="margin-top: 0; " class="blueLine">
+                        </div>
+
+                        <div class="row row-centered" style="text-align: left; ">
+    
+                            <div class="form-group form-group-sm col-sm-2 col-sm-offset-1 col-centered">
+                                <label class="control-label myinput-xsm">Valores a riesgo: </label>
+                                <input type="number" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.valoresARiesgo" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+            
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Suma asegurada: </label>
+                                <input type="number" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.sumaAsegurada" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Prima: </label>
+                                <input type="number" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.prima" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Nuestra orden(%): </label>
+                                <input type="number" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.nuestraOrdenPorc" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                            </div>
+                        </div>
+
+                        <div class="row row-centered" style="text-align: left; ">
+    
+                            <div class="form-group form-group-sm col-sm-2 col-sm-offset-1 col-centered">
+                                <label class="control-label myinput-xsm">Suma reasegurada: </label>
+                                <input type="number" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.sumaReasegurada" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+            
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                                <label class="control-label myinput-xsm">Prima bruta: </label>
+                                <input type="number" 
+                                       ng-change="setIsEdited()"
+                                       class="form-control input-sm myinput-xsm" 
+                                       ng-model="cumulo.primaBruta" 
+                                       ng-model-options="{ updateOn: 'blur' }" />
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                            </div>
+
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                            </div>
+    
+                            <div class="form-group form-group-sm col-sm-2 col-centered">
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+
+                        <div class="row" style="padding-right: 20px; padding-left: 20px; ">
+                            <span style="color: #004776; font-size: medium; ">Reaseguradores: </span>
+                            <hr style="margin-top: 0; " class="blueLine">
+                        </div>
+
+
+                        <div ui-grid="reaseguradores_ui_grid"
+                            ui-grid-edit
+                            ui-grid-cellnav
+                            ui-grid-resize-columns
+                            ui-grid-selection
+                            ui-grid-pinning
+                            class="angularGrid_Wide"
+                            style="height: 300px; text-align: center; ">
+                        </div>
+                
+                    </form>
+            
+                </div>
+            
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12 col-sm-offset-0">
+                    <button class="btn btn-sm btn-warning pull-right" ng-click="cancel()" style="margin-right: 15px; min-width: 100px; ">Cerrar</button>
+                    <button class="btn btn-sm pull-right btn-primary" ng-click="ok()" style="margin-right: 15px; min-width: 100px; ">Grabar</button>
+                </div>
+            </div>
+        </div>
+    </div>

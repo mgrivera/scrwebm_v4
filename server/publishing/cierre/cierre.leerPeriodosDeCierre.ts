@@ -2,7 +2,7 @@
 import SimpleSchema from 'simpl-schema'; 
 import { Meteor } from 'meteor/meteor'; 
 
-import { Cierre } from '../../imports/collections/cierre/cierre'; 
+import { Cierre } from 'imports/collections/cierre/cierre'; 
 
 Meteor.publish("cierre.leerPeriodosDeCierre", function (filtro, cantRecords) {
 

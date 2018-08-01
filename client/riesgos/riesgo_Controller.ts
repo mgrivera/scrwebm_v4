@@ -23,6 +23,10 @@ import { Suscriptores } from 'imports/collections/catalogos/suscriptores';
 
 import { DialogModal } from '../imports/generales/angularGenericModal'; 
 
+// importamos los files necesarios para el registro de cúmulos ... 
+import '../imports/generales/cumulos/registro/registroCumulos.html'; 
+import 'client/imports/generales/cumulos/registro/registroCumulos'; 
+
 angular.module("scrwebM").controller("Riesgo_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
 
@@ -639,6 +643,106 @@ angular.module("scrwebM").controller("Riesgo_Controller",
                 },
                 tiposDocumentoLista: function () {
                     return [ { tipo: 'POL', descripcion: 'Póliza'} ];
+                }
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                return true;
+            });
+    }
+
+    $scope.registroCumulos = function() {
+
+        if (!$scope.movimientoSeleccionado || lodash.isEmpty($scope.movimientoSeleccionado)) {
+            DialogModal($modal, "<em>Riesgos - Cúmulos - Registro</em>",
+                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
+                                "Debe seleccionar un movimiento antes de intentar abrir el registro de cúmulos.",
+                                false).then();
+
+            return;
+        }
+
+        // movimientoSeleccionado es inicializado en $scope.$parent cuando se selecciona un movimiento; luego está disponible en los 
+        // (children) controllers una vez que se ha inializado ... 
+        let riesgo = $scope.riesgo; 
+        let movimiento = $scope.movimientoSeleccionado; 
+
+        let valoresARiesgo = 0; 
+        let sumaAsegurada = 0; 
+        let prima = 0; 
+        let nuestraOrdenPorc = 0; 
+        let sumaReasegurada = 0; 
+        let primaBruta = 0; 
+              
+        // determinamos nuestra orden 
+        if (movimiento.companias) { 
+            nuestraOrdenPorc = movimiento.companias.find(x => x.nosotros).ordenPorc;
+        }
+
+        if (movimiento.coberturas) { 
+            valoresARiesgo = lodash.round(lodash.sumBy(movimiento.coberturas, 'valorARiesgo'), 2); 
+            sumaAsegurada = lodash.round(lodash.sumBy(movimiento.coberturas, 'sumaAsegurada'), 2); 
+            prima = lodash.round(lodash.sumBy(movimiento.coberturas, 'prima'), 2); 
+            sumaReasegurada = lodash.round(sumaAsegurada * nuestraOrdenPorc / 100, 2);  
+            primaBruta = lodash.round(prima * nuestraOrdenPorc / 100, 2);  
+        }
+
+        let reaseguradores = []; 
+
+        if (movimiento.companias) { 
+            movimiento.companias.filter(x => !x.nosotros).forEach((x) => { 
+                reaseguradores.push({ 
+                    compania: x.compania, 
+                    ordenPorc: x.ordenPorc, 
+                } as never); 
+            })
+        }
+
+        let infoCumulos = {
+
+            source : {
+                entityID : riesgo._id,
+                subEntityID : movimiento._id,
+                origen : "fac",
+                numero : `${riesgo.numero}-${movimiento.numero}`
+            },
+            
+            desde: movimiento.desde, 
+            hasta: movimiento.hasta, 
+            tipoCumulo: null, 
+            zona: null, 
+            moneda: riesgo.moneda,  
+            cedente: riesgo.compania, 
+            indole: riesgo.indole, 
+            ramo: riesgo.ramo,  
+            tipoObjetoAsegurado: riesgo.tipoObjetoAsegurado,  
+
+            valoresARiesgo: valoresARiesgo, 
+            sumaAsegurada: sumaAsegurada,  
+            prima: prima,  
+            nuestraOrdenPorc: nuestraOrdenPorc,  
+            sumaReasegurada: sumaReasegurada, 
+            primaBruta: primaBruta,  
+
+            reaseguradores: reaseguradores, 
+        }; 
+
+        $modal.open({
+            templateUrl: 'client/imports/generales/cumulos/registro/registroCumulos.html',
+            controller: 'RegistroCumulos_Controller',
+            size: 'lg',
+            resolve: {
+                infoCumulos: function () {
+                    return infoCumulos;
+                },
+                origen: function() { 
+                    return $scope.origen;           // edición / consulta 
+                }, 
+                companiaSeleccionada: function() { 
+                    return $scope.companiaSeleccionada; 
                 }
             }
         }).result.then(

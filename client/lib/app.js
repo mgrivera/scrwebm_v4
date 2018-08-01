@@ -25,5 +25,5 @@ angular.module("scrwebM", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid', 'ui.grid.edit', 'ui.grid.cellNav',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
                             'ui.grid.pinning', 'ui.grid.grouping'
-                            ]);
+                          ]);
 
