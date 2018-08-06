@@ -155,7 +155,8 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
-                                        <label class="control-label input-label pull-left">Compañía: </label>
+                                        <!-- compañías (cedentes) -->
+                                        <label class="control-label input-label pull-left">Compañías (cedentes): </label>
                                         <select class=" form-control input-sm myinput-sm"
                                                 name="compania"
                                                 ng-model="filtro.compania"
@@ -165,6 +166,7 @@
                                                 multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
+                                        <!-- monedas -->
                                         <label class="control-label input-label pull-left">Monedas: </label>
                                         <select class=" form-control input-sm myinput-sm"
                                                 name="moneda"
@@ -180,6 +182,7 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
+                                        <!-- estados -->
                                         <label class="control-label input-label pull-left">Estados: </label>
                                         <select class="form-control input-sm myinput-sm"
                                                 name="estado"
@@ -190,6 +193,7 @@
                                                 multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
+                                        <!-- indoles -->
                                         <label class="control-label input-label pull-left">Indoles: </label>
                                         <select class="form-control input-sm myinput-sm"
                                                 name="indole"
@@ -207,6 +211,7 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
+                                        <!-- ramos -->
                                         <label class="control-label input-label pull-left">Ramos: </label>
                                         <select class=" form-control input-sm myinput-sm"
                                                 name="ramo"
@@ -217,6 +222,7 @@
                                                 multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
+                                        <!-- asegurados -->
                                         <label class="control-label input-label pull-left">Asegurados: </label>
                                         <select class="form-control input-sm myinput-sm"
                                                 name="asegurado"
@@ -232,6 +238,7 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
+                                        <!-- corredores -->
                                         <label class="control-label input-label pull-left">Corredores: </label>
                                         <select class=" form-control input-sm myinput-sm"
                                                 name="corredor"
@@ -242,6 +249,7 @@
                                                 multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
+                                        <!-- suscriptores -->
                                         <label class="control-label input-label pull-left">Suscriptores: </label>
                                         <select class=" form-control input-sm myinput-sm"
                                                 ng-model="filtro.suscriptor"
@@ -258,7 +266,8 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
-                                        <label class="control-label input-label pull-left">Tipos: </label>
+                                        <!-- tipos de facultativo -->
+                                        <label class="control-label input-label pull-left">Tipos de facultativo: </label>
                                         <select class=" form-control input-sm myinput-sm"
                                                 ng-model="filtro.tipo"
                                                 ng-options="item._id as item.descripcion for item in tiposFacultativo | orderBy:'descripcion'"
@@ -267,6 +276,14 @@
                                                 multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
+                                        <!-- reaseguradores -->
+                                        <label class="control-label input-label pull-left">Compañías (reaseguradores): </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                ng-model="filtro.reasegurador"
+                                                ng-options="item._id as item.nombre for item in companias | filter: soloReaseguradores_Filter | orderBy:'nombre'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
                                     </div>
                                 </div>
                             </div>
@@ -274,12 +291,42 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
+                                        <!-- tipos de objeto asegurado -->
+                                        <label class="control-label input-label pull-left">Tipos de objeto asegurado: </label>
+                                        <select class=" form-control input-sm myinput-sm"
+                                                ng-model="filtro.tipoObjetoAsegurado"
+                                                ng-options="item._id as item.descripcion for item in tiposObjetoAsegurado | orderBy:'descripcion'"
+                                                ng-model-options="{ updateOn: 'blur' }"
+                                                size="8"
+                                                multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </tab>
+
+                    <tab heading="Opciones">
+
+                        <div class="row row-centered" style="margin-top: 20px; ">
+                            <div class="col-sm-6 col-centered">
+                                <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
+                                    <legend class="scheduler-border-radioButtons">Cúmulos - registro: </legend>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="registroCumulos" ng-model="filtro.registroCumulos" value='con'> con cúmulo registrado
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="registroCumulos" ng-model="filtro.registroCumulos" value='sin'> sin cúmulo registrado
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="registroCumulos" ng-model="filtro.registroCumulos" value='todos'> todos
+                                    </label>
+                                </fieldset>
+                            </div>
+
+                        </div>
+
                     </tab>
                 </tabset>
             </div>

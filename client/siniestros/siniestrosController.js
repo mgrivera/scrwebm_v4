@@ -13,6 +13,7 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 

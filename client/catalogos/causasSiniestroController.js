@@ -1,5 +1,7 @@
 
 
+import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
+
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("CausasSiniestroController", function ($scope) {

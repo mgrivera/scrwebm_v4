@@ -1,32 +1,37 @@
 
-import moment from 'moment';
-import lodash from 'lodash';
+import * as moment from 'moment';
+import * as lodash from 'lodash';
+import * as angular from 'angular';
 
-import { Monedas } from '/imports/collections/catalogos/monedas'; 
-import { Companias } from '/imports/collections/catalogos/companias'; 
-import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
-import { Ramos } from '/imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
-import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalogos/ContratosProp_Configuracion';
-import { Cuotas } from '/imports/collections/principales/cuotas'; 
-import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
+import { TiposContrato } from 'imports/collections/catalogos/tiposContrato'; 
+import { Ramos } from 'imports/collections/catalogos/ramos'; 
+import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
 
-import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
-import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
-import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
+import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { Contratos_Methods } from 'client/contratos/methods/_methods/_methods'; 
+import { MostrarPagosEnCuotas } from 'client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
-import { Contratos } from '/imports/collections/principales/contratos'; 
-import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
+import { Contratos } from 'imports/collections/principales/contratos'; 
+import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
 
 // siguen todos las tablas (collections) para el registro de contratos proporcionales 
-import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos'; 
-import { ContratosProp_comAdic_resumen, ContratosProp_comAdic_distribucion, ContratosProp_comAdic_montosFinales, } from '/imports/collections/principales/contratos'; 
-import { ContratosProp_partBeneficios_resumen, ContratosProp_partBeneficios_distribucion, ContratosProp_partBeneficios_montosFinales, } from '/imports/collections/principales/contratos'; 
-import { ContratosProp_entCartPr_resumen, ContratosProp_entCartPr_distribucion, ContratosProp_entCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
-import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, ContratosProp_entCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
-import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
-import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_comAdic_resumen, ContratosProp_comAdic_distribucion, ContratosProp_comAdic_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_partBeneficios_resumen, ContratosProp_partBeneficios_distribucion, ContratosProp_partBeneficios_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_entCartPr_resumen, ContratosProp_entCartPr_distribucion, ContratosProp_entCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, ContratosProp_entCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
+
+// importamos los files necesarios para el registro de cúmulos ... 
+import '../imports/generales/cumulos/registro/registroCumulos.html'; 
+import 'client/imports/generales/cumulos/registro/registroCumulos'; 
+
 
 angular.module("scrwebM").controller("ContratoController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
@@ -367,22 +372,22 @@ angular.module("scrwebM").controller("ContratoController",
 
                     if (Array.isArray(contrato.personas)) {
                         contrato.personas.forEach(persona => {
-                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
+                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre } as never);
                         });
                     };
 
                     // ahora revisamos las compañías en el contrato (cedente, cuentas, caaps) y agregamos las que
                     // *no* existan en el array de compañías
 
-                    if (!lodash.some(companias, c => { return c.compania == contrato.compania; } ))
-                        companias.push({ compania: contrato.compania });
+                    if (!lodash.some(companias, (c: any) => { return c.compania == contrato.compania; } ))
+                        companias.push({ compania: contrato.compania } as never);
 
                     if (Array.isArray(contrato.capas)) {
                         contrato.capas.forEach(capa => {
                         if (Array.isArray(capa.reaseguradores)) {
                             capa.reaseguradores.forEach(r => {
-                                if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
-                                    companias.push({ compania: r.compania });
+                                if (!lodash.some(companias, (c: any) => { return c.compania == r.compania; } ))
+                                    companias.push({ compania: r.compania } as never);
                             });
                         };
                         });
@@ -390,8 +395,8 @@ angular.module("scrwebM").controller("ContratoController",
 
                     if (contrato.cuentas && Array.isArray(contrato.cuentas.reaseguradores)) {
                         contrato.cuentas.reaseguradores.forEach(r => {
-                        if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
-                            companias.push({ compania: r.compania });
+                        if (!lodash.some(companias, (c: any) => { return c.compania == r.compania; } ))
+                            companias.push({ compania: r.compania } as never);
                         });
                     };
 
@@ -622,7 +627,7 @@ angular.module("scrwebM").controller("ContratoController",
             $scope.contrato.capas = [];
         }
             
-        var capa = {};
+        var capa = {} as any;
 
         capa._id = new Mongo.ObjectID()._str;
 
@@ -641,7 +646,7 @@ angular.module("scrwebM").controller("ContratoController",
 
 
         if ($scope.contrato.capas.length > 0) {
-            var maxCapa = lodash.maxBy($scope.contrato.capas, "numero");
+            var maxCapa = lodash.maxBy($scope.contrato.capas, "numero") as any;
             if (maxCapa) {
                 capa.numero = maxCapa.numero + 1;
                 capa.moneda = maxCapa.moneda ? maxCapa.moneda : null;
@@ -687,7 +692,7 @@ angular.module("scrwebM").controller("ContratoController",
 
     $scope.eliminarCapa = function (entity) {
 
-        lodash.remove($scope.contrato.capas, function (capa) { return capa._id === entity._id; });
+        lodash.remove($scope.contrato.capas, function (capa: any) { return capa._id === entity._id; });
 
         if (!$scope.contrato.docState) { 
             $scope.contrato.docState = 2;
@@ -876,9 +881,9 @@ angular.module("scrwebM").controller("ContratoController",
             $scope.capaSeleccionada.reaseguradores = [];
         }
             
-        var reasegurador = {};
+        var reasegurador = {} as any;
 
-        let ultimoReasegurador = null;
+        let ultimoReasegurador = {} as any;
         if ($scope.capaSeleccionada.reaseguradores.length) { 
             ultimoReasegurador = lodash.last($scope.capaSeleccionada.reaseguradores);
         }
@@ -911,7 +916,7 @@ angular.module("scrwebM").controller("ContratoController",
     }
 
     $scope.eliminarCapaReasegurador = function (entity) {
-        lodash.remove($scope.capaSeleccionada.reaseguradores, function (r) { return r._id === entity._id; });
+        lodash.remove($scope.capaSeleccionada.reaseguradores, function (r: any) { return r._id === entity._id; });
 
         if (!$scope.contrato.docState) { 
             $scope.contrato.docState = 2;
@@ -962,7 +967,7 @@ angular.module("scrwebM").controller("ContratoController",
     // ui-grid de Capas - primas de compañías
     // --------------------------------------------------------------------------------------
     let capasPrimasCompaniasSeleccionada = {};
-    let capasPrimasCompaniasGridApi = {};
+    let capasPrimasCompaniasGridApi = {} as any;
 
     $scope.capasPrimasCompanias_ui_grid = {
         enableSorting: true,
@@ -1328,13 +1333,13 @@ angular.module("scrwebM").controller("ContratoController",
                 p.primaNeta0 = p.primaBruta;
 
                 if (p.imp1)
-                p.primaNeta0 += p.imp1;
+                    p.primaNeta0 += p.imp1;
 
                 if (p.imp2)
-                p.primaNeta0 += p.imp2;
+                    p.primaNeta0 += p.imp2;
 
                 if (p.corretaje)
-                p.primaNeta0 += p.corretaje;
+                    p.primaNeta0 += p.corretaje;
             }
 
             // impuestoSobrePN%
@@ -1350,7 +1355,7 @@ angular.module("scrwebM").controller("ContratoController",
                 p.primaNeta = p.primaNeta0;
 
                 if (p.impSPN)
-                p.primaNeta += p.impSPN;
+                    p.primaNeta += p.impSPN;
             }
 
             // finalmente, el usuario puede indicar la prima neta más no la prima bruta
@@ -1359,7 +1364,7 @@ angular.module("scrwebM").controller("ContratoController",
 
                 // el impuesto viene con signo contrario; al restar, agregamos el monto a la pn
                 if (p.impuestoSobrePN)
-                p.primaNeta0 += p.impSPN;
+                    p.primaNeta0 += p.impSPN;
             }
 
             if (lodash.isFinite(p.primaNeta0) && !lodash.isFinite(p.primaBruta)) {
@@ -1367,13 +1372,13 @@ angular.module("scrwebM").controller("ContratoController",
 
                 // cómo los 'costos' ya vienen con signo diferente a la prima, al restar, agregamos el monto a la pb
                 if (p.imp1)
-                p.primaBruta += p.imp1;
+                    p.primaBruta += p.imp1;
 
                 if (p.imp2)
-                p.primaBruta += p.imp2;
+                    p.primaBruta += p.imp2;
 
                 if (p.corretaje)
-                p.primaBruta += p.corretaje;
+                    p.primaBruta += p.corretaje;
             }
         })
 
@@ -1396,7 +1401,7 @@ angular.module("scrwebM").controller("ContratoController",
     // ---------------------------------------------------------------------
     // ui-grid: cuotas para la capa seleccionada
     // ----------------------------------------------------------------------
-    var capasCuotaSeleccionada = {};
+    var capasCuotaSeleccionada = {} as any;
 
     $scope.capasCuotas_ui_grid = {
         enableSorting: true,
@@ -1672,7 +1677,6 @@ angular.module("scrwebM").controller("ContratoController",
             name: '',
             field: '_id',
             displayName: '',
-            cellTemplate: '<div class="ui-grid-cell-contents">ver</div>',
             cellTemplate: '<button class="btn btn-sm btn-link" type="button" ng-click="grid.appScope.mostrarPagosEnCuota(this.row.entity)">ver</button>',
             width: 50,
             headerCellClass: 'ui-grid-centerCell',
@@ -1709,7 +1713,7 @@ angular.module("scrwebM").controller("ContratoController",
             $scope.cuotas = [];
         }
             
-        var cuota = {};
+        var cuota = {} as any;
 
         cuota._id = new Mongo.ObjectID()._str;
 
@@ -1751,7 +1755,7 @@ angular.module("scrwebM").controller("ContratoController",
 
     $scope.eliminarCapaCuota = function (cuota) {
 
-        let index = lodash.findIndex($scope.cuotas, (x) => { return x._id === cuota._id; });
+        let index = lodash.findIndex($scope.cuotas, (x: any) => { return x._id === cuota._id; });
         if (index != -1) {
             $scope.cuotas[index].docState = 3;
         }
@@ -1785,7 +1789,7 @@ angular.module("scrwebM").controller("ContratoController",
 
             // calculamos la fecha
             if (!cuota.fecha && cuota.diasVencimiento && cuota.fechaVencimiento) {
-                cuota.fecha = moment(cuota.fechaVencimiento).subtract(parametros.diasVencimiento, 'days').toDate();
+                cuota.fecha = moment(cuota.fechaVencimiento).subtract(cuota.diasVencimiento, 'days').toDate();
                 if (!cuota.docState) { cuota.docState = 2; }; 
                 
                 cuotaActualizada = true; 
@@ -1961,6 +1965,8 @@ angular.module("scrwebM").controller("ContratoController",
     // para inicializar el item (en el $scope) cuando el usuario abre la página
     // -------------------------------------------------------------------------
 
+    let Contratos_SubscriptionHandle = {} as any;
+
     function inicializarItem() {
         if ($scope.id == "0") {
             // el id viene en '0' cuando el usuario hace un click en Nuevo ...
@@ -2009,11 +2015,9 @@ angular.module("scrwebM").controller("ContratoController",
             let contratoID = $scope.id; 
 
             // si se efectuó un subscription al collection antes, la detenemos ...
-            if (Contratos_SubscriptionHandle) {
+            if (Contratos_SubscriptionHandle && Contratos_SubscriptionHandle.stop) {
                 Contratos_SubscriptionHandle.stop();
             }
-
-            Contratos_SubscriptionHandle = null;
 
             Contratos_SubscriptionHandle = 
             Meteor.subscribe('contrato', contratoID, () => { 
@@ -2176,5 +2180,147 @@ angular.module("scrwebM").controller("ContratoController",
         }
 
         return false;
+    }
+
+    $scope.registroCumulos = function() {
+
+        // movimientoSeleccionado es inicializado en $scope.$parent cuando se selecciona un movimiento; luego está disponible en los 
+        // (children) controllers una vez que se ha inializado ... 
+        let contrato = $scope.contrato; 
+        // let movimiento = $scope.movimientoSeleccionado; 
+
+        let valoresARiesgo = 0; 
+        let sumaAsegurada = 0; 
+        let prima = 0; 
+        let nuestraOrdenPorc = 0; 
+        let sumaReasegurada = 0; 
+        let primaBruta = 0; 
+              
+        // TODO: aquí debemos determinar el tipo de contrato: capa / cuenta
+        let tipoContrato = ""; 
+
+        if (contrato && contrato.capas && contrato.capas.length) { 
+            tipoContrato = "capa"; 
+        } else if (contrato && contrato.cuentasTecnicas_definicion && contrato.cuentasTecnicas_definicion.length) { 
+            tipoContrato = "cuenta"; 
+        }
+
+        if (!tipoContrato) {
+            DialogModal($modal, "<em>Contratos - Cúmulos - Registro</em>",
+                                "Aparentemente, Ud. <em>no ha determinado</em> aún el tipo del contrato: proporcional / no prooporcional.<br />" +
+                                "Por favor continúe efectuando el registro del contrato. Agregue capas o períodos (de cuentas técnicas) según corresponda.",
+                                false).then();
+
+            return;
+        }
+
+        // determinamos las cifras del cúmulo, de acuerdo al tipo de contrato: prop / no prop 
+
+        // TODO: nótese que no determinamos sumas aseguradas, etc., pues por ahora no existen en el registro del contrato. Lo que 
+        // único que el usuario registra en el contrato no proporcional es su prima ... 
+
+        if (tipoContrato === "capa") { 
+            valoresARiesgo = 0; 
+            sumaAsegurada = 0; 
+            prima = lodash.round(lodash(contrato.capasPrimasCompanias).filter(x => x.nosotros).sumBy('pmd'), 2); 
+            sumaReasegurada = 0;  
+            primaBruta = lodash.round(lodash(contrato.capasPrimasCompanias).filter(x => x.nosotros).sumBy('primaBruta'), 2); 
+
+            // determinamos nuestra orden 
+            if (prima) { 
+                nuestraOrdenPorc = primaBruta * 100 / prima;
+            }
+        }
+
+        let moneda = ""; 
+        let reaseguradores = []; 
+
+        if (tipoContrato === "capa") { 
+            moneda = contrato.capas[0].moneda; 
+
+            if (contrato.capas[0].reaseguradores) { 
+                contrato.capas[0].reaseguradores.forEach((x) => { 
+                    reaseguradores.push({ 
+                        _id: new Mongo.ObjectID()._str,
+                        compania: x.compania, 
+                        ordenPorc: x.ordenPorc, 
+                    } as never); 
+                })
+            }
+        } else { 
+            moneda = contrato.cuentasTecnicas_definicion[0].moneda; 
+
+            // NOTA: por ahora, simplemente, leemos los reasegurados en la tabla de saldos para la primera de las cuentas técnicas 
+            let reaseguradoresContratoProp = ContratosProp_cuentas_saldos.find({ 
+                contratoID: contrato._id, 
+                definicionID: contrato.cuentasTecnicas_definicion[0]._id, 
+                nosotros: { $ne: true } }).fetch(); 
+
+            if (reaseguradoresContratoProp) { 
+                reaseguradoresContratoProp.forEach((x) => { 
+                    reaseguradores.push({ 
+                        _id: new Mongo.ObjectID()._str,
+                        compania: x.compania
+                    } as never); 
+                })
+            }
+        }
+
+        let infoCumulos = {
+
+            _id: new Mongo.ObjectID()._str,
+
+            source : {
+                entityID : contrato._id,
+                subEntityID : null,
+                origen : tipoContrato,
+                // numero : `${contrato.numero}-${movimiento.numero}`
+                numero : `${contrato.numero}`
+            },
+            
+            desde: contrato.desde, 
+            hasta: contrato.hasta, 
+            tipoCumulo: null, 
+            zona: null, 
+            moneda: moneda,  
+            cedente: contrato.compania, 
+            indole: null, 
+            ramo: contrato.ramo,  
+            tipoObjetoAsegurado: null,  
+
+            valoresARiesgo: valoresARiesgo, 
+            sumaAsegurada: sumaAsegurada,  
+            prima: prima,  
+            nuestraOrdenPorc: nuestraOrdenPorc,  
+            sumaReasegurada: sumaReasegurada, 
+            primaBruta: primaBruta,  
+
+            reaseguradores: reaseguradores, 
+
+            cia: contrato.cia, 
+        }; 
+
+        $modal.open({
+            templateUrl: 'client/imports/generales/cumulos/registro/registroCumulos.html',
+            controller: 'RegistroCumulos_Controller',
+            size: 'lg',
+            resolve: {
+                infoCumulos: function () {
+                    return infoCumulos;
+                },
+                origen: function() { 
+                    return $scope.origen;           // edición / consulta 
+                }, 
+                companiaSeleccionada: function() { 
+                    return $scope.companiaSeleccionada; 
+                }
+            }
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                return true;
+            });
     }
 }])

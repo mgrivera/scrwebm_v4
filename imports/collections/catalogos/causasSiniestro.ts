@@ -1,8 +1,7 @@
 
+
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
-
-CausasSiniestro = new Mongo.Collection("causasSiniestro");
 
 var schema = new SimpleSchema({
     _id: {
@@ -29,4 +28,5 @@ var schema = new SimpleSchema({
     }
 });
 
+export const CausasSiniestro: any = new Mongo.Collection("causasSiniestro");
 CausasSiniestro.attachSchema(schema);

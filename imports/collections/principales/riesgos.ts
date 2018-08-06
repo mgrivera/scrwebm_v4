@@ -1,11 +1,12 @@
 
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
-﻿
+
 // -----------------------------------------------------------------------
 // Objeto asegurado (riesgo sub-document)
 // -----------------------------------------------------------------------
 var objetoAsegurado_SimpleSchema = new SimpleSchema({
+    tipo: { type: String, label: "Tipo del objeto asegurado (ej: Galpones).", optional: true, }, 
     descripcion: { type: String, optional: true },
     ubicacion: { type: String, optional: true }
 })

@@ -1912,6 +1912,16 @@ angular.module("scrwebM").controller("RiesgoMovimientos_Controller",
             movimientos_ui_grid_gridApi.core.refresh();  
             movimientos_ui_grid_gridApi.selection.selectRow(movimientoSeleccionado);
         }
+
+        // si el usuario no ha seleccionado un movimiento pero existen, seleccionamos el 1ro. ... 
+        if ($scope.riesgo && $scope.riesgo.movimientos && Array.isArray($scope.riesgo.movimientos) && $scope.riesgo.movimientos.length) { 
+
+            movimientoSeleccionado = $scope.riesgo.movimientos[0]; 
+            $scope.$parent.movimientoSeleccionado = movimientoSeleccionado;     // para que esté disponible en cualquier state 
+
+            movimientos_ui_grid_gridApi.core.refresh();  
+            movimientos_ui_grid_gridApi.selection.selectRow(movimientoSeleccionado);
+        }
     }, 500, 1);
 
     $scope.showProgress = false; 

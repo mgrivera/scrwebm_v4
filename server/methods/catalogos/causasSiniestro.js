@@ -1,4 +1,7 @@
 
+
+import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
+
 Meteor.methods(
 {
     causasSiniestroSave: function (causasSiniestro) {

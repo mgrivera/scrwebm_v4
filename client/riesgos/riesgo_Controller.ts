@@ -15,6 +15,7 @@ import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 import { Cuotas } from 'imports/collections/principales/cuotas'; 
 import { TiposFacultativo } from 'imports/collections/catalogos/tiposFacultativo'; 
+import { TiposObjetoAsegurado } from 'imports/collections/catalogos/tiposObjetoAsegurado'; 
 import { AutosMarcas } from 'imports/collections/catalogos/autosMarcas'; 
 
 import { Coberturas } from 'imports/collections/catalogos/coberturas'; 
@@ -127,6 +128,7 @@ angular.module("scrwebM").controller("Riesgo_Controller",
         coberturas: () => { return Coberturas.find({}); },
         asegurados: () => { return Asegurados.find({}); },
         tiposFacultativo: () => { return TiposFacultativo.find({}); },
+        tiposObjetoAsegurado: () => { return TiposObjetoAsegurado.find(); },  
     })
 
     $scope.nuevo0 = function () {
@@ -695,6 +697,7 @@ angular.module("scrwebM").controller("Riesgo_Controller",
         if (movimiento.companias) { 
             movimiento.companias.filter(x => !x.nosotros).forEach((x) => { 
                 reaseguradores.push({ 
+                    _id: new Mongo.ObjectID()._str,
                     compania: x.compania, 
                     ordenPorc: x.ordenPorc, 
                 } as never); 
@@ -702,6 +705,8 @@ angular.module("scrwebM").controller("Riesgo_Controller",
         }
 
         let infoCumulos = {
+
+            _id: new Mongo.ObjectID()._str,
 
             source : {
                 entityID : riesgo._id,
@@ -718,7 +723,7 @@ angular.module("scrwebM").controller("Riesgo_Controller",
             cedente: riesgo.compania, 
             indole: riesgo.indole, 
             ramo: riesgo.ramo,  
-            tipoObjetoAsegurado: riesgo.tipoObjetoAsegurado,  
+            tipoObjetoAsegurado: riesgo.objetoAsegurado && riesgo.objetoAsegurado.tipo ? riesgo.objetoAsegurado.tipo : null,  
 
             valoresARiesgo: valoresARiesgo, 
             sumaAsegurada: sumaAsegurada,  
@@ -728,6 +733,8 @@ angular.module("scrwebM").controller("Riesgo_Controller",
             primaBruta: primaBruta,  
 
             reaseguradores: reaseguradores, 
+
+            cia: $scope.companiaSeleccionada._id, 
         }; 
 
         $modal.open({

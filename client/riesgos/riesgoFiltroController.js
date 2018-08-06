@@ -9,6 +9,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
+import { TiposObjetoAsegurado } from '/imports/collections/catalogos/tiposObjetoAsegurado'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -70,6 +71,7 @@ angular.module("scrwebM").controller("RiesgosFiltro_Controller",
         ramos: () => { return Ramos.find({}); },
         asegurados: () => { return Asegurados.find({}); },
         tiposFacultativo: () => { return TiposFacultativo.find({}); },
+        tiposObjetoAsegurado: () => { return TiposObjetoAsegurado.find(); },  
     })
 
     // para limpiar el filtro, simplemente inicializamos el $scope.filtro ...
@@ -142,6 +144,15 @@ angular.module("scrwebM").controller("RiesgosFiltro_Controller",
     // para filtrar el contenido de la lista de compañías
     $scope.soloSegYCorr_Filter = function (item) {
         if (item.tipo == 'SEG' || item.tipo == 'CORR') { 
+            return true;
+        }
+        else { 
+            return false;
+        }  
+    }
+
+    $scope.soloReaseguradores_Filter = function (item) {
+        if (item.tipo == 'REA') { 
             return true;
         }
         else { 

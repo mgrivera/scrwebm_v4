@@ -1,4 +1,6 @@
 
+
+import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 
 CausasSiniestro.before.remove(function (userId, doc) {

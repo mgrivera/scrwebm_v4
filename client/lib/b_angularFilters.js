@@ -12,6 +12,7 @@ import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';
 import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
+import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
 
 // ---------------------------------------------------------------------------------------
 // ui-grid: para formatear fields numéricos y dates

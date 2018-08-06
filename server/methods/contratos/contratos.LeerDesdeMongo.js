@@ -9,6 +9,7 @@ import { Ramos } from '/imports/collections/catalogos/ramos';
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Cumulos_Registro } from '/imports/collections/principales/cumulos_registro'; 
 
 Meteor.methods(
 {
@@ -58,22 +59,22 @@ Meteor.methods(
         if (filtro2.compania && filtro2.compania.length) {
             let array = _.clone(filtro2.compania);
             where.compania = { $in: array };
-        };
+        }
 
         if (filtro2.tipo && filtro2.tipo.length) {
             let array = _.clone(filtro2.tipo);
             where.tipo = { $in: array };
-        };
+        }
 
         if (filtro2.ramo && filtro2.ramo.length) {
             let array = _.clone(filtro2.ramo);
             where.ramo = { $in: array };
-        };
+        }
 
         if (filtro2.suscriptor && filtro2.suscriptor.length) {
             let array = _.clone(filtro2.suscriptor);
             where.suscriptor = { $in: array };
-        };
+        }
 
         if (filtro2.descripcion) {
             let search = new RegExp(filtro2.descripcion, 'i');
@@ -89,7 +90,7 @@ Meteor.methods(
 
         if (contratos.length == 0) {
             return "Cero registros han sido leídos desde la base de datos";
-        };
+        }
 
         let companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
         let suscriptores = Suscriptores.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
@@ -165,7 +166,33 @@ Meteor.methods(
                 };
             };
             // -------------------------------------------------------------------------------------------------------
-        });
+        })
+
+        if (filtro2.registroCumulos && filtro2.registroCumulos != "todos") { 
+
+            // para cada riesgo, leemos a ver si tiene o un cúmulo registrado 
+            let array = Temp_Consulta_Contratos.find({ user: Meteor.userId() }).fetch(); 
+
+            array.forEach((itemConsulta) => { 
+
+                let existe = Cumulos_Registro.findOne({ 'source.entityID': itemConsulta.id }); 
+
+                switch (filtro2.registroCumulos) { 
+                    case "con": { 
+                        if (!existe) { 
+                            Temp_Consulta_Contratos.remove({ _id: itemConsulta._id }); 
+                        }
+                        break; 
+                    }
+                    case "sin": { 
+                        if (existe) { 
+                            Temp_Consulta_Contratos.remove({ _id: itemConsulta._id }); 
+                        }
+                        break; 
+                    }
+                }
+            }) 
+        }
 
         return "Ok, los contratos que cumplen el criterio indicado, han sido leídos desde la base de datos.";
     }
