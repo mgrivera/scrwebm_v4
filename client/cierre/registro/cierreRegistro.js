@@ -8,6 +8,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
+import { Filtros } from '/imports/collections/otros/filtros'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 

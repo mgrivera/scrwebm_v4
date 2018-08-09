@@ -8,6 +8,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import { Temp_consulta_cierreRegistro } from '/imports/collections/consultas/temp_consulta_cierreRegistro'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
+import { Filtros } from '/imports/collections/otros/filtros'; 
 
 angular.module("scrwebM").controller("Cierre.Consulta.Controller",
 ['$stateParams', '$scope', '$meteor', '$modal', '$interval', function ($stateParams, $scope, $meteor, $modal, $interval) {

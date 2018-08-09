@@ -8,6 +8,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Temp_Consulta_Remesas } from '/imports/collections/consultas/tempConsultaRemesas';  
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Filtros } from '/imports/collections/otros/filtros'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 

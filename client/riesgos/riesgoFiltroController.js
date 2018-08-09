@@ -10,6 +10,7 @@ import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativ
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
 import { TiposObjetoAsegurado } from '/imports/collections/catalogos/tiposObjetoAsegurado'; 
+import { Filtros } from '/imports/collections/otros/filtros'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 

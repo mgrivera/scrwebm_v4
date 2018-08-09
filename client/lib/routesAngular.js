@@ -465,6 +465,25 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
             parent:'corretaje_consulta',
         })
 
+        // cúmulos - consulta 
+        .state('cumulos_consulta', {
+            url: '/consultas/cumulo',
+            templateUrl: 'client/consultas/cumulos/main.html',
+            controller: 'ConsultasCumulos_Controller'
+        })
+        .state('cumulos_consulta_filter', {
+            url: '/filter',
+            templateUrl: 'client/consultas/cumulos/filtro.html',
+            controller: 'ConsultasCumulos_Filtro_Controller',
+            parent:'cumulos_consulta',
+        })
+        .state('cumulos_consulta_list', {
+            url: '/list?companiaSeleccionada&parametrosReporte',
+            templateUrl: 'client/consultas/cumulos/list.html',
+            controller: 'ConsultasCumulos_Lista_Controller',
+            parent:'cumulos_consulta',
+        })
+
         // ----------------------------------------------------------------
         // cierre
         // ----------------------------------------------------------------

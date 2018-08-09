@@ -1,4 +1,7 @@
 ﻿
+
+import { Filtros } from '/imports/collections/otros/filtros'; 
+
 Filtros.allow({
     insert: function (userId, doc) {
         if (userId && userId === doc.userId)

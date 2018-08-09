@@ -1,21 +1,14 @@
 ﻿
 
-import lodash from 'lodash'; 
-import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import * as lodash from 'lodash'; 
+import * as angular from 'angular'; 
 
-import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
-import { Monedas } from '/imports/collections/catalogos/monedas'; 
-import { Companias } from '/imports/collections/catalogos/companias'; 
-import { Ramos } from '/imports/collections/catalogos/ramos'; 
-import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
-import { Filtros } from '/imports/collections/otros/filtros'; 
+import { Consulta_Cumulos } from 'imports/collections/consultas/consulta_cumulos'; 
+import { Filtros } from 'imports/collections/otros/filtros'; 
 
-import { Consulta_Corretaje } from '/imports/collections/consultas/consulta_corretaje'; 
+import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+angular.module("scrwebM").controller("ConsultasCumulos_Filtro_Controller", ['$scope', '$state', function ($scope, $state) {
 
     $scope.processProgress = {
         current: 0,
@@ -26,8 +19,8 @@ angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
 
     // -------------------------------------------------------------------------------------------------------
     // para recibir los eventos desde la tarea en el servidor ...
-    EventDDP.setClient({ myuserId: Meteor.userId(), app: 'scrwebm', process: 'corretaje_consulta' });
-    EventDDP.addListener('corretaje_consulta_reportProgress', function(process) {
+    EventDDP.setClient({ myuserId: Meteor.userId(), app: 'scrwebm', process: 'cumulos_consulta' });
+    EventDDP.addListener('cumulos_consulta_reportProgress', function(process) {
         $scope.processProgress.current = process.current;
         $scope.processProgress.max = process.max;
         $scope.processProgress.progress = process.progress;
@@ -47,24 +40,7 @@ angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
         $scope.alerts.splice(index, 1);
     }
 
-    // ------------------------------------------------------------------------------------------------
-    // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-    let companiaSeleccionadaDoc = null;
-
-    if (companiaSeleccionada) { 
-        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
-    }
-    // ------------------------------------------------------------------------------------------------
-
-    // leemos los catálogos en el $scope
-    $scope.monedas = Monedas.find().fetch();
-    $scope.companias = Companias.find().fetch();
-    $scope.suscriptores = Suscriptores.find().fetch();
-    $scope.ramos = Ramos.find().fetch();
-
     // para limpiar el filtro, simplemente inicializamos el $scope.filtro ...
-
     $scope.limpiarFiltro = function () {
         $scope.filtro = {};
     }
@@ -94,11 +70,11 @@ angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
         $scope.showProgress = true;
 
         // preparamos el filtro (selector)
-        var filtro = {};
+        let filtro = {} as any;
 
         // agregamos la compañía seleccionada al filtro
         filtro = $scope.filtro;
-        filtro.cia = companiaSeleccionadaDoc && companiaSeleccionadaDoc._id ? companiaSeleccionadaDoc._id : -999;
+        filtro.cia = $scope.companiaSeleccionada._id;
 
         // para medir y mostrar el progreso de la tarea ...
         $scope.processProgress.current = 0;
@@ -106,7 +82,9 @@ angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
         $scope.processProgress.progress = 0;
         $scope.processProgress.message = "";
 
-        Meteor.call('consultas.corretaje', filtro, (err, result) => {
+        let consultas_Cumulos_SubscriptionHandle = {} as any; 
+
+        Meteor.call('consultas.cumulos', filtro, (err, result) => {
 
             if (err) {
                 let errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -124,20 +102,20 @@ angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
             }
 
             // si se efectuó un subscription al collection antes, la detenemos ...
-            if (Consultas_Corretaje_SubscriptionHandle) { 
-                Consultas_Corretaje_SubscriptionHandle.stop();
+            if (consultas_Cumulos_SubscriptionHandle && consultas_Cumulos_SubscriptionHandle.stop) { 
+                consultas_Cumulos_SubscriptionHandle.stop();
             }
                 
-            Consultas_Corretaje_SubscriptionHandle = 
-            Meteor.subscribe('consultas.corretaje', () => {
+            consultas_Cumulos_SubscriptionHandle = 
+            Meteor.subscribe('consultas.cumulos', () => {
                 // ------------------------------------------------------------------------------------------------------
                 // guardamos el filtro indicado por el usuario
                 var filtroActual = lodash.clone($scope.filtro);
 
-                if (Filtros.findOne({ nombre: 'consultas_Corretaje', userId: Meteor.userId() })) {
+                if (Filtros.findOne({ nombre: 'consultas_Cumulos', userId: Meteor.userId() })) {
                     // el filtro existía antes; lo actualizamos
                     // validate false: como el filtro puede ser vacío (ie: {}), simple schema no permitiría eso; por eso saltamos la validación
-                    Filtros.update(Filtros.findOne({ nombre: 'consultas_Corretaje', userId: Meteor.userId() })._id,
+                    Filtros.update(Filtros.findOne({ nombre: 'consultas_Cumulos', userId: Meteor.userId() })._id,
                                     { $set: { filtro: filtroActual } },
                                     { validate: false });
                 }
@@ -145,28 +123,29 @@ angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
                     Filtros.insert({
                         _id: new Mongo.ObjectID()._str,
                         userId: Meteor.userId(),
-                        nombre: 'consultas_Corretaje',
+                        nombre: 'consultas_Cumulos',
                         filtro: filtroActual
                     })
                 }
                 // ------------------------------------------------------------------------------------------------------
 
-                if (Consulta_Corretaje.find({ user: Meteor.userId() }).count() == 0) {
+                if (Consulta_Cumulos.find({ user: Meteor.userId() }).count() == 0) {
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
                         type: 'warning',
                         msg: "0 registros seleccionados. Por favor revise el criterio de selección indicado e indique uno diferente.<br />" +
                             "(Nota: el filtro <b>solo</b> regresará registros si existe una <em>compañía seleccionada</em>.)"
                     });
+
                     $scope.showProgress = false;
+                    $scope.$apply(); 
+
                     return;
                 }
 
                 $scope.showProgress = false;
 
-                $state.go('corretaje_consulta_list', {
-                    companiaSeleccionada: JSON.stringify(companiaSeleccionadaDoc),
-                })
+                $state.go('cumulos_consulta_list')
             })
         })
     }
@@ -176,9 +155,9 @@ angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
     // los filtros (solo del usuario) se publican en forma automática cuando se inicia la aplicación
 
     $scope.filtro = {};
-    var filtroAnterior = Filtros.findOne(
+    let filtroAnterior = Filtros.findOne(
         {
-            nombre: 'consultas_Corretaje',
+            nombre: 'consultas_Cumulos',
             userId: Meteor.userId(),
         });
 

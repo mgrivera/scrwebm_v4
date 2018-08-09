@@ -185,11 +185,11 @@ Meteor.methods(
             doc.render();
         }
         catch (error) {
-            var e: {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                properties: error.properties,
+            var e = {
+                message: error.message ? error.message : "Indefinido",
+                name: error.name ? error.name : "Indefinido",
+                stack: error.stack ? error.stack : "Indefinido",
+                properties: error.properties ? error.properties : "Indefinido",
             }
             throw new Meteor.Error('error-render-Docxtemplater',
                 `Error: se ha producido un error al intentar generar un documento docx usando DocxTemplater.

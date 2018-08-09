@@ -274,6 +274,19 @@ angular.module("scrwebM").controller('RegistroCumulos_Controller',
                     }, 
                 })
 
+                // nótese como establecemos la lista para el ddl de zonas, siempre en base al tipo de cúmulo que se registró 
+                // para el item  
+                let zonas = []; 
+
+                if ($scope.cumulo.tipoCumulo) { 
+                    let cumuloSeleccionado = $scope.cumulos.find(x => x._id === $scope.cumulo.tipoCumulo); 
+                    if (cumuloSeleccionado) { 
+                        zonas = cumuloSeleccionado.zonas; 
+                    }
+                }
+
+                $scope.zonas = zonas; 
+
                 let message = ""; 
                 if ($scope.origen === 'edicion') {  
                     message = `*** Cúmulo registrado el ${moment($scope.cumulo.ingreso).format("DD-MMM-YYYY")} - Ud. puede hacer modificaciones y 

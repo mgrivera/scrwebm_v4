@@ -1,5 +1,6 @@
 
 
+import { Filtros } from '/imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller('Consultas_montosPendientesCobro_vencimientos_opcionesReportController',

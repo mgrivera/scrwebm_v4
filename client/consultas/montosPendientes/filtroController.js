@@ -11,6 +11,7 @@ import { Ramos } from '/imports/collections/catalogos/ramos';
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Consulta_MontosPendientes } from '/imports/collections/consultas/consulta_MontosPendientes'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Filtros } from '/imports/collections/otros/filtros'; 
 
 angular.module("scrwebM").controller("ConsultasMontosPendientesFiltroController",
 ['$scope', '$state', '$stateParams', '$meteor',
