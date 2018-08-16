@@ -1,0 +1,81 @@
+
+
+
+<div class="modal-header">
+        <h5 class="modal-title">
+            <span>Exportar a Excel</span>
+        </h5>
+    </div>
+    
+    <div class="modal-body">
+        <div class="container-fluid">
+    
+            <div class="row">
+                <div class="col-sm-12 col-sm-offset-0">
+                    <div class="col-sm-6 col-sm-offset-6" style="text-align: right; font-style: italic; ">
+                        <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="row">
+                <div class="col-sm-12 col-sm-offset-0">
+                    <div class="col-sm-4 col-sm-offset-4" style="text-align: center; vertical-align: middle; ">
+                        <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+                    </div>
+                </div>
+            </div>
+    
+    
+            <div class="row">
+                <div class="col-sm-12" style="font-size: small; ">
+                    <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                        <span ng-bind-html="alert.msg | unsafe"></span>
+                    </alert>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6" style="font-size: small; ">
+                    <p>
+                        Esta función le permite <b>guardar</b> el estado (parcial) de la cobranza, a un archivo en el 
+                        disco del equipo. 
+                    </p>
+                    <p>
+                        La idea es que Ud. pueda, luego, recuperar el estado de este proceso y continuarlo, sin perder
+                        el trabajo que se había hecho antes. 
+                    </p>
+                    <p>
+                        Ud. debe hacer un <em>click</em> en el <em>link</em> que sigue, para guardar el estado de este proceso
+                        en un archivo en el disco del equipo. 
+                    </p>
+                    <p>
+                        <a href="#" ng-click="cobranza_guardarEstado()">Guardar estado actual del proceso</a>
+                    </p>        
+                </div>
+
+                <div class="col-sm-6" style="font-size: small; ">
+                        <p>
+                            Esta función le permite <b>recuperar</b> el estado que se ha guardado <em>previamente</em> para el proceso. 
+                        </p>
+                        <p>
+                            Ud. debe hacer un <em>click</em> en el <em>link</em> que sigue y recuperar el estado de este proceso, 
+                            desde un archivo al cual se haya guardado antes. 
+                        </p>
+                        <p>
+                            <!-- <a href="#" ng-click="cobranza_leerEstado()">Recuperar el estado anterior del proceso</a> -->
+                            <input type="file"
+                                    id = "fileInput"
+                                    accept = ".txt"
+                                    multiple = "false"
+                                    onchange = "angular.element(this).scope().uploadFile(this.files)"
+                                    ng-show="true">
+                        </p>        
+                    </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; min-width: 80px; ">Cerrar</button>
+    </div>

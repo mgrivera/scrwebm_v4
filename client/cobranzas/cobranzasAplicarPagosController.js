@@ -228,6 +228,32 @@ angular.module("scrwebM").controller("CobranzasAplicarPagosController",
         }
     }
 
+    $scope.cobranza_guardarState = function() { 
+        
+        // para permitir al usuario guardar el estado de la cobranza y recuperarlo luego. Esto permite que el usuario 'marque' muchos cobros; 
+        // los guarda en un file y luego regrese, los cargue y continúe el proceso ... 
+
+        let modalInstance = $modal.open({
+            templateUrl: 'client/cobranzas/cobranzaGuardarEstado_Modal.html',
+            controller: 'CobranzaGuardarEstado_Controller',
+            size: 'md',
+            resolve: {
+                temp_cobranzas: () => {
+                    return $scope.temp_cobranzas;
+                },
+                companiaSeleccionada: () => {
+                    return $scope.companiaSeleccionada;
+                },
+            },
+        }).result.then(
+            function (resolve) {
+                return true;
+            },
+            function (cancel) {
+                return true;
+            });
+    }
+
     //-------------------------------------
     // angular pagination ...
     $scope.pageSize = 10;

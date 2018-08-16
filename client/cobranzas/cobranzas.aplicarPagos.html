@@ -54,7 +54,19 @@
             <table style="font-size: x-small; " class="table table-condensed table-striped table-bordered table-hover table-responsive">
                 <thead>
                     <tr>
-                        <th style="font-size: small; text-align: left; background-color: #333333 !important" colspan="15">{{ infoRemesa }}</th>
+                        <th style="font-size: small; text-align: left; background-color: #333333 !important" colspan="12">
+                            <span style="text-align: left; ">
+                                {{ infoRemesa }}
+                            </span>
+                        </th>  
+
+                        <th style="font-size: small; text-align: left; background-color: #333333 !important" colspan="3">
+                            <div style="text-align: right; ">
+                                <a href="#" ng-click="cobranza_guardarState()">
+                                    Guardar estado&nbsp;&nbsp;<span class="fa fa-save"></span>&nbsp;&nbsp;&nbsp;
+                                </a>
+                            </div>
+                        </th>  
                     </tr>
                     <tr>
                         <th style="text-align: center; " colspan="6">Cuota pendiente</th>
