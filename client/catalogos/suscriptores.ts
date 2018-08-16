@@ -1,11 +1,12 @@
 ﻿
 
-import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { Bancos } from '/imports/collections/catalogos/bancos'; 
+import * as angular from 'angular'; 
+import * as lodash from 'lodash'; 
 
-angular.module("scrwebM").controller("BancosController",
- ['$scope', '$stateParams', 
-  function ($scope, $stateParams) {
+import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
+
+angular.module("scrwebM").controller("SuscriptoresController", ['$scope',  function ($scope) {
 
       $scope.showProgress = false;
 
@@ -14,9 +15,10 @@ angular.module("scrwebM").controller("BancosController",
 
       $scope.closeAlert = function (index) {
           $scope.alerts.splice(index, 1);
-      }
+      };
 
-      $scope.bancos_ui_grid = {
+      $scope.suscriptores_ui_grid = {
+
           enableSorting: true,
           showColumnFooter: false,
           enableCellEdit: false,
@@ -42,12 +44,13 @@ angular.module("scrwebM").controller("BancosController",
           rowIdentity: function (row) {
               return row._id;
           },
+
           getRowIdentity: function (row) {
               return row._id;
           }
       }
 
-      $scope.bancos_ui_grid.columnDefs = [
+      $scope.suscriptores_ui_grid.columnDefs = [
                {
                    name: 'docState',
                    field: 'docState',
@@ -76,7 +79,7 @@ angular.module("scrwebM").controller("BancosController",
               {
                   name: 'abreviatura',
                   field: 'abreviatura',
-                  displayName: 'Abreviatura',
+                  displayName: 'Iniciales',
                   width: 120,
                   headerCellClass: 'ui-grid-leftCell',
                   cellClass: 'ui-grid-leftCell',
@@ -93,47 +96,44 @@ angular.module("scrwebM").controller("BancosController",
                   enableSorting: false,
                   width: 25
               }
-      ];
+      ]
 
-      $scope.showProgress = true;
 
       // ---------------------------------------------------------
       // subscriptions ...
-      let subscriptionHandle = null;
+      $scope.showProgress = true;
 
-      subscriptionHandle =
-      Meteor.subscribe('bancos', () => {
-
+      Meteor.subscribe('suscriptores', () => { 
+      
           $scope.helpers({
-              bancos: () => {
-                  return Bancos.find({}, { sort: { nombre: 1 } });
+              suscriptores: () => {
+                  return Suscriptores.find({}, { sort: { nombre: 1 } });
               },
           });
 
-          $scope.bancos_ui_grid.data = $scope.bancos;
-
+          $scope.suscriptores_ui_grid.data = $scope.suscriptores;
           $scope.showProgress = false;
-          $scope.$apply();
       })
       // ---------------------------------------------------------
 
+
       $scope.deleteItem = function (item) {
           item.docState = 3;
-      }
+      };
 
       $scope.nuevo = function () {
-          $scope.bancos.push({
+          $scope.suscriptores.push({
               _id: new Mongo.ObjectID()._str,
               docState: 1
           });
-      }
-
+      };
 
       $scope.save = function () {
 
           $scope.showProgress = true;
 
-          var editedItems = _.filter($scope.bancos, function (item) { return item.docState; });
+          // eliminamos los items eliminados; del $scope y del collection
+          var editedItems = lodash.filter($scope.suscriptores, function (item) { return item.docState; });
 
           // nótese como validamos cada item antes de intentar guardar en el servidor
           var isValid = false;
@@ -141,17 +141,18 @@ angular.module("scrwebM").controller("BancosController",
 
           editedItems.forEach(function (item) {
               if (item.docState != 3) {
-                  isValid = Bancos.simpleSchema().namedContext().validate(item);
+                  isValid = Suscriptores.simpleSchema().namedContext().validate(item);
 
                   if (!isValid) {
-                      Bancos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
+                      Suscriptores.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
                       });
                   }
               }
           })
 
           if (errores && errores.length) {
+
               $scope.alerts.length = 0;
               $scope.alerts.push({
                   type: 'danger',
@@ -170,12 +171,10 @@ angular.module("scrwebM").controller("BancosController",
               return;
           }
 
+          $scope.suscriptores = [];
+          $scope.suscriptores_ui_grid.data = [];
 
-          // eliminamos la conexión entre angular y meteor
-          // $scope.bancos = [];
-          $scope.bancos_ui_grid.data = [];
-
-          Meteor.call('bancosSave', editedItems, (err, result) => {
+          Meteor.call('suscriptoresSave', editedItems, (err, result) => {
 
               if (err) {
                   let errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -186,38 +185,31 @@ angular.module("scrwebM").controller("BancosController",
                       msg: errorMessage
                   });
 
-                  $scope.helpers({
-                      bancos: () => {
-                          return Bancos.find({}, { sort: { nombre: 1 } });
-                      },
-                  });
-
-                  $scope.bancos_ui_grid.data = $scope.bancos;
-
                   $scope.showProgress = false;
                   $scope.$apply();
 
                   return;
               }
 
-                $scope.alerts.length = 0;
-                $scope.alerts.push({
-                    type: 'info',
-                    msg: result
-                });
+              $scope.alerts.length = 0;
+              $scope.alerts.push({
+                  type: 'info',
+                  msg: result
+              });
 
-                // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
-                $scope.helpers({
-                    bancos: () => {
-                        return Bancos.find({}, { sort: { nombre: 1 } });
-                    },
-                });
+              // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
+              $scope.helpers({
+                  suscriptores: () => {
+                      return Suscriptores.find({}, { sort: { nombre: 1 } });
+                  },
+              });
 
-                $scope.bancos_ui_grid.data = $scope.bancos;
+              $scope.suscriptores_ui_grid.data = $scope.suscriptores;
 
-                $scope.showProgress = false;
-                $scope.$apply();
-            });
-      };
+              $scope.showProgress = false;
+              $scope.$apply();
+          })
+      }
+
   }
 ]);

@@ -26,7 +26,7 @@ import { DialogModal } from '../imports/generales/angularGenericModal';
 
 // importamos los files necesarios para el registro de cúmulos ... 
 import '../imports/generales/cumulos/registro/registroCumulos.html'; 
-import 'client/imports/generales/cumulos/registro/registroCumulos'; 
+import '../imports/generales/cumulos/registro/registroCumulos'; 
 
 angular.module("scrwebM").controller("Riesgo_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {

@@ -1,11 +1,12 @@
-﻿
 
-import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { Bancos } from '/imports/collections/catalogos/bancos'; 
 
-angular.module("scrwebM").controller("BancosController",
- ['$scope', '$stateParams', 
-  function ($scope, $stateParams) {
+import * as angular from 'angular'; 
+import * as lodash from 'lodash'; 
+
+import { CausasSiniestro } from 'imports/collections/catalogos/causasSiniestro'; 
+import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
+angular.module("scrwebM").controller("CausasSiniestroController", function ($scope) {
 
       $scope.showProgress = false;
 
@@ -14,9 +15,10 @@ angular.module("scrwebM").controller("BancosController",
 
       $scope.closeAlert = function (index) {
           $scope.alerts.splice(index, 1);
-      }
+      };
 
-      $scope.bancos_ui_grid = {
+
+      $scope.causasSiniestro_ui_grid = {
           enableSorting: true,
           showColumnFooter: false,
           enableCellEdit: false,
@@ -47,7 +49,7 @@ angular.module("scrwebM").controller("BancosController",
           }
       }
 
-      $scope.bancos_ui_grid.columnDefs = [
+      $scope.causasSiniestro_ui_grid.columnDefs = [
                {
                    name: 'docState',
                    field: 'docState',
@@ -62,9 +64,9 @@ angular.module("scrwebM").controller("BancosController",
                    width: 25
                },
               {
-                  name: 'nombre',
-                  field: 'nombre',
-                  displayName: 'Nombre',
+                  name: 'descripcion',
+                  field: 'descripcion',
+                  displayName: 'Descripción',
                   width: 250,
                   headerCellClass: 'ui-grid-leftCell',
                   cellClass: 'ui-grid-leftCell',
@@ -99,30 +101,27 @@ angular.module("scrwebM").controller("BancosController",
 
       // ---------------------------------------------------------
       // subscriptions ...
-      let subscriptionHandle = null;
-
-      subscriptionHandle =
-      Meteor.subscribe('bancos', () => {
+      Meteor.subscribe('causasSiniestro', () => {
 
           $scope.helpers({
-              bancos: () => {
-                  return Bancos.find({}, { sort: { nombre: 1 } });
+              causasSiniestro: () => {
+                  return CausasSiniestro.find({}, { sort: { descripcion: 1 } });
               },
           });
 
-          $scope.bancos_ui_grid.data = $scope.bancos;
+          $scope.causasSiniestro_ui_grid.data = $scope.causasSiniestro;
 
           $scope.showProgress = false;
           $scope.$apply();
       })
-      // ---------------------------------------------------------
 
+      // ---------------------------------------------------------
       $scope.deleteItem = function (item) {
           item.docState = 3;
       }
 
       $scope.nuevo = function () {
-          $scope.bancos.push({
+          $scope.causasSiniestro.push({
               _id: new Mongo.ObjectID()._str,
               docState: 1
           });
@@ -133,25 +132,28 @@ angular.module("scrwebM").controller("BancosController",
 
           $scope.showProgress = true;
 
-          var editedItems = _.filter($scope.bancos, function (item) { return item.docState; });
+          // eliminamos los items eliminados; del $scope y del collection
+          var editedItems = lodash.filter($scope.causasSiniestro, function (item) { return item.docState; });
 
           // nótese como validamos cada item antes de intentar guardar en el servidor
+
           var isValid = false;
           var errores = [];
 
           editedItems.forEach(function (item) {
               if (item.docState != 3) {
-                  isValid = Bancos.simpleSchema().namedContext().validate(item);
+                  isValid = CausasSiniestro.simpleSchema().namedContext().validate(item);
 
                   if (!isValid) {
-                      Bancos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
+                      CausasSiniestro.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
                       });
                   }
               }
           })
 
           if (errores && errores.length) {
+
               $scope.alerts.length = 0;
               $scope.alerts.push({
                   type: 'danger',
@@ -170,12 +172,10 @@ angular.module("scrwebM").controller("BancosController",
               return;
           }
 
+          $scope.causasSiniestro = [];
+          $scope.causasSiniestro_ui_grid.data = [];
 
-          // eliminamos la conexión entre angular y meteor
-          // $scope.bancos = [];
-          $scope.bancos_ui_grid.data = [];
-
-          Meteor.call('bancosSave', editedItems, (err, result) => {
+          Meteor.call('causasSiniestroSave', editedItems, (err, result) => {
 
               if (err) {
                   let errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -186,38 +186,29 @@ angular.module("scrwebM").controller("BancosController",
                       msg: errorMessage
                   });
 
-                  $scope.helpers({
-                      bancos: () => {
-                          return Bancos.find({}, { sort: { nombre: 1 } });
-                      },
-                  });
-
-                  $scope.bancos_ui_grid.data = $scope.bancos;
-
                   $scope.showProgress = false;
                   $scope.$apply();
 
                   return;
               }
 
-                $scope.alerts.length = 0;
-                $scope.alerts.push({
-                    type: 'info',
-                    msg: result
-                });
-
-                // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
-                $scope.helpers({
-                    bancos: () => {
-                        return Bancos.find({}, { sort: { nombre: 1 } });
-                    },
-                });
-
-                $scope.bancos_ui_grid.data = $scope.bancos;
-
-                $scope.showProgress = false;
-                $scope.$apply();
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'info',
+                msg: result
             });
-      };
-  }
-]);
+
+            // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
+            $scope.helpers({
+                causasSiniestro: () => {
+                    return CausasSiniestro.find({}, { sort: { descripcion: 1 } });
+                },
+            });
+
+            $scope.causasSiniestro_ui_grid.data = $scope.causasSiniestro;
+
+            $scope.showProgress = false;
+            $scope.$apply();
+        })
+      }
+  });

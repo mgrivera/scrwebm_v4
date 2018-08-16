@@ -6,7 +6,7 @@ import * as angular from 'angular';
 import { Consulta_Cumulos } from 'imports/collections/consultas/consulta_cumulos'; 
 import { Filtros } from 'imports/collections/otros/filtros'; 
 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebM").controller("ConsultasCumulos_Filtro_Controller", ['$scope', '$state', function ($scope, $state) {
 

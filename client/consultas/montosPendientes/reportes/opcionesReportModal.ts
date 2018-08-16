@@ -1,11 +1,11 @@
 
 
-import * as angular from 'angular'; 
+import * as angular from 'angular';
 
 import { Filtros } from 'imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController',
+angular.module("scrwebM").controller('Consultas_montosPendientes_opcionesReportController',
 ['$scope', '$modalInstance', 'companiaSeleccionada', function ($scope, $modalInstance, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -30,7 +30,7 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
     
     $scope.reportLink = "#";
     if (scrwebm_net_app_address) {
-        $scope.reportLink = `${scrwebm_net_app_address}/reports/consultas/cumulos/report.aspx?user=${Meteor.userId()}&report=cumulos`;
+        $scope.reportLink = `${scrwebm_net_app_address}/reports/consultas/montosPendientes/report.aspx?user=${Meteor.userId()}&report=montosPendientes`;
     }
 
     $scope.opcionesReport = {
@@ -47,7 +47,7 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
         $scope.showProgress = true; 
 
         // con este método grabamos las opciones para la ejecución del reporte y mostramos el link que permite obtenerlo 
-        Meteor.call('consultas.cumulos.report.grabarAMongoOpcionesReporte', $scope.opcionesReport, companiaSeleccionada,
+        Meteor.call('consultas.montosPendientes.report.grabarAMongoOpcionesReporte', $scope.opcionesReport, companiaSeleccionada,
             (err, result) => {
 
                 if (err) {
@@ -80,10 +80,10 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
                 // guardamos las opciones indicadas por el usuario, para que estén disponibles la próxima vez 
                 // ------------------------------------------------------------------------------------------------------
                 // guardamos el filtro indicado por el usuario
-                if (Filtros.findOne({ nombre: 'consultas.cumulos.opcionesReport', userId: Meteor.userId() })) { 
+                if (Filtros.findOne({ nombre: 'consultas.montosPendientes.opcionesReport', userId: Meteor.userId() })) { 
                     // el filtro existía antes; lo actualizamos
                     // validate false: como el filtro puede ser vacío (ie: {}), simple schema no permitiría eso; por eso saltamos la validación
-                    Filtros.update(Filtros.findOne({ nombre: 'consultas.cumulos.opcionesReport', userId: Meteor.userId() })._id,
+                    Filtros.update(Filtros.findOne({ nombre: 'consultas.montosPendientes.opcionesReport', userId: Meteor.userId() })._id,
                     { $set: { filtro: $scope.opcionesReport } },
                     { validate: false });
                 }
@@ -91,7 +91,7 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
                     Filtros.insert({
                         _id: new Mongo.ObjectID()._str,
                         userId: Meteor.userId(),
-                        nombre: 'consultas.cumulos.opcionesReport',
+                        nombre: 'consultas.montosPendientes.opcionesReport',
                         filtro: $scope.opcionesReport
                     });
                 }
@@ -115,12 +115,10 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
     // ------------------------------------------------------------------------------------------------------
     // intentamos leer las opciones usadas antes por el usuario, para mostrarlas en el diálogo ... 
     $scope.opcionesReport = {};
-    var filtroAnterior = Filtros.findOne({ nombre: 'consultas.cumulos.opcionesReport', userId: Meteor.userId() });
+    var filtroAnterior = Filtros.findOne({ nombre: 'consultas.montosPendientes.opcionesReport', userId: Meteor.userId() });
 
     if (filtroAnterior) { 
         $scope.opcionesReport = filtroAnterior.filtro;
     }
     // ------------------------------------------------------------------------------------------------------
-
-}
-])
+}])

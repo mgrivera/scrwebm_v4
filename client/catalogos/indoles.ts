@@ -1,11 +1,13 @@
 ﻿
 
-import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { Bancos } from '/imports/collections/catalogos/bancos'; 
+import * as angular from 'angular'; 
+import * as lodash from 'lodash'; 
 
-angular.module("scrwebM").controller("BancosController",
- ['$scope', '$stateParams', 
-  function ($scope, $stateParams) {
+import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
+import { Indoles } from 'imports/collections/catalogos/indoles'; 
+
+angular.module("scrwebM").controller("IndolesController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 
@@ -14,9 +16,9 @@ angular.module("scrwebM").controller("BancosController",
 
       $scope.closeAlert = function (index) {
           $scope.alerts.splice(index, 1);
-      }
+      };
 
-      $scope.bancos_ui_grid = {
+      $scope.indoles_ui_grid = {
           enableSorting: true,
           showColumnFooter: false,
           enableCellEdit: false,
@@ -42,12 +44,14 @@ angular.module("scrwebM").controller("BancosController",
           rowIdentity: function (row) {
               return row._id;
           },
+
           getRowIdentity: function (row) {
               return row._id;
           }
-      }
 
-      $scope.bancos_ui_grid.columnDefs = [
+      };
+
+      $scope.indoles_ui_grid.columnDefs = [
                {
                    name: 'docState',
                    field: 'docState',
@@ -62,9 +66,9 @@ angular.module("scrwebM").controller("BancosController",
                    width: 25
                },
               {
-                  name: 'nombre',
-                  field: 'nombre',
-                  displayName: 'Nombre',
+                  name: 'descripcion',
+                  field: 'descripcion',
+                  displayName: 'Descripción',
                   width: 250,
                   headerCellClass: 'ui-grid-leftCell',
                   cellClass: 'ui-grid-leftCell',
@@ -95,63 +99,62 @@ angular.module("scrwebM").controller("BancosController",
               }
       ];
 
-      $scope.showProgress = true;
 
       // ---------------------------------------------------------
       // subscriptions ...
-      let subscriptionHandle = null;
+      $scope.showProgress = true;
 
-      subscriptionHandle =
-      Meteor.subscribe('bancos', () => {
-
+      Meteor.subscribe('indoles', () => { 
+      
           $scope.helpers({
-              bancos: () => {
-                  return Bancos.find({}, { sort: { nombre: 1 } });
+              indoles: () => {
+                  return Indoles.find({}, { sort: { descripcion: 1 } });
               },
           });
 
-          $scope.bancos_ui_grid.data = $scope.bancos;
+          $scope.indoles_ui_grid.data = $scope.indoles;
 
           $scope.showProgress = false;
-          $scope.$apply();
       })
-      // ---------------------------------------------------------
+
 
       $scope.deleteItem = function (item) {
           item.docState = 3;
-      }
+      };
 
       $scope.nuevo = function () {
-          $scope.bancos.push({
+          $scope.indoles.push({
               _id: new Mongo.ObjectID()._str,
               docState: 1
           });
-      }
-
+      };
 
       $scope.save = function () {
 
           $scope.showProgress = true;
 
-          var editedItems = _.filter($scope.bancos, function (item) { return item.docState; });
+          // eliminamos los items eliminados; del $scope y del collection
+          var editedItems = lodash.filter($scope.indoles, function (item) { return item.docState; });
 
           // nótese como validamos cada item antes de intentar guardar en el servidor
+
           var isValid = false;
           var errores = [];
 
           editedItems.forEach(function (item) {
               if (item.docState != 3) {
-                  isValid = Bancos.simpleSchema().namedContext().validate(item);
+                  isValid = Indoles.simpleSchema().namedContext().validate(item);
 
                   if (!isValid) {
-                      Bancos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
+                      Indoles.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
                       });
                   }
               }
           })
 
           if (errores && errores.length) {
+
               $scope.alerts.length = 0;
               $scope.alerts.push({
                   type: 'danger',
@@ -172,10 +175,10 @@ angular.module("scrwebM").controller("BancosController",
 
 
           // eliminamos la conexión entre angular y meteor
-          // $scope.bancos = [];
-          $scope.bancos_ui_grid.data = [];
+          $scope.indoles_ui_grid.data = [];
+          $scope.indoles = [];
 
-          Meteor.call('bancosSave', editedItems, (err, result) => {
+          Meteor.call('indolesSave', editedItems, (err, result) => {
 
               if (err) {
                   let errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -185,14 +188,6 @@ angular.module("scrwebM").controller("BancosController",
                       type: 'danger',
                       msg: errorMessage
                   });
-
-                  $scope.helpers({
-                      bancos: () => {
-                          return Bancos.find({}, { sort: { nombre: 1 } });
-                      },
-                  });
-
-                  $scope.bancos_ui_grid.data = $scope.bancos;
 
                   $scope.showProgress = false;
                   $scope.$apply();
@@ -208,16 +203,15 @@ angular.module("scrwebM").controller("BancosController",
 
                 // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
                 $scope.helpers({
-                    bancos: () => {
-                        return Bancos.find({}, { sort: { nombre: 1 } });
+                    indoles: () => {
+                        return Indoles.find({}, { sort: { descripcion: 1 } });
                     },
                 });
-
-                $scope.bancos_ui_grid.data = $scope.bancos;
+                $scope.indoles_ui_grid.data = $scope.indoles;
 
                 $scope.showProgress = false;
                 $scope.$apply();
-            });
-      };
+            })
+      }
   }
 ]);

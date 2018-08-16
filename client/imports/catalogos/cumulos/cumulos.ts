@@ -4,7 +4,7 @@ import * as angular from 'angular';
 import * as lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../../generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { DialogModal } from '../../generales/angularGenericModal'; 
 
 import { Cumulos } from 'imports/collections/catalogos/cumulos'; 
 

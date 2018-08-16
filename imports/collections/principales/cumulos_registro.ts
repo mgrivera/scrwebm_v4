@@ -21,8 +21,10 @@ let simpleSchema: any = new SimpleSchema({
 
     source: { type: source_SimpleSchema, optional: false, minCount: 1 },
 
+    fecha_aPartirDesde: { type: Date, label: "A partir de (fecha)?", optional: false, },
     desde: { type: Date, label: "Desde", optional: false, },
     hasta: { type: Date, label: 'Hasta', optional: false, },
+    proyeccion: { type: Boolean, label: "Proyección", optional: true, },
 
     tipoCumulo: { type: String, label: 'Tipo de cúmulo', optional: false, },
     zona: { type: String, label: 'Zona', optional: false, },

@@ -7,33 +7,60 @@ import { Cumulos_Registro } from 'imports/collections/principales/cumulos_regist
 
 Meteor.methods(
 {
-    'cumulos_registro.save': function (item) {
+    'cumulos_registro.save': function (cumulos) {
 
-        if (item.docState && item.docState == 1) {
-            delete item.docState;
-            Cumulos_Registro.insert(item);
+        if (!lodash.isArray(cumulos) || cumulos.length == 0) {
+            throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        if (item.docState && item.docState == 2) {
+        var inserts = lodash.chain(cumulos).
+                      filter(function (item) { return item.docState && item.docState == 1; }).
+                      map(function (item) { delete item.docState; return item; }).
+                      value();
 
-            var item2 = lodash.cloneDeep(item);
+        inserts.forEach(function (item) {
+            Cumulos_Registro.insert(item, function (error, result) {
+                if (error) { 
+                    if (error.invalidKeys) { 
+                        throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
+                    }   
+                    else { 
+                        throw new Meteor.Error("meteorError", error);
+                    }     
+                }
+            })
+        })
 
-            delete item2.docState;
-            delete item2._id;
+        var updates = lodash.chain(cumulos).
+                        filter(function (item) { return item.docState && item.docState == 2; }).
+                        map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto 
+                        map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto 
+                        map(function (item) { delete item.object._id; return item; }).             // eliminamos _id del objeto (arriba lo separamos) 
+                        value();
 
-            item2.ultAct = new Date();
-            item2.ultUsuario = this.userId;
+        updates.forEach(function (item) {
+            Cumulos_Registro.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+                //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
+                if (error) { 
+                    if (error.invalidKeys) { 
+                        throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
+                    }   
+                    else { 
+                        throw new Meteor.Error("meteorError", error);
+                    }     
+                }
+            })
+        })
 
-            Cumulos_Registro.update({ _id: item._id }, { $set: item2 });
-        }
+        var removes = lodash.filter(cumulos, function (item) { return item.docState && item.docState == 3; });
 
-        if (item.docState && item.docState == 3) {
+        removes.forEach(function (item) {
             Cumulos_Registro.remove({ _id: item._id });
-        }
+        })
 
         return { 
             error: false, 
-            message: 'Ok, los datos han sido actualizados en la base de datos.', 
+            message: "Ok, los datos han sido actualizados en la base de datos.", 
         }
     }
 })

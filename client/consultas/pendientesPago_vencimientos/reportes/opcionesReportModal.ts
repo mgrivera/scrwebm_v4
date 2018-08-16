@@ -1,11 +1,11 @@
 
 
-import * as angular from 'angular'; 
+import * as angular from 'angular';
 
 import { Filtros } from 'imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController',
+angular.module("scrwebM").controller('Consultas_montosPendientesPago_vencimientos_opcionesReportController',
 ['$scope', '$modalInstance', 'companiaSeleccionada', function ($scope, $modalInstance, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -30,7 +30,7 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
     
     $scope.reportLink = "#";
     if (scrwebm_net_app_address) {
-        $scope.reportLink = `${scrwebm_net_app_address}/reports/consultas/cumulos/report.aspx?user=${Meteor.userId()}&report=cumulos`;
+        $scope.reportLink = `${scrwebm_net_app_address}/reports/consultas/montosPendientesPagoVencimientos/report.aspx?user=${Meteor.userId()}&report=montosPendientesPagoVencimientos`;
     }
 
     $scope.opcionesReport = {
@@ -46,8 +46,25 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
 
         $scope.showProgress = true; 
 
+        // leemos dos fechas que el usuario pasa al proceso para: 1) calcular vencimientos; 2) leer montos hasta. La idea es 
+        // pasar ambas fechas como parte de las opciones del reporte. Ambas están en Filtros, por eso leemos el filtro recién 
+        // indicado 
+        let filtroAnterior = Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos', userId: Meteor.userId() });
+
+        $scope.opcionesReport.fechaPendientesAl = new Date(); 
+        $scope.opcionesReport.fechaLeerHasta = new Date(); 
+
+        // pasamos las fechas indicadas a este proceso como parte de las opciones del reporte (además de subtitulo, colores, ...) 
+        if (filtroAnterior.filtro && filtroAnterior.filtro.fechaPendientesAl) { 
+            $scope.opcionesReport.fechaPendientesAl = filtroAnterior.filtro.fechaPendientesAl; 
+        }
+
+        if (filtroAnterior.filtro && filtroAnterior.filtro.fechaLeerHasta) { 
+            $scope.opcionesReport.fechaLeerHasta = filtroAnterior.filtro.fechaLeerHasta; 
+        }
+
         // con este método grabamos las opciones para la ejecución del reporte y mostramos el link que permite obtenerlo 
-        Meteor.call('consultas.cumulos.report.grabarAMongoOpcionesReporte', $scope.opcionesReport, companiaSeleccionada,
+        Meteor.call('consultas.montos.pend.pago.venc.report.grabarAMongoOpcionesReporte', $scope.opcionesReport, companiaSeleccionada,
             (err, result) => {
 
                 if (err) {
@@ -80,10 +97,10 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
                 // guardamos las opciones indicadas por el usuario, para que estén disponibles la próxima vez 
                 // ------------------------------------------------------------------------------------------------------
                 // guardamos el filtro indicado por el usuario
-                if (Filtros.findOne({ nombre: 'consultas.cumulos.opcionesReport', userId: Meteor.userId() })) { 
+                if (Filtros.findOne({ nombre: 'consultas.montosPendPagoVenc.opcionesReport', userId: Meteor.userId() })) { 
                     // el filtro existía antes; lo actualizamos
                     // validate false: como el filtro puede ser vacío (ie: {}), simple schema no permitiría eso; por eso saltamos la validación
-                    Filtros.update(Filtros.findOne({ nombre: 'consultas.cumulos.opcionesReport', userId: Meteor.userId() })._id,
+                    Filtros.update(Filtros.findOne({ nombre: 'consultas.montosPendPagoVenc.opcionesReport', userId: Meteor.userId() })._id,
                     { $set: { filtro: $scope.opcionesReport } },
                     { validate: false });
                 }
@@ -91,7 +108,7 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
                     Filtros.insert({
                         _id: new Mongo.ObjectID()._str,
                         userId: Meteor.userId(),
-                        nombre: 'consultas.cumulos.opcionesReport',
+                        nombre: 'consultas.montosPendPagoVenc.opcionesReport',
                         filtro: $scope.opcionesReport
                     });
                 }
@@ -115,7 +132,7 @@ angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController
     // ------------------------------------------------------------------------------------------------------
     // intentamos leer las opciones usadas antes por el usuario, para mostrarlas en el diálogo ... 
     $scope.opcionesReport = {};
-    var filtroAnterior = Filtros.findOne({ nombre: 'consultas.cumulos.opcionesReport', userId: Meteor.userId() });
+    var filtroAnterior = Filtros.findOne({ nombre: 'consultas.montosPendPagoVenc.opcionesReport', userId: Meteor.userId() });
 
     if (filtroAnterior) { 
         $scope.opcionesReport = filtroAnterior.filtro;

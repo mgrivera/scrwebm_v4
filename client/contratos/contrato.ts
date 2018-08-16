@@ -12,9 +12,9 @@ import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSele
 import { Cuotas } from 'imports/collections/principales/cuotas'; 
 import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
 
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
-import { Contratos_Methods } from 'client/contratos/methods/_methods/_methods'; 
-import { MostrarPagosEnCuotas } from 'client/imports/generales/mostrarPagosAplicadosACuotaController'; 
+import { DialogModal } from '../imports/generales/angularGenericModal'; 
+import { Contratos_Methods } from './methods/_methods/_methods'; 
+import { MostrarPagosEnCuotas } from '../imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 import { Contratos } from 'imports/collections/principales/contratos'; 
 import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
@@ -30,7 +30,7 @@ import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, 
 
 // importamos los files necesarios para el registro de cúmulos ... 
 import '../imports/generales/cumulos/registro/registroCumulos.html'; 
-import 'client/imports/generales/cumulos/registro/registroCumulos'; 
+import '../imports/generales/cumulos/registro/registroCumulos'; 
 
 
 angular.module("scrwebM").controller("ContratoController",
