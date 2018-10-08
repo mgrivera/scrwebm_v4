@@ -31,6 +31,7 @@
     "papaparse": "4.1.1",
     "save-as": "0.1.8",
     "simpl-schema": "0.3.2",
+    "tabulator-tables": "^4.0.4",
     "xlsx": "0.9.13",
     "xlsx-injector": "0.0.3"
   },

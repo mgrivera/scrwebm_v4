@@ -1,6 +1,5 @@
 
 
-
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Referencias } from '/imports/collections/principales/referencias'; 

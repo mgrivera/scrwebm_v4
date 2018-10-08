@@ -1,6 +1,5 @@
 
 
-import * as moment from 'moment';
 import * as lodash from 'lodash'; 
 
 import { Cumulos_Registro } from 'imports/collections/principales/cumulos_registro';  
