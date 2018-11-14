@@ -62,7 +62,7 @@ Meteor.methods(
                           message: message
                         };
 
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         riesgos.forEach(riesgo => {
@@ -144,6 +144,7 @@ Meteor.methods(
                 ramoAbreviatura: ramo ? ramo.abreviatura : 'Indef', 
 
                 asegurado: riesgo.asegurado,
+                nombreAsegurado: riesgo.nombreAsegurado,
                 suscriptor: riesgo.suscriptor,
 
                 'sumaAsegurada': sumaAsegurada,
@@ -171,7 +172,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -181,7 +182,7 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }

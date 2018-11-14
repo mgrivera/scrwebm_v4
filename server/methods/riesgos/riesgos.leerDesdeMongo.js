@@ -144,7 +144,7 @@ Meteor.methods(
         let monedas = Monedas.find({}, { fields: { _id: 1, simbolo: 1, }}).fetch();
         let companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
         let ramos = Ramos.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let asegurados = Asegurados.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        let asegurados = Asegurados.find({}, { fields: { _id: 1, nombre: 1, abreviatura: 1, }}).fetch();
         let tiposFacultativo = TiposFacultativo.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
@@ -177,8 +177,8 @@ Meteor.methods(
                        'Indefinido';
 
            let asegurado = lodash.some(asegurados, (x) => { return x._id === item.asegurado; }) ?
-                           lodash.find(asegurados, (x) => { return x._id === item.asegurado; }).abreviatura :
-                           'Indefinido';
+                           lodash.find(asegurados, (x) => { return x._id === item.asegurado; }) :
+                           null;
 
            let tipo = lodash.some(tiposFacultativo, (x) => { return x._id === item.tipo; }) ?
                       lodash.find(tiposFacultativo, (x) => { return x._id === item.tipo; }).abreviatura :
@@ -200,7 +200,8 @@ Meteor.methods(
             riesgo.moneda = moneda;
             riesgo.compania = compania;
             riesgo.ramo = ramo;
-            riesgo.asegurado = asegurado;
+            riesgo.asegurado = asegurado ? asegurado.abreviatura : "Indefinido";
+            riesgo.nombreAsegurado = asegurado ? asegurado.nombre : "Indefinido";
             riesgo.tipo = tipo;
             riesgo.cia = item.cia;
 
