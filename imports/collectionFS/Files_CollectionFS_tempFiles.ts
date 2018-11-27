@@ -1,8 +1,10 @@
 
 
+declare var FS;         // used when does not exist a ts declaration file
+
 let filesPath = Meteor.settings.public.collectionFS_path_tempFiles;
 
-CollectionFS_tempFiles = new FS.Collection("collectionFS_tempFiles", {
+export const CollectionFS_tempFiles = new FS.Collection("collectionFS_tempFiles", {
   stores: [new FS.Store.FileSystem("collectionFS_tempFiles", { path: filesPath })],
   // filter: {
   //   allow: {

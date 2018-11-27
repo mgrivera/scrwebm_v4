@@ -1,27 +1,30 @@
 
 
-import moment from 'moment';
-import numeral from 'numeral';
-import lodash from 'lodash';
-import JSZip from 'jszip';
-import Docxtemplater from 'docxtemplater';
-import fs from 'fs';
+import * as moment from 'moment';
+import * as numeral from 'numeral';
+import * as lodash from 'lodash';
+import * as JSZip from 'jszip';
+import * as Docxtemplater from 'docxtemplater';
+import * as fs from 'fs';
 
 import SimpleSchema from 'simpl-schema';
 
 // para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
 // para poder hacer un download (usando el url) desde el client ...
-import { grabarDatosACollectionFS_regresarUrl } from '/server/imports/general/grabarDatosACollectionFS_regresarUrl';
-import { leerInfoAutos } from '/server/imports/general/riesgos_leerInfoAutos'; 
+import { grabarDatosACollectionFS_regresarUrl } from 'server/imports/general/grabarDatosACollectionFS_regresarUrl';
+import { leerInfoAutos } from 'server/imports/general/riesgos_leerInfoAutos'; 
 
-import { Riesgos } from '/imports/collections/principales/riesgos'; 
-import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
-import { Monedas } from '/imports/collections/catalogos/monedas'; 
-import { Companias } from '/imports/collections/catalogos/companias'; 
-import { Ramos } from '/imports/collections/catalogos/ramos'; 
-import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
-import { Cuotas } from '/imports/collections/principales/cuotas'; 
-import { Indoles } from '/imports/collections/catalogos/indoles'; 
+import { Riesgos } from 'imports/collections/principales/riesgos'; 
+import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Ramos } from 'imports/collections/catalogos/ramos'; 
+import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
+import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { Indoles } from 'imports/collections/catalogos/indoles'; 
+
+import { CollectionFS_templates } from 'imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_tempFiles } from 'imports/collectionFS/Files_CollectionFS_tempFiles'; 
 
 Meteor.methods(
 {
@@ -80,8 +83,8 @@ Meteor.methods(
 
          // leemos la póliza en el array de documentos del riesgo
          let poliza = "";
-         if (riesgo.documentos && _.isArray(riesgo.documentos) && riesgo.documentos.length) {
-             let polizaItem = _.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
+         if (riesgo.documentos && Array.isArray(riesgo.documentos) && riesgo.documentos.length) {
+             let polizaItem = lodash.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
              if (polizaItem) {
                  poliza = polizaItem.numero;
              }
@@ -90,13 +93,13 @@ Meteor.methods(
          // leemos la cesion y el recibo en el array de documentos del movimiento
          let cesion = "";
          let recibo = "";
-         if (movimiento.documentos && _.isArray(movimiento.documentos) && movimiento.documentos.length) {
-             let cesionItem = _.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
+         if (movimiento.documentos && Array.isArray(movimiento.documentos) && movimiento.documentos.length) {
+             let cesionItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
              if (cesionItem) {
                  cesion = cesionItem.numero;
              }
 
-             let reciboItem = _.find(movimiento.documentos, (x) => { return x.tipo === 'REC'; });
+             let reciboItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'REC'; });
              if (reciboItem) {
                  recibo = reciboItem.numero;
              }
@@ -115,7 +118,7 @@ Meteor.methods(
         // leemos el contenido del archivo (plantilla) en el server ...
         
         // aunque el file pueda existir en collectionFS puede no hacerlo en el disco (pues alguien lo eliminó???)
-        let content = null; 
+        let content: any = null; 
         try { 
             content = fs.readFileSync(fileNameWithPath, "binary");            
         } catch(err) { 
@@ -128,8 +131,8 @@ Meteor.methods(
         doc.loadZip(zip);
 
         // nótese como obtenemos nuestra parte (para luego obtener la retención del cedente) ...
-        let nosotros = movimiento && movimiento.companias && _.isArray(movimiento.companias) ?
-                       _.find(movimiento.companias, (x) => { return x.nosotros; }) :
+        let nosotros = movimiento && movimiento.companias && Array.isArray(movimiento.companias) ?
+                       lodash.find(movimiento.companias, (x) => { return x.nosotros; }) :
                        {};
 
         let retencionCedente = 0;
@@ -139,8 +142,8 @@ Meteor.methods(
 
 
         // leemos los reaseguradores y creamos un documento para cada uno
-        let reaseguradores = movimiento && movimiento.companias && _.isArray(movimiento.companias) ?
-                             _.filter(movimiento.companias, (x) => { return !x.nosotros; }) :
+        let reaseguradores = movimiento && movimiento.companias && Array.isArray(movimiento.companias) ?
+                             lodash.filter(movimiento.companias, (x) => { return !x.nosotros; }) :
                              [];
 
         let reaseguradoresArray = [];
@@ -153,8 +156,8 @@ Meteor.methods(
 
             // leemos las persona definida para el reasegurador
             let persona = "";
-            if (riesgo.personas && _.isArray(riesgo.personas) && riesgo.personas.length) {
-                let personaItem = _.find(riesgo.personas, (x) => { return x.compania === reasegurador.compania; });
+            if (riesgo.personas && Array.isArray(riesgo.personas) && riesgo.personas.length) {
+                let personaItem = lodash.find(riesgo.personas, (x) => { return x.compania === reasegurador.compania; });
                 if (personaItem) {
                     persona = `${personaItem.titulo} ${personaItem.nombre}`;
                 }
@@ -192,15 +195,19 @@ Meteor.methods(
                                 vencimiento: moment(x.fechaVencimiento).format('DD-MMM-YYYY'),
                                 monto: numeral(abs(x.monto)).format('0,0.00'),
                 };
-                cuotas.push(cuota);
+                cuotas.push(cuota as never);
             });
 
             // -------------------------------------------------------------------------------------------------------------------------------
-            // determinamos una especie de corretaje para el reasegurador; este corretaje no será perfecto; para calcularlo, determinamos la 
-            // sumatoria (nuestra vs reasseguradores) de las primas netas; este es el corretaje; luego multiplizamos por su orden ... 
+            // determinamos una especie de corretaje para el reasegurador; este corretaje no será perfecto; 
+            // para calcularlo, determinamos la sumatoria (nuestra vs reasseguradores) de las primas netas; 
+            // este es el corretaje; luego multiplizamos por su orden ... 
             let corretaje = 0; 
             
             if (movimiento.primas) { 
+                // calculamos el corretaje como la sumatoria de todas las primas netas; la nuestra incluída; 
+                // el resultado de sumar, en forma algebraíca, todas las primas netas, nuestra y de reaseguradores, 
+                // es el corretaje ... 
                 corretaje = lodash(movimiento.primas).sumBy('primaNeta');
             }
 
@@ -231,7 +238,7 @@ Meteor.methods(
             // -------------------------------------------------------------------------------------------------------------------------------
 
             // leemos los datos del auto, si el ramo es automovil y si se han registrado ... 
-            let infoAutos = {}; 
+            let infoAutos = {} as any; 
             if (ramo.tipoRamo && ramo.tipoRamo === 'automovil') { 
                 infoAutos = leerInfoAutos(riesgoID, movimientoID); 
             }
@@ -278,6 +285,7 @@ Meteor.methods(
                 comision: primas && primas.comision ? numeral(abs(primas.comision)).format('0,0.00'): "0,00",
                 impuestoPorc: primas && primas.impuestoPorc ? `${numeral(abs(primas.impuestoPorc)).format('0,0.00')}%` : numeral(0).format('0,0.00'),
                 impuesto: primas && primas.impuesto ? numeral(abs(primas.impuesto)).format('0,0.00'): numeral(0).format('0,0.00'),
+                primaNeta_antesImpSPN: primas && primas.primaNeta0 ? numeral(abs(primas.primaNeta0)).format('0,0.00'): numeral(0).format('0,0.00'),
                 primaNeta: primas && primas.primaNeta ? numeral(abs(primas.primaNeta)).format('0,0.00'): numeral(0).format('0,0.00'),
                 corretajeReasegurador: numeral(abs(corretajeReasegurador)).format('0,0.00'),
                 corretajePorc: numeral(abs(corretajePorc)).format('0.00'),
@@ -285,7 +293,7 @@ Meteor.methods(
                 cuotas: cuotas,
             };
 
-            reaseguradoresArray.push(reaseguradorItem);
+            reaseguradoresArray.push(reaseguradorItem as never);
         });
 
         //set the templateVariables

@@ -22,6 +22,9 @@ import { Suscriptores } from '/imports/collections/catalogos/suscriptores';
 // para poder hacer un download (usando el url) desde el client ...
 import { grabarDatosACollectionFS_regresarUrl } from '/server/imports/general/grabarDatosACollectionFS_regresarUrl';
 
+import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_tempFiles } from '/imports/collectionFS/Files_CollectionFS_tempFiles'; 
+
 Meteor.methods(
 {
     'siniestros.obtenerNotasLiquidacion': function (fileID, siniestroId, liquidacionId, fecha) {

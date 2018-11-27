@@ -21,6 +21,9 @@ import { Contratos } from '/imports/collections/principales/contratos';
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
+import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_tempFiles } from '/imports/collectionFS/Files_CollectionFS_tempFiles'; 
+
 Meteor.methods(
 {
     'contratos.obtenerNotasImpresas.generales': function (fileID, contratoId, fecha) {

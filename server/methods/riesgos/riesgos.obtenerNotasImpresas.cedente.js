@@ -24,6 +24,9 @@ import { Asegurados } from '/imports/collections/catalogos/asegurados';
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
+import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_tempFiles } from '/imports/collectionFS/Files_CollectionFS_tempFiles'; 
+
 Meteor.methods(
 {
     'riesgos.obtenerNotasImpresas.cedente': function (fileID, riesgoID, movimientoID, fecha) {

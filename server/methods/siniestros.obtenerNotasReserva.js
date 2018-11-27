@@ -21,6 +21,9 @@ import { Ramos } from '/imports/collections/catalogos/ramos';
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
+import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_tempFiles } from '/imports/collectionFS/Files_CollectionFS_tempFiles'; 
+
 Meteor.methods(
 {
     'siniestros.obtenerNotasReserva': function (fileID, siniestroId, reservaId, fecha) {

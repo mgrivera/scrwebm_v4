@@ -10,6 +10,8 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
+import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
+
 angular.module("scrwebM").controller('ImprimirNotasModalController',
 ['$scope', '$modalInstance', '$modal', 'siniestro',
 function ($scope, $modalInstance, $modal, siniestro) {

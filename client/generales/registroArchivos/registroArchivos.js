@@ -6,6 +6,9 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
+import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_logos } from '/imports/collectionFS/Files_CollectionFS_logos'; 
+
 angular.module("scrwebM").controller("RegistroArchivosController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal',
   function ($scope, $state, $stateParams, $meteor, $modal) {

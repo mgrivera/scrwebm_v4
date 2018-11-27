@@ -1,9 +1,9 @@
 
-// debugger;
+declare var FS;         // used when does not exist a ts declaration file
 
 let filesPath = Meteor.settings.public.collectionFS_path_logos;
 
-CollectionFS_logos = new FS.Collection("collectionFS_logos", {
+export const CollectionFS_logos = new FS.Collection("collectionFS_logos", {
   stores: [new FS.Store.FileSystem("collectionFS_logos", { path: filesPath })],
   filter: {
     allow: {
