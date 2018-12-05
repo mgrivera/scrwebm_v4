@@ -536,6 +536,11 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
             templateUrl: 'client/utilitarios/reconversion/reconversion.html',
             controller: 'Utilitarios_Reconversion_Controller'
         })
+        .state('utilitarios_reconversion_riesgos', {
+            url: '/utilitarios/reconversionRiesgos',
+            templateUrl: 'client/utilitarios/reconversionRiesgos/reconversion.html',
+            controller: 'Utilitarios_Reconversion_Riesgos_Controller'
+        })
         // ----------------------------------------------------------------
         // administración (funciones para el administrador)
         // ---------------------------------------------------------------- /consultas/pendientesCobroVencimientos/filtro

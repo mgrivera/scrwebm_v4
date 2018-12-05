@@ -1,0 +1,104 @@
+
+
+
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1" style="text-align: right; font-style: italic; ">
+        <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+        <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+        <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+            <span ng-bind-html="alert.msg | unsafe"></span>
+        </alert>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+
+        <h3>
+            <em>scrwebm</em> - Cálculo de la reconversión monetaria - Riesgos (facultativo)
+        </h3>
+
+        <tabset style="text-align: left; margin-top: 10px; ">
+
+            <tab heading="Reconversión">
+                <form role="form" 
+                id="forms.reconversionForm" 
+                name="forms.reconversionForm" 
+                      ng-submit="reconversionForm_submit()" 
+                      novalidate 
+                      style="margin-top: 15px; ">
+            
+                    <div class="container-fluid">
+            
+                        <div class="row">
+            
+                            <!-- cantidadDigitos -->
+                            <div class="col-sm-3 col-sm-offset-0">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label">Cantidad dígitos: </label>
+                                    <input type="number" class="form-control input-sm myinput-sm" ng-model="parametros.cantidadDigitos"
+                                        ng-model-options="{ updateOn: 'blur' }" />
+                                </div>
+                            </div>
+            
+                            <!-- moneda -->
+                            <div class="col-sm-3 col-sm-offset-1">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label">Moneda (<em>default</em>): </label>
+                                    <div class="style=color: #337AB7; padding-left: 30px; ">
+                                        <p class="form-control-static pull-left">{{ moneda.descripcion }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                    </div>
+                </form>
+            
+                <div>
+                    <button type="submit" form="forms.reconversionForm" class="btn btn-sm pull-right btn-primary" style="margin-right: 15px; ">Reconvertir</button>
+                </div>
+            </tab>
+
+            <tab heading="Log">
+
+                <div class="row">
+                    <div class="col-sm-10 col-sm-offset-1">
+                
+                        <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                            <div class="container-fluid">
+                                <div class="navbar-collapse collapse">
+                                    <ul class="nav navbar-nav">
+                                        <li><a href="#" class="navbar_custom_small_header">Reconversión monetaria</a></li>
+                                    </ul>
+                
+                                </div>
+                            </div>
+                        </nav>
+                
+                        <div style="text-align: center; ">
+                            <div ui-grid="reconversionMonetaria_ui_grid"
+                                ui-grid-selection
+                                ui-grid-resize-columns
+                                class="angularGrid"
+                                style="height: 250px; width: 100%; ">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </tab>
+        </tabset>   
+
+    </div>
+</div>
