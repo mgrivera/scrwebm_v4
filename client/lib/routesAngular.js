@@ -162,6 +162,11 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
             templateUrl: 'client/generales/registroArchivos/registroArchivos.html',
             controller: 'RegistroArchivosController'
         })
+        .state('pruebaReact', {
+            url: '/generales/pruebaReact',
+            templateUrl: 'client/generales/pruebaReact/pruebaReact.html',
+            controller: 'PruebaReactController'
+        })
         // ----------------------------------------------------------------
         // contratos
         // ----------------------------------------------------------------

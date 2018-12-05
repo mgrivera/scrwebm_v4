@@ -34,6 +34,7 @@ angular.module("scrwebM").controller('Riesgos_opcionesReportController',
     $scope.opcionesReport = {
         subTitulo: "", 
         mostrarColores: false, 
+        tipoReporte: "original", 
     }
 
     $scope.showReportLink = false; 
@@ -116,6 +117,10 @@ angular.module("scrwebM").controller('Riesgos_opcionesReportController',
 
     if (filtroAnterior) { 
         $scope.opcionesReport = filtroAnterior.filtro;
+
+        if (!$scope.opcionesReport.hasOwnProperty("tipoReporte")) { 
+            $scope.opcionesReport.tipoReporte = "original"; 
+        }
     }
     // ------------------------------------------------------------------------------------------------------
 

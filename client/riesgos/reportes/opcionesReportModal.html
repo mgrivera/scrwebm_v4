@@ -77,6 +77,20 @@
 
                         <div class="row">
                             <div class="col-sm-10 col-sm-offset-1 ">
+                                <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
+                                    <legend class="scheduler-border-radioButtons">Reporte: </legend>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="tipoReporte" ng-model="opcionesReport.tipoReporte" value='original'> Original (solo primas)
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="tipoReporte" ng-model="opcionesReport.tipoReporte" value='originalMasSumaAseg'> Sumas aseg y reaseg
+                                    </label>
+                                </fieldset>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-10 col-sm-offset-1 ">
                                 <a ng-href="{{reportLink}}" ng-show="showReportLink" target="_blank">Obtener reporte ...&nbsp;&nbsp;<span class="fa fa-print"></span></a>
                             </div>
                         </div>
