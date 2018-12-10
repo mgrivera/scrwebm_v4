@@ -10,7 +10,7 @@ import { Ramos } from 'imports/collections/catalogos/ramos';
 import { Cumulos } from 'imports/collections/catalogos/cumulos'; 
 import { Indoles } from 'imports/collections/catalogos/indoles'; 
 
-angular.module("scrwebM").controller("ConsultasCumulos_Controller", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("ConsultasCumulos_Controller", ['$scope', function ($scope) {
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada

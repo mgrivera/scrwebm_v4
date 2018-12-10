@@ -7,7 +7,7 @@ import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDe
 
 import { Indoles } from 'imports/collections/catalogos/indoles'; 
 
-angular.module("scrwebM").controller("IndolesController", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("IndolesController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 

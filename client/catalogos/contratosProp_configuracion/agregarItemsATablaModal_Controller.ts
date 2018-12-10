@@ -10,7 +10,7 @@ import { TiposContrato } from 'imports/collections/catalogos/tiposContrato';
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('AgregarItemsATablaModal_Controller',
+angular.module("scrwebm").controller('AgregarItemsATablaModal_Controller',
 ['$scope', '$modalInstance', '$modal', 'codigoContrato', 'tablaConfiguracion', 'ciaSeleccionada',
 function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ciaSeleccionada) {
 

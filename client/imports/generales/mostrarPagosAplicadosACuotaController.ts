@@ -53,7 +53,7 @@ function mostrarPagosEnCuotas2($modal, cuota, origen) {
 }
 
 
-angular.module("scrwebM").controller('MostrarPagosAplicadosACuotaController',
+angular.module("scrwebm").controller('MostrarPagosAplicadosACuotaController',
 ['$state', '$scope', '$modalInstance', 'cuota', 'origen', 
 function ($state, $scope, $modalInstance, cuota, origen) {
 

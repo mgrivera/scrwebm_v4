@@ -11,7 +11,7 @@ import { Companias } from 'imports/collections/catalogos/companias';
 
 import * as lodash from 'lodash'; 
 
-angular.module("scrwebM").controller("CuentasContablesAsociadas_Controller", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("CuentasContablesAsociadas_Controller", ['$scope', function ($scope) {
 
     $scope.showProgress = false;
 

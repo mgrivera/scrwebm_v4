@@ -13,7 +13,7 @@ import { Filtros } from '/imports/collections/otros/filtros';
 
 import { Consulta_Corretaje } from '/imports/collections/consultas/consulta_corretaje'; 
 
-angular.module("scrwebM").controller("ConsultasCorretaje_Filtro_Controller",
+angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

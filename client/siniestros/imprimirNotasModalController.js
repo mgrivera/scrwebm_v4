@@ -12,7 +12,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 
 import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
 
-angular.module("scrwebM").controller('ImprimirNotasModalController',
+angular.module("scrwebm").controller('ImprimirNotasModalController',
 ['$scope', '$modalInstance', '$modal', 'siniestro',
 function ($scope, $modalInstance, $modal, siniestro) {
 

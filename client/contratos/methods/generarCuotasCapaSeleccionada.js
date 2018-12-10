@@ -92,7 +92,7 @@ function generarCuotas($scope, $modal) {
 }
 
 
-angular.module("scrwebM").controller('CapasGenerarCuotasController',
+angular.module("scrwebm").controller('CapasGenerarCuotasController',
 ['$scope', '$modalInstance', 'contrato', 'cuotas', 
 function ($scope, $modalInstance, contrato, cuotas) {
 

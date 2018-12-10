@@ -4,7 +4,7 @@ import * as angular from 'angular';
 
 import { Consulta_Cumulos } from 'imports/collections/consultas/consulta_cumulos'; 
 
-angular.module("scrwebM").controller("ConsultasCumulos_Lista_Controller",
+angular.module("scrwebm").controller("ConsultasCumulos_Lista_Controller",
 ['$scope', '$state', '$modal', 'uiGridConstants', function ($scope, $state, $modal, uiGridConstants) {
 
     $scope.showProgress = false;

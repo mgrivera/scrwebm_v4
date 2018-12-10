@@ -3,7 +3,7 @@
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("ConsultasMontosPendientesPagoVencimientos_Controller",
+angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_Controller",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

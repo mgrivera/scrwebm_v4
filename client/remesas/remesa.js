@@ -17,7 +17,7 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("RemesaController",
+angular.module("scrwebm").controller("RemesaController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', 'uiGridGroupingConstants', 'uiGridConstants',
   function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, uiGridGroupingConstants, uiGridConstants) {
 

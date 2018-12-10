@@ -2,7 +2,7 @@
 import * as lodash from 'lodash'; 
 import * as angular from 'angular'; 
 
-angular.module("scrwebM").controller('Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller',
+angular.module("scrwebm").controller('Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'periodoCierre', 'companiaSeleccionada',
 function ($scope, $modalInstance, $modal, $meteor, periodoCierre, companiaSeleccionada) {
 

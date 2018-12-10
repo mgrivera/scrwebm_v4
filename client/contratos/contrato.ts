@@ -33,7 +33,7 @@ import '../imports/generales/cumulos/registro/registroCumulos.html';
 import '../imports/generales/cumulos/registro/registroCumulos'; 
 
 
-angular.module("scrwebM").controller("ContratoController",
+angular.module("scrwebm").controller("ContratoController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
   function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q) {
 

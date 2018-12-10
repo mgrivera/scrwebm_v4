@@ -28,7 +28,7 @@ import { DialogModal } from '../imports/generales/angularGenericModal';
 import '../imports/generales/cumulos/registro/registroCumulos.html'; 
 import '../imports/generales/cumulos/registro/registroCumulos'; 
 
-angular.module("scrwebM").controller("Riesgo_Controller",
+angular.module("scrwebm").controller("Riesgo_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
 
     $scope.showProgress = true;

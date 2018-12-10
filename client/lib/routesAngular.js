@@ -1,6 +1,6 @@
 
 
-angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
+angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
   function ($urlRouterProvider, $stateProvider, $locationProvider) {
 
         $locationProvider.html5Mode(true);
@@ -153,7 +153,7 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
         // seleccionar compañía
         .state('seleccionarCompania', {
             url: '/generales/seleccionarCiaUsuaria',
-            templateUrl: 'client/seleccionarCompania/seleccionarCompania.html',
+            templateUrl: 'client/generales/seleccionarCompania/seleccionarCompania.html',
             controller: 'SeleccionarCompaniaController'
         })
         // registrar archivos (logos, plantillas, ...)
@@ -164,7 +164,7 @@ angular.module("scrwebM").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('pruebaReact', {
             url: '/generales/pruebaReact',
-            templateUrl: 'client/generales/pruebaReact/pruebaReact.html',
+            templateUrl: 'client/imports/generales/pruebaReact/pruebaReact.html',
             controller: 'PruebaReactController'
         })
         // ----------------------------------------------------------------

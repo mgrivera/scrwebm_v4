@@ -29,7 +29,7 @@ let permitirUsuarioDownloadFiles = function($modal, files, mensajeAlUsuario) {
 Global_Methods.PermitirUsuarioDownloadFiles = permitirUsuarioDownloadFiles;
 
 
-angular.module("scrwebM").controller('DownloadFilesController',
+angular.module("scrwebm").controller('DownloadFilesController',
 ['$scope', '$modalInstance', '$modal', 'files', 'mensaje',
 function ($scope, $modalInstance, $modal, files, mensaje) {
 

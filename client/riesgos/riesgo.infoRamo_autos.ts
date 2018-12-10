@@ -8,7 +8,7 @@ import { AutosMarcas } from 'imports/collections/catalogos/autosMarcas';
 
 import { DialogModal } from '../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("RiesgoInfoRamo_autos_Controller",
+angular.module("scrwebm").controller("RiesgoInfoRamo_autos_Controller",
 ['$scope', '$modal', function ($scope, $modal) {
 
     $scope.showProgress = true; 
@@ -296,14 +296,14 @@ angular.module("scrwebM").controller("RiesgoInfoRamo_autos_Controller",
 
 
 // definimos los angular filters que usa el ui-grid 
-angular.module("scrwebM").filter('marcaAutoFilter', function () {
+angular.module("scrwebm").filter('marcaAutoFilter', function () {
     return function (marcaID) {
         let marca = AutosMarcas.findOne(marcaID);
         return marca ? marca.marca : "Indefinido";
     };
 })
 
-angular.module("scrwebM").filter('modeloAutoFilter', function () {
+angular.module("scrwebm").filter('modeloAutoFilter', function () {
     return function (modeloID, entity) {
         let marca = AutosMarcas.findOne(entity.marca);
         
@@ -317,7 +317,7 @@ angular.module("scrwebM").filter('modeloAutoFilter', function () {
     };
 })
 
-angular.module("scrwebM").filter('numeroMovimientoFilter', function () {
+angular.module("scrwebm").filter('numeroMovimientoFilter', function () {
     return function (movimientoID, entity, gridScope) {
         // nótese como leemos el riesgo en el parent scope y luego sus movimientos; así encontramos el número del movimiento 
         let movimientos = gridScope.$parent && gridScope.$parent.riesgo && gridScope.$parent.riesgo.movimientos ?

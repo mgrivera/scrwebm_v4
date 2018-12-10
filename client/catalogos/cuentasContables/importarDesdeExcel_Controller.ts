@@ -5,7 +5,7 @@ import * as angular from 'angular';
 import { replaceAllInstances } from 'imports/funciones/texto/replaceAllInstances'; 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('CuentasContablesImportarDesdeExcel_Controller',
+angular.module("scrwebm").controller('CuentasContablesImportarDesdeExcel_Controller',
 ['$scope', '$modalInstance', '$modal', 'cuentasContables', 'cuentasContables_ui_grid', 'ciaSeleccionada',
 function ($scope, $modalInstance, $modal, cuentasContables, cuentasContables_ui_grid, ciaSeleccionada) {
 

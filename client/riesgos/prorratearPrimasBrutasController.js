@@ -2,7 +2,7 @@
 
 import lodash from 'lodash';
 
-angular.module("scrwebM").controller('Riesgos_ProrratearPrimasController',
+angular.module("scrwebm").controller('Riesgos_ProrratearPrimasController',
 ['$scope', '$modalInstance', 'riesgo', 'movimiento',
 function ($scope, $modalInstance, riesgo, movimiento) {
 

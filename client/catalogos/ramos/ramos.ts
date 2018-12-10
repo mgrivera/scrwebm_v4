@@ -5,7 +5,7 @@ import * as angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Ramos } from 'imports/collections/catalogos/ramos'; 
 
-angular.module("scrwebM").controller("RamosController", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("RamosController", ['$scope', function ($scope) {
 
     $scope.showProgress = false;
 

@@ -8,7 +8,7 @@ import { DialogModal } from '../../generales/angularGenericModal';
 
 import { Cumulos } from 'imports/collections/catalogos/cumulos'; 
 
-angular.module("scrwebM").controller("CumulosController", ['$scope', '$modal', function ($scope, $modal) {
+angular.module("scrwebm").controller("CumulosController", ['$scope', '$modal', function ($scope, $modal) {
 
     $scope.showProgress = false;
 

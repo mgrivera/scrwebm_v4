@@ -172,6 +172,7 @@ Meteor.methods(
         lodash(movimiento.companias).filter((x) => { return !x.nosotros; }).forEach((x) => {
             let compania = {
                 nombre: Companias.findOne(x.compania).abreviatura,
+                nombreCompleto: Companias.findOne(x.compania).nombre,
                 participacion: numeral(x.ordenPorc).format('0,0.00'),
             };
             reaseguradores.push(compania);

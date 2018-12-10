@@ -10,7 +10,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-angular.module("scrwebM").controller("ContratosFiltroController",
+angular.module("scrwebm").controller("ContratosFiltroController",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

@@ -7,7 +7,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("ContratosListaController",
+angular.module("scrwebm").controller("ContratosListaController",
 ['$scope', '$state', '$stateParams', '$meteor',
  function ($scope, $state, $stateParams, $meteor) {
 

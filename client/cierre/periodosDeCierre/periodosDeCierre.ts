@@ -14,7 +14,7 @@ import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSele
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("Cierre.periodosDeCierre.Controller",
+angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
 ['$stateParams', '$scope', '$meteor', '$modal', function ($stateParams, $scope, $meteor, $modal) {
 
     $scope.showProgress = false;

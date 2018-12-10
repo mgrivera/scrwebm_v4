@@ -8,7 +8,7 @@ import * as moment from 'moment';
 import { DialogModal } from '../imports/generales/angularGenericModal'; 
 import { MostrarPagosEnCuotas } from '../imports/generales/mostrarPagosAplicadosACuotaController'; 
 
-angular.module("scrwebM").controller("RiesgoCuotas_Controller",
+angular.module("scrwebm").controller("RiesgoCuotas_Controller",
 ['$scope', '$state', '$stateParams', '$modal', 'uiGridConstants', 
   function ($scope, $state, $stateParams, $modal, uiGridConstants) {
 

@@ -9,7 +9,7 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 
 import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
 
-angular.module("scrwebM").controller('ImprimirNotasContratosModalController',
+angular.module("scrwebm").controller('ImprimirNotasContratosModalController',
 ['$scope', '$modalInstance', '$modal', 'contrato', 'cuotas',
 function ($scope, $modalInstance, $modal, contrato, cuotas) {
 

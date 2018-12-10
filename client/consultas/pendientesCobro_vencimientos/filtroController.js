@@ -11,7 +11,7 @@ import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collection
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-angular.module("scrwebM").controller("ConsultasMontosPendientesCobroVencimientos_Filtro_Controller",
+angular.module("scrwebm").controller("ConsultasMontosPendientesCobroVencimientos_Filtro_Controller",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

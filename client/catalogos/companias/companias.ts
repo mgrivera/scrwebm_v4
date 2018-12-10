@@ -7,7 +7,7 @@ import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensaj
 import { Companias } from 'imports/collections/catalogos/companias'; 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("CompaniasController",
+angular.module("scrwebm").controller("CompaniasController",
  ['$scope', '$modal', function ($scope, $modal) {
 
       $scope.showProgress = false;
@@ -463,7 +463,7 @@ angular.module("scrwebM").controller("CompaniasController",
 // ---------------------------------------------------------------------------------------
 // para regresar el nombre del tipo
 // ---------------------------------------------------------------------------------------
-angular.module("scrwebM").filter('tipoCompania', function ($sce) {
+angular.module("scrwebm").filter('tipoCompania', function ($sce) {
     return function (value) {
 
         if (!value) {

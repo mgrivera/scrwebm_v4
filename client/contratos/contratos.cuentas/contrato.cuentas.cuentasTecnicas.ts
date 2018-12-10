@@ -19,7 +19,7 @@ import { DialogModal } from '../../imports/generales/angularGenericModal';
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
 
-angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controller",
+angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
   function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q) {
 
@@ -1466,7 +1466,7 @@ angular.module("scrwebM").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.cuentasTecnicas_Saldos_ui_grid.data = $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID );
 }])
 
-angular.module("scrwebM").filter('contPr_cuentas_resultadoTecnico', function () {
+angular.module("scrwebm").filter('contPr_cuentas_resultadoTecnico', function () {
     return function (value, scope) {
         // este filtro recibe el row y regresa el resultado técnico. Como el corretaje es restado de la prima antes de restar 
         // siniestros, es dificil mostrar este en el grid. Aquí, simplemente, agregamos el corretaje al saldo del row, para 

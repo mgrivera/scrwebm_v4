@@ -6,7 +6,7 @@ import saveAs from 'save-as';
 import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('CobranzaGuardarEstado_Controller',
+angular.module("scrwebm").controller('CobranzaGuardarEstado_Controller',
 ['$scope', '$modalInstance', '$modal', 'temp_cobranzas', 'companiaSeleccionada', 
 function ($scope, $modalInstance, $modal, temp_cobranzas, companiaSeleccionada) {
 

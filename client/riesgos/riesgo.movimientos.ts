@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { DialogModal } from '../imports/generales/angularGenericModal'; 
 import { determinarSiExistenCuotasConCobrosAplicados } from '../imports/generales/determinarSiExistenCuotasCobradas'; 
 
-angular.module("scrwebM").controller("RiesgoMovimientos_Controller",
+angular.module("scrwebm").controller("RiesgoMovimientos_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$interval', 
   function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $interval) {
 

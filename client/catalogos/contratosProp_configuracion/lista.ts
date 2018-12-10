@@ -9,7 +9,7 @@ import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensaj
 import { ContratosProp_Configuracion_ListaCodigos } from 'imports/collections/catalogos/ContratosProp_Configuracion'; 
 import { ContProp_tablaConf } from '../../lib/forerunnerDB'; 
 
-angular.module("scrwebM").controller("ContratosProp_Configuracion_Lista_Controller",
+angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controller",
 ['$scope', '$state', '$modal', function ($scope, $state, $modal) {
 
     $scope.showProgress = true;

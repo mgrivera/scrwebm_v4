@@ -4,7 +4,7 @@
 import moment from 'moment';
 import lodash from 'lodash';
 
-angular.module("scrwebM").controller('Riesgos_ConstruirCuotasController',
+angular.module("scrwebm").controller('Riesgos_ConstruirCuotasController',
 ['$scope', '$modalInstance', 'riesgo', 'movimiento', 'cuotas',
 function ($scope, $modalInstance, riesgo, movimiento, cuotas) {
 

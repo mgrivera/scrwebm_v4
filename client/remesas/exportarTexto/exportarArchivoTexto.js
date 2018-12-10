@@ -11,7 +11,7 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('RemesaExportarArchivoTexto_Modal_Controller',
+angular.module("scrwebm").controller('RemesaExportarArchivoTexto_Modal_Controller',
 ['$scope', '$modalInstance', '$modal', 'remesa', 'tiposCuentaContable', 'cuentasContablesLista', 'cuentasContables', 'ciaSeleccionada', 'uiGridConstants',
 function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasContablesLista, cuentasContables, ciaSeleccionada, uiGridConstants) {
 

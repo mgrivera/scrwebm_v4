@@ -14,7 +14,7 @@ import { Filtros } from 'imports/collections/otros/filtros';
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("Cierre.Registro.Controller", ['$scope', '$modal', '$interval', function ($scope, $modal, $interval) {
+angular.module("scrwebm").controller("Cierre.Registro.Controller", ['$scope', '$modal', '$interval', function ($scope, $modal, $interval) {
 
       $scope.showProgress = false;
 

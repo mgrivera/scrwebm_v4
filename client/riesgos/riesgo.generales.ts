@@ -14,7 +14,7 @@ import { Suscriptores } from 'imports/collections/catalogos/suscriptores';
 import '../imports/generales/agregarNuevoAsegurado.html';           // html: el path *debe* ser relativo y *no* absoluto (???!!!)        
 import "../imports/generales/agregarNuevoAseguradoController"; 
 
-angular.module("scrwebM").controller("RiesgoGenerales_Controller",
+angular.module("scrwebm").controller("RiesgoGenerales_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
 
     $scope.showProgress = false;

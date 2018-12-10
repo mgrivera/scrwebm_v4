@@ -2,7 +2,7 @@
 
 import moment from 'moment'; 
 
-angular.module("scrwebM").controller('Riesgos_ConstruirCuotasProductorController',
+angular.module("scrwebm").controller('Riesgos_ConstruirCuotasProductorController',
 ['$scope', '$modalInstance', 'riesgo', 'movimiento', 'productor', 'cuotas', 
 function ($scope, $modalInstance, riesgo, movimiento, productor, cuotas) {
 

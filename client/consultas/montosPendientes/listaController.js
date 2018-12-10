@@ -16,7 +16,7 @@ import { Consulta_MontosPendientes } from '/imports/collections/consultas/consul
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
-angular.module("scrwebM").controller("ConsultaMontosPendientesListaController",
+angular.module("scrwebm").controller("ConsultaMontosPendientesListaController",
 ['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',
 function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
 

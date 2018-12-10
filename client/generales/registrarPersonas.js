@@ -3,7 +3,7 @@
 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 
-angular.module("scrwebM").controller('RegistrarPersonasController',
+angular.module("scrwebm").controller('RegistrarPersonasController',
 ['$scope', '$modalInstance', 'companias',
 function ($scope, $modalInstance, companias) {
 

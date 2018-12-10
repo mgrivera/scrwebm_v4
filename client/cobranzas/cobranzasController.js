@@ -9,7 +9,7 @@ import { Bancos } from '/imports/collections/catalogos/bancos';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
 
-angular.module("scrwebM").controller("CobranzasController",
+angular.module("scrwebm").controller("CobranzasController",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

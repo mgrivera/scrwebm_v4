@@ -12,7 +12,7 @@ import { Filtros } from '/imports/collections/otros/filtros';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("RemesasFiltroController",
+angular.module("scrwebm").controller("RemesasFiltroController",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

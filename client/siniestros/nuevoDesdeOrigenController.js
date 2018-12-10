@@ -11,7 +11,7 @@ import { Suscriptores } from '/imports/collections/catalogos/suscriptores';
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('NuevoSiniestroDesdeOrigenController',
+angular.module("scrwebm").controller('NuevoSiniestroDesdeOrigenController',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'cia',
 function ($scope, $modalInstance, $modal, $meteor, cia) {
 

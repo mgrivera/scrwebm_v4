@@ -72,7 +72,7 @@ function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecn
       })
 }
 
-angular.module("scrwebM").controller('CuentasConstruirDefinicionCuentasController',
+angular.module("scrwebm").controller('CuentasConstruirDefinicionCuentasController',
 ['$scope', '$modalInstance', 'contrato', 'monedas', 'parentScope', 
 function ($scope, $modalInstance, contrato, monedas, parentScope) {
 

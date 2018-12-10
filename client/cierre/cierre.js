@@ -4,7 +4,7 @@
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("Cierre_Controller", ['$scope', '$state', function ($scope, $state) {
+angular.module("scrwebm").controller("Cierre_Controller", ['$scope', '$state', function ($scope, $state) {
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada

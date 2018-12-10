@@ -12,7 +12,7 @@ import { Suscriptores } from '/imports/collections/catalogos/suscriptores';
 import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-angular.module("scrwebM").controller("SiniestrosFiltroController",
+angular.module("scrwebm").controller("SiniestrosFiltroController",
 ['$scope', '$stateParams', '$state', '$meteor',
 function ($scope, $stateParams, $state, $meteor) {
 

@@ -8,7 +8,7 @@ import { Filtros } from 'imports/collections/otros/filtros';
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("ConsultasCumulos_Filtro_Controller", ['$scope', '$state', function ($scope, $state) {
+angular.module("scrwebm").controller("ConsultasCumulos_Filtro_Controller", ['$scope', '$state', function ($scope, $state) {
 
     $scope.processProgress = {
         current: 0,

@@ -1,8 +1,9 @@
 
 
 import { Component } from 'react'
+import ReactDOM from 'react-dom';
 
-export class MyReactComponent extends Component {
+export default class MyReactComponent extends Component {
   render() {
     return <div>
       <p>FooBar: {this.props.fooBar}</p>

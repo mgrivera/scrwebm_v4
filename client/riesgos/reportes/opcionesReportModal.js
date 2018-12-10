@@ -3,7 +3,7 @@
 import { Filtros } from '/imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('Riesgos_opcionesReportController',
+angular.module("scrwebm").controller('Riesgos_opcionesReportController',
 ['$scope', '$modalInstance', '$meteor', 'companiaSeleccionada', function ($scope, $modalInstance, $meteor, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];

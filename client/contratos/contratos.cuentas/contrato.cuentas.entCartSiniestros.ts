@@ -18,7 +18,7 @@ import { ContratosProp_Configuracion_Tablas } from 'imports/collections/catalogo
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebM").controller("Contrato_Cuentas_EntCartSn_Controller",
+angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
   function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q) {
 

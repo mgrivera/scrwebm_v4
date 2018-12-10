@@ -3,7 +3,7 @@
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
 
-angular.module("scrwebM").controller("BancosController",
+angular.module("scrwebm").controller("BancosController",
  ['$scope', '$stateParams', 
   function ($scope, $stateParams) {
 

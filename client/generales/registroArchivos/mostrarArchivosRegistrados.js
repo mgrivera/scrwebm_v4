@@ -5,7 +5,10 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
 import { CollectionFS_logos } from '/imports/collectionFS/Files_CollectionFS_logos'; 
 
-angular.module("scrwebM").controller('MostrarArchivosRegistradosController',
+// importamos el module generales, pues está en  imports ... 
+import scrwebmGenerales from '/client/imports/generales/generalesAngularModule'; 
+
+angular.module(scrwebmGenerales.name).controller('MostrarArchivosRegistradosController',
 ['$scope', '$modalInstance', '$modal',
 function ($scope, $modalInstance, $modal) {
 

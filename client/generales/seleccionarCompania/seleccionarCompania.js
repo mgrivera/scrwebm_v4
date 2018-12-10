@@ -1,15 +1,15 @@
 ﻿
 
-
-import lodash from 'lodash';
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("SeleccionarCompaniaController",
-['$scope', '$stateParams', '$meteor', '$modal',
-  function ($scope, $stateParams, $meteor, $modal) {
+// importamos el module generales, pues está en  imports ... 
+import scrwebmGenerales from '/client/imports/generales/generalesAngularModule'; 
+
+angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController", ['$scope', '$modal',
+  function ($scope, $modal) {
 
       $scope.showProgress = false;
 

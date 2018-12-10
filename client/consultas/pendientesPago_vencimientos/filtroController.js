@@ -12,7 +12,7 @@ import { Filtros } from '/imports/collections/otros/filtros';
 
 import { Consulta_MontosPendientesPago_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesPago_Vencimientos';
 
-angular.module("scrwebM").controller("ConsultasMontosPendientesPagoVencimientos_Filtro_Controller",
+angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_Filtro_Controller",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

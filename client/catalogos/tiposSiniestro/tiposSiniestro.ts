@@ -6,7 +6,7 @@ import * as lodash from 'lodash'
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { TiposSiniestro } from 'imports/collections/catalogos/tiposSiniestro'; 
 
-angular.module("scrwebM").controller("TiposSiniestroController", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("TiposSiniestroController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 

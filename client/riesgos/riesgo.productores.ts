@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { DialogModal } from '../imports/generales/angularGenericModal'; 
 import { determinarSiExistenCuotasConCobrosAplicados } from '../imports/generales/determinarSiExistenCuotasCobradas'; 
 
-angular.module("scrwebM").controller("RiesgoProductores_Controller",
+angular.module("scrwebm").controller("RiesgoProductores_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', 
   function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants) {
 

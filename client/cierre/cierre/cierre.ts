@@ -12,7 +12,7 @@ import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSele
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("Cierre.Cierre.Controller", ['$scope', '$modal', function ($scope, $modal) {
+angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$modal', function ($scope, $modal) {
 
     $scope.processProgress = {
         current: 0,

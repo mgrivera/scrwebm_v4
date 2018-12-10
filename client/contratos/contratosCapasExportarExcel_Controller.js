@@ -2,7 +2,7 @@
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('ContratosCapasExportarExcel_Controller',
+angular.module("scrwebm").controller('ContratosCapasExportarExcel_Controller',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'contratoID', 'ciaSeleccionada',
 function ($scope, $modalInstance, $modal, $meteor, contratoID, ciaSeleccionada) {
 

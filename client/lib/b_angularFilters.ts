@@ -20,13 +20,13 @@ import { CausasSiniestro } from 'imports/collections/catalogos/causasSiniestro';
 // ---------------------------------------------------------------------------------------
 // ui-grid: para formatear fields numéricos y dates
 // ---------------------------------------------------------------------------------------
-angular.module("scrwebM").filter('currencyFilter', function () {
+angular.module("scrwebm").filter('currencyFilter', function () {
     return function (value) {
         return numeral(value).format('0,0.00');
     };
 });
 
-angular.module("scrwebM").filter('number8decimals', function () {
+angular.module("scrwebm").filter('number8decimals', function () {
     return function (value) {
         if (lodash.isFinite(value))
             return numeral(value).format('0.00000000');
@@ -35,7 +35,7 @@ angular.module("scrwebM").filter('number8decimals', function () {
     };
 });
 
-angular.module("scrwebM").filter('number6decimals', function () {
+angular.module("scrwebm").filter('number6decimals', function () {
     return function (value) {
         if (value)
             return numeral(value).format('0.000000');
@@ -44,7 +44,7 @@ angular.module("scrwebM").filter('number6decimals', function () {
     };
 });
 
-angular.module("scrwebM").filter('currencyFilterAndNull', function () {
+angular.module("scrwebm").filter('currencyFilterAndNull', function () {
     return function (value) {
         if (lodash.isFinite(value))
             return numeral(value).format('0,0.00');
@@ -53,7 +53,7 @@ angular.module("scrwebM").filter('currencyFilterAndNull', function () {
     };
 });
 
-angular.module("scrwebM").filter('dateFilter', function () {
+angular.module("scrwebm").filter('dateFilter', function () {
     return function (value) {
         if (value)
             return moment(value).format('DD-MM-YY');
@@ -62,7 +62,7 @@ angular.module("scrwebM").filter('dateFilter', function () {
     };
 });
 
-angular.module("scrwebM").filter('dateFilterFullMonthAndYear', function () {
+angular.module("scrwebm").filter('dateFilterFullMonthAndYear', function () {
     return function (value) {
         if (value)
             return moment(value).format('DD-MMM-YYYY');
@@ -71,7 +71,7 @@ angular.module("scrwebM").filter('dateFilterFullMonthAndYear', function () {
     };
 });
 
-angular.module("scrwebM").filter('dateTimeFilter', function () {
+angular.module("scrwebm").filter('dateTimeFilter', function () {
     return function (value) {
         if (value)
             return moment(value).format('DD-MM-YY h:m a');
@@ -80,20 +80,20 @@ angular.module("scrwebM").filter('dateTimeFilter', function () {
     };
 });
 
-angular.module("scrwebM").filter('boolFilter', function () {
+angular.module("scrwebm").filter('boolFilter', function () {
     return function (value) {
         return value ? "Ok" : "";
     };
 });
 
-angular.module("scrwebM").filter('tipoContratoFilter', function () {
+angular.module("scrwebm").filter('tipoContratoFilter', function () {
     return function (tipoContratoID) {
         var tipoContrato = TiposContrato.find(tipoContratoID);
         return !tipoContrato || lodash.isEmpty(tipoContrato) ? "Indefinido" : tipoContrato.descripcion;
     };
 });
 
-angular.module("scrwebM").filter('tipoSiniestroFilter', function () {
+angular.module("scrwebm").filter('tipoSiniestroFilter', function () {
     return function (tipoSiniestroID) {
         var tipoSiniestro = TiposSiniestro.findOne(tipoSiniestroID);
         return !tipoSiniestro ? "Indefinido" : tipoSiniestro.abreviatura;
@@ -107,7 +107,7 @@ var tiposCompania = [{ descripcion: 'Ajustadores', tipo: 'AJUST' },
                      { descripcion: 'Reaseguradores', tipo: 'REA' },
                      { descripcion: 'Compañías de seguro', tipo: 'SEG' }];
 
-angular.module("scrwebM").filter('tipoCompaniaFilter', function () {
+angular.module("scrwebm").filter('tipoCompaniaFilter', function () {
     return function (tipoCompania) {
 
         var found = lodash.find(tiposCompania, function (t) { return t.tipo == tipoCompania; });
@@ -116,7 +116,7 @@ angular.module("scrwebM").filter('tipoCompaniaFilter', function () {
     };
 });
 
-angular.module("scrwebM").filter('tipoCompania2Filter', function () {
+angular.module("scrwebm").filter('tipoCompania2Filter', function () {
     // la diferencia con el anterior es que aquí recibimos una compañía, la buscamos; buscamos su tipo y lo regresamos
     return function (companiaID) {
 
@@ -134,35 +134,35 @@ angular.module("scrwebM").filter('tipoCompania2Filter', function () {
     };
 });
 
-angular.module("scrwebM").filter('empresaUsuariaSeleccionadaFilter', function () {
+angular.module("scrwebm").filter('empresaUsuariaSeleccionadaFilter', function () {
     return function (companiaID) {
         var compania = EmpresasUsuarias.findOne(companiaID, { fields: { nombre: 1 } });
         return !compania || lodash.isEmpty(compania) ? "Indefinido" : compania.nombre;
     };
 });
 
-angular.module("scrwebM").filter('companiaAbreviaturaFilter', function () {
+angular.module("scrwebm").filter('companiaAbreviaturaFilter', function () {
     return function (companiaID) {
         var compania = Companias.findOne(companiaID, { fields: { abreviatura: 1 } });
         return !compania || lodash.isEmpty(compania) ? "Indefinido" : compania.abreviatura;
     };
 });
 
-angular.module("scrwebM").filter('ramoAbreviaturaFilter', function () {
+angular.module("scrwebm").filter('ramoAbreviaturaFilter', function () {
     return function (ramoID) {
         var ramo = Ramos.findOne(ramoID, { fields: { abreviatura: 1 } });
         return !ramo || lodash.isEmpty(ramo) ? "Indefinido" : ramo.abreviatura;
     };
 });
 
-angular.module("scrwebM").filter('coberturaAbreviaturaFilter', function () {
+angular.module("scrwebm").filter('coberturaAbreviaturaFilter', function () {
     return function (coberturaID) {
         var cobertura = Coberturas.findOne(coberturaID, { fields: { abreviatura: 1 } });
         return !cobertura || lodash.isEmpty(cobertura) ? "Indefinido" : cobertura.abreviatura;
     };
 });
 
-angular.module("scrwebM").filter('aseguradoAbreviaturaFilter', function () {
+angular.module("scrwebm").filter('aseguradoAbreviaturaFilter', function () {
     return function (aseguradoID) {
         var asegurado = Asegurados.findOne(aseguradoID, { fields: { abreviatura: 1 } });
 
@@ -172,35 +172,35 @@ angular.module("scrwebM").filter('aseguradoAbreviaturaFilter', function () {
     };
 });
 
-angular.module("scrwebM").filter('tipoContratoAbreviaturaFilter', function () {
+angular.module("scrwebm").filter('tipoContratoAbreviaturaFilter', function () {
     return function (tipoContratoID) {
         var tipoContrato = TiposContrato.findOne(tipoContratoID);
         return !tipoContrato || lodash.isEmpty(tipoContrato) ? "Indefinido" : tipoContrato.abreviatura;
     };
 });
 
-angular.module("scrwebM").filter('suscriptorAbreviaturaFilter', function () {
+angular.module("scrwebm").filter('suscriptorAbreviaturaFilter', function () {
     return id => {
         let suscriptor = Suscriptores.findOne(id);
         return !suscriptor || lodash.isEmpty(suscriptor) ? "Indef" : suscriptor.abreviatura;
     };
 });
 
-angular.module("scrwebM").filter('monedaSimboloFilter', function () {
+angular.module("scrwebm").filter('monedaSimboloFilter', function () {
     return function (monedaID) {
         var moneda = Monedas.findOne(monedaID);
         return !moneda || lodash.isEmpty(moneda) ? "Indefinido" : moneda.simbolo;
     };
 });
 
-angular.module("scrwebM").filter('causaSiniestroAbreviaturaFilter', function () {
+angular.module("scrwebm").filter('causaSiniestroAbreviaturaFilter', function () {
     return function (causaID) {
         var causa = CausasSiniestro.findOne(causaID, { fields: { abreviatura: 1 } });
         return !causa || lodash.isEmpty(causa) ? "Indefinido" : causa.abreviatura;
     };
 });
 
-angular.module("scrwebM").filter('userNameOrEmailFilter', function () {
+angular.module("scrwebm").filter('userNameOrEmailFilter', function () {
     return function (userID) {
         if (!userID)
             return "";
@@ -222,7 +222,7 @@ angular.module("scrwebM").filter('userNameOrEmailFilter', function () {
 // para mostrar información de pagos para las cuotas de contratos, fac, sntros, etc.
 // ---------------------------------------------------------------------------------------
 
-angular.module("scrwebM").filter('origenCuota_Filter', function () {
+angular.module("scrwebm").filter('origenCuota_Filter', function () {
     return function (value) {
         //debugger;
         var source = value;
@@ -230,7 +230,7 @@ angular.module("scrwebM").filter('origenCuota_Filter', function () {
     };
 });
 
-angular.module("scrwebM").filter('cuotaTienePagos_Filter', function () {
+angular.module("scrwebm").filter('cuotaTienePagos_Filter', function () {
     return function (value, scope) {
         //debugger;
         var row = scope.row.entity;
@@ -240,7 +240,7 @@ angular.module("scrwebM").filter('cuotaTienePagos_Filter', function () {
     };
 });
 
-angular.module("scrwebM").filter('cuotaTienePagoCompleto_Filter', function () {
+angular.module("scrwebm").filter('cuotaTienePagoCompleto_Filter', function () {
     return function (value, scope) {
         //debugger;
         var row = scope.row.entity;
@@ -258,7 +258,7 @@ angular.module("scrwebM").filter('cuotaTienePagoCompleto_Filter', function () {
 // ---------------------------------------------------------------------------------------
 // para mostrar 'unsafe' strings (with embedded html) in ui-bootstrap alerts ....
 // ---------------------------------------------------------------------------------------
-angular.module("scrwebM").filter('unsafe',
+angular.module("scrwebm").filter('unsafe',
 ['$sce',
 function ($sce) {
     return function (value) {
@@ -273,13 +273,13 @@ function ($sce) {
 // nota: lo que sigue es para lograr implementar el comportamiento del dropdownlist en el ui-grid ...
 // -----------------------------------------------------------------------------------------------------------
 
-angular.module("scrwebM").filter('mapDropdown',
+angular.module("scrwebm").filter('mapDropdown',
 ['uiGridFactory',
 function (uiGridFactory) {
     return uiGridFactory.getMapDrowdownFilter()
 }]);
 
-angular.module("scrwebM").factory('uiGridFactory',
+angular.module("scrwebm").factory('uiGridFactory',
 ['$http', '$rootScope',
 function ($http, $rootScope) {
 

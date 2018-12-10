@@ -20,10 +20,15 @@ import 'angular-ui-grid/ui-grid.css';
 
 import 'angular-utils-pagination';              // angularUtils.directives.dirPagination
 
-angular.module("scrwebM", [ angularMeteor, uiRouter, 'ui.bootstrap',
+// hacemos un import de los módulos (angular modules) que están en /client/imports, y los pasamos en DI (angular dependency injection) 
+import generales from '/client/imports/generales/generalesAngularModule'; 
+
+angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'angularUtils.directives.dirPagination', 'accounts.ui',
                             'ui.grid', 'ui.grid.edit', 'ui.grid.cellNav',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
-                            'ui.grid.pinning', 'ui.grid.grouping'
+                            'ui.grid.pinning', 'ui.grid.grouping', 
+                            // pasamos los modules (angular modules) que están directamente bajo éste ... 
+                            generales.name, 
                           ]);
 

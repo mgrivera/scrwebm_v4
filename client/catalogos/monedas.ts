@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Monedas } from 'imports/collections/catalogos/monedas'; 
 
-angular.module("scrwebM").controller("MonedasController", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("MonedasController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 

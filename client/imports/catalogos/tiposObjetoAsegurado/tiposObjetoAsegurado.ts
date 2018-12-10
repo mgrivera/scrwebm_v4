@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '../../generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { TiposObjetoAsegurado } from 'imports/collections/catalogos/tiposObjetoAsegurado'; 
 
-angular.module("scrwebM").controller("TiposObjetoAseguradoController", ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {
+angular.module("scrwebm").controller("TiposObjetoAseguradoController", ['$scope', '$stateParams', '$meteor', function ($scope, $stateParams, $meteor) {
 
       $scope.showProgress = false;
 

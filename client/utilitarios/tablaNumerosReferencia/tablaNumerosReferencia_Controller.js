@@ -6,7 +6,7 @@ import { Referencias } from '/imports/collections/principales/referencias';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("Utilitarios_TablaNumerosReferencia_Controller",
+angular.module("scrwebm").controller("Utilitarios_TablaNumerosReferencia_Controller",
  ['$scope', '$stateParams', '$meteor',
   function ($scope, $stateParams, $meteor) {
 

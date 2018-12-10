@@ -9,5 +9,5 @@ import '../imports/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado';
 import '../imports/catalogos/cumulos/cumulos.html'; 
 import '../imports/catalogos/cumulos/cumulos';
 
-angular.module("scrwebM").controller("Catalogos_Controller", function ($scope) {
+angular.module("scrwebm").controller("Catalogos_Controller", function ($scope) {
 })

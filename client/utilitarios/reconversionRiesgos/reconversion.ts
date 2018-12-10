@@ -10,7 +10,7 @@ import { ReconversionMonetaria_log } from 'imports/collections/otros/reconversio
 import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("Utilitarios_Reconversion_Riesgos_Controller", ['$scope', '$modal', function ($scope, $modal) {
+angular.module("scrwebm").controller("Utilitarios_Reconversion_Riesgos_Controller", ['$scope', '$modal', function ($scope, $modal) {
 
     $scope.showProgress = false;
 

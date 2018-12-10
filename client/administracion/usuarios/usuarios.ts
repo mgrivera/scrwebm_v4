@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("UsuariosDatosPersonalesController",
+angular.module("scrwebm").controller("UsuariosDatosPersonalesController",
  ['$scope', '$stateParams', '$meteor', '$modal',
   function ($scope, $stateParams, $meteor, $modal) {
 

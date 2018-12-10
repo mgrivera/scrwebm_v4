@@ -10,7 +10,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 
 import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
 
-angular.module("scrwebM").controller('ImprimirNotasRiesgosModalController',
+angular.module("scrwebm").controller('ImprimirNotasRiesgosModalController',
 ['$scope', '$modalInstance', '$modal', '$meteor', 'riesgo', 'cuotas', 'tiposMovimiento',
 function ($scope, $modalInstance, $modal, $meteor, riesgo, cuotas, tiposMovimiento) {
     // ui-bootstrap alerts ...

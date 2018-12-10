@@ -4,7 +4,7 @@ import { Siniestros } from '/imports/collections/principales/siniestros';
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("SiniestrosListaController",
+angular.module("scrwebm").controller("SiniestrosListaController",
 ['$scope', '$stateParams', '$state', '$meteor',
 function ($scope, $stateParams, $state, $meteor) {
 

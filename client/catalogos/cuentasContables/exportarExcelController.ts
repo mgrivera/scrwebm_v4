@@ -4,7 +4,7 @@ import * as angular from 'angular';
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('CuentasContablesExportarExcel_Controller',
+angular.module("scrwebm").controller('CuentasContablesExportarExcel_Controller',
 ['$scope', '$modalInstance', 'ciaSeleccionada', function ($scope, $modalInstance, ciaSeleccionada) {
 
     // ui-bootstrap alerts ...

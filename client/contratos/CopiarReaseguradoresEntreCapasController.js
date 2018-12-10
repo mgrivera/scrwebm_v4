@@ -3,7 +3,7 @@
 import lodash from 'lodash';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('CopiarReaseguradoresEntreCapasController',
+angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
 ['$scope', '$modalInstance', '$modal', 'contrato', function ($scope, $modalInstance, $modal, contrato) {
 
     $scope.alerts = [];

@@ -2,7 +2,7 @@
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('RenovarRiesgo_ModalController',
+angular.module("scrwebm").controller('RenovarRiesgo_ModalController',
 ['$scope', '$modalInstance', 'riesgoOriginal', 'companiaSeleccionada',
 function ($scope, $modalInstance, riesgoOriginal, companiaSeleccionada) {
     $scope.alerts = [];

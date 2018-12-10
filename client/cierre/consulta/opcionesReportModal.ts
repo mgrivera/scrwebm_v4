@@ -5,7 +5,7 @@ import * as angular from 'angular';
 import { Filtros } from 'imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('Cierre_opcionesReportController',
+angular.module("scrwebm").controller('Cierre_opcionesReportController',
 ['$scope', '$modalInstance', 'companiaSeleccionada', 'fechaInicialPeriodo', 'fechaFinalPeriodo', 'cuentasCorrientes', 
 function ($scope, $modalInstance, companiaSeleccionada, fechaInicialPeriodo, fechaFinalPeriodo, cuentasCorrientes) {
     // ui-bootstrap alerts ...

@@ -5,7 +5,7 @@ import { Temp_Consulta_Remesas } from '/imports/collections/consultas/tempConsul
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("RemesasListaController",
+angular.module("scrwebm").controller("RemesasListaController",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

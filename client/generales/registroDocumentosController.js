@@ -3,7 +3,7 @@
 import lodash from 'lodash'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('RegistroDocumentosController',
+angular.module("scrwebm").controller('RegistroDocumentosController',
 ['$scope', '$modalInstance', '$modal', 'entidad', 'documentos', 'tiposDocumentoLista',
 function ($scope, $modalInstance, $modal, entidad, documentos, tiposDocumentoLista) {
 

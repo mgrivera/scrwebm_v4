@@ -13,7 +13,7 @@ import { Suscriptores } from 'imports/collections/catalogos/suscriptores';
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Controller",
+angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Controller",
 ['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
 
     $scope.showProgress = false;

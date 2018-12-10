@@ -13,7 +13,7 @@ import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias
 import { CuentasContables } from 'imports/collections/catalogos/cuentasContables';
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("CuentasBancariasController",
+angular.module("scrwebm").controller("CuentasBancariasController",
  ['$scope', '$stateParams',
   function ($scope, $stateParams) {
 

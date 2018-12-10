@@ -3,7 +3,7 @@
 
 import { Consulta_Corretaje } from '/imports/collections/consultas/consulta_corretaje'; 
 
-angular.module("scrwebM").controller("CConsultasCorretaje_Lista_Controller",
+angular.module("scrwebm").controller("CConsultasCorretaje_Lista_Controller",
 ['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',
 function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
 

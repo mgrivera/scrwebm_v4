@@ -11,7 +11,7 @@ import { Remesas } from '/imports/collections/principales/remesas';
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("CobranzasAplicarPagosController",
+angular.module("scrwebm").controller("CobranzasAplicarPagosController",
 ['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
 
     $scope.showProgress = false;

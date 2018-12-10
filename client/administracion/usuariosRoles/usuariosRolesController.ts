@@ -4,7 +4,7 @@ import * as angular from 'angular';
 import * as lodash from 'lodash';
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("UsuariosRolesController",
+angular.module("scrwebm").controller("UsuariosRolesController",
  ['$scope', '$stateParams', '$meteor', '$modal', function ($scope, $stateParams, $meteor, $modal) {
 
       $scope.showProgress = false;

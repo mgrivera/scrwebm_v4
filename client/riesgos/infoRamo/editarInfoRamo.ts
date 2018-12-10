@@ -3,7 +3,7 @@
 import * as angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('InfoRamo_editarItem_ModalController',
+angular.module("scrwebm").controller('InfoRamo_editarItem_ModalController',
 ['$scope', '$modalInstance', 'infoRamo', 'autosMarcas', function ($scope, $modalInstance, infoRamo, autosMarcas) {
     $scope.alerts = [];
 

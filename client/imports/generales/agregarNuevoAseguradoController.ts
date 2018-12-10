@@ -6,7 +6,7 @@ import { Asegurados } from 'imports/collections/catalogos/asegurados';
 
 import { mensajeErrorDesdeMethod_preparar } from './mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('AgregarNuevoAsegurado_ModalController',
+angular.module("scrwebm").controller('AgregarNuevoAsegurado_ModalController',
 ['$scope', '$modalInstance', 'nombre', function ($scope, $modalInstance, nombre) {
     $scope.alerts = [];
 

@@ -6,7 +6,7 @@ import Papa from 'papaparse';
 import { Consulta_MontosPendientesPago_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesPago_Vencimientos'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("ConsultasMontosPendientesPagoVencimientos_Lista_Controller",
+angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_Lista_Controller",
 ['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',
 function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
 

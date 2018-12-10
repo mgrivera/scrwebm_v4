@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { TiposFacultativo } from 'imports/collections/catalogos/tiposFacultativo'; 
 
-angular.module("scrwebM").controller("TiposFacultativoController", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("TiposFacultativoController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 

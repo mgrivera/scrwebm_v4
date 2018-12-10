@@ -45,4 +45,5 @@ barbatus:typescript
 jamiecollinson:selectize-bootstrap
 dotansimha:accounts-ui-angular
 angular-templates
-angularui:angular-ui-bootstrap
+enforcer:angular-ui-bootstrap
+angular:angular

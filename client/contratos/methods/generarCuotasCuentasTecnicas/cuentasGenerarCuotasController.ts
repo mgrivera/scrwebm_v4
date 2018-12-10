@@ -7,7 +7,7 @@ import * as lodash from 'lodash';
 import { determinarSiExistenCuotasConCobrosAplicados } from '../../../imports/generales/determinarSiExistenCuotasCobradas'; 
 import { DialogModal } from '../../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('CuentasGenerarCuotasController',
+angular.module("scrwebm").controller('CuentasGenerarCuotasController',
 ['$scope', '$modal', '$modalInstance', 'contrato', 'definicionCuentaTecnicaSeleccionada', 'cuotas', 'definicionCuentaTecnicaSeleccionada_Info',
  'cuentas_saldos', 'comAdic_montosFinales', 'entCartPr_montosFinales', 'entCartSn_montosFinales', 
  'retCartPr_montosFinales', 'retCartSn_montosFinales', 'partBeneficios_montosFinales', 

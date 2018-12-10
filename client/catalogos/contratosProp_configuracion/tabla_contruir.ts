@@ -10,7 +10,7 @@ import { TiposContrato } from 'imports/collections/catalogos/tiposContrato';
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { ContProp_tablaConf } from '../../lib/forerunnerDB'; 
 
-angular.module("scrwebM").controller("ContratosProp_Configuracion_Tabla_Construir_Controller",
+angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construir_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', '$interval', 
   function ($scope, $state, $stateParams, $meteor, $modal, $interval) {
 

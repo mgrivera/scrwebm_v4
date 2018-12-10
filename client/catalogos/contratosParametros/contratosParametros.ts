@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
 
-angular.module("scrwebM").controller("ContratosParametrosController",
+angular.module("scrwebm").controller("ContratosParametrosController",
  ['$scope', '$stateParams', function ($scope, $stateParams) {
 
       $scope.showProgress = false;

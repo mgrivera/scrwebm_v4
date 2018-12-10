@@ -1,7 +1,7 @@
 ﻿
 
 
-angular.module("scrwebM").controller("ContratoGeneralesController",
+angular.module("scrwebm").controller("ContratoGeneralesController",
 ['$scope', '$state', '$stateParams', '$meteor',
   function ($scope, $state, $stateParams, $meteor) {
 

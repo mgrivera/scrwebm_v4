@@ -5,7 +5,7 @@ import * as angular from 'angular';
 import { Filtros } from 'imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller('Consultas_cumulos_opcionesReportController',
+angular.module("scrwebm").controller('Consultas_cumulos_opcionesReportController',
 ['$scope', '$modalInstance', 'companiaSeleccionada', function ($scope, $modalInstance, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];

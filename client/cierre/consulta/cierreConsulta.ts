@@ -12,7 +12,7 @@ import { Monedas } from 'imports/collections/catalogos/monedas';
 import { Companias } from 'imports/collections/catalogos/companias'; 
 import { Filtros } from 'imports/collections/otros/filtros'; 
 
-angular.module("scrwebM").controller("Cierre.Consulta.Controller", ['$scope', '$modal', '$interval', function ($scope, $modal, $interval) {
+angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$modal', '$interval', function ($scope, $modal, $interval) {
 
       $scope.showProgress = false;
 

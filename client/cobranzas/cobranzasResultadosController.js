@@ -6,7 +6,7 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
   
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller("CobranzasResultadosController",
+angular.module("scrwebm").controller("CobranzasResultadosController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal',
   function ($scope, $state, $stateParams, $meteor, $modal) {
 

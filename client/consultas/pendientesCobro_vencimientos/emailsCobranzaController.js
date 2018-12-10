@@ -15,7 +15,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebM").controller('Consulta_MontosPorCobrar_Vencimientos_EmailsCobranza_Controller',
+angular.module("scrwebm").controller('Consulta_MontosPorCobrar_Vencimientos_EmailsCobranza_Controller',
 ['$scope', '$modalInstance', '$meteor', '$modal', 'cuotasSeleccionadas',
 function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
 

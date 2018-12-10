@@ -8,7 +8,7 @@ import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDe
 import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("EmpresasUsuarias_Controller", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 

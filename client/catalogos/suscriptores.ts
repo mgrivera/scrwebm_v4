@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
 
-angular.module("scrwebM").controller("SuscriptoresController", ['$scope',  function ($scope) {
+angular.module("scrwebm").controller("SuscriptoresController", ['$scope',  function ($scope) {
 
       $scope.showProgress = false;
 

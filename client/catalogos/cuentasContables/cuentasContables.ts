@@ -10,7 +10,7 @@ import { CuentasContables } from 'imports/collections/catalogos/cuentasContables
 import { replaceAllInstances } from 'imports/funciones/texto/replaceAllInstances'; 
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebM").controller("CuentasContablesController", ['$scope', '$modal', function ($scope, $modal) {
+angular.module("scrwebm").controller("CuentasContablesController", ['$scope', '$modal', function ($scope, $modal) {
 
       $scope.showProgress = false;
 

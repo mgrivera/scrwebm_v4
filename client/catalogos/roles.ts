@@ -5,7 +5,7 @@ import * as lodash from 'lodash';
 
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebM").controller("RolesController", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("RolesController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 
