@@ -247,7 +247,7 @@ angular.module("scrwebm").controller("UsuariosRolesController",
           $scope.usuarios_ui_grid.data = [];
 
           $meteor.call('usuariosRolesSave', editedItems).then(
-            function (data) {
+            function (data: any) {
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -330,7 +330,7 @@ angular.module("scrwebm").controller("UsuariosRolesController",
       // Meteor.roles siempre existe en el cliente
       $scope.helpers({
           roles: () => {
-              return Meteor.roles.find({}, { sort: { name: 1 } });
+              return Meteor.roles.find();
           },
       });
       $scope.roles_ui_grid.data = $scope.roles;

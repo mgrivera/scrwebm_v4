@@ -14,9 +14,11 @@ import uiRouter from 'angular-ui-router';
 import 'angular-ui-grid';
 
 // nótese que importamos los assets de npm packages ...
-import 'angular-ui-grid/ui-grid.css';
-// import 'angular-ui-grid/ui-grid.woff';
-// import 'angular-ui-grid/ui-grid.ttf';
+import "/node_modules/angular-ui-grid/ui-grid.css";  
+// import 'angular-ui-grid/ui-grid.css';
+
+// import '../../node_modules/angular-ui-grid/fonts/ui-grid.woff';
+// import '../../node_modules/angular-ui-grid/fonts/ui-grid.ttf';
 
 import 'angular-utils-pagination';              // angularUtils.directives.dirPagination
 
@@ -29,6 +31,6 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
-                            generales.name, 
+                            generales.name
                           ]);
 

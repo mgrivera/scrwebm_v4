@@ -524,15 +524,49 @@ angular.module("scrwebm").controller("Riesgo_Controller",
             controller: 'ImprimirNotasRiesgosModalController',
             size: 'lg',
             resolve: {
-            riesgo: function () {
-                return $scope.riesgo;
-            },
-            cuotas: function() {
-                return $scope.cuotas;
-            },
-            tiposMovimiento: function() {
-                return $scope.tiposMovimiento;
+                riesgo: function () {
+                    return $scope.riesgo;
+                },
+                cuotas: function() {
+                    return $scope.cuotas;
+                },
+                tiposMovimiento: function() {
+                    return $scope.tiposMovimiento;
+                }
             }
+        }).result.then(
+        function () {
+            return true;
+        },
+        function () {
+            return true;
+        })
+    }
+
+    
+
+    $scope.notasDebito = function() {
+        if (!$scope.riesgo || !$scope.riesgo.movimientos || lodash.isEmpty($scope.riesgo.movimientos)) {
+            DialogModal($modal, "<em>Riesgos - Construcción de notas de débito</em>",
+                        "Aparentemente, el riesgo para el cual Ud. desea construir las notas de débito, no tiene movimientos registrados.",
+                        false).then();
+            return;
+        };
+
+        $modal.open({
+            templateUrl: 'client/riesgos/notasDebito/imprimirNotasDebitoModal.html',
+            controller: 'ImprimirNotasDebitoModalController',
+            size: 'lg',
+            resolve: {
+                riesgo: function () {
+                    return $scope.riesgo;
+                },
+                cuotas: function() {
+                    return $scope.cuotas;
+                },
+                tiposMovimiento: function() {
+                    return $scope.tiposMovimiento;
+                }
             }
         }).result.then(
         function () {

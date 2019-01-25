@@ -164,8 +164,8 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('pruebaReact', {
             url: '/generales/pruebaReact',
-            templateUrl: 'client/imports/generales/pruebaReact/pruebaReact.html',
-            controller: 'PruebaReactController'
+            templateUrl: 'client/imports/generales/pruebaReact/pruebaReact.html'
+            // controller: 'PruebaReactController'
         })
         // ----------------------------------------------------------------
         // contratos
@@ -285,6 +285,11 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         .state('riesgo.cuotas', {
             templateUrl: 'client/riesgos/riesgo.cuotas.html',
             controller: 'RiesgoCuotas_Controller',
+            parent: 'riesgo'
+        })
+        .state('riesgo.notasDebito', {
+            templateUrl: 'client/riesgos/notasDebito/notasDebito.html',
+            controller: 'NotasDebitoController',
             parent: 'riesgo'
         })
 

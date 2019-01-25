@@ -17,8 +17,15 @@
                     <li ng-if="origen == 'edicion'"><a href="#" ng-click="grabar()" class="navbar_custom_small_node">Grabar&nbsp;&nbsp;<span class="fa fa-floppy-o"></span></a></li>
                     <li><a href="#" ng-click="refresh()" class="navbar_custom_small_node">Refresh&nbsp;&nbsp;<span class="fa fa-refresh"></span></a></li>
                     <li class="divider-vertical-small"></li>
-                    <li><a href="#" ng-click="imprimir()" class="navbar_custom_small_node">Imprimir&nbsp;&nbsp;<span class="fa fa-print"></span></a></li>
 
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Imprimir <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" ng-click="imprimir()" class="navbar_custom_small_node">Notas de cobertura&nbsp;&nbsp;<span class="fa fa-file-text-o"></span></a></li>
+                            <li><a href="#" ng-click="goToState('notasDebito')" class="navbar_custom_small_node">Notas de débito&nbsp;&nbsp;<span class="fa fa-file-text-o"></span></a></li>
+                        </ul>
+                    </li>
+                    
                     <li class="divider-vertical-small"></li>
 
                     <li ng-if="origen == 'edicion'"><a href="#" ng-click="nuevo0()" class="navbar_custom_small_node">Nuevo&nbsp;&nbsp;<span class="fa fa-file-o"></span></a></li>
@@ -38,12 +45,12 @@
                         <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Otros <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="#" ng-click="registroDocumentos()" class="navbar_custom_small_node">Documentos&nbsp;&nbsp;<span class="fa fa-file-text-o"></span></a></li>
-                            <li><a href="#" ng-click="registrarPersonasCompanias()" class="navbar_custom_xsmall_node">Personas <i style="color: blue; " class="fa fa-user"></i></a></li>
+                            <li><a href="#" ng-click="registrarPersonasCompanias()" class="navbar_custom_small_node">Personas <i style="color: blue; " class="fa fa-user"></i></a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#" ng-click="registroCumulos()" class="navbar_custom_xsmall_node">Cúmulos <i style="color: #F2353B; " class="fa fa-umbrella"></i></a></li>
+                            <li><a href="#" ng-click="registroCumulos()" class="navbar_custom_small_node">Cúmulos <i style="color: #F2353B; " class="fa fa-umbrella"></i></a></li>
                             <li ng-if="origen == 'edicion'" role="separator" class="divider"></li>
-                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="copiarEnUnNuevoRiesgo()" class="navbar_custom_xsmall_node">Copiar en uno nuevo <i class="fa fa-copy"></i></a></li>
-                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="renovarRiesgo()" class="navbar_custom_xsmall_node">Renovar riesgo <i class="fa fa-magic"></i></a></li>
+                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="copiarEnUnNuevoRiesgo()" class="navbar_custom_small_node">Copiar en uno nuevo <i class="fa fa-copy"></i></a></li>
+                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="renovarRiesgo()" class="navbar_custom_small_node">Renovar riesgo <i class="fa fa-magic"></i></a></li>
                         </ul>
                     </li>
 

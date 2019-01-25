@@ -7,9 +7,6 @@ import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 import { mostrarHelp } from '../imports/generales/mostrarHelp'; 
 
-import '../imports/generales/pruebaReact/pruebaReact.html'; 
-import '../imports/generales/pruebaReact/pruebaReact'; 
-
 // Este controller se carga con la página primera del programa; es decir, la que muestra el menú (navBar) principal
 angular.module("scrwebm").controller("MainController", ['$rootScope', '$scope', '$modal', '$location', 
 function ($rootScope, $scope, $modal, $location) {
