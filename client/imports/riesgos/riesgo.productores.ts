@@ -3,12 +3,12 @@
 import * as angular from 'angular';
 import * as lodash from 'lodash'; 
 
-import { DialogModal } from '../imports/generales/angularGenericModal'; 
-import { determinarSiExistenCuotasConCobrosAplicados } from '../imports/generales/determinarSiExistenCuotasCobradas'; 
+import { DialogModal } from '../generales/angularGenericModal'; 
+import { determinarSiExistenCuotasConCobrosAplicados } from '../generales/determinarSiExistenCuotasCobradas'; 
 
-angular.module("scrwebm").controller("RiesgoProductores_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', 
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants) {
+export default angular.module("scrwebm.riesgos.productores", []).controller("RiesgoProductores_Controller",
+['$scope', '$modal', 'uiGridConstants', 
+  function ($scope, $modal, uiGridConstants) {
 
     $scope.showProgress = true; 
 

@@ -6,9 +6,13 @@ import * as lodash from 'lodash';
 
 import { AutosMarcas } from 'imports/collections/catalogos/autosMarcas'; 
 
-import { DialogModal } from '../imports/generales/angularGenericModal'; 
+import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("RiesgoInfoRamo_autos_Controller",
+// cargamos los files que permiten abrir un modal para que el usuario edite la información ... 
+import './infoRamo/editarInfoRamoModal.html'; 
+import EditarInfoRamo from './infoRamo/editarInfoRamo'; 
+
+export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name ]).controller("RiesgoInfoRamo_autos_Controller",
 ['$scope', '$modal', function ($scope, $modal) {
 
     $scope.showProgress = true; 
@@ -188,7 +192,7 @@ angular.module("scrwebm").controller("RiesgoInfoRamo_autos_Controller",
         }
 
         $modal.open({
-            templateUrl: 'client/riesgos/infoRamo/editarInfoRamoModal.html',
+            templateUrl: 'client/imports/riesgos/infoRamo/editarInfoRamoModal.html',
             controller: 'InfoRamo_editarItem_ModalController',
             size: 'md',
             resolve: {
@@ -242,7 +246,7 @@ angular.module("scrwebm").controller("RiesgoInfoRamo_autos_Controller",
         }
 
         $modal.open({
-            templateUrl: 'client/riesgos/infoRamo/editarInfoRamoModal.html',
+            templateUrl: 'client/imports/riesgos/infoRamo/editarInfoRamoModal.html',
             controller: 'InfoRamo_editarItem_ModalController',
             size: 'md',
             resolve: {
@@ -296,15 +300,15 @@ angular.module("scrwebm").controller("RiesgoInfoRamo_autos_Controller",
 
 
 // definimos los angular filters que usa el ui-grid 
-angular.module("scrwebm").filter('marcaAutoFilter', function () {
-    return function (marcaID) {
+angular.module("scrwebm.riesgos.infoRamo").filter('marcaAutoFilter', function () {
+    return function (marcaID: any) {
         let marca = AutosMarcas.findOne(marcaID);
         return marca ? marca.marca : "Indefinido";
     };
 })
 
-angular.module("scrwebm").filter('modeloAutoFilter', function () {
-    return function (modeloID, entity) {
+angular.module("scrwebm.riesgos.infoRamo").filter('modeloAutoFilter', function () {
+    return function (modeloID: any, entity: any) {
         let marca = AutosMarcas.findOne(entity.marca);
         
         let modelos = marca && marca.modelos ? marca.modelos : []; 
@@ -317,8 +321,8 @@ angular.module("scrwebm").filter('modeloAutoFilter', function () {
     };
 })
 
-angular.module("scrwebm").filter('numeroMovimientoFilter', function () {
-    return function (movimientoID, entity, gridScope) {
+angular.module("scrwebm.riesgos.infoRamo").filter('numeroMovimientoFilter', function () {
+    return function (movimientoID: any, entity: any, gridScope: any) {
         // nótese como leemos el riesgo en el parent scope y luego sus movimientos; así encontramos el número del movimiento 
         let movimientos = gridScope.$parent && gridScope.$parent.riesgo && gridScope.$parent.riesgo.movimientos ?
                                                                            gridScope.$parent.riesgo.movimientos : []; 

@@ -1,6 +1,7 @@
 
 
 import moment from 'moment';
+
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
@@ -10,9 +11,10 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 
 import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
 
-angular.module("scrwebm").controller('ImprimirNotasRiesgosModalController',
-['$scope', '$modalInstance', '$modal', '$meteor', 'riesgo', 'cuotas', 'tiposMovimiento',
-function ($scope, $modalInstance, $modal, $meteor, riesgo, cuotas, tiposMovimiento) {
+export default angular.module("scrwebm.riesgos.riesgo.imprimirNotasCobertura", []).
+controller('ImprimirNotasRiesgosModalController',
+['$scope', '$modalInstance', '$modal', 'riesgo', 'tiposMovimiento',
+function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 

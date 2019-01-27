@@ -162,11 +162,6 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             templateUrl: 'client/generales/registroArchivos/registroArchivos.html',
             controller: 'RegistroArchivosController'
         })
-        .state('pruebaReact', {
-            url: '/generales/pruebaReact',
-            templateUrl: 'client/imports/generales/pruebaReact/pruebaReact.html'
-            // controller: 'PruebaReactController'
-        })
         // ----------------------------------------------------------------
         // contratos
         // ----------------------------------------------------------------
@@ -245,50 +240,50 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('riesgosFiltro', {
             url: '/riesgos/filtro?origen',
-            templateUrl: 'client/riesgos/filtro.html',
+            templateUrl: 'client/imports/riesgos/filtro.html',
             controller: 'RiesgosFiltro_Controller',
             params: { 'origen': null, },
         })
         .state('riesgosLista', {
             url: '/riesgos/lista?origen&limit',
-            templateUrl: 'client/riesgos/lista.html',
+            templateUrl: 'client/imports/riesgos/lista.html',
             controller: 'RiesgosLista_Controller',
             params: { 'origen': null, 'limit': null, },
         })
         .state('riesgo', {
             url: '/riesgos/riesgo?origen&id&limit&vieneDeAfuera',
-            templateUrl: 'client/riesgos/riesgo.html',
+            templateUrl: 'client/imports/riesgos/riesgo.html',
             controller: 'Riesgo_Controller',
             params: { 'origen': null, 'id': null, 'limit': null, 'vieneDeAfuera': null },
         })
 
         .state('riesgo.generales', {
-            templateUrl: 'client/riesgos/riesgo.generales.html',
+            templateUrl: 'client/imports/riesgos/riesgo.generales.html',
             controller: 'RiesgoGenerales_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.movimientos', {
-            templateUrl: 'client/riesgos/riesgo.movimientos.html',
+            templateUrl: 'client/imports/riesgos/riesgo.movimientos.html',
             controller: 'RiesgoMovimientos_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.infoRamo_autos', {
-            templateUrl: 'client/riesgos/riesgo.infoRamo_autos.html',
+            templateUrl: 'client/imports/riesgos/riesgo.infoRamo_autos.html',
             controller: 'RiesgoInfoRamo_autos_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.productores', {
-            templateUrl: 'client/riesgos/riesgo.productores.html',
+            templateUrl: 'client/imports/riesgos/riesgo.productores.html',
             controller: 'RiesgoProductores_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.cuotas', {
-            templateUrl: 'client/riesgos/riesgo.cuotas.html',
+            templateUrl: 'client/imports/riesgos/riesgo.cuotas.html',
             controller: 'RiesgoCuotas_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.notasDebito', {
-            templateUrl: 'client/riesgos/notasDebito/notasDebito.html',
+            templateUrl: 'client/imports/riesgos/notasDebito/notasDebito.html',
             controller: 'NotasDebitoController',
             parent: 'riesgo'
         })

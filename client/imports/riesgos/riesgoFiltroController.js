@@ -14,7 +14,7 @@ import { Filtros } from '/imports/collections/otros/filtros';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("RiesgosFiltro_Controller",
+export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosFiltro_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', function ($scope, $state, $stateParams, $meteor) {
 
     $scope.showProgress = false;

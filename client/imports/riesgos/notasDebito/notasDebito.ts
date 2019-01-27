@@ -5,7 +5,8 @@ import * as angular from 'angular';
 import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebm").controller('NotasDebitoController', ['$scope', function ($scope) {
+export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", []).
+                       controller('NotasDebitoController', ['$scope', function ($scope) {
 
     $scope.showProgress = true; 
 

@@ -8,7 +8,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("RiesgosLista_Controller",
+export default angular.module("scrwebm.riesgos.lista", []).controller("RiesgosLista_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
 
     $scope.showProgress = false;

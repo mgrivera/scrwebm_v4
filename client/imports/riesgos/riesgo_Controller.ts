@@ -4,7 +4,7 @@ import * as lodash from 'lodash';
 import * as angular from 'angular';
 
 import * as riesgos_funcionesGenerales from './riesgos_funcionesGenerales'; 
-import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Riesgos, Riesgos_InfoRamo, Riesgo_InfoRamos_Autos_SimpleSchema } from 'imports/collections/principales/riesgos'; 
 import { Monedas } from 'imports/collections/catalogos/monedas'; 
@@ -22,14 +22,58 @@ import { Coberturas } from 'imports/collections/catalogos/coberturas';
 import { Indoles } from 'imports/collections/catalogos/indoles'; 
 import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
 
-import { DialogModal } from '../imports/generales/angularGenericModal'; 
+import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+
+// esto es un angular module 
+import '../generales/agregarNuevoAsegurado.html';           // html: el path *debe* ser relativo y *no* absoluto (???!!!)        
+import AgregarNuevoAsegurado from "../generales/agregarNuevoAseguradoController"; 
 
 // importamos los files necesarios para el registro de cúmulos ... 
-import '../imports/generales/cumulos/registro/registroCumulos.html'; 
-import '../imports/generales/cumulos/registro/registroCumulos'; 
+import '../generales/cumulos/registro/registroCumulos.html'; 
+import 'client/imports/generales/cumulos/registro/registroCumulos'; 
 
-angular.module("scrwebm").controller("Riesgo_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
+// importamos el resto del código, otros states, html files etc., que se necesitan para manejar el riesgo 
+import './riesgo.generales.html';
+import RiesgosGenerales from 'client/imports/riesgos/riesgo.generales';
+
+import './riesgo.movimientos.html'; 
+import RiesgoMovimientos from 'client/imports/riesgos/riesgo.movimientos'; 
+
+import './riesgo.infoRamo_autos.html'; 
+import RiesgosInfoRamo from 'client/imports/riesgos/riesgo.infoRamo_autos'; 
+
+import './riesgo.productores.html'; 
+import RiesgoProductores from 'client/imports/riesgos/riesgo.productores'; 
+
+import './riesgo.cuotas.html'; 
+import RiesgoCuotas from './riesgo.cuotas'; 
+
+// para imprimir las cuotas; obtener las notas de cobertura 
+import './imprimirNotasModal.html'; 
+import RiesgoImprimirNotasCobertura from './imprimirNotasModalController'; 
+
+// para hacer la renovación de un riesgo 
+import './renovarRiesgo/renovarRiesgoModal.html'; 
+import RenovarRiesgo from './renovarRiesgo/renovarRiesgoController'; 
+
+// construir notas de débito 
+import './notasDebito/notasDebito.html'; 
+import ConstruirNotasDebito from './notasDebito/notasDebito'; 
+
+
+export default angular.module("scrwebm.riesgos.riesgo", [ 
+    'angular-meteor', 
+    AgregarNuevoAsegurado.name, 
+    RiesgosGenerales.name, 
+    RiesgoMovimientos.name, 
+    RiesgosInfoRamo.name, 
+    RiesgoProductores.name, 
+    RiesgoCuotas.name, 
+    RiesgoImprimirNotasCobertura.name, 
+    RenovarRiesgo.name, 
+    ConstruirNotasDebito.name, 
+])
+.controller("Riesgo_Controller", ['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
 
     $scope.showProgress = true;
 
@@ -234,7 +278,7 @@ angular.module("scrwebm").controller("Riesgo_Controller",
         }
 
         $modal.open({
-            templateUrl: 'client/riesgos/renovarRiesgo/renovarRiesgoModal.html',
+            templateUrl: 'client/imports/riesgos/renovarRiesgo/renovarRiesgoModal.html',
             controller: 'RenovarRiesgo_ModalController',
             size: 'md',
             resolve: {
@@ -325,7 +369,7 @@ angular.module("scrwebm").controller("Riesgo_Controller",
 
         // ------------------------------------------------------------------------------------------
         // ahora validamos las cuotas, las cuales son registradas en un collection diferente ...
-        editedItems = $scope.cuotas.filter((c) => c.docState); 
+        editedItems = $scope.cuotas.filter((c: any) => c.docState); 
 
         editedItems.forEach(function (item) {
             if (item.docState != 3) {
@@ -361,8 +405,8 @@ angular.module("scrwebm").controller("Riesgo_Controller",
         $scope.showProgress = true; 
 
         // nótese como pasamos la información del ramo, cuando existe ... 
-        let editedInfoRamo = $scope.riesgos_infoRamo.filter((c) => c.docState); 
-        Meteor.call('riesgos.save', item, editedInfoRamo, (err, resultRiesgo) => {
+        let editedInfoRamo = $scope.riesgos_infoRamo.filter((c: any) => c.docState); 
+        Meteor.call('riesgos.save', item, editedInfoRamo, (err: any, resultRiesgo: any) => {
 
             if (err) {
                 let errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -520,15 +564,12 @@ angular.module("scrwebm").controller("Riesgo_Controller",
         };
 
         $modal.open({
-            templateUrl: 'client/riesgos/imprimirNotasModal.html',
+            templateUrl: 'client/imports/riesgos/imprimirNotasModal.html',
             controller: 'ImprimirNotasRiesgosModalController',
             size: 'lg',
             resolve: {
                 riesgo: function () {
                     return $scope.riesgo;
-                },
-                cuotas: function() {
-                    return $scope.cuotas;
                 },
                 tiposMovimiento: function() {
                     return $scope.tiposMovimiento;

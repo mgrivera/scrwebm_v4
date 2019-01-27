@@ -1,6 +1,5 @@
 ﻿
 
-
 // este archivo es el que se carga primero en el cliente ... meteor carga el contenido de client/lib antes
 // que cualquier otro archivo que exista en cualquier otro directorio (en el cliente) ...
 
@@ -23,7 +22,9 @@ import "/node_modules/angular-ui-grid/ui-grid.css";
 import 'angular-utils-pagination';              // angularUtils.directives.dirPagination
 
 // hacemos un import de los módulos (angular modules) que están en /client/imports, y los pasamos en DI (angular dependency injection) 
-import generales from '/client/imports/generales/generalesAngularModule'; 
+import Generales from '/client/imports/generales/generalesAngularModule'; 
+import Riesgos from '/client/imports/riesgos/riesgosAngularModule'; 
+
 
 angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'angularUtils.directives.dirPagination', 'accounts.ui',
@@ -31,6 +32,6 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
-                            generales.name
+                            Generales.name, Riesgos.name, 
                           ]);
 

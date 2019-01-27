@@ -4,12 +4,24 @@ import * as angular from 'angular';
 import * as lodash from 'lodash'; 
 import * as moment from 'moment'; 
 
-import { DialogModal } from '../imports/generales/angularGenericModal'; 
-import { determinarSiExistenCuotasConCobrosAplicados } from '../imports/generales/determinarSiExistenCuotasCobradas'; 
+import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { determinarSiExistenCuotasConCobrosAplicados } from 'client/imports/generales/determinarSiExistenCuotasCobradas'; 
 
-angular.module("scrwebm").controller("RiesgoMovimientos_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$interval', 
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $interval) {
+// controller (modal) para prorratear las primas brutas 
+import './prorratearPrimasModal.html'; 
+import ProrratearPrimasBrutas from './prorratearPrimasBrutasController'; 
+
+import ConstruirCuotas from './construirCuotasController'; 
+import ConstruirCuotasProductor from './construirCuotasProductoresController'; 
+
+export default angular.module("scrwebm.riesgos.movimientos", [ 
+    ProrratearPrimasBrutas.name, 
+    ConstruirCuotas.name, 
+    ConstruirCuotasProductor.name, 
+]).
+                       controller("RiesgoMovimientos_Controller",
+['$scope', '$modal', 'uiGridConstants', '$interval', 
+  function ($scope, $modal, uiGridConstants, $interval) {
 
     $scope.showProgress = true;
 
@@ -1407,7 +1419,6 @@ angular.module("scrwebm").controller("RiesgoMovimientos_Controller",
 
     // para abrir un modal que permite al usuario calcular las primas prorrateadas del movimiento
     // (casi siempre en base a las primas del movimiento anterior y las del actual)
-
     $scope.prorratearPrimasBrutas = function() {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
@@ -1420,7 +1431,7 @@ angular.module("scrwebm").controller("RiesgoMovimientos_Controller",
         }
 
         var modalInstance = $modal.open({
-            templateUrl: 'client/riesgos/prorratearPrimasModal.html',
+            templateUrl: 'client/imports/riesgos/prorratearPrimasModal.html',
             controller: 'Riesgos_ProrratearPrimasController',
             size: 'lg',
             resolve: {
@@ -1878,7 +1889,7 @@ angular.module("scrwebm").controller("RiesgoMovimientos_Controller",
 
     function construirCuotasMovimiento() {
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/generales/construirCuotas.html',
             controller: 'Riesgos_ConstruirCuotasController',
             size: 'md',

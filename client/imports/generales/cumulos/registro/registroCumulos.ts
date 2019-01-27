@@ -14,7 +14,7 @@ import { Cumulos_Registro } from 'imports/collections/principales/cumulos_regist
 import { mensajeErrorDesdeMethod_preparar } from '../../mensajeDeErrorDesdeMethodPreparar'; 
 import { DialogModal } from '../../angularGenericModal'; 
 
-angular.module("scrwebm").controller('RegistroCumulos_Controller',
+angular.module("scrwebm.generales").controller('RegistroCumulos_Controller',
 ['$scope', '$modalInstance', 'uiGridConstants', 'infoCumulos', 'origen', 'companiaSeleccionada', '$modal', 
   function ($scope, $modalInstance, uiGridConstants, infoCumulos, origen, companiaSeleccionada, $modal) {
     

@@ -1,9 +1,9 @@
 
 
 import * as angular from 'angular';
-import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller('InfoRamo_editarItem_ModalController',
+export default angular.module("scrwebm.riesgos.infoRamo.editarInfoRamo", []).controller('InfoRamo_editarItem_ModalController',
 ['$scope', '$modalInstance', 'infoRamo', 'autosMarcas', function ($scope, $modalInstance, infoRamo, autosMarcas) {
     $scope.alerts = [];
 

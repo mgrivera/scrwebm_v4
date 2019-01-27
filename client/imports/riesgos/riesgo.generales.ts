@@ -2,20 +2,10 @@
 
 import * as angular from 'angular';
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
 import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { TiposFacultativo } from 'imports/collections/catalogos/tiposFacultativo'; 
-import { Indoles } from 'imports/collections/catalogos/indoles'; 
-import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
 
-// importamos la plantilla y el controller, pues los usamos más abajo 
-import '../imports/generales/agregarNuevoAsegurado.html';           // html: el path *debe* ser relativo y *no* absoluto (???!!!)        
-import "../imports/generales/agregarNuevoAseguradoController"; 
-
-angular.module("scrwebm").controller("RiesgoGenerales_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
+export default angular.module("scrwebm.riesgos.generales", []).controller("RiesgoGenerales_Controller",
+['$scope', '$modal', function ($scope, $modal) {
 
     $scope.showProgress = false;
 

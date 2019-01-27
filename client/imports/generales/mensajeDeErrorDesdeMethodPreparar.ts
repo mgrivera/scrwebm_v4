@@ -2,7 +2,7 @@
 
 
 // before, this was called: MensajeErrorDesdeMethod_preparar
-export function mensajeErrorDesdeMethod_preparar(errorFromMeteorMethod) {
+export function mensajeErrorDesdeMethod_preparar(errorFromMeteorMethod: any) {
     // preparamos el mensaje de error que debe ser mostrado al usuario, cuando un Meteor Method falla
     // con un objeto 'error' ...
     let err = errorFromMeteorMethod;

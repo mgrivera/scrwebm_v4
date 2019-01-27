@@ -13,7 +13,7 @@ import './mostrarPagosCuotaModal.html';
 // -----------------------------------------------------------------------------
 // para mostrar los pagos aplicados a una cuota en particular
 // -----------------------------------------------------------------------------
-export function MostrarPagosEnCuotas($modal, cuota, origen, cuotaID = null) {
+export function MostrarPagosEnCuotas($modal: any, cuota: any, origen: any, cuotaID = null) {
 
     // si esta función no recibe una cuota, pero si una cuotaID, la idea es leer la cuota y
     // continuar con el proceso ...
@@ -33,7 +33,7 @@ export function MostrarPagosEnCuotas($modal, cuota, origen, cuotaID = null) {
 }
 
 
-function mostrarPagosEnCuotas2($modal, cuota, origen) {
+function mostrarPagosEnCuotas2($modal: any, cuota: any, origen: any) {
 
     var modalInstance = $modal.open({
         templateUrl: 'client/imports/generales/mostrarPagosCuotaModal.html',
@@ -53,9 +53,10 @@ function mostrarPagosEnCuotas2($modal, cuota, origen) {
 }
 
 
-angular.module("scrwebm").controller('MostrarPagosAplicadosACuotaController',
-['$state', '$scope', '$modalInstance', 'cuota', 'origen', 
-function ($state, $scope, $modalInstance, cuota, origen) {
+export const MostrarPagosAplicados = angular.module("scrwebm.cuotas.mostrarPagosAplicados", []).
+                                        controller('MostrarPagosAplicadosACuotaController',
+    ['$state', '$scope', '$modalInstance', 'cuota', 'origen', 
+    function ($state, $scope, $modalInstance, cuota, origen) {
 
     $scope.cuota = cuota;
 

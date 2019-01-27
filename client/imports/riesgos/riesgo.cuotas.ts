@@ -5,12 +5,14 @@ import * as angular from 'angular';
 import * as lodash from 'lodash'; 
 import * as moment from 'moment';
 
-import { DialogModal } from '../imports/generales/angularGenericModal'; 
-import { MostrarPagosEnCuotas } from '../imports/generales/mostrarPagosAplicadosACuotaController'; 
+import { DialogModal } from '../generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("RiesgoCuotas_Controller",
-['$scope', '$state', '$stateParams', '$modal', 'uiGridConstants', 
-  function ($scope, $state, $stateParams, $modal, uiGridConstants) {
+// mostrarPagosEnCuotas es una función; MostrarPagosAplicados es un angular module que contiene un controller ... 
+import { MostrarPagosEnCuotas, MostrarPagosAplicados } from '../generales/mostrarPagosAplicadosACuotaController'; 
+
+export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.name ]).controller("RiesgoCuotas_Controller",
+['$scope', '$stateParams', '$modal', 'uiGridConstants', 
+  function ($scope, $stateParams, $modal, uiGridConstants) {
 
     $scope.showProgress = true; 
 
@@ -484,20 +486,6 @@ angular.module("scrwebm").controller("RiesgoCuotas_Controller",
         // (fac, contratos, sntros, etc.)
         MostrarPagosEnCuotas($modal, cuota, $stateParams.origen);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     $scope.cuotas_ui_grid.data = [];
 
