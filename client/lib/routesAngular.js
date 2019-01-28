@@ -555,6 +555,36 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             controller: 'UsuariosDatosPersonalesController'
         })
 
+        // ----------------------------------------------------------------
+        // notas de crédito/débito 
+        // ----------------------------------------------------------------
+        .state('notasDebitoCredito', {
+            url: '/notasDebitoCredito',
+            templateUrl: 'client/imports/notasDebitoCredito/notasDebitoCredito.html', 
+            controller: 'NotasDebitoCredito_Controller', 
+        })
+        .state('notasDebitoCredito.filter', {
+            url: '/filter?origen',
+            templateUrl: 'client/imports/notasDebitoCredito/filter/filter.html', 
+            controller: 'NotasDebitoCredito_Filter_Controller', 
+            parameters: { origen: null }, 
+            parent:'notasDebitoCredito',
+        })
+        .state('notasDebitoCredito.list', {
+            url: '/list?origen&limit',
+            templateUrl: 'client/imports/notasDebitoCredito/list/list.html', 
+            controller: 'NotasDebitoCredito_List_Controller', 
+            parameters: { origen: null, limit: 0, }, 
+            parent:'notasDebitoCredito',
+        })
+        .state('notasDebitoCredito.item', {
+            url: '/item?origen&id&pageNumber&vieneDeAfuera',
+            templateUrl: 'client/imports/notasDebitoCredito/item/item.html', 
+            controller: 'NotasDebitoCredito_Item_Controller', 
+            parameters: { origen: null, id: "0", pageNumber: 0, vieneDeAfuera: false, }, 
+            parent:'notasDebitoCredito',
+        })
+
         $urlRouterProvider.otherwise("/");
   }
 ]);

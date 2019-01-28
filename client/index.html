@@ -54,10 +54,10 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                                 </li>
 
                                 <li class="dropdown dropdown-submenu" ng-show="userHasRole_notasdbcr || userHasRole_notasdbcr_consulta">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Notas cr/Notas db</a>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Notas de crédito y débito</a>
                                     <ul class="dropdown-menu">
-                                        <li ng-if="userHasRole_notasdbcr"><a href="/NotaCrDb/Edicion">Registro</a></li>
-                                        <li ng-if="userHasRole_notasdbcr_consulta"><a href='/NotaCrDb/Consulta'>Consulta</a></li>
+                                        <li ng-if="userHasRole_notasdbcr"><a href="/notasDebitoCredito/filter?origen=edicion">Registro</a></li>
+                                        <li ng-if="userHasRole_notasdbcr_consulta"><a href="/client/imports/notasDebitoCredito/filter/filter.html?origen=consulta">Consulta</a></li>
                                     </ul>
                                 </li>
 

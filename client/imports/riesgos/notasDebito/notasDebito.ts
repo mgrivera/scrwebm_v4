@@ -5,7 +5,9 @@ import * as angular from 'angular';
 import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 
-export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", []).
+import RenderImage from './showImageAngular'; 
+
+export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ RenderImage.name, ]).
                        controller('NotasDebitoController', ['$scope', function ($scope) {
 
     $scope.showProgress = true; 

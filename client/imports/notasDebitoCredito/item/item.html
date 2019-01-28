@@ -1,0 +1,44 @@
+
+
+<div class="ui-viewBorder">
+
+    <nav class="navbar navbar-inverse navbar_custom_small_fullWidth" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+
+                    <li><a href="#" class="navbar_custom_small_header" ng-if="notasDebitoCredito.docState && (origen == 'edicion')"><em>Notas db/cr</em>
+                            (<span class="fa fa-asterisk"></span>)</a></li>
+                    <li><a href="#" class="navbar_custom_small_header" ng-if="!notasDebitoCredito.docState || (origen == 'consulta')"><em>Notas db/cr</em></a></li>
+
+                    <li ng-if="origen == 'edicion'"><a href="#" ng-click="grabar()" class="navbar_custom_small_node">Grabar&nbsp;&nbsp;<span
+                                class="fa fa-floppy-o"></span></a></li>
+                    <li><a href="#" ng-click="refresh()" class="navbar_custom_small_node">Refresh&nbsp;&nbsp;<span
+                                class="fa fa-refresh"></span></a></li>
+                    <li class="divider-vertical-small"></li>
+
+                    <li class="divider-vertical-small"></li>
+
+                    <li ng-if="origen == 'edicion'"><a href="#" ng-click="nuevo0()" class="navbar_custom_small_node">Nuevo&nbsp;&nbsp;<span
+                                class="fa fa-file-o"></span></a></li>
+                    <li ng-if="origen == 'edicion'"><a href="#" ng-click="eliminar()" class="navbar_custom_small_node">Eliminar&nbsp;&nbsp;<span
+                                class="fa fa-times"></span></a></li>
+
+                    <li ng-if="origen=='edicion'" class="divider-vertical-small"></li>
+
+                    <li><a href="#" ng-click="goToState('generales')" class="navbar_custom_small_node">Generales</a></li>
+
+                    <li class="divider-vertical-small"></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right" ng-if="!vieneDeAfuera">
+                    <li><a href="#" ng-click="regresarALista()" class="navbar_custom_small_node">Regresar ...</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <div ui-view></div>
+
+</div>

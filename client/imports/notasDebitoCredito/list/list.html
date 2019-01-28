@@ -1,0 +1,45 @@
+
+
+<div class="ui-viewBorder">
+
+    <h4>Notas débito/crédito - List</h4>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0">
+            <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Notas de débito/crédito seleccionadas </a></li>
+                        </ul>
+    
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#" ng-click="leerMasRegistros()" class="navbar_custom_small_node_withBackground">Más ...</a></li>
+                            <li><a href="#" ng-click="leerTodosLosRegistros()" class="navbar_custom_small_node_withBackground">Todo</a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" ng-click="regresar()" class="navbar_custom_small_node_withBackground">Regresar ...</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+    
+            <div ui-grid="list_ui_grid" 
+                 ui-grid-resize-columns 
+                 ui-grid-selection 
+                 ui-grid-pinning 
+                 class="angularGrid" 
+                 style="height: 300px; width: 100%; ">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <hr class="blueLine" />
+
+        <a href="#" ng-click="nuevo()" class="btn btn-default btn-sm pull-right" style="min-width: 80px; margin-right: 20px; "
+            ng-if="origen == 'edicion'">
+            Nuevo
+        </a>
+    </div>
+
+</div>
