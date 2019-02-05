@@ -21,6 +21,8 @@ import { AutosMarcas } from 'imports/collections/catalogos/autosMarcas';
 import { Coberturas } from 'imports/collections/catalogos/coberturas'; 
 import { Indoles } from 'imports/collections/catalogos/indoles'; 
 import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
+import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
+
 
 import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
@@ -929,7 +931,17 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                                         return AutosMarcas.find();  
                                     }, 
                                 })
+
+                                // leemos las notas de débito registradas para el riesgo; pasamos null como 2do parametro pues 
+                                // queremos todas las notas para el riegso y no las de algún movimiento en particular ... 
+                                Meteor.subscribe('notasDebitoCredito', $scope.riesgo._id, null);
                                 
+                                $scope.helpers({
+                                    notasDebitoCredito: () => { 
+                                        return NotasDebitoCredito.find();  
+                                    }, 
+                                })
+
                                 $scope.alerts.length = 0;
                                 $scope.goToState('generales');
         
@@ -979,6 +991,16 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                                 $scope.helpers({
                                     autosMarcas: () => { 
                                         return AutosMarcas.find();  
+                                    }, 
+                                })
+
+                                // leemos las notas de débito registradas para el riesgo; pasamos null como 2do parametro pues 
+                                // queremos todas las notas para el riegso y no las de algún movimiento en particular ... 
+                                Meteor.subscribe('notasDebitoCredito', $scope.riesgo._id, null);
+                                
+                                $scope.helpers({
+                                    notasDebitoCredito: () => { 
+                                        return NotasDebitoCredito.find();  
                                     }, 
                                 })
                                 

@@ -1,18 +1,65 @@
 
 
-
 <div class="ui-viewBorder">
 
-    <h3>Riesgos - Notas de débito</h3>
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
 
-    <p>Desde este <em>state</em> vamos a permitir al usuario construir las notas de débito para el riesgo</p>
+    <div class="row">
 
-    <br /> 
+        <div class="col-sm-10 col-sm-offset-1">
 
-    <render-image 
-        image-url="'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Paris_-_Eiffelturm_und_Marsfeld2.jpg/280px-Paris_-_Eiffelturm_und_Marsfeld2.jpg'"
-        image-descripcion="'Beautiful view of Eifel Tower ...'" 
-        simple-string-value="'This is the *simple string value* React property ...'"
-    ></render-image>
+            <table style="color: #02008D; font-size: small; margin-bottom: 10px; width: 100%; font-weight: bold; ">
+                <col width="33%">
+                <col width="33%">
+                <col width="33%">
+                <tr>
+                    <td></td>
+                    <td>
+                        <span ng-if="numeroMovimientoSeleccionado() != -1" style="text-align: center; ">
+                            {{ 'Movimiento seleccionado: ' + numeroMovimientoSeleccionado() }}
+                        </span>
+                        <span ng-if="numeroMovimientoSeleccionado() == -1" style="text-align: center; ">
+                            Movimiento seleccionado: <em>ninguno</em>
+                        </span>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <hr class="blueLine" />
+
+            <br /> 
+
+            <notas-debito-edit-form
+                riesgo-id="riesgo._id" 
+                movimiento-seleccionado-id="movimientoSeleccionado._id">
+            </notas-debito-edit-form>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+
+            <hr class="blueLine" />
+    
+            <a href="#" ng-click="notasDebito_construir()" class="btn btn-primary btn-sm pull-left" style="min-width: 100px; margin-left: 30px; " ng-if="origen == 'edicion'">
+                Construir y registrar notas de débito
+            </a>
+    
+            <a href="#" ng-click="notasDebito_obtenerEnWord()" class="btn btn-primary btn-sm pull-left" style="min-width: 80px; margin-left: 20px; ">
+                Obtener notas de débito en Word
+            </a>
+
+            <a href="{{downLoadLink_notasDebito}}" target="_self" ng-if="downLoadWordDocument_notasDebito" download>
+                {{ selectedFile_notasDebito.original.name }}
+            </a>
+        </div>
 
 </div>

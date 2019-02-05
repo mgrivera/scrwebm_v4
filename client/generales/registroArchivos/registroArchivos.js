@@ -41,6 +41,7 @@ angular.module(scrwebmGenerales.name).controller("RegistroArchivosController",
             { tipo: 'TMP-CONT-NOTA-PRIMAS', descripcion: 'Contratos - Notas - Primas' },
             { tipo: 'TMP-SNTR-NOTA-RES', descripcion: 'Siniestros - Notas - Reservas' },
             { tipo: 'TMP-SNTR-NOTA-LIQ', descripcion: 'Siniestros - Notas - Liquidaciones' },
+            { tipo: 'TMP-NOTA-DEBITO', descripcion: 'Notas de débito' },
         ];
 
       // ------------------------------------------------------------------------------------------------
@@ -149,6 +150,7 @@ angular.module(scrwebmGenerales.name).controller("RegistroArchivosController",
                   case 'TMP-SNTR-NOTA-LIQ':
                   case 'TMP-CONT-NOTA-GENERAL':
                   case 'TMP-CONT-NOTA-PRIMAS':
+                  case 'TMP-NOTA-DEBITO': 
                       collectionFS = CollectionFS_templates;
                       break;
                   default:

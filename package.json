@@ -2,7 +2,8 @@
   "name": "scrwebm_v4",
   "private": true,
   "scripts": {
-    "start": "run.bat"
+    "start": "run.bat",
+    "debug": "meteor run --inspect"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.42",
@@ -31,7 +32,10 @@
     "papaparse": "4.1.1",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
+    "react-bootstrap": "0.32.4",
     "react-dom": "^16.6.3",
+    "react-jsonschema-form": "^1.2.0",
+    "react-jsonschema-form-layout-grid": "^2.1.0",
     "react2angular": "^4.0.4",
     "save-as": "0.1.8",
     "simpl-schema": "0.3.2",

@@ -93,7 +93,7 @@ Meteor.methods(
     }
 })
 
-function saveInfoRamo(editedInfoRamo) { 
+function saveInfoRamo(editedInfoRamo: any) { 
 
     let inserts = lodash.chain(editedInfoRamo).
                   filter(function (item) { return item.docState && item.docState == 1; }).
