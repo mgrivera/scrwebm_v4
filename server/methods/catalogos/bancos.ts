@@ -1,29 +1,30 @@
 ﻿
-import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
+
+import { Bancos } from 'imports/collections/catalogos/bancos'; 
 
 Meteor.methods(
 {
-    cuentasBancariasSave: function (items) {
+    bancosSave: function (bancos) {
 
-        if (!_.isArray(items) || items.length == 0) {
+        if (!_.isArray(bancos) || bancos.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(items).
+        var inserts = _.chain(bancos).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
 
 
         inserts.forEach(function (item) {
-            CuentasBancarias.insert(item, function (error, result) {
+            Bancos.insert(item, function (error, result) {
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
-        })
+        });
 
 
-        var updates = _.chain(items).
+        var updates = _.chain(bancos).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -31,18 +32,18 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            CuentasBancarias.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            Bancos.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
-        })
+        });
 
-        var removes = _.filter(items, function (item) { return item.docState && item.docState == 3; });
+        var removes = _.filter(bancos, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
-            CuentasBancarias.remove({ _id: item._id });
-        })
+            Bancos.remove({ _id: item._id });
+        });
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
