@@ -1,9 +1,9 @@
 
 
-import { Companias } from '/imports/collections/catalogos/companias'; 
-
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
+
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 let capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
 
@@ -27,16 +27,17 @@ let capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
             return;
     }
 
-    var companiaNosotros = Companias.findOne({ nosotros: true });
+    // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
+    // justamente, tendrá 'nuestra orden'
+    let companiaNosotros = {};
+    let result = LeerCompaniaNosotros(Meteor.userId()); 
 
-    if (!companiaNosotros) {
-        DialogModal($modal, "<em>Contratos - Capas</em>",
-                            `Aparentemente, no hay una compañía del tipo 'nosotros'
-                            registrada en <em>catálogos</em>.<br />
-                            Debe haberla <em>antes</em> de intentar ejecutar
-                            esta función.`, false).then();
+    if (result.error) {
+        DialogModal($modal, "<em>Contratos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
         return;
     }
+
+    companiaNosotros = result.companiaNosotros; 
 
     // cada capa debe tener un array de reaseguradores
     let error = false;
@@ -58,12 +59,11 @@ let capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
         return;
     }
 
-    capasDeterminarRegistrosPrimaCompanias2($scope);
+    capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros);
 }
 
-function capasDeterminarRegistrosPrimaCompanias2($scope) {
+function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
 
-    let companiaNosotros = Companias.findOne({ nosotros: true });
     let contrato = $scope.contrato;
 
     if (contrato.capasPrimasCompanias && contrato.capasPrimasCompanias.length) { 

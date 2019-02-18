@@ -13,6 +13,7 @@ import ProrratearPrimasBrutas from './prorratearPrimasBrutasController';
 
 import ConstruirCuotas from './construirCuotasController'; 
 import ConstruirCuotasProductor from './construirCuotasProductoresController'; 
+import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros'; 
 
 export default angular.module("scrwebm.riesgos.movimientos", [ 
     ProrratearPrimasBrutas.name, 
@@ -210,23 +211,15 @@ export default angular.module("scrwebm.riesgos.movimientos", [
             
         // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
         // justamente, tendrá 'nuestra orden'
-
         let companiaNosotros = {} as any;
+        let result: any = LeerCompaniaNosotros(Meteor.userId()); 
 
-        if (!$scope.riesgo.movimientos.length) {
-            companiaNosotros = $scope.companias.find(x => x.nosotros);
-
-            if (!companiaNosotros) {
-                DialogModal($modal, "<em>Riesgos</em>",
-                            "No hemos encotrado una compañía del tipo 'nosotros', la cual represente, justemente, nuestra compañía.<br />" +
-                            "En el catálogo <em>Compañías</em> debe existir una compañía del tipo <em>nosotros</em>.<br />" +
-                            "Por favor revise esta situación antes de continuar.",
-                            false).then();
-
-                return;
-            }
+        if (result.error) {
+            DialogModal($modal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
+            return;
         }
 
+        companiaNosotros = result.companiaNosotros; 
 
         if ($scope.riesgo.movimientos.length > 0) {
 

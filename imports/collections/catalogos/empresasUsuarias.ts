@@ -11,6 +11,7 @@ var schema = new SimpleSchema({
     direccion: { type: String, label: "Dirección", max: 350, optional: true, },
     telefono: { type: String, label: "Teléfono", max: 100, optional: true, },
     fax: { type: String, label: "Fax", max: 100, optional: true, },
+    companiaNosotros: { type: String, label: "Compañía que representa a 'nosotros'", optional: true, },
     docState: { type: Number, optional: true, }
 })
 

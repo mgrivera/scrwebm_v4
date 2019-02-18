@@ -74,7 +74,7 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('catalogos.ciasUsuarias', {
             url: '/ciasUsuarias',
-            templateUrl: 'client/catalogos/empresasUsuarias.html',
+            templateUrl: 'client/catalogos/empresasUsuarias/empresasUsuarias.html',
             controller: 'EmpresasUsuarias_Controller'
         })
         .state('catalogos.coberturas', {

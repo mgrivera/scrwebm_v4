@@ -9,6 +9,7 @@ import { TiposContrato } from 'imports/collections/catalogos/tiposContrato';
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { ContProp_tablaConf } from '../../lib/forerunnerDB'; 
+import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros'; 
 
 angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construir_Controller",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal', '$interval', 
@@ -469,12 +470,36 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                 return;
         }
 
-        // el usuario debió haber seleccionado la compañía 'nosotros'
-        let companiaNosotros = companias_selectedRows.find((x: any) => { return x.nosotros; });
-        if (!companiaNosotros) {
+        // 1) leemos la compañía 'nosotros' ... 
+        let companiaNosotros = {} as any;
+        let result: any = LeerCompaniaNosotros(Meteor.userId()); 
+
+        if (result.error) {
+            DialogModal($modal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
+            return;
+        }
+
+        companiaNosotros = result.companiaNosotros; 
+
+        // 2) comprobamos que el usuario haya seleccionado la compañía 'nosotros' 
+        let existe: any = companias_selectedRows.find((x: any) => { return x._id === companiaNosotros._id; });
+        if (!existe) {
             let message = `Error: Ud. debe seleccionar, en la lista de compañías, la que corresponde a
                            <em><b>nosotros</b></em>. Esa es, justamente, nuestra compañía y debe ser
                            seleccionada para representar nuestra participación en el contrato.
+                          `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            return;
+        }
+
+        // 3) comprobamos que la compañía 'nosotros' tenga 'marcado' el campo 'nosotros' (más abajo se ordena por allí) ... 
+        if (!existe.nosotros) {
+            let message = `Error: aparentemente, la compañía del tipo <em><b>nosotros</b></em>, aunque fue seleccionada en la lista, 
+                           no está marcada en la maestra (catálogo de Compañías) como <em><b>nosotros</b></em>. <br /><br /> 
+                           Por favor abra el catálogo de Compañías y marque la compañía como <em><b>nosotros</b></em>. <br /> 
+                           Luego regrese y continúe con este proceso. 
                           `; 
             message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 

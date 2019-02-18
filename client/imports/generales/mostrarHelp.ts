@@ -6,8 +6,13 @@ export function mostrarHelp (currentStateName) {
     // NOta: normalmente, el help para cada state será un post en el blog que mantenemos para contab ...
     switch (currentStateName) {
         case 'catalogos.companias':
-            window.open('https://scrwebm.wordpress.com/2016/06/20/companias/', '_blank');
+            window.open('https://sites.google.com/view/scrwebm/cat%C3%A1logos/compañías', '_blank');
             break;
+
+        case 'catalogos.ciasUsuarias':
+            window.open('https://sites.google.com/view/scrwebm/cat%C3%A1logos/empresas-usuarias', '_blank');
+            break;
+
         case 'catalogos.contrProp_configuracion.contrProp_configuracion_lista':
         case 'catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla':
             window.open('https://scrwebm.wordpress.com/2016/12/10/contratos-proporcionales-configuracion/', '_blank');
