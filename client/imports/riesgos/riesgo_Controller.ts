@@ -2,6 +2,7 @@
 
 import * as lodash from 'lodash';
 import * as angular from 'angular';
+import saveAs from 'save-as'; 
 
 import * as riesgos_funcionesGenerales from './riesgos_funcionesGenerales'; 
 import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
@@ -22,7 +23,7 @@ import { Coberturas } from 'imports/collections/catalogos/coberturas';
 import { Indoles } from 'imports/collections/catalogos/indoles'; 
 import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
 import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
-
+import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros'; 
 
 import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
@@ -881,10 +882,9 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                         }, 
                     })
                     
+                    $scope.showProgress = false;
                     $scope.alerts.length = 0;
                     $scope.goToState('generales');
-
-                    $scope.showProgress = false;
                 })
             })
         }
@@ -1016,9 +1016,283 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         }
     }
 
+    $scope.DownloadToDisk = function() { 
+        // para grabar una copia del riesgo, como un simple json, al disco. Luego, este json podrá ser importado como 
+        // un riesgo nuevo ... 
+        let message = ""; 
+        try {
+            let riesgo_json = lodash.cloneDeep($scope.riesgo); 
+
+            // la información adicional para el riesgo Autos (u otros ramos) puede o no existir 
+            riesgo_json.riesgos_infoRamo = []; 
+
+            if ($scope.riesgos_infoRamo) { 
+                riesgo_json.riesgos_infoRamo = $scope.riesgos_infoRamo; 
+            }
+
+            var blob = new Blob([JSON.stringify(riesgo_json)], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, "riesgo");
+        }
+        catch(err) {
+            message = err.message ? err.message : err.toString();
+        }
+        finally {
+            if (message) {
+                DialogModal($modal, "<em>Riesgos - Exportar el riesgo a un archivo en disco</em>",
+                                    "Ha ocurrido un error al intentar ejecutar esta función:<br />" +
+                                    message, false).then();
+            }
+        }
+    }
+
+    $scope.importFromJson = function() { 
+        // leemos algún riesgo que se haya exportado antes (con un Download) y lo agregamos como un riesgo nuevo ... 
+        let inputFile = angular.element("#fileInput");
+        if (inputFile) { 
+            inputFile.click();        // simulamos un click al input (file)
+        }
+    }
+
+    $scope.uploadFile = function(files: any) {
+
+        if (!$scope.riesgo || !$scope.riesgo.docState || $scope.riesgo.docState != 1) {
+            DialogModal($modal, "<em> Riesgos</em>",
+                                `Aparentemente, el riesgo que <em>recibirá la copia</em> <b>no es nuevo</b> (ya existía).<br /> 
+                                 Ud. debe importar un riesgo siempre en un riesgo <b>nuevo</b>; es decir, <b>no</b> en uno que ya exista.
+                                `,
+                                false).then();
+
+            let inputFile: any = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) { 
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            }
+                
+            return;
+        }
+
+        let userSelectedFile = files[0];
+
+        if (!userSelectedFile) {
+            DialogModal($modal, "<em> Riesgos</em>",
+                                "Aparentemente, Ud. no ha seleccionado un archivo.<br />" +
+                                "Por favor seleccione un archivo que corresponda a un riesgo <em>exportado</em> antes, con la opción <em>download</em>.",
+                                false).then();
+
+            let inputFile: any = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) { 
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            }
+                
+            return;
+        }
+
+        var reader = new FileReader();
+        
+
+        reader.onload = function(e: any) {
+            
+            // esta función importa (merge) el contenido del archivo, que es un json, al riesgo en el $scope ... 
+            let result: any = importarRiesgoFromTextFile(e, $scope.companiaSeleccionada); 
+
+            let inputFile: any = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) { 
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            }
+
+            $scope.alerts.length = 0;
+            let alertType = result.error ? 'danger' : 'info'; 
+
+            $scope.alerts.push({
+                type: alertType,
+                msg: result.message
+            });
+
+            $scope.riesgo = result.riesgo; 
+            $scope.riesgos_infoRamo = result.riesgos_infoRamo; 
+                
+            $scope.$apply();
+        }
+
+        reader.readAsText(userSelectedFile);
+    }
+
     inicializarItem();
   
     // definimos en el $parent para que esté disponible en todos los states 
     $scope.movimientoSeleccionado = {}; 
 }
 ])
+
+function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string }) { 
+
+    let riesgos_infoRamo = []; 
+    let riesgo = {} as any; 
+    let empresaUsuariaDiferente = false; 
+
+    try {
+        var content = e.target.result;
+        let riesgoJson = JSON.parse(content);
+
+        // con el riesgo en json viene la información del ramo, si existe (no siempre existe) 
+        if (riesgoJson.riesgos_infoRamo) { 
+            riesgos_infoRamo = riesgoJson.riesgos_infoRamo; 
+            delete riesgoJson.riesgos_infoRamo; 
+        }
+
+        // hacemos un merge del objeto que el usuario importa
+        lodash.merge(riesgo, riesgoJson); 
+
+        // determinamos si el riesgo que estamos importando se registró bajo una empresa usuaria diferente 
+        if (riesgo.cia != companiaSeleccionada._id) { 
+            empresaUsuariaDiferente = true; 
+        }
+
+        // usamos un nuevo _id; además, ponemos el numero en cero 
+        riesgo._id = new Mongo.ObjectID()._str;
+        riesgo.numero = 0;
+        riesgo.referencia = null; 
+        riesgo.ingreso = new Date();
+        riesgo.usuario = Meteor.userId();
+        riesgo.cia = companiaSeleccionada && companiaSeleccionada._id ? companiaSeleccionada._id : null;
+        riesgo.docState  = 1; 
+
+        riesgo.ultAct = null; 
+        riesgo.ultUsuario = null; 
+
+        // nótese como las fechas vienen como strings 
+        riesgo.desde = new Date(riesgo.desde); 
+        riesgo.hasta = new Date(riesgo.hasta); 
+
+        if (riesgo.documentos) { 
+            riesgo.documentos.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+        }
+
+        for (let movimiento of riesgo.movimientos) { 
+            // guardamos el _id original del movimiento, para asignarlo en el array de info del ramo (si existe) ... 
+            let movimiento_id_original = movimiento._id; 
+
+            movimiento._id = new Mongo.ObjectID()._str;
+            movimiento.fechaEmision = new Date(movimiento.fechaEmision); 
+            movimiento.desde = new Date(movimiento.desde); 
+            movimiento.hasta = new Date(movimiento.hasta); 
+
+            // cambiamos el _id en cada array; la idea es que no sean los mismos que en riesgo original 
+            if (movimiento.companias) { 
+                movimiento.companias.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+            }
+
+            if (movimiento.coberturas) { 
+                movimiento.coberturas.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+            }
+
+            if (movimiento.coberturasCompanias) { 
+                movimiento.coberturasCompanias.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+            }
+
+            if (movimiento.primas) { 
+                movimiento.primas.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+            }
+
+            if (movimiento.productores) { 
+                movimiento.productores.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+            }
+
+            if (movimiento.documentos) { 
+                movimiento.documentos.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+            }
+
+            // cambiamos los _ids en la info del ramo, si existe 
+            riesgos_infoRamo.filter((x: any) => x.movimientoID === movimiento_id_original).forEach((x: any) => { 
+                // aquí tenemos los items para el movimiento que estamos tratando; cambiamos los _ids que lo identifican 
+                // como parte del riesgo y movimiento ... 
+                x._id = new Mongo.ObjectID()._str; 
+                x.movimientoID = movimiento._id; 
+                x.riesgoID = riesgo._id; 
+            }) 
+        }
+
+        if (empresaUsuariaDiferente) { 
+            // el riesgo viene de otra empresa usuaria; cambiamos la compañía 'nosotros' ... 
+            // leemos la compañía 'nosotros' definida para el usuario, para usarla en el nuevo riesgo que se ha importado 
+            let companiaNosotros = {} as any;
+            let result: any = LeerCompaniaNosotros(Meteor.userId()); 
+
+            if (result.error) {
+                let message = `<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em><br /> ${result.message}`; 
+
+                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+                return { 
+                    error: true, 
+                    message: message
+                }
+            }
+
+            companiaNosotros = result.companiaNosotros;  
+
+            // ok, ya tenemos la compañía 'nosotros'; ahora la cambiamos en los arrays en los cuales interviene ... 
+            if (riesgo.movimientos) {
+
+                for (let movimiento of riesgo.movimientos) {
+
+                    if (movimiento.companias) {
+                        // arreglo de compañías 
+                        for (let compania of movimiento.companias) {
+                            if (compania.nosotros) {
+                                compania.compania = companiaNosotros._id;
+                            }
+                        }
+                    }
+
+                    if (movimiento.coberturasCompanias) {
+                        // arreglo de coberturas para cada compañía  
+                        for (let compania of movimiento.coberturasCompanias) {
+                            if (compania.nosotros) {
+                                compania.compania = companiaNosotros._id;
+                            }
+                        }
+                    }
+
+                    if (movimiento.primas) {
+                        // arreglo de primas para cada compañía 
+                        for (let compania of movimiento.primas) {
+                            if (compania.nosotros) {
+                                compania.compania = companiaNosotros._id;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    catch(err) {
+        let message = "Error: ha ocurrido un error al intentar ejecutar esta función.<br />"; 
+        message += err.message ? err.message : err.toString();
+
+        return { 
+            error: true, 
+            message: message
+        }
+    }
+
+    let message = `<em>Riesgos - Importar un riesgo</em> <br /> 
+                   Ok, el riesgo ha sido importado en un riesgo nuevo. 
+                   Ud. puede hacer modificaciones y luego hacer un <em>click</em> en <em>Grabar</em>.`; 
+
+    if (empresaUsuariaDiferente) { 
+        message += `<br /><br /><b>Nota:</b> el riesgo original fue registrado para una <em>empresa usuaria</em> diferente. 
+                    La compañía usuaria ha sido cambiada para reflejar la que ahora está seleccionada para el usuario.`
+    }
+
+    message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+    return { 
+        riesgo: riesgo, 
+        riesgos_infoRamo: riesgos_infoRamo, 
+        error: false, 
+        message: message
+    }
+}

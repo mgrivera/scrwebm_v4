@@ -22,8 +22,8 @@ export default angular.module("scrwebm.riesgos.generales", []).controller("Riesg
     // ---------------------------------------------------------------------------
     // para inicializar la fecha final cuando se indica la inicial ...
     $scope.$watch(
-        function(scope) { return scope.riesgo.desde; },
-        function(newValue, oldValue) {
+        function(scope: any) { return scope.riesgo.desde; },
+        function(newValue: any, oldValue: any) {
             if (newValue && (newValue != oldValue)) {
                 if (!$scope.riesgo.hasta) {
                     // determinamos la fecha pero para el prox año
@@ -48,7 +48,7 @@ export default angular.module("scrwebm.riesgos.generales", []).controller("Riesg
 
 // para establecer las opciones del select asegurado; nótese como usamos selectize, debemos usar un $apply ... 
 // el setTimeout es para que angular reconozca el control 
-function aseguradoSetSelectize($modal, $scope) {
+function aseguradoSetSelectize($modal: any, $scope: any) {
     setTimeout(function () {
         $scope.$apply(function () {
 
@@ -74,7 +74,7 @@ function aseguradoSetSelectize($modal, $scope) {
                 selectOnTab: false, 
                 openOnFocus: false, 
 
-                onItemAdd: function(value) { 
+                onItemAdd: function(value: any) { 
 
                     // this way you can have the whole item 
                     // var data = this.options[value];
@@ -87,7 +87,7 @@ function aseguradoSetSelectize($modal, $scope) {
                     }
                 }, 
 
-                create:function (input, callback) {
+                create: function (input: any, callback: any) {
 
                     agregarAsegurado_desdeInput($modal, input).then((result) => {
 
@@ -122,7 +122,7 @@ function aseguradoSetSelectize($modal, $scope) {
   }
 
 
-  const agregarAsegurado_desdeInput = ($modal, nombre) => {
+  const agregarAsegurado_desdeInput = ($modal: any, nombre: any) => {
     return new Promise((resolve, reject) => {
       
         var modalInstance = $modal.open({
@@ -135,11 +135,11 @@ function aseguradoSetSelectize($modal, $scope) {
                 },
             }
         }).result.then(
-              function (result) {
+              function (result: any) {
                   // en resolve viene el nuevo asegurado 
                   resolve(result);
               },
-              function (cancel) {
+              function (cancel: any) {
                   // el usuario canceló y *no* agregó el nuevo asseguado a la base de datos ... 
                   resolve(undefined);
               }

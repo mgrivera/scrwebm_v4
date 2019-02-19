@@ -84,7 +84,7 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
                     type: 'warning',
-                    msg: `El movimiento seleccionado no tiene notas de débito registradas.`
+                    msg: `El movimiento seleccionado <b>no tiene</b> notas de débito registradas.`
                 });
             } else { 
                 $scope.alerts.length = 0;

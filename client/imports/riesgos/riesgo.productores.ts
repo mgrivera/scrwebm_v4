@@ -36,7 +36,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
         enableRowSelection: true,
         enableRowHeaderSelection: true,
         multiSelect: false,
-        enableSelectAll: true,
+        enableSelectAll: false,
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
@@ -364,19 +364,10 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
                 }
             }
         }).result.then(
-            function (resolve) {
+            function (resolve: any) {
                 return true;
             },
-            function (cancel) {
-
-                // en el controller que usa este modal se contruyen las cuotas; regresamos cuando en usuario hace click en Cancel para cerrar
-                // el diálogo. Si existen cuotas en el $scope, las mostramos en el grid que corresponde ...
-
-                // debugger;
-
-                if ($scope.cuotas)
-                    $scope.cuotas_ui_grid.data = $scope.cuotas;
-
+            function (cancel: any) {
                 return true;
             });
     }

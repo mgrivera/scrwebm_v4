@@ -375,6 +375,7 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
     $scope.DownloadToDisk = () => {
         // permitimos grabar el asiento contable, como un json, a un archivo en la máquina. Luego, este archivo podrá
         // ser importado como un asiento nuevo ...
+        let message = ""; 
         try {
             // construye y regresa un objeto como el que usa contabm, para que luego pueda ser leído allí 
             let asientoContable_contabm = construirAsientoContableContab(remesa, cuentasContables); 
