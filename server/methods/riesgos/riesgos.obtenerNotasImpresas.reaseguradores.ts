@@ -11,7 +11,10 @@ import SimpleSchema from 'simpl-schema';
 
 // para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
 // para poder hacer un download (usando el url) desde el client ...
-import { grabarDatosACollectionFS_regresarUrl } from 'server/imports/general/grabarDatosACollectionFS_regresarUrl';
+
+// import { grabarDatosACollectionFS_regresarUrl } from 'server/imports/general/grabarDatosACollectionFS_regresarUrl';
+import { grabarDatosACollectionFS_regresarUrl } from '../../imports/general/grabarDatosACollectionFS_regresarUrl';
+
 import { leerInfoAutos } from 'server/imports/general/riesgos_leerInfoAutos'; 
 
 import { Riesgos } from 'imports/collections/principales/riesgos'; 
