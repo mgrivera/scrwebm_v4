@@ -287,12 +287,13 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
         }
 
         if (itemSeleccionado.docState) {
-            DialogModal($modal,
-                    "<em>Contratos - Configuración de contratos proporcionales</em>",
-                    `Aparentemente, el registro ha recibido modificaciones que no se han guardado aún.<br />
-                        Ud. debe guardar los cambios efectuados en la lista antes de continuar con esta función.
-                    `,
-                    false);
+            
+            let message = `Aparentemente, el registro ha recibido modificaciones que no se han guardado aún.<br />
+            Ud. debe guardar los cambios efectuados en la lista antes de continuar con esta función.
+            `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+            DialogModal($modal, "<em>Contratos - Configuración de contratos proporcionales</em>", message, false);
             return;
         }
 

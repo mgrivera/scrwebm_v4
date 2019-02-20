@@ -34,12 +34,11 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Controll
 
     $scope.regresarALista = function () {
         if (lodash.some($scope.contratosProp_configuracion_tablas, (x) => { return x.docState; })) {
-            var promise = DialogModal($modal,
-                                    "<em>Contratos - Configuración</em>",
-                                    `Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em>
-                                        y perder los cambios?
-                                    `,
-                                    true).then(
+            let message = `Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em>
+            y perder los cambios?`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+            DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(
                 function (resolve) {
                     $state.go('catalogos.contrProp_configuracion.contrProp_configuracion_lista');
                 },

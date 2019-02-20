@@ -311,12 +311,12 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
 
         if (!$scope.parametros) {
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>",
-                                `Error: Ud. debe indicar los valores (parámetros) requeridos
-                                 (año, compañía, moneda, ramo, ...) para la construcción de
-                                 los <em>registros de configuración</em> del año para el contrato.
-                                `,
-                                false);
+            let message = `Error: Ud. debe indicar los valores (parámetros) requeridos (año, compañía, moneda, ramo, ...) para la construcción de
+                           los <em>registros de configuración</em> del año para el contrato.`; 
+            
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
             return;
         }
 
@@ -343,12 +343,13 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
             // el usuario debió haber seleccionado la compañía 'nosotros'
             let companiaNosotros = lodash.some(companiasArray, (x: any) => { return x.nosotros; });
             if (!companiaNosotros) {
-                DialogModal($modal, "<em>Contratos - Configuración</em>",
-                                    `Error: Ud. debe seleccionar, en la lista de compañías, la que corresponde a
-                                     <em><b>nosotros</b></em>. Esa es, justamente, nuestra compañía y debe ser
-                                     seleccionada para representar nuestra participación en el contrato.
-                                    `,
-                                    false);
+                let message = `Error: Ud. debe seleccionar, en la lista de compañías, la que corresponde a
+                <em><b>nosotros</b></em>. Esa es, justamente, nuestra compañía y debe ser
+                seleccionada para representar nuestra participación en el contrato.
+                `; 
+                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
                 return;
             }
 
@@ -393,13 +394,14 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
             $scope.registrosConfiguracion_ui_grid.data = [];
             $scope.registrosConfiguracion_ui_grid.data = registrosConfiguracionArray;
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>",
-                        `Ok, los registros de configuración para el año y el contrato han sido construídos.<br />
-                         Ahora Ud. puede indicar los valores apropiados para cada uno.<br /><br />
-                         Para <em><b>propagar</b></em> los valores indicados a otros registros,
-                         haga un <em>click</em> en <em>Propagar</em>.
-                        `,
-                        false);
+            let message = `Ok, los registros de configuración para el año y el contrato han sido construídos.<br />
+            Ahora Ud. puede indicar los valores apropiados para cada uno.<br /><br />
+            Para <em><b>propagar</b></em> los valores indicados a otros registros,
+            haga un <em>click</em> en <em>Propagar</em>.
+           `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
         }
     }
 
@@ -487,15 +489,16 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
 
     $scope.AgregarRegistrosDeConfiguracion = () => {
         // finalmente, cuando el usuario ejecuta esta función, agregamos estos registros a la tabla de configuración
-        DialogModal($modal, "<em>Contratos - Configuración</em>",
-                            `Los registros que Ud. ha construido serán agregados a la
-                             <em><b>tabla de configuración</b></em> definitiva.<br /><br />
-                             Estos registros, aunque agregados, no serán permanentes. Ud. deberá hacer un
-                             <em>click</em> en <em>Grabar</em> para grabar los registros agregados a la
-                             base de datos. <br /><br />
-                             Desea continuar y agregar estos registros a la tabla de configuracion?
-                            `,
-                            true).then(
+        let message = `Los registros que Ud. ha construido serán agregados a la
+        <em><b>tabla de configuración</b></em> definitiva.<br /><br />
+        Estos registros, aunque agregados, no serán permanentes. Ud. deberá hacer un
+        <em>click</em> en <em>Grabar</em> para grabar los registros agregados a la
+        base de datos. <br /><br />
+        Desea continuar y agregar estos registros a la tabla de configuracion?
+        `; 
+        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+        DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(
                                 () => {
                                     // Ok, vamos a agregar los registros a la tabla de configuración ...
                                     let cantidadRegistrosAgregados = 0;
@@ -527,15 +530,15 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
                                         cantidadRegistrosAgregados++;
                                     })
 
-                                    DialogModal($modal, "<em>Contratos - Configuración</em>",
-                                                `Ok, los registros de configuración han sido agregados a la tabla.<br />
-                                                 En total, <b>${cantidadRegistrosAgregados.toString()}</b> registros
-                                                 han sido agregados.<br /><br />
-                                                 Recuerde que Ud. debe cerrar este diálogo y
-                                                 hacer un <em>click</em> en <em>Grabar</em> para que los registros sean
-                                                 efectivamente registrados en la base de datos.
-                                                `,
-                                                false);
+                                    let message = `Ok, los registros de configuración han sido agregados a la tabla.<br />
+                                    En total, <b>${cantidadRegistrosAgregados.toString()}</b> registros
+                                    han sido agregados.<br /><br />
+                                    Recuerde que Ud. debe cerrar este diálogo y
+                                    hacer un <em>click</em> en <em>Grabar</em> para que los registros sean
+                                    efectivamente registrados en la base de datos.
+                                    `; 
+                                    message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+                                    DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
                                 },
                                 () => {
                                     return;
