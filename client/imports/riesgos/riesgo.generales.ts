@@ -19,6 +19,8 @@ export default angular.module("scrwebm.riesgos.generales", []).controller("Riesg
         { estado: 'DE', descripcion: 'Declinado' },
     ];
 
+    $scope.companiasCedentes = $scope.companias.filter((x: any) => { return ((x.tipo === 'SEG' || x.puedeCederRiesgos) && !x.nosotros) })
+
     // ---------------------------------------------------------------------------
     // para inicializar la fecha final cuando se indica la inicial ...
     $scope.$watch(

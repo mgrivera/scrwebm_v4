@@ -182,7 +182,7 @@
                                     name="compania"
                                     ng-model="riesgo.compania"
                                     ng-change="setIsEdited()"
-                                    ng-options="item._id as item.nombre for item in companias | filter: {tipo:'SEG', nosotros:false} | orderBy:'nombre'"
+                                    ng-options="item._id as item.nombre for item in companiasCedentes | orderBy:'nombre'"
                                     ng-model-options="{ updateOn: 'blur' }"
                                     required></select>
                         </div>

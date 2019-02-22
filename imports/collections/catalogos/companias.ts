@@ -18,6 +18,7 @@ var schema = new SimpleSchema({
     nombre: { type: String, label: "Nombre", min: 1, max: 80, optional: false },
     abreviatura: { type: String, label: "Abreviatura", min: 1, max: 15, optional: false },
     tipo: { type: String, label: "Tipo", min: 1, max: 8, optional: false },
+    puedeCederRiesgos: { type: Boolean, label: "Puede ceder riesgos?", optional: true, },
     rif: { type: String, label: "Rif", max: 20, optional: true },
     direccion: { type: String, label: "Dirección", max: 350, optional: true },
     telefono: { type: String, label: "Teléfono", max: 100, optional: true },
