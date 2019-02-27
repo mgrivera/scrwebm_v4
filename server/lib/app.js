@@ -4,6 +4,9 @@ Meteor.startup(function () {
     // environment variable que meteor usa para configurar la dirección usada para enviar e-mails
     // MAIL_URL = "smtp://USERNAME:PASSWORD@HOST:PORT/";
     process.env.MAIL_URL = Meteor.settings.mail_url;
+
+    // just to know the version of mongodb driver 
+    console.log("mongodb driver version: ", MongoInternals.NpmModules.mongodb.version)
   });
 
 Accounts.onCreateUser(function(options, user) {
