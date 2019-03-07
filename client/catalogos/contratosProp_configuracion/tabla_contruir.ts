@@ -12,8 +12,8 @@ import { ContProp_tablaConf } from '../../lib/forerunnerDB';
 import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros'; 
 
 angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construir_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', '$interval', 
-  function ($scope, $state, $stateParams, $meteor, $modal, $interval) {
+['$scope', '$state', '$stateParams', '$modal', '$interval', 
+  function ($scope, $state, $stateParams, $modal, $interval) {
 
     $scope.showProgress = false;
 

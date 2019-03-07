@@ -5,14 +5,17 @@ import numeral from 'numeral';
 import lodash from 'lodash';
 import JSZip from 'jszip';
 import Docxtemplater from 'docxtemplater';
-import fs from 'fs';
+
+import { Promise } from 'meteor/promise'; 
+import path from 'path';
+import { readFile, writeFile } from '@cloudcmd/dropbox';
+
+// para leer un node stream y convertirlo en un string; nota: returns a promise 
+import getStream from 'get-stream'; 
 
 import SimpleSchema from 'simpl-schema';
 import { Riesgos } from '/imports/collections/principales/riesgos';  
 
-// para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
-// para poder hacer un download (usando el url) desde el client ...
-import { grabarDatosACollectionFS_regresarUrl } from '/server/imports/general/grabarDatosACollectionFS_regresarUrl';
 import { leerInfoAutos } from '/server/imports/general/riesgos_leerInfoAutos'; 
 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
@@ -24,56 +27,80 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
-import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
-import { CollectionFS_tempFiles } from '/imports/collectionFS/Files_CollectionFS_tempFiles'; 
-
 Meteor.methods(
 {
-    'riesgos.obtenerNotasImpresas.interna': function (fileID, riesgoID, movimientoID, fecha) {
+    'riesgos.obtenerNotasImpresas.interna': function (folderPath, fileName, riesgoID, movimientoID, fecha) {
 
         new SimpleSchema({
-            fileID: { type: String, optional: false, },
+            fileName: { type: String, optional: false, },
+            folderPath: { type: String, optional: false, },
             riesgoID: { type: String, optional: false, },
             movimientoID: { type: String, optional: false, },
             fecha: { type: String, optional: false, },
-        }).validate({ fileID, riesgoID, movimientoID, fecha, });
+        }).validate({ fileName, folderPath, riesgoID, movimientoID, fecha, });
 
-        // TODO: recuperar el file (collectionFS)
-        let template = CollectionFS_templates.findOne(fileID);
+        // nos aseguramos que el usuario tenga un nombre en la tabla de usuarios 
+        const usuario = Meteor.user(); 
 
-        if (!template) {
-            throw new Meteor.Error('db-registro-no-encontrado',
-            `Error inesperado: no hemos podido leer (un registro en la base de datos para) el archivo (template) que se ha seleccionado.`);
+        if (!usuario || !usuario.personales || !usuario.personales.nombre) { 
+            message = `Error: el usuario no tiene un nombre asociado en la tabla de usuarios. <br /> 
+                        Para resolver este error, abra la opción: <em>Administración / Usuarios</em> y asocie un nombre al usuario.
+                        `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
         }
 
         // el template debe ser siempre un documento word ...
-        let nombreArchivo = template.original.name;
-        if (!nombreArchivo || !nombreArchivo.endsWith('.docx')) {
-            throw new Meteor.Error('archivo-debe-ser-word-docx', 'El archivo debe ser un documento Word (.docx).');
-        }
+        if (!fileName || !fileName.endsWith('.docx')) {
+            message = `El archivo debe ser un documento Word (.docx).`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
+        } 
 
         let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
         if (!companiaSeleccionada) {
-            throw new Meteor.Error('db-registro-no-encontrado',
-            `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
-             Se ha seleccionado una compañía antes de ejecutar este proceso?
-            `);
+            message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
+                       Se ha seleccionado una compañía antes de ejecutar este proceso?`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
         }
 
         // antes que nada, leemos el riesgo
         let riesgo = Riesgos.findOne(riesgoID);
 
         if (!riesgo) {
-            throw new Meteor.Error('db-registro-no-encontrado',
-            `Error inesperado: no pudimos leer el riesgo en la base de datos.`);
+            message = `Error inesperado: no pudimos leer el riesgo en la base de datos.`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
         }
 
         let movimiento = lodash.find(riesgo.movimientos, (x) => { return x._id === movimientoID; });
 
         if (!movimiento) {
-            throw new Meteor.Error('db-registro-no-encontrado',
-            `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`);
+            message = `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
         }
 
          let tiposMovimiento = [
@@ -103,31 +130,6 @@ Meteor.methods(
          let moneda = Monedas.findOne(riesgo.moneda);
          let suscriptor = Suscriptores.findOne(riesgo.suscriptor);
          let indole = Indoles.findOne(riesgo.indole);
-
-        // ----------------------------------------------------------------------------------------------------
-        // obtenemos el directorio en el server donde están las plantillas (guardadas por el usuario mediante collectionFS)
-        // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
-        let filePath = Meteor.settings.public.collectionFS_path_templates;
-        // nótese que el nombre 'real' que asigna collectionFS cuando el usuario hace el download del archivo,
-        // lo encontramos en el item en collectionFS
-        let fileNameWithPath = filePath + "/" + template.copies.collectionFS_templates.key;
-
-        // ----------------------------------------------------------------------------------------------------
-        // ahora intentamos abrir el archivo con fs (node file system)
-        // leemos el contenido del archivo (plantilla) en el server ...
-        
-        // aunque el file pueda existir en collectionFS puede no hacerlo en el disco (pues alguien lo eliminó???)
-        let content = null; 
-        try { 
-            content = fs.readFileSync(fileNameWithPath, "binary");            
-        } catch(err) { 
-            throw new Meteor.Error('error-archivo-indicado',
-            `Error: por alguna razón, no ha sido posible leer el archivo indicado en el disco en el servidor. Por favor revise.`);
-        }
-
-        let zip = new JSZip(content);
-        let doc = new Docxtemplater();
-        doc.loadZip(zip);
 
         // leemos las personas definidas para el riesgo
         let persona = "";
@@ -266,6 +268,52 @@ Meteor.methods(
             infoAutos = leerInfoAutos(riesgoID, movimientoID); 
         }
 
+        // -----------------------------------------------------------------------------------------------
+        // PRIMERO construimos el file path 
+        let filePath = path.join(folderPath, fileName); 
+
+        // en windows, path regresa back en vez de forward slashes ... 
+        filePath = filePath.replace(/\\/g,"/");
+
+        // SEGUNDO leemos el file 
+        const token = Meteor.settings.public.dropBox_appToken;      // this is the Dropbox app token 
+        let readStream = null; 
+
+        try {
+            readStream = Promise.await(readFile(token, filePath));
+        } catch(err) { 
+            message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
+                        El mensaje del error obtenido es: ${err}
+                        `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
+        } 
+
+        let content = null; 
+
+        try {
+            // from npm: convert a node stream to a string or buffer; note: returns a promise 
+            content = Promise.await(getStream.buffer(readStream)); 
+        } catch(err) { 
+            message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
+                        El mensaje del error obtenido es: ${err}
+                        `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
+        } 
+
+        let zip = new JSZip(content);
+        let doc = new Docxtemplater();
+        doc.loadZip(zip);
+
         //set the templateVariables
         doc.setData({
             fecha: fecha,
@@ -345,22 +393,47 @@ Meteor.methods(
 
         let buf = doc.getZip().generate({ type:"nodebuffer" });
 
-        // agregamos un nombre del archivo al 'metadata' en collectionFS; así, identificamos este archivo
-        // en particular, y lo podemos eliminar en un futuro, antes de volver a registrarlo ...
-        let userID = Meteor.user().emails[0].address;
+        // -----------------------------------------------------------------------------------------------
+        let nombreUsuario = usuario.personales.nombre;
 
-        let userID2 = userID.replace(/\./g, "_");
-        userID2 = userID2.replace(/\@/g, "_");
-        let nombreArchivo2 = nombreArchivo.replace('.docx', `_${userID2}.docx`);
+        let nombreUsuario2 = nombreUsuario.replace(/\./g, "_");           // nombre del usuario: reemplazamos un posible '.' por un '_' 
+        nombreUsuario2 = nombreUsuario2.replace(/\@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
+        
+        // construimos un id único para el archivo, para que el usuario pueda tener más de un resultado para la misma 
+        // plantilla. La fecha está en Dropbox ... 
+        let fileId = new Mongo.ObjectID()._str.substring(0, 6); 
 
-        let removedFiles = CollectionFS_tempFiles.remove({ 'original.name': nombreArchivo2 });
+        let fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
 
-        // el tipo del archivo debe estar guardado con el 'template'
-        let tipoArchivo = template.metadata.tipo;
+        // finalmente, escribimos el archivo resultado, al directorio tmp 
+        filePath2 = path.join(folderPath, "tmp", fileName2); 
 
-        // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
-        // promise y no el promise object ...
-        return grabarDatosACollectionFS_regresarUrl(buf, nombreArchivo2, tipoArchivo, 'scrwebm', companiaSeleccionada, Meteor.user(), 'docx');
+        // en windows, path regresa back en vez de forward slashes ... 
+        filePath2 = filePath2.replace(/\\/g,"/");
+
+        try {
+            Promise.await(writeFile(token, filePath2, buf));
+        } catch(err) { 
+            message = `Error: se ha producido un error al intentar escribir el archivo ${filePath2} a Dropbox. <br />
+                        El mensaje del error obtenido es: ${err}
+                        `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
+        } 
+
+        message = `Ok, la plantilla ha sido aplicada a los datos seleccionados y el documento Word ha sido construido 
+                   en forma satisfactoria.
+                  `; 
+        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+        return { 
+            error: false, 
+            message: message, 
+        }
     }
 })
 

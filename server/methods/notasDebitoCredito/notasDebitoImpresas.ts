@@ -24,8 +24,8 @@ import { TiposFacultativo } from 'imports/collections/catalogos/tiposFacultativo
 import { CuentasBancarias } from 'imports/collections/catalogos/cuentasBancarias'; 
 import { Bancos } from 'imports/collections/catalogos/bancos'; 
 
-import { CollectionFS_templates } from 'imports/collectionFS/Files_CollectionFS_templates'; 
-import { CollectionFS_tempFiles } from 'imports/collectionFS/Files_CollectionFS_tempFiles'; 
+import { CollectionFS_templates } from 'server/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_tempFiles } from 'server/imports/collectionFS/Files_CollectionFS_tempFiles'; 
 
 Meteor.methods(
 {

@@ -1,6 +1,7 @@
 
 
 import moment from 'moment';
+import lodash from 'lodash'; 
 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
@@ -8,8 +9,6 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-
-import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
 
 export default angular.module("scrwebm.riesgos.riesgo.imprimirNotasCobertura", []).
 controller('ImprimirNotasRiesgosModalController',
@@ -20,22 +19,25 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
-    };
+    }
 
     $scope.ok = function () {
         // $modalInstance.close("Ok");
-    };
+    }
 
     $scope.cancel = function () {
         $modalInstance.dismiss("Cancel");
-    };
+    }
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-    if (companiaSeleccionada)
-        var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = null; 
 
+    if (companiaSeleccionada) { 
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+    }
+        
     $scope.companiaSeleccionada = {};
 
     if (companiaSeleccionadaDoc)
@@ -75,7 +77,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
 
                     $scope.reaseguradoresLista = [];
 
-                    _.filter(movimientoSeleccionado.companias, function(x) { return !x.nosotros; }).forEach(function(r) {
+                    lodash.filter(movimientoSeleccionado.companias, function(x) { return !x.nosotros; }).forEach(function(r) {
                         var reasegurador = { _id: r.compania, nombre: Companias.findOne(r.compania).abreviatura };
                         $scope.reaseguradoresLista.push(reasegurador);
                     });
@@ -139,166 +141,214 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
     $scope.selectedFile_interna = {};
     $scope.downLoadLink_interna = "";
 
+    $scope.tipoPlantillaWord = null; 
+
     $scope.obtenerDocumentoWord = function (file) {
 
-        if (!movimientoSeleccionado || _.isEmpty(movimientoSeleccionado)) {
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
             DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
                         "Ud. debe seleccionar un movimiento en la lista.",
                         false).then();
             return;
-        };
+        }
 
-        if (!$scope.parametros.fecha || _.isEmpty($scope.parametros.fecha)) {
+        if (!$scope.parametros.fecha || lodash.isEmpty($scope.parametros.fecha)) {
             DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
                         `Ud. debe indicar la fecha que se mostrará en el documento.<br />
                          Ejemplo: Caracas, 25 de Abril del 2.015.
                         `,
                         false).then();
             return;
-        };
+        }
+
+        if (!$scope.tipoPlantillaWord) {
+            DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
+                        `Ud. debe indicar el <em>tipo</em> de plantilla que será usada para construir el documento.<br /><br />
+                         Los tipos de plantilla que pueden ser usados para obtener las notas de cobertura son: 
+                         <em>Cedentes</em>, <em>Reaseguradores</em>, <em>Interna</em>. <br /><br />
+                         De acuerdo a cual plantilla y su tipo que Ud. indique, será construído el documento Word
+                         que resulta de este proceso.  
+                        `,
+                        false).then();
+            return;
+        }
 
         $scope.alerts.length = 0;
         $scope.showProgress = true;
 
         // nota para el cedente
-        if (file.metadata.tipo === "TMP-FAC-NOTA-CED") {
+        if ($scope.tipoPlantillaWord === 'cedentes') {
             Meteor.call('riesgos.obtenerNotasImpresas.cedente',
-                         file._id,
+                         "/facultativo/notasCobertura", file.name,
                          riesgo._id,
                          movimientoSeleccionado._id,
                          $scope.parametros.fecha, (err, result) => {
 
-                     if (err) {
-                         let errorMessage = mensajeErrorDesdeMethod_preparar(err);
-
-                         $scope.alerts.length = 0;
-                         $scope.alerts.push({ type: 'danger', msg: errorMessage });
-
-                         $scope.showProgress = false;
-                         $scope.$apply();
-
-                         return;
-                     }
+                if (err) {
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
-                    $scope.alerts.push({
-                        type: 'info',
-                        msg: `Ok, el documento ha sido construido en forma exitosa.<br />
-                              Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
-                    });
-
-                    $scope.selectedFile_cedente = file;
-                    $scope.downLoadLink_cedente = result;
-                    $scope.downLoadWordDocument_cedente = true;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
                     $scope.showProgress = false;
                     $scope.$apply();
-            });
-        };
 
-        // nota de cobertura Interna
-        if (file.metadata.tipo === "TMP-FAC-NOTA-INT") {
-            Meteor.call('riesgos.obtenerNotasImpresas.interna',
-                         file._id,
-                         riesgo._id,
-                         movimientoSeleccionado._id,
-                         $scope.parametros.fecha, (err, result) => {
+                    return;
+                }
 
-                 if (err) {
-                     let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                if (result.error) {
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: result.message, });
 
-                     $scope.alerts.length = 0;
-                     $scope.alerts.push({ type: 'danger', msg: errorMessage });
+                    $scope.showProgress = false;
+                    $scope.$apply();
 
-                     $scope.showProgress = false;
-                     $scope.$apply();
-
-                     return;
-                 }
+                    return;
+                }
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
                     type: 'info',
-                    msg: `Ok, el documento ha sido construido en forma exitosa.<br />
-                          Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
+                    msg: result.message,
                 });
 
-                $scope.selectedFile_interna = file;
-                $scope.downLoadLink_interna = result;
-                $scope.downLoadWordDocument_interna = true;
+                $scope.tipoPlantillaWord = null;
 
                 $scope.showProgress = false;
                 $scope.$apply();
-            });
+            })
+        }
+
+        // nota de cobertura Interna
+        if ($scope.tipoPlantillaWord === 'interna') {
+            Meteor.call('riesgos.obtenerNotasImpresas.interna',
+                        "/facultativo/notasCobertura", file.name,
+                         riesgo._id,
+                         movimientoSeleccionado._id,
+                         $scope.parametros.fecha, (err, result) => {
+
+                if (err) {
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+
+                    return;
+                }
+
+                if (result.error) {
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                }
+        
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'info',
+                    msg: `Ok, el documento ha sido construido en forma exitosa.`,
+                });
+
+                $scope.tipoPlantillaWord = null;
+
+                $scope.showProgress = false;
+                $scope.$apply();
+            })
         }
 
         // nota de cobertura de reaseguradores
-        if (file.metadata.tipo === "TMP-FAC-NOTA-REA") {
+        if ($scope.tipoPlantillaWord === 'reaseguradores') {
             Meteor.call('riesgos.obtenerNotasImpresas.reaseguradores',
-                         file._id,
+                        "/facultativo/notasCobertura", file.name,
                          riesgo._id,
                          movimientoSeleccionado._id,
                          $scope.parametros.fecha, (err, result) => {
 
-                 if (err) {
-                     let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                if (err) {
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
-                     $scope.alerts.length = 0;
-                     $scope.alerts.push({ type: 'danger', msg: errorMessage });
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
-                     $scope.showProgress = false;
-                     $scope.$apply();
+                    $scope.showProgress = false;
+                    $scope.$apply();
 
-                     return;
-                 }
+                    return;
+                }
+
+                if (result.error) {
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                }
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
                     type: 'info',
-                    msg: `Ok, el documento ha sido construido en forma exitosa.<br />
-                          Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
+                    msg: `Ok, el documento ha sido construido en forma exitosa.`,
                 });
 
-                $scope.selectedFile_reaseguradores = file;
-                $scope.downLoadLink_reaseguradores = result;
-                $scope.downLoadWordDocument_reaseguradores = true;
+                $scope.tipoPlantillaWord = null;
 
                 $scope.showProgress = false;
                 $scope.$apply();
-            });
-        };
-    };
+            })
+        }
+    }
 
     $scope.movimientos_ui_grid.data = riesgo.movimientos;
-
-    $scope.helpers({
-        template_files: () => {
-            return CollectionFS_templates.find({
-                // regresamos solo archivos cuyo tipo comienza así ...
-                'metadata.tipo': { $regex: /^TMP-FAC-NOTA/ },
-            });
-        },
-    });
-
 
     // leemos las plantillas que corresponden a notas de cobertura impresas (cuyo tipo es: TMP-FAC-NOTA-CED, TMP-FAC-NOTA-REA, ...)
     $scope.showProgress = true;
 
-    $scope.subscribe("collectionFS_files", () => { return ['TMP-FAC-NOTA']; }, {
-        onReady: function () {
+    // ejecutamos un método que lee y regresa desde dropbox las plantillas para notas de cobertura 
+    Meteor.call('plantillas.obtenerListaArchivosDesdeDirectorio', "/facultativo/notasCobertura", (err, result) => {
 
-        //   $scope.plantillas_ui_grid.data = [];
-        //   $scope.plantillas_ui_grid.data = $scope.collectionFS_files;
+        if (err) {
+            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
-          $scope.showProgress = false;
-          $scope.$apply();
-        },
-        onStop: function (error) {
-          $scope.showProgress = false;
-          $scope.$apply();
-      }
-  });
-  // --------------------------------------------------------------------------------------------------------------------
+            $scope.alerts.length = 0;
+            $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
+            $scope.showProgress = false;
+            $scope.$apply();
+
+            return;
+        }
+
+        if (result.error) { 
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg:  result.message
+            });
+
+            $scope.showProgress = false;
+            $scope.$apply();
+
+            return;
+        }
+
+        $scope.alerts.length = 0;
+        $scope.alerts.push({
+            type: 'info',
+            msg: result.message,
+        });
+
+        $scope.template_files = result && result.files && result.files.files ? result.files.files : [ { name: "indefinido", type: "indefinido"} ]; 
+
+        $scope.showProgress = false;
+        $scope.$apply();
+    })
 }
 ]);

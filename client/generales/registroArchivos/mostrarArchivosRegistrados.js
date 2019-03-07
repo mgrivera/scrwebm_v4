@@ -1,9 +1,10 @@
 
 
+import lodash from 'lodash'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
-import { CollectionFS_logos } from '/imports/collectionFS/Files_CollectionFS_logos'; 
+import { CollectionFS_templates } from '/client/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_logos } from '/client/imports/collectionFS/Files_CollectionFS_logos'; 
 
 // importamos el module generales, pues está en  imports ... 
 import scrwebmGenerales from '/client/imports/generales/generalesAngularModule'; 
@@ -14,11 +15,11 @@ function ($scope, $modalInstance, $modal) {
 
     $scope.ok = function () {
         $modalInstance.close("Ok");
-    };
+    }
 
     $scope.cancel = function () {
         $modalInstance.dismiss("Cancel");
-    };
+    }
 
     $scope.helpers({
         logos: () => {
@@ -31,15 +32,30 @@ function ($scope, $modalInstance, $modal) {
 
     $scope.fileURL_toString = (file) => {
         // siempre tenemos varios collections (fs) con diferentes tipos de archivo registrados en
-        // éstas ...
-        if (_.startsWith(file.metadata.tipo, 'TMP-')) {
-            let urlString = CollectionFS_templates.findOne({ _id: file._id }).url().toString();
-            return urlString;
-        } else {
-            let urlString = CollectionFS_logos.findOne({ _id: file._id }).url().toString();
-            return urlString;
-        };
+        // éstas; por ejemplo: templates (word, excel, ...) o logos ...
+        if (lodash.startsWith(file.metadata.tipo, 'TMP-')) {
+            let id = file._id; 
+            let document = CollectionFS_templates.findOne(id); 
+            if (document) { 
+                let urlString = document.url().toString();
 
+                var url = Pictures.findOne({'metadata.make': context}).url();
+
+
+                return urlString;
+            } else { 
+                return "url indefinido - no fue posible obtenerlo (???)";
+            }
+        } else {
+            let id = file._id; 
+            let document = CollectionFS_templates.findOne(id); 
+            if (document && document.url && document.url()) { 
+                let urlString = document.url().toString();
+                return urlString;
+            } else { 
+                return "url indefinido - no fue posible obtenerlo (???)";
+            }
+        }
     }
 
     // --------------------------------------------------------------------------------------------------------------------
@@ -48,7 +64,6 @@ function ($scope, $modalInstance, $modal) {
 
     $scope.subscribe("collectionFS_files", () => { return []; }, {
         onReady: function () {
-            // debugger;
             $scope.showProgress = false;
             $scope.$apply();
         },
@@ -63,7 +78,7 @@ function ($scope, $modalInstance, $modal) {
 
       DialogModal($modal, "<em>Registro de archivos</em>", `Desea eliminar el archivo <b><em>${file.original.name}</em></b> ?`, true).then(
               function (resolve) {
-                  if (_.startsWith(file.metadata.tipo, 'TMP-')) {
+                  if (lodash.startsWith(file.metadata.tipo, 'TMP-')) {
                       // nótese como el usuario puede registrar varios tipos de archivos
                       // templates: word and excel files; logos; ...
                       CollectionFS_templates.remove({ _id: file._id });

@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { CausasSiniestro } from 'imports/collections/catalogos/causasSiniestro'; 
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("CausasSiniestroController", function ($scope) {
+angular.module("scrwebm").controller("CausasSiniestroController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 
@@ -211,4 +211,4 @@ angular.module("scrwebm").controller("CausasSiniestroController", function ($sco
             $scope.$apply();
         })
       }
-  });
+  }]);

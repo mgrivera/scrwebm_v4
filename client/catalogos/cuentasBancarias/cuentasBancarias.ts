@@ -14,8 +14,7 @@ import { CuentasContables } from 'imports/collections/catalogos/cuentasContables
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 
 angular.module("scrwebm").controller("CuentasBancariasController",
- ['$scope', '$stateParams',
-  function ($scope, $stateParams) {
+ ['$scope', function ($scope) {
 
     $scope.showProgress = false;
 

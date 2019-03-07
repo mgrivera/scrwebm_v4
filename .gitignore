@@ -11,5 +11,8 @@ pdfMake_from_bower/build/vfs_fonts.js
 run.bat
 settings.json
 
+run_prc.bat 
+settings_prc.json 
+
 # ignorar archivos de configuración de visual studio code 
 .vscode/

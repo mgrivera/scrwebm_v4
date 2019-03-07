@@ -8,7 +8,7 @@ import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensa
 import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
 import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
-import { CollectionFS_templates } from 'imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_templates } from 'client/imports/collectionFS/Files_CollectionFS_templates'; 
 
 import NotasDebito_angularComponents from './notasDebito_angularComponents'; 
 

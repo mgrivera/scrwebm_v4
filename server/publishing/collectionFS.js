@@ -2,8 +2,8 @@
 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
-import { CollectionFS_logos } from '/imports/collectionFS/Files_CollectionFS_logos'; 
+import { CollectionFS_templates } from '/server/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_logos } from '/server/imports/collectionFS/Files_CollectionFS_logos'; 
 
 Meteor.publish('collectionFS_files', function(tipoArchivo) {
     // regresamos registros solo para la cia seleccionada ...

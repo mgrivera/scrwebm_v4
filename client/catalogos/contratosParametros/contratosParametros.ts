@@ -7,7 +7,7 @@ import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensaj
 import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
 
 angular.module("scrwebm").controller("ContratosParametrosController",
- ['$scope', '$stateParams', function ($scope, $stateParams) {
+ ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 

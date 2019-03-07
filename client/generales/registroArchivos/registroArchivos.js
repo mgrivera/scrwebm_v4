@@ -6,8 +6,8 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-import { CollectionFS_templates } from '/imports/collectionFS/Files_CollectionFS_templates'; 
-import { CollectionFS_logos } from '/imports/collectionFS/Files_CollectionFS_logos';
+import { CollectionFS_templates } from '/client/imports/collectionFS/Files_CollectionFS_templates'; 
+import { CollectionFS_logos } from '/client/imports/collectionFS/Files_CollectionFS_logos';
 
 // importamos el module generales, pues está en  imports ... 
 import scrwebmGenerales from '/client/imports/generales/generalesAngularModule'; 
@@ -16,7 +16,6 @@ angular.module(scrwebmGenerales.name).controller("RegistroArchivosController",
 ['$scope', '$state', '$stateParams', '$meteor', '$modal',
   function ($scope, $state, $stateParams, $meteor, $modal) {
 
-    //   debugger;
       $scope.showProgress = true;
 
       // ui-bootstrap alerts ...

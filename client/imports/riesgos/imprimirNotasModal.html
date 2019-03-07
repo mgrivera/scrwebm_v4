@@ -68,9 +68,9 @@
                             <tbody>
                                 <tr ng-repeat="file in template_files">
                                     <td style="text-align: left; ">
-                                        <a href="#" ng-click="obtenerDocumentoWord(file)">{{ file.original.name }}</a>
+                                        <a href="#" ng-click="obtenerDocumentoWord(file)">{{ file.name }}</a>
                                     </td>
-                                    <td style="text-align: left; ">{{ file.metadata.tipo }}</td>
+                                    <td style="text-align: left; ">{{ file.type }}</td>
                                 </tr>
                             </tbody>
                             <tfoot>
@@ -87,6 +87,25 @@
                                        class="form-control input-sm myinput-xsm"
                                        ng-model="parametros.fecha"
                                        ng-model-options="{ updateOn: 'blur' }"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div style="margin: 0 20px; ">
+                                <fieldset class="scheduler-border-radioButtons-noBold" style="text-align: left; ">
+                                    <legend class="scheduler-border-radioButtons-noBold" style="font-weight: normal; ">Tipo de plantilla (Word): </legend>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="tipoPlantillaWord" ng-model="tipoPlantillaWord" value='cedentes'> cedentes
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="tipoPlantillaWord" ng-model="tipoPlantillaWord" value='reaseguradores'> reaseguradores
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="tipoPlantillaWord" ng-model="tipoPlantillaWord" value='interna'> interna
+                                    </label>
+                                </fieldset>
                             </div>
                         </div>
                     </div>
