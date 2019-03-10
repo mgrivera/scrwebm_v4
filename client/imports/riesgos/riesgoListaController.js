@@ -361,7 +361,7 @@ export default angular.module("scrwebm.riesgos.lista", []).controller("RiesgosLi
 
     $scope.reporteOpcionesModal = function() { 
         $modal.open({
-            templateUrl: 'client/riesgos/reportes/opcionesReportModal.html',
+            templateUrl: 'client/imports/riesgos/reportes/opcionesReportModal.html',
             controller: 'Riesgos_opcionesReportController',
             size: 'md',
             resolve: {
