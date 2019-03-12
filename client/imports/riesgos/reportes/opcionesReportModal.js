@@ -3,7 +3,9 @@
 import { Filtros } from '/imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller('Riesgos_opcionesReportController',
+export default angular.module("scrwebm.riesgos.lista.reportModal", []); 
+
+angular.module("scrwebm.riesgos.lista.reportModal").controller('Riesgos_opcionesReportController',
 ['$scope', '$modalInstance', '$meteor', 'companiaSeleccionada', function ($scope, $modalInstance, $meteor, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
