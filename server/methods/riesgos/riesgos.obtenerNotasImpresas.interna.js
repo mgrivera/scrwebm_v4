@@ -426,7 +426,8 @@ Meteor.methods(
         } 
 
         message = `Ok, la plantilla ha sido aplicada a los datos seleccionados y el documento Word ha sido construido 
-                   en forma satisfactoria.
+                   en forma satisfactoria. <br /> 
+                   El resultado ha sido escrito al archivo <b><em>${filePath2}</em></b>, en el Dropbox del programa.  
                   `; 
         message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 

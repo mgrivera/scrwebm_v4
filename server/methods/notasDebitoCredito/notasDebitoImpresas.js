@@ -16,28 +16,26 @@ import getStream from 'get-stream';
 
 import SimpleSchema from 'simpl-schema';
 
-import { leerInfoAutos } from '/server/imports/general/riesgos_leerInfoAutos'; 
-
+import { Riesgos } from '/imports/collections/principales/riesgos'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
-import { Riesgos } from '/imports/collections/principales/riesgos';  
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
-import { Ramos } from '/imports/collections/catalogos/ramos'; 
-import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
-import { Indoles } from '/imports/collections/catalogos/indoles'; 
+import { NotasDebitoCredito } from '/imports/collections/principales/notasDebitoCredito'; 
+import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
+import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
+import { Bancos } from '/imports/collections/catalogos/bancos';  
 
 Meteor.methods(
 {
-    'riesgos.obtenerNotasImpresas.cedente': function (folderPath, fileName, riesgoID, movimientoID, fecha) {
+    'notasDebito.obtenerNotasImpresas': function (folderPath, fileName, riesgoID, movimientoID) {
 
         new SimpleSchema({
             fileName: { type: String, optional: false, },
             folderPath: { type: String, optional: false, },
             riesgoID: { type: String, optional: false, },
             movimientoID: { type: String, optional: false, },
-            fecha: { type: String, optional: false, },
-        }).validate({ fileName, folderPath, riesgoID, movimientoID, fecha, });
+        }).validate({ fileName, folderPath, riesgoID, movimientoID, });
 
         let message = ""; 
 
@@ -93,7 +91,7 @@ Meteor.methods(
             }
         }
 
-        let movimiento = lodash.find(riesgo.movimientos, (x) => { return x._id === movimientoID; });
+        let movimiento = riesgo.movimientos.find((x: any) => x._id === movimientoID);
 
         if (!movimiento) {
             message = `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`; 
@@ -105,25 +103,10 @@ Meteor.methods(
             }
         }
 
-         let compania = Companias.findOne(riesgo.compania);
-         let asegurado = Asegurados.findOne(riesgo.asegurado);
-         let ramo = Ramos.findOne(riesgo.ramo);
-         let moneda = Monedas.findOne(riesgo.moneda);
-         let indole = Indoles.findOne(riesgo.indole);
-
-        // leemos las personas definidas para el riesgo
-        let persona = "";
-        if (riesgo.personas && _.isArray(riesgo.personas) && riesgo.personas.length) {
-            let personaItem = _.find(riesgo.personas, (x) => { return x.compania === riesgo.compania; });
-            if (personaItem) {
-                persona = `${personaItem.titulo} ${personaItem.nombre}`;
-            }
-        }
-
         // leemos la póliza en el array de documentos del riesgo
         let poliza = "";
-        if (riesgo.documentos && _.isArray(riesgo.documentos) && riesgo.documentos.length) {
-            let polizaItem = _.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
+        if (riesgo.documentos && Array.isArray(riesgo.documentos) && riesgo.documentos.length) {
+            let polizaItem = lodash.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
             if (polizaItem) {
                 poliza = polizaItem.numero;
             }
@@ -132,72 +115,101 @@ Meteor.methods(
         // leemos la cesion y el recibo en el array de documentos del movimiento
         let cesion = "";
         let recibo = "";
-        if (movimiento.documentos && _.isArray(movimiento.documentos) && movimiento.documentos.length) {
-            let cesionItem = _.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
+        if (movimiento.documentos && Array.isArray(movimiento.documentos) && movimiento.documentos.length) {
+            let cesionItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
             if (cesionItem) {
                 cesion = cesionItem.numero;
             }
 
-            let reciboItem = _.find(movimiento.documentos, (x) => { return x.tipo === 'REC'; });
+            let reciboItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'REC'; });
             if (reciboItem) {
                 recibo = reciboItem.numero;
             }
         }
 
-        // seleccionamos el movimiento de primas que corresponde a 'nosotros' (nuestra orden)
-        let primas = lodash.find(movimiento.primas, (x) => { return x.nosotros; });
+        // para obtener la orden de reaseguro (nuestra), buscamos la compañía 'nosotros' en el array de compañías en 
+        // movimientos. Desde allí, obtenemos la orden sobre el 100%. Nótese que esta no es la orden de un reasegurador, 
+        // si la nota de débito es para éste (una devolución, por ejemplo). Siempre es para nuestra orden. 
+        const companias = movimiento.companias; 
+        const nosotros = companias.find(x => x.nosotros); 
 
-        let companiaNosotros = lodash.find(movimiento.companias, (x) => { return x.nosotros; });
+        let ordenPorc = 0; 
 
-        let retencionCedente = 0;
-        if (companiaNosotros && companiaNosotros.ordenPorc) {
-            retencionCedente = 100 - companiaNosotros.ordenPorc;
+        if (nosotros) { 
+            ordenPorc = nosotros.ordenPorc; 
         }
 
-        // la suma asegurada, reasegurada, etc., está en el array coberturasCompanias, pero debemos sumarizar ...
-        let valoresARiesgo = lodash(movimiento.coberturasCompanias).
-                            filter((x) => { return x.nosotros; }).
-                            sumBy('valorARiesgo');
+        // leemos las notas de débito que puedan existir para el riesgo y movimiento indicados 
+        let notasDebito = NotasDebitoCredito.find({ 
+            'source.entityID': riesgo._id, 'source.subEntityID': movimiento._id }, { sort: { fecha: 1, }
+        }).fetch(); 
 
-        let sumaAsegurada = lodash(movimiento.coberturasCompanias).
-                            filter((x) => { return x.nosotros; }).
-                            sumBy('sumaAsegurada');
+        let notasDebitoWord = []; 
 
-        let sumaReasegurada = lodash(movimiento.coberturasCompanias).
-                            filter((x) => { return x.nosotros; }).
-                            sumBy('sumaReasegurada');
+        for (const nd of notasDebito) { 
 
-        let prima = lodash(movimiento.coberturasCompanias).
-                            filter((x) => { return x.nosotros; }).
-                            sumBy('prima');
+            let compania = Companias.findOne(nd.compania);
+            let moneda = Monedas.findOne(nd.moneda);
+            let cuotas = Cuotas.find(nd.cuota).fetch();      // tal vez en el futuro podrán haber más de una cuota para una nota de débito 
+            let tipoNegocio = TiposFacultativo.findOne(nd.tipoNegocio); 
+            let cuentaBancaria = CuentasBancarias.findOne(nd.cuentaBancaria); 
 
-        // preparamos un array de reaseguradores, para mostrarlas en la nota de cobertura
-        let reaseguradores = [];
-        lodash(movimiento.companias).filter((x) => { return !x.nosotros; }).forEach((x) => {
-            let compania = {
-                nombre: Companias.findOne(x.compania).abreviatura,
-                nombreCompleto: Companias.findOne(x.compania).nombre,
-                participacion: numeral(x.ordenPorc).format('0,0.00'),
-            };
-            reaseguradores.push(compania);
-        });
+            let cuentaBancariaBanco; 
+            let cuentaBancariaMoneda; 
 
-        let cuotas = [];
-        Cuotas.find({ 'source.entityID': riesgo._id, 'source.subEntityID': movimiento._id, compania: riesgo.compania, },
-                    { sort: { fecha: 1, }}).
-               forEach((x) => {
+            if (cuentaBancaria) { 
+                cuentaBancariaBanco = Bancos.findOne(cuentaBancaria.banco); 
+                cuentaBancariaMoneda = Monedas.findOne(cuentaBancaria.moneda); 
+            }
+
+
+            let notaDebito = {
+                año: nd.ano, 
+                numero: nd.numero, 
+                fecha: moment(nd.fecha).format('DD-MMM-YYYY'),
+
+                nombreCompania: compania.nombre, 
+                rifCompania: compania.rif ? compania.rif : "Indefinido", 
+
+                tipoNegocio: tipoNegocio.descripcion, 
+                numeroCesion: cesion, 
+
+                vigDesde: moment(movimiento.desde).format('DD-MMM-YYYY'),
+                vigHasta: moment(movimiento.hasta).format('DD-MMM-YYYY'),
+
+                ordenPorc: ordenPorc, 
+
+                // datos de la cuenta bancaria (coordenadas para el pago) 
+                nombreBanco: cuentaBancariaBanco.nombre,  
+                tipoCuenta: (cuentaBancaria.tipo === 'CORR' ? "Corriente" : "Ahorros"), 
+                numeroCuenta: cuentaBancaria.numero,  
+                simboloMonedaCuenta: cuentaBancariaMoneda.simbolo, 
+
+                cuotas: [], 
+            }; 
+
+            // tal vez en el futuro, una nd pueda tener más de una cuota de cobro. No por ahora ... 
             let cuota = {
-                fecha: moment(x.fecha).format('DD-MMM-YYYY'),
-                vencimiento: moment(x.fechaVencimiento).format('DD-MMM-YYYY'),
-                monto: numeral(abs(x.monto)).format('0,0.00'),
-            };
-            cuotas.push(cuota);
-        });
+                fechaCuota: moment(nd.fechaCuota).format('DD-MMM-YYYY'),
+                fechaVencimientoCuota: moment(nd.fechaVencimientoCuota).format('DD-MMM-YYYY'),
+                monedaCuota: moneda.simbolo, 
+                montoCuota: numeral(abs(nd.monto)).format('0,0.00'),
+            }
 
-        // leemos los datos del auto, si el ramo es automovil y si se han registrado ... 
-        let infoAutos = {}; 
-        if (ramo.tipoRamo && ramo.tipoRamo === 'automovil') { 
-            infoAutos = leerInfoAutos(riesgoID, movimientoID); 
+            notaDebito.cuotas.push(cuota); 
+
+            notasDebitoWord.push(notaDebito); 
+        }
+
+        if (!notasDebitoWord.length) { 
+            message = `Error: no hemos podido leer, al menos, una nota de débito registrada para el riesgo y movimiento seleccionados.
+                      `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            return { 
+                error: true, 
+                message: message, 
+            }
         }
 
         // -----------------------------------------------------------------------------------------------
@@ -245,55 +257,13 @@ Meteor.methods(
         let zip = new JSZip(content);
         let doc = new Docxtemplater();
         doc.loadZip(zip);
-        
+
         //set the templateVariables
         doc.setData({
-            fecha: fecha,
-            riesgo: riesgo.numero,
-            movimiento: movimiento.numero,
-            referencia: riesgo.referencia,
-            cedente: compania.nombre,
-            retencionCedente: `${numeral(abs(retencionCedente)).format('0,0.00')}`,
-            direccionCedente: compania.direccion ? compania.direccion : "Indefinida (por registrar en catálogo)",
-            ramo: ramo.descripcion,
-            moneda: moneda.descripcion,
-            monedaSimbolo: moneda.simbolo,
-            asegurado: asegurado.nombre,
-            indole: indole.descripcion,
-            atencion: persona ? persona : "",
-            poliza: poliza ? poliza : "",
-            cesion: cesion ? cesion : "",
-            recibo: recibo ? recibo : "",
-            objetoAsegurado: riesgo.objetoAsegurado && riesgo.objetoAsegurado.descripcion ? riesgo.objetoAsegurado.descripcion : '',
-            ubicacion: riesgo.objetoAsegurado && riesgo.objetoAsegurado.ubicacion ? riesgo.objetoAsegurado.ubicacion : '',
-            vigPolDesde: riesgo.desde ? moment(riesgo.desde).format('DD-MMM-YYYY') : '',
-            vigPolHasta: riesgo.hasta ? moment(riesgo.hasta).format('DD-MMM-YYYY') : '',
-            vigCesDesde: movimiento.desde ? moment(movimiento.desde).format('DD-MMM-YYYY') : '',
-            vigCesHasta: movimiento.hasta ? moment(movimiento.hasta).format('DD-MMM-YYYY') : '',
-
-            // infoAutos: solo viene para ramo automovil ... 
-            marca: infoAutos.marca ? infoAutos.marca : "", 
-            modelo: infoAutos.modelo ? infoAutos.modelo : "", 
-            año: infoAutos.año ? infoAutos.año : "", 
-            placa: infoAutos.placa ? infoAutos.placa : "", 
-            serialCarroceria: infoAutos.serialCarroceria ? infoAutos.serialCarroceria : "", 
-
-            valoresARiesgo: numeral(abs(valoresARiesgo)).format('0,0.00'),
-            sumaAsegurada: numeral(abs(sumaAsegurada)).format('0,0.00'),
-            sumaReasegurada: numeral(abs(sumaReasegurada)).format('0,0.00'),
-            nuestraOrdenPorc: companiaNosotros && companiaNosotros.ordenPorc ? `${numeral(abs(companiaNosotros.ordenPorc)).format('0,0.00')}` : numeral(0).format('0,0.00'),
-            prima: numeral(abs(prima)).format('0,0.00'),
-            primaBruta: primas && primas.primaBruta ? numeral(abs(primas.primaBruta)).format('0,0.00'): numeral(0).format('0,0.00'),
-            comisionPorc: primas && primas.comisionPorc ? `${numeral(abs(primas.comisionPorc)).format('0,0.00')}`: numeral(0).format('0,0.00'),
-            comision: primas && primas.comision ? numeral(abs(primas.comision)).format('0,0.00'): numeral(0).format('0,0.00'),
-            impuestoPorc: primas && primas.impuestoPorc ? `${numeral(abs(primas.impuestoPorc)).format('0,0.00')}` : numeral(0).format('0,0.00'),
-            impuesto: primas && primas.impuesto ? numeral(abs(primas.impuesto)).format('0,0.00'): numeral(0).format('0,0.00'),
-            primaNeta: primas && primas.primaNeta ? numeral(abs(primas.primaNeta)).format('0,0.00'): numeral(0).format('0,0.00'),
-            reaseg: lodash.orderBy(reaseguradores, ['nombre'], ['asc']),
-            cuotas: cuotas,
+            notasDebito: notasDebitoWord,
         });
 
-
+        //apply them (replace all occurences of {first_name} by Hipp, ...)
         try {
             // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
             doc.render();

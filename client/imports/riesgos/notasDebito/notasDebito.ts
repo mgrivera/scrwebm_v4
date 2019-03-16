@@ -98,23 +98,49 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
         // leemos las plantillas que corresponden a notas de cobertura impresas (cuyo tipo es: TMP-FAC-NOTA-CED, TMP-FAC-NOTA-REA, ...)
         $scope.showProgress = true;
 
-        $scope.subscribe("collectionFS_files", () => { return ['TMP-NOTA-DEBITO']; }, {
-            onReady: function () {
+        // ejecutamos un método que lee y regresa desde dropbox las plantillas para notas de cobertura 
+        Meteor.call('plantillas.obtenerListaArchivosDesdeDirectorio', "/facultativo/notasDebito", (err, result) => {
 
-                //   $scope.plantillas_ui_grid.data = [];
-                //   $scope.plantillas_ui_grid.data = $scope.collectionFS_files;
+            if (err) {
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
                 $scope.showProgress = false;
                 $scope.$apply();
-            },
-            onStop: function (error) {
-                $scope.showProgress = false;
-                $scope.$apply();
+
+                return;
             }
-        });
+
+            if (result.error) { 
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg:  result.message
+                });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
+
+            // para que solo se muestre el mensaje en alerts que muestra la cantidad de notas de débito leídas (registradas)
+            // $scope.alerts.length = 0;
+            // $scope.alerts.push({
+            //     type: 'info',
+            //     msg: result.message,
+            // });
+
+            $scope.template_files = result && result.files && Array.isArray(result.files) ? result.files : [ { name: "indefinido", type: "indefinido"} ]; 
+
+            $scope.showProgress = false;
+            $scope.$apply();
+        })
     })
 
-    $scope.notasDebito_construir = function() { 
+    $scope.notasDebito_construir = function(file: any) { 
 
         $scope.showProgress = true;
 
@@ -157,60 +183,90 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
         })
     }
 
-    // para mostrar los links que permiten al usuario hacer el download de las notas de débito 
-    $scope.downLoadWordDocument_notasDebito = false;
-    $scope.selectedFile_notasDebito = {};
-    $scope.downLoadLink_notasDebito = "";
-
     $scope.notasDebito_obtenerEnWord = function() { 
 
-        // TODO: aquí debemos leer desde el collection de files, la que corresponde al tipo: NOTA-DEBITO ... 
-        let file = CollectionFS_templates.findOne({ 'metadata.tipo': "TMP-NOTA-DEBITO" });
+        const template_files: { name: string }[] = $scope.template_files; 
 
-        if (!file) { 
+        if (!template_files || !Array.isArray(template_files) || !template_files.length) { 
+
+            let message = `Error: no existe una plantilla registrada en Dropbox para imprimir las notas de débito.<br />
+                           Ud. debe agregar una plantilla para este tipo de documentos, al directorio apropiado en la 
+                           cuenta Dropbox del programa.`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'danger',
-                msg: `Error: no existe una plantilla registrada para imprimir las notas de débito.<br />
-                      Ud. debe abrir la opción <em>Generales/Registrar archivos</em> y registrar una plantilla para 
-                      la impresión de notas de débito.`,
+                msg: message,
             });
             return; 
         }
 
-        // nota para el cedente
-        if (file.metadata.tipo === "TMP-NOTA-DEBITO") {
-            Meteor.call('notasDebito.obtenerNotasImpresas',
-                file._id,
-                $scope.riesgo._id, $scope.movimientoSeleccionado._id, (err: any, result: any) => {
+        if (!$scope.riesgo || !$scope.riesgo._id) { 
 
-                    if (err) {
-                        let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            let message = `Error: no se ha seleccionado un riesgo. Ud. debe seleccionar un riesgo antes de ejecutar esta función.`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({ type: 'danger', msg: errorMessage });
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: message,
+            });
+            return; 
+        }
 
-                        $scope.showProgress = false;
-                        $scope.$apply();
+        if (!$scope.movimientoSeleccionado || !$scope.movimientoSeleccionado._id) { 
 
-                        return;
-                    }
+            let message = `Error: no se ha seleccionado un movimiento. Ud. debe seleccionar un movimiento antes de ejecutar esta función.`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: message,
+            });
+            return; 
+        }
+
+        $scope.alerts.length = 0;
+        $scope.showProgress = true;
+
+        Meteor.call('notasDebito.obtenerNotasImpresas',
+            "/facultativo/notasDebito", template_files[0].name,
+            $scope.riesgo._id, $scope.movimientoSeleccionado._id, (err: any, result: any) => {
+
+                if (err) {
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
-                    $scope.alerts.push({
-                        type: 'info',
-                        msg: `Ok, el documento ha sido construido en forma exitosa.<br />
-                                  Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
-                    });
-
-                    $scope.selectedFile_notasDebito = file;
-                    $scope.downLoadLink_notasDebito = result;
-                    $scope.downLoadWordDocument_notasDebito = true;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
                     $scope.showProgress = false;
                     $scope.$apply();
-                });
-        };
+
+                    return;
+                }
+
+                if (result.error) {
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: result.message });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+
+                    return;
+                }
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'info',
+                    msg: result.message,
+                })
+
+                $scope.showProgress = false;
+                $scope.$apply();
+            }
+        )
     }
 }
 ]);

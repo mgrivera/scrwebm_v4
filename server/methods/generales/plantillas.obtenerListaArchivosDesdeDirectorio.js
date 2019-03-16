@@ -3,21 +3,13 @@
 import { Meteor } from 'meteor/meteor'; 
 import { Promise } from 'meteor/promise'; 
 import SimpleSchema from 'simpl-schema';
-import path from 'path';
-import { readDir, readFile, writeFile } from '@cloudcmd/dropbox';
+import { readDir } from '@cloudcmd/dropbox';
 
 // para leer un node stream y convertirlo en un string; nota: returns a promise 
 import getStream from 'get-stream'; 
 
 Meteor.methods({
     'plantillas.obtenerListaArchivosDesdeDirectorio': function (folderPath) {
-
-        // agregamos este método para contar la cantidad de registros que contiene un collection;
-        // Nota Importante: no usamos 'tmeasday:publish-counts' pues indica en su documentación que
-        // puede ser muy ineficiente si el dataset contiene muchos registros; además, este package
-        // es reactive, lo cual agregar un cierto costo a su ejecución ...
-
-        // nota: solo a veces usamos filtro ... 
 
         new SimpleSchema({
             folderPath: { type: String }
@@ -34,6 +26,7 @@ Meteor.methods({
         
         try {
             files = Promise.await(readDir(token, folderPath, { type, sort, order }));
+            files = files.files.filter(x => x.type === "file"); 
         } catch(err) { 
             error = true; 
             message = `Error: se ha producido un error al intentar obtener el contenido del directorio en Dropbox. <br />
@@ -41,9 +34,15 @@ Meteor.methods({
                 `; 
         } 
 
-        if (!error) { 
-            const filesCount = files && files.files && files.files.length ? files.files.length.toString() : "(Indefinido (???))"; 
+        if (!error && files && Array.isArray(files) && files.length) { 
+            const filesCount =  files.length.toString(); 
             message = `Ok, hemos leído <b>${filesCount}</b> archivos para este tipo de plantillas. `; 
+        } else { 
+            error = true; 
+            message = `Error: no hemos podido leer plantillas registradas en Dropbox, para este tipo de proceso en particular. <br /> 
+                       Ud. debe registrar al menos una plantilla para este tipo de proceso, en el directorio adecuado 
+                       (<em>${folderPath}</em>) en el Dropbox del programa. 
+                      `; 
         }
 
         message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???

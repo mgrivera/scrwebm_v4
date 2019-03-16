@@ -252,7 +252,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
                     type: 'info',
-                    msg: `Ok, el documento ha sido construido en forma exitosa.`,
+                    msg: result.message,
                 });
 
                 $scope.tipoPlantillaWord = null;
@@ -295,7 +295,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
                     type: 'info',
-                    msg: `Ok, el documento ha sido construido en forma exitosa.`,
+                    msg: result.message,
                 });
 
                 $scope.tipoPlantillaWord = null;
@@ -345,7 +345,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
             msg: result.message,
         });
 
-        $scope.template_files = result && result.files && result.files.files ? result.files.files : [ { name: "indefinido", type: "indefinido"} ]; 
+        $scope.template_files = result && result.files && Array.isArray(result.files) ? result.files : [ { name: "indefinido", type: "indefinido"} ]; 
 
         $scope.showProgress = false;
         $scope.$apply();
