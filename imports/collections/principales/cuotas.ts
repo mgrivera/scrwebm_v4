@@ -74,6 +74,10 @@ let simpleSchema: any = new SimpleSchema({
 export const Cuotas: any = new Mongo.Collection("cuotas");
 Cuotas.attachSchema(simpleSchema);
 
+if (Meteor.isServer) {
+    Cuotas.rawCollection().createIndex({ 'pagos.remesaID': 1 });
+}
+
 // validamos que registros anteriores al cierre no sean alterados 
 simpleSchema.addDocValidator(obj => {
     // Must return an array, potentially empty, of objects with `name` and `type` string properties and optional `value` property.

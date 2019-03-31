@@ -1,10 +1,11 @@
 
 
+import angular from 'angular'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller('RemesaCuadreObtener_Modal_Controller',
-['$scope', '$modalInstance', '$modal', '$meteor', 'remesaID', 'ciaSeleccionada',
-function ($scope, $modalInstance, $modal, $meteor, remesaID, ciaSeleccionada) {
+export default angular.module("scrwebm.remesas.remesa.remesasCuadreObtener", [])
+                      .controller('RemesaCuadreObtener_Modal_Controller',
+['$scope', '$modalInstance', 'remesaID', 'ciaSeleccionada', function ($scope, $modalInstance, remesaID, ciaSeleccionada) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];

@@ -1,4 +1,6 @@
 
+import angular from 'angular'; 
+
 import lodash from 'lodash'; 
 import moment from 'moment'; 
 import saveAs from 'save-as'; 
@@ -11,7 +13,11 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller('RemesaExportarArchivoTexto_Modal_Controller',
+import "./opcionesObtenerAsiento_Modal.html"; 
+import RemesaCuadreAsientoObtenerOpciones from "./opcionesObtenerAsiento_Modal_Controller"; 
+
+export default angular.module("scrwebm.remesas.remesa.cuadre.asientoContable", [ RemesaCuadreAsientoObtenerOpciones.name ])
+            .controller('RemesaCuadreAsientoContable_Modal_Controller',
 ['$scope', '$modalInstance', '$modal', 'remesa', 'tiposCuentaContable', 'cuentasContablesLista', 'cuentasContables', 'ciaSeleccionada', 'uiGridConstants',
 function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasContablesLista, cuentasContables, ciaSeleccionada, uiGridConstants) {
 
@@ -41,9 +47,9 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
     $scope.cuentasContablesLista = cuentasContablesLista; 
 
     $scope.obtenerAsientoContable = () => {
-        let modalInstance = $modal.open({
-            templateUrl: 'client/remesas/exportarTexto/opcionesObtenerAsiento_Modal.html',
-            controller: 'RemesaCuadreObtener_Opciones_Modal_Controller',
+        $modal.open({
+            templateUrl: 'client/imports/remesas/asientoContable/opcionesObtenerAsiento_Modal.html',
+            controller: 'RemesaCuadreAsientoContable_Opciones_Modal_Controller',
             size: 'md',
             resolve: {
             },
@@ -86,7 +92,6 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
             
                         $scope.showProgress = false;
                         $scope.$apply();
-        
                     })
                 })
         },

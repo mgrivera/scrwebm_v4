@@ -1,46 +1,49 @@
 ﻿
 
+import angular from 'angular';
 
 import { Temp_Consulta_Remesas } from '/imports/collections/consultas/tempConsultaRemesas'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebm").controller("RemesasListaController",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+import ReportDesdeList from './reportDesdeList/angularComponent'; 
 
-      $scope.showProgress = false;
+export default angular.module("scrwebm.remesas.lista", [ ReportDesdeList.name ])
+       .controller("RemesasListaController", ['$scope', '$state', '$stateParams', function ($scope, $state, $stateParams) {
 
-      // ui-bootstrap alerts ...
-      $scope.alerts = [];
+    $scope.showProgress = false;
 
-      $scope.closeAlert = function (index) {
-          $scope.alerts.splice(index, 1);
-      };
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
 
-      $scope.origen = $stateParams.origen;
-      var pageNumber = $stateParams.pageNumber;
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
 
-      // ------------------------------------------------------------------------------------------------
-      // leemos la compañía seleccionada
-      var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-      if (companiaSeleccionada) {
-          var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
-      }
+    $scope.origen = $stateParams.origen;
+    var pageNumber = $stateParams.pageNumber;
 
-      $scope.companiaSeleccionada = {};
+    // ------------------------------------------------------------------------------------------------
+    // leemos la compañía seleccionada
+    var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = null; 
+    if (companiaSeleccionada) {
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1, nombreCorto: 1, } });
+    }
 
-      if (companiaSeleccionadaDoc) {
-          $scope.companiaSeleccionada = companiaSeleccionadaDoc;
-      }
-      else {
-          $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
-      }
-      // ------------------------------------------------------------------------------------------------
+    $scope.companiaSeleccionada = {};
 
-      $scope.nuevo = function () {
-          $state.go("remesa", { origen: 'edicion', id: '0', pageNumber: 0 });
-      }
+    if (companiaSeleccionadaDoc) {
+        $scope.companiaSeleccionada = companiaSeleccionadaDoc;
+    }
+    else {
+        $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
+    }
+    // ------------------------------------------------------------------------------------------------
+
+    $scope.nuevo = function () {
+        $state.go("remesa", { origen: 'edicion', id: '0', pageNumber: 0 });
+    }
 
     $scope.abrirRemesaPage = function (remesaID) {
     

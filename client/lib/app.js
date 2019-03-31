@@ -24,7 +24,8 @@ import 'angular-utils-pagination';              // angularUtils.directives.dirPa
 // hacemos un import de los módulos (angular modules) que están en /client/imports, y los pasamos en DI (angular dependency injection) 
 import Generales from '/client/imports/generales/generalesAngularModule'; 
 import Riesgos from '/client/imports/riesgos/riesgosAngularModule'; 
-import NotasDebitoCredito from '/client/imports/notasDebitoCredito/notasDebitoCreditoController'; 
+import Remesas from '/client/imports/remesas/remesasAngularModule'; 
+import NotasDebitoCredito from '/client/imports/notasDebitoCredito/notasDebitoCreditoModule'; 
 
 
 angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
@@ -33,6 +34,6 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
-                            Generales.name, Riesgos.name, NotasDebitoCredito.name, 
+                            Generales.name, Riesgos.name, Remesas.name, NotasDebitoCredito.name, 
                           ]);
 

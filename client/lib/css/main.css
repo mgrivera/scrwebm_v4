@@ -173,3 +173,16 @@ a.disabled {
     pointer-events: none;
     text-decoration: none;
 }
+
+a.toolBarLink {
+  font-size: small;
+  padding: 5px;
+}
+
+a:hover.toolBarLink {
+  color: #428BCA !important;
+  font-style: italic;
+}
+
+/* para corregir un pequeño bug en semantic ui modal que hace que no se centre en el screen  */
+}

@@ -2,7 +2,7 @@
 
 import lodash from 'lodash'; 
 
-import { ProtegerEntidades } from '../imports/generales/protegerEntidades'; 
+import { ProtegerEntidades } from '/client/imports/generales/protegerEntidades'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -17,9 +17,28 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("RemesaController",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', 'uiGridGroupingConstants', 'uiGridConstants',
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, uiGridGroupingConstants, uiGridConstants) {
+import '/client/imports/remesas/remesa.generales.html'; 
+import '/client/imports/remesas/remesa.detalle.html'; 
+import '/client/imports/remesas/remesa.cuadre.html'; 
+
+import RemesasRemesaCuadreExportarExcel from './exportarExcelModal/remesaCuadreExportarExcel_Modal_Controller'; 
+import './exportarExcelModal/remesaCuadreExportarExcel_Modal.html'; 
+
+import RemesasRemesaObtenerCuadreRemesa from './obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal'; 
+import './obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html';
+
+import './asientoContable/asientoContable_Modal.html';
+import RemesaCuadreAsientoContable from './asientoContable/asientoContable'; 
+
+export default angular.module("scrwebm.remesas.remesa", 
+                      [ 
+                        RemesasRemesaCuadreExportarExcel.name, 
+                        RemesasRemesaObtenerCuadreRemesa.name, 
+                        RemesaCuadreAsientoContable.name, 
+                      ])
+                      .controller("RemesaController",
+['$scope', '$state', '$stateParams', '$modal', 'uiGridGroupingConstants',
+  function ($scope, $state, $stateParams, $modal, uiGridGroupingConstants) {
 
     $scope.showProgress = false;
 
@@ -458,8 +477,8 @@ angular.module("scrwebm").controller("RemesaController",
 
 
     $scope.exportarCuadreRemesaMicrosoftExcel = () => {
-    let modalInstance = $modal.open({
-        templateUrl: 'client/remesas/exportarExcelModal/remesaCuadreExportarExcel_Modal.html',
+    $modal.open({
+        templateUrl: 'client/imports/remesas/exportarExcelModal/remesaCuadreExportarExcel_Modal.html',
         controller: 'RemesaCuadreExportarExcel_Modal_Controller',
         size: 'md',
         resolve: {
@@ -479,11 +498,10 @@ angular.module("scrwebm").controller("RemesaController",
         })
     }
 
-
-    $scope.construirAsientoContable = () => {
-        let modalInstance = $modal.open({
-            templateUrl: 'client/remesas/exportarTexto/exportarArchivoTexto_Modal.html',
-            controller: 'RemesaExportarArchivoTexto_Modal_Controller',
+    $scope.remesaCuadreAsientoContable = () => {
+        $modal.open({
+            templateUrl: 'client/imports/remesas/asientoContable/asientoContable_Modal.html',
+            controller: 'RemesaCuadreAsientoContable_Modal_Controller',
             size: 'lg',
             resolve: {
                 remesa: () => {
@@ -991,39 +1009,34 @@ angular.module("scrwebm").controller("RemesaController",
 
     $scope.obtenerCuadreRemesa = remesaID => {
         if ($scope.remesa.docState && $scope.origen == 'edicion') {
-            let promise = DialogModal($modal,
-                                    "<em>Remesas</em>",
-                                    "Aparentemente, la remesa ha recibido cambios; por favor " +
-                                    "guarde los cambios antes de intentar ejecutar esta función.",
-                                    false);
+            DialogModal($modal, "<em>Remesas</em>",
+                                "Aparentemente, la remesa ha recibido cambios; por favor " +
+                                "guarde los cambios antes de intentar ejecutar esta función.",
+                                false);
             return;
         }
 
         if (!$scope.remesa.fechaCerrada) {
-            let promise = DialogModal($modal,
-                                    "<em>Remesas</em>",
-                                    `Aparentemente, a la remesa no se le han asociado cobros/pagos aún, y su estado no
-                                    es <em>cerrada</em>.<br /><br />
-                                    Por esa razón, Ud. no debe intentar obtener un <em>cuadre</em> para la misma.<br /><br />
-                                    Ud. debe ejecutar la opción <em>Cobranzas/Cobranza</em> para asociar cuotas de
-                                    pago/cobro a la remesa.<br /><br />
-                                    Luego, puede regresar a esta opción y obtener el <em>cuadre</em> para la remesa.`,
-                                    false);
+            DialogModal($modal, "<em>Remesas</em>",
+                                `Aparentemente, a la remesa no se le han asociado cobros/pagos aún, y su estado no
+                                es <em>cerrada</em>.<br /><br />
+                                Por esa razón, Ud. no debe intentar obtener un <em>cuadre</em> para la misma.<br /><br />
+                                Ud. debe ejecutar la opción <em>Cobranzas/Cobranza</em> para asociar cuotas de
+                                pago/cobro a la remesa.<br /><br />
+                                Luego, puede regresar a esta opción y obtener el <em>cuadre</em> para la remesa.`,
+                                false);
             return;
         }
 
 
         if ($scope.remesa.cuadre && $scope.remesa.cuadre.length) {
-            let promise = DialogModal($modal,
-                                    "<em>Remesas</em>",
-                                    `Esta remesa <b>ya contiene</b> un <em>cuadre</em> registrado. Seguramente,
-                                        el mismo fue construido usando esta misma función.<br /><br />
-                                        Si Ud. continúa, el mismo será eliminado y un nuevo <em>cuadre</em>
-                                        será construido y registrado en su lugar.<br /><br />
-                                        Desea continuar y registrar un nuevo <em>cuadre</em> para la remesa?`,
-                                    true);
-
-            promise.then(
+            DialogModal($modal, "<em>Remesas</em>",
+                                `Esta remesa <b>ya contiene</b> un <em>cuadre</em> registrado. Seguramente,
+                                el mismo fue construido usando esta misma función.<br /><br />
+                                Si Ud. continúa, el mismo será eliminado y un nuevo <em>cuadre</em>
+                                será construido y registrado en su lugar.<br /><br />
+                                Desea continuar y registrar un nuevo <em>cuadre</em> para la remesa?`,
+                                true).then(
                 function (resolve) {
                     obtenerCuadreRemesa($scope.remesa._id);
                     mostrarCuadreRemesa(); 
@@ -1042,8 +1055,8 @@ angular.module("scrwebm").controller("RemesaController",
 
     function obtenerCuadreRemesa(remesaID) {
 
-        let modalInstance = $modal.open({
-            templateUrl: 'client/remesas/obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html',
+        $modal.open({
+            templateUrl: 'client/imports/remesas/obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html',
             controller: 'RemesaCuadreObtener_Modal_Controller',
             size: 'md',
             resolve: {

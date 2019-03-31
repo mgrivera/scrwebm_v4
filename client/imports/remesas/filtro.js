@@ -1,5 +1,6 @@
 ﻿
 
+import angular from 'angular';
 import lodash from 'lodash'; 
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
@@ -12,9 +13,9 @@ import { Filtros } from '/imports/collections/otros/filtros';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("RemesasFiltroController",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+export default angular.module("scrwebm.remesas.filtro", [])
+       .controller("RemesasFiltroController", ['$scope', '$state', '$stateParams', 
+  function ($scope, $state, $stateParams) {
 
       $scope.showProgress = false;
 
@@ -25,55 +26,55 @@ angular.module("scrwebm").controller("RemesasFiltroController",
         progress: 0
     };
 
-      // ui-bootstrap alerts ...
-      $scope.alerts = [];
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
 
-      $scope.closeAlert = function (index) {
-          $scope.alerts.splice(index, 1);
-      };
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
 
-      $scope.origen = $stateParams.origen;
+    $scope.origen = $stateParams.origen;
 
-      $scope.miSu_List = ['', 'MI', 'SU'];
+    $scope.miSu_List = ['', 'MI', 'SU'];
 
-      $scope.tiposInstrumentoPago_List = [
-            { tipo: 'CH', descripcion: 'Cheque' },
-            { tipo: 'DP', descripcion: 'Depósito' },
-            { tipo: 'TR', descripcion: 'Transferencia' }];
+    $scope.tiposInstrumentoPago_List = [
+        { tipo: 'CH', descripcion: 'Cheque' },
+        { tipo: 'DP', descripcion: 'Depósito' },
+        { tipo: 'TR', descripcion: 'Transferencia' }];
 
-      // ------------------------------------------------------------------------------------------------
-      // leemos la compañía seleccionada
-      var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-      if (companiaSeleccionada) {
-          var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
-      }
+    // ------------------------------------------------------------------------------------------------
+    // leemos la compañía seleccionada
+    var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    if (companiaSeleccionada) {
+        var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+    }
 
-      $scope.companiaSeleccionada = {};
+    $scope.companiaSeleccionada = {};
 
-      if (companiaSeleccionadaDoc) {
-          $scope.companiaSeleccionada = companiaSeleccionadaDoc;
-      }
-      else {
-          $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
-      }
-      // ------------------------------------------------------------------------------------------------
+    if (companiaSeleccionadaDoc) {
+        $scope.companiaSeleccionada = companiaSeleccionadaDoc;
+    }
+    else {
+        $scope.companiaSeleccionada.nombre = "No hay una compañía seleccionada ...";
+    }
+    // ------------------------------------------------------------------------------------------------
 
-      $scope.helpers({
-          companias: () => {
-              return Companias.find();
-          },
-          monedas: () => {
-              return Monedas.find();
-          },
-          bancos: () => {
-              return Bancos.find();
-          },
-      })
+    $scope.helpers({
+        companias: () => {
+            return Companias.find();
+        },
+        monedas: () => {
+            return Monedas.find();
+        },
+        bancos: () => {
+            return Bancos.find();
+        },
+    })
 
-      // para limpiar el filtro, simplemente inicializamos el $scope.filtro ...
-      $scope.limpiarFiltro = function () {
-          $scope.filtro = {};
-      }
+    // para limpiar el filtro, simplemente inicializamos el $scope.filtro ...
+    $scope.limpiarFiltro = function () {
+        $scope.filtro = {};
+    }
 
 
     // aplicamos el filtro indicado por el usuario y abrimos la lista

@@ -26,19 +26,22 @@
 
     <div class="row">
         <div class="col-sm-10 col-sm-offset-1">
-            <div class="col-sm-8" style="padding-left: 0; ">
+            <div class="col-sm-5" style="padding-left: 0; ">
                 <dir-pagination-controls class="navigation-bar pull-left" boundary-links="true"></dir-pagination-controls>
             </div>
-
-            <div class="col-sm-4" style="padding-right: 0; ">
+            <div class="col-sm-2" style="padding-left: 0; ">
+                <report-from-list-angular-component compania-seleccionada-id="companiaSeleccionada._id" 
+                                                    compania-seleccionada-nombre="companiaSeleccionada.nombreCorto" />
+            </div>
+            <div class="col-sm-5" style="padding-right: 0; ">
                 <div class="input-group input-group-sm pull-right">
-                    <span class="input-group-addon">
+                    <!-- <span class="input-group-addon">
                         <span class="glyphicon glyphicon-search"></span>
-                    </span>
+                    </span> -->
                     <input ng-model="filterUser"
                            class="form-control"
                            type="text"
-                           placeholder="buscar ..." />
+                           placeholder="buscar (ejemplo: vivir, atrio, etc.) ..." />
                 </div>
             </div>
         </div>
@@ -78,7 +81,7 @@
 
                         <td style="text-align: center; ">{{ remesa.miSu }}</td>
                         <td style="text-align: center; white-space: nowrap; ">{{ remesa.moneda }}</td>
-                        <td style="text-align: right; ">{{ remesa.instrumentoPago.monto | currencyFilter }}</td>
+                        <td style="text-align: right; ">{{ remesa.monto | currency:"":2}}</td>
                         <td style="text-align: center; white-space: nowrap; ">{{ remesa.fechaCerrada | date:'dd-MM-yyyy' }}</td>
                         
                         <td style="text-align: left; ">

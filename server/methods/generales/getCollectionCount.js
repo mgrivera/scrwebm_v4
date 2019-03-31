@@ -1,8 +1,11 @@
 
+
 import SimpleSchema from 'simpl-schema';
+
 import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
 import { Cierre } from '/imports/collections/cierre/cierre'; 
 import { Temp_consulta_cierreRegistro } from '/imports/collections/consultas/temp_consulta_cierreRegistro'; 
+import { Temp_Consulta_NotasDebitoCredito } from '/imports/collections/consultas/tempConsultaNotasDebitoCredito'; 
 import { Temp_Consulta_Riesgos } from '/imports/collections/consultas/tempConsultaRiesgos'; 
 
 Meteor.methods({
@@ -22,23 +25,21 @@ Meteor.methods({
         switch (collectionName) {
             case 'Temp_Consulta_Riesgos': { 
                 return Temp_Consulta_Riesgos.find({ user: this.userId }).count();
-                break;
             }
             case 'Temp_Consulta_Contratos': { 
                 return Temp_Consulta_Contratos.find({ user: this.userId }).count();
-                break;
             } 
             case 'CierreRegistro': { 
                 return CierreRegistro.find(filtro).count();
-                break;
             } 
             case 'Cierre': { 
                 return Cierre.find(filtro).count();
-                break;
             } 
             case 'Temp_consulta_cierreRegistro': { 
                 return Temp_consulta_cierreRegistro.find({ user: this.userId }).count();
-                break;
+            }
+            case 'temp_consulta_notasDebitoCredito': { 
+                return Temp_Consulta_NotasDebitoCredito.find({ user: this.userId }).count();
             }
             default: { 
                 return -9999;
