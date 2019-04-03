@@ -1,14 +1,14 @@
 ﻿
 
+import angular from 'angular'; 
 
 import { Remesas } from '/imports/collections/principales/remesas';
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
   
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("CobranzasResultadosController",
-['$scope', '$state', '$stateParams', '$meteor', '$modal',
-  function ($scope, $state, $stateParams, $meteor, $modal) {
+export default angular.module("scrwebm.cobranzas.resultados", [])
+                      .controller("CobranzasResultadosController", ['$scope', '$stateParams', '$modal', function ($scope, $stateParams, $modal) {
 
       $scope.showProgress = false;
 

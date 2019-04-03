@@ -326,23 +326,23 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('cobranzas', {
             url: '/cobranzas',
-            templateUrl: 'client/cobranzas/cobranzas.html',
+            templateUrl: 'client/imports/cobranzas/cobranzas.html',
             controller: 'CobranzasController'
         })
         .state('cobranzas.seleccionRemesa', {
             url: '/cobranzas/seleccionRemesa',
-            templateUrl: 'client/cobranzas/cobranzas.seleccionRemesa.html',
+            templateUrl: 'client/imports/cobranzas/cobranzas.seleccionRemesa.html',
             controller: 'CobranzasSeleccionRemesaController'
         })
         .state('cobranzas.aplicarPagos', {
             url: '/cobranzas/aplicarPagos?remesaPK',
-            templateUrl: 'client/cobranzas/cobranzas.aplicarPagos.html',
+            templateUrl: 'client/imports/cobranzas/cobranzas.aplicarPagos.html',
             controller: 'CobranzasAplicarPagosController',
             params: { 'remesaPK': null }
         })
         .state('cobranzas.resultados', {
             url: '/cobranzas/resultados?remesaID&cantPagos',
-            templateUrl: 'client/cobranzas/cobranzas.resultados.html',
+            templateUrl: 'client/imports/cobranzas/cobranzas.resultados.html',
             controller: 'CobranzasResultadosController',
             params: { 'remesaID': null, 'cantPagos': null }
         })

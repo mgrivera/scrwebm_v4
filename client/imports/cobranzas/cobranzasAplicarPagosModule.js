@@ -1,5 +1,7 @@
 ﻿
 
+import angular from 'angular'; 
+
 import lodash from 'lodash'; 
 import numeral from 'numeral'; 
 import moment from 'moment'; 
@@ -9,9 +11,12 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
 
+import CobranzaResumenCobranzaModal from './resumenCobranzaModal/angularComponent'; 
+
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("CobranzasAplicarPagosController",
+export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResumenCobranzaModal.name ])
+                      .controller("CobranzasAplicarPagosController",
 ['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
 
     $scope.showProgress = false;
@@ -32,6 +37,9 @@ angular.module("scrwebm").controller("CobranzasAplicarPagosController",
         $scope.showProgress = true;
 
         remesaSeleccionada = Remesas.findOne({ _id: remesaSeleccionadaPK });
+
+        $scope.remesa = remesaSeleccionada; 
+        $scope.monedaRemesa = Monedas.findOne($scope.remesa.moneda); 
 
         Meteor.call('cobranzas.determinarCuotasPendientesCompaniaRemesaSeleccionada', remesaSeleccionada._id, (err, result)  => {
 
@@ -193,6 +201,9 @@ angular.module("scrwebm").controller("CobranzasAplicarPagosController",
         `
     }
 
+    let resumenArray = []; 
+    $scope.resumenCuotasAplicadasArray = []; 
+
     $scope.calcularTotalMontoAPagar = function() { 
         // para calcular y mostrar el total para el monto seleccionado en la tabla 
         let montoTotalSeleccionado = lodash($scope.temp_cobranzas).filter((x) => { return x.pagar; }).sumBy("monto"); 
@@ -224,16 +235,38 @@ angular.module("scrwebm").controller("CobranzasAplicarPagosController",
                 Monto remesa: ${numeral(montoRemesa).format("0,0.00")} - 
                 aplicado: ${numeral(montoTotalSeleccionado).format("0,0.00")} - 
                 resta: ${numeral(montoPorAplicar).format("0,0.00")}. 
-            `
+            `; 
         }
+
+        // creamos un array para pasar al react component que muestra el resumen 
+        resumenArray.length = 0; 
+        let id = 0; 
+        $scope.temp_cobranzas.filter(x => x.pagar).forEach((x) => { 
+            const item = { 
+                id: id, 
+                origen: `${x.origen.origen}-${x.origen.numero}`, 
+                monedaID: x.cuota.moneda, 
+                monto: x.monto, 
+            }
+
+            resumenArray.push(item); 
+            id++; 
+        })
+
+        resumenArray.forEach(x => { 
+            const moneda = Monedas.findOne(x.monedaID, { fields: { simbolo: true, }}); 
+            x.simboloMoneda = moneda.simbolo; 
+            x.monedaDefecto = moneda.defecto ? moneda.defecto : false; 
+        })
+
+        $scope.resumenCuotasAplicadasArray = resumenArray; 
     }
 
     $scope.cobranza_guardarState = function() { 
         
         // para permitir al usuario guardar el estado de la cobranza y recuperarlo luego. Esto permite que el usuario 'marque' muchos cobros; 
         // los guarda en un file y luego regrese, los cargue y continúe el proceso ... 
-
-        let modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/cobranzas/cobranzaGuardarEstado_Modal.html',
             controller: 'CobranzaGuardarEstado_Controller',
             size: 'md',
@@ -258,4 +291,25 @@ angular.module("scrwebm").controller("CobranzasAplicarPagosController",
     // angular pagination ...
     $scope.pageSize = 10;
     $scope.currentPage = 1;
+
+    // para reportar el progreso de la tarea en la página
+    $scope.processProgress = {
+        current: 0,
+        max: 0,
+        progress: 0,
+        message: "", 
+    }
+
+    // ------------------------------------------------------------------------------------------------------
+    // para recibir los eventos desde la tarea en el servidor ...
+    EventDDP.setClient({ myuserId: Meteor.userId(), app: 'scrwebm', process: 'cobranzas.procesosVarios' });
+    EventDDP.addListener('cobranzas.procesosVarios.reportProgress', function(process) {
+        $scope.processProgress.current = process.current;
+        $scope.processProgress.max = process.max;
+        $scope.processProgress.progress = process.progress;
+        $scope.processProgress.message = process.message ? process.message : null;
+        // if we don't call this method, angular wont refresh the view each time the progress changes ...
+        // until, of course, the above process ends ...
+        $scope.$apply();
+    });
 }]);

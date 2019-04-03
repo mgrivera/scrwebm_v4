@@ -26,6 +26,7 @@ import Generales from '/client/imports/generales/generalesAngularModule';
 import Riesgos from '/client/imports/riesgos/riesgosAngularModule'; 
 import Remesas from '/client/imports/remesas/remesasAngularModule'; 
 import NotasDebitoCredito from '/client/imports/notasDebitoCredito/notasDebitoCreditoModule'; 
+import Cobranzas from '/client/imports/cobranzas/cobranzasModule'; 
 
 
 angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
@@ -34,6 +35,6 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
-                            Generales.name, Riesgos.name, Remesas.name, NotasDebitoCredito.name, 
+                            Generales.name, Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
                           ]);
 

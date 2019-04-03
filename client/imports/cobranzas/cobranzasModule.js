@@ -1,6 +1,5 @@
 ﻿
 
-
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
@@ -9,11 +8,31 @@ import { Bancos } from '/imports/collections/catalogos/bancos';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
 
-angular.module("scrwebm").controller("CobranzasController",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+import './cobranzas.html'; 
+
+// angular modules 
+import './cobranzas.seleccionRemesa.html'; 
+import CobranzasSeleccionRemesaModule from './cobranzasSeleccionRemesaModule'; 
+
+import './cobranzas.aplicarPagos.html';
+import CobranzasAplicarPagosModule from  './cobranzasAplicarPagosModule'; 
+
+import './cobranzas.resultados.html'; 
+import CobranzasResultadosModule from  './cobranzasResultadosModule'; 
+
+export default angular.module("scrwebm.cobranzas", [ CobranzasSeleccionRemesaModule.name, 
+                                                     CobranzasAplicarPagosModule.name, 
+                                                     CobranzasResultadosModule.name] )
+                      .controller("CobranzasController", ['$scope', '$state', '$meteor', function ($scope, $state, $meteor) {
 
     $scope.showProgress = false;
+
+    $scope.processProgress = {
+        current: 0,
+        max: 0,
+        progress: 0,
+        message: "", 
+    }
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -26,7 +45,7 @@ angular.module("scrwebm").controller("CobranzasController",
     // leemos la compañía seleccionada
     var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     if (companiaSeleccionada) { 
-        var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+        var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID);
     }
         
     $scope.companiaSeleccionada = {};
@@ -38,7 +57,6 @@ angular.module("scrwebm").controller("CobranzasController",
     }  
     // ------------------------------------------------------------------------------------------------
 
-
     // leemos los catálogos en el $scope
     $scope.monedas = $scope.$meteorCollection(Monedas, false);
     $scope.companias = $scope.$meteorCollection(Companias, false);
@@ -47,12 +65,14 @@ angular.module("scrwebm").controller("CobranzasController",
     // aplicamos el filtro indicado por el usuario y abrimos la lista
     function leerRemesasAbiertas() {
 
-        //debugger;
+        $scope.showProgress = true;
+        $scope.processProgress.message = "leyendo remesas abiertas ..."; 
 
         // si se efectuó un subscription al collection antes, la detenemos ...
-        if (Remesas_SubscriptionHandle)
+        if (Remesas_SubscriptionHandle) { 
             Remesas_SubscriptionHandle.stop();
-
+        }
+            
         Remesas_SubscriptionHandle = null;
 
         // preparamos el filtro (selector)
@@ -61,8 +81,6 @@ angular.module("scrwebm").controller("CobranzasController",
         // agregamos la compañía seleccionada al filtro
         filtro.cia = $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : -999;
         filtro.fechaCerrada = null;
-
-        $scope.showProgress = true;
 
         $meteor.subscribe('remesas', JSON.stringify(filtro)).then(
             function (subscriptionHandle) {
@@ -80,6 +98,7 @@ angular.module("scrwebm").controller("CobranzasController",
                     return;
                 }
 
+                $scope.processProgress.message = ""; 
                 $scope.showProgress = false;
 
                 // mostramos el 'state' inicial, el cual le permite al usuario seleccionar una remesa
@@ -94,11 +113,11 @@ angular.module("scrwebm").controller("CobranzasController",
                         err.toString()
                 });
 
+                $scope.processProgress.message = ""; 
                 $scope.showProgress = false;
             })
     }
 
-
-      leerRemesasAbiertas();
+    leerRemesasAbiertas();
   }
 ]);

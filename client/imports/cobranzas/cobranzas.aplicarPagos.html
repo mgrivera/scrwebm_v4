@@ -12,6 +12,14 @@
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
             <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            <div ng-show="showProgress">
+                <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
+                    ({{ processProgress.current }}/{{ processProgress.max }} - {{ processProgress.progress }})
+                </div>
+                <div ng-show="processProgress.message" style="font-size: x-small; font-weight: bold; ">
+                    ({{ processProgress.message }})
+                </div>
+            </div>
         </div>
     </div>
 
@@ -40,14 +48,14 @@
             <p style="font-size: small; color: red; text-align: left; ">
                 (<b>Nota:</b> recuerde que el monto a cobrar/pagar debe ser siempre del signo <em>contrario</em> al original)
             </p>
-        </div>  
+        </div> 
+
         <div class="col-sm-4 col-sm-offset-0" style="text-align: right; font-size: small; ">
             <select ng-model="search.pagar"
                     ng-options="item.tipo as item.descripcion for item in opcionesSeleccionarCuotas">
             </select>
         </div>  
     </div>
-
 
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0">
@@ -148,7 +156,16 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-12 col-sm-offset-0" style="text-align: right; ">
+        <div class="col-sm-7 col-sm-offset-1" style="text-align: left; ">
+            <cobranza-resumen-cobranza-modal remesa-numero="remesa.numero",
+                                             remesa-mi-su="remesa.miSu", 
+                                             remesa-moneda-id="remesa.moneda", 
+                                             remesa-simbolo-moneda="monedaRemesa.simbolo",
+                                             remesa-monto="remesa.instrumentoPago.monto",
+                                             remesa-factor-cambio="remesa.factorCambio", 
+                                             resumen-cuotas-aplicadas="resumenCuotasAplicadasArray" />
+        </div>
+        <div class="col-sm-4 col-sm-offset-0" style="text-align: right; ">
             <button ng-click="regresarStateAnterior()" class="btn btn-default btn-sm">Regresar ...</button>
             <button ng-click="aplicarPagos()" class="btn btn-default btn-sm">Aplicar ...</button>
         </div>

@@ -1,0 +1,31 @@
+
+
+.operaciones {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: x-small; 
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .operaciones td, .operaciones th {
+    border: 1px solid #ddd;
+    padding: 4px 4px 4px 4px;
+  }
+  
+  .operaciones tr:nth-child(even){background-color: #f2f2f2;}
+  
+  .operaciones tr:hover {background-color: #ddd;}
+  
+  .operaciones th {
+    padding: 6px 4px 6px 4px;
+    text-align: left;
+    background-color: #428BCA;
+    color: white;
+  }
+
+  table.center {
+    width:90%; 
+    margin-left:5%; 
+    margin-right:5%;
+    margin-top: 8px; 
+  }

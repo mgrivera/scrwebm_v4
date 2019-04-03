@@ -1,7 +1,8 @@
 
 
-
 import lodash from 'lodash';
+import numeral from 'numeral'; 
+
 import { Remesas } from '/imports/collections/principales/remesas';  
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 import { Riesgos } from '/imports/collections/principales/riesgos'; 
@@ -32,7 +33,26 @@ Meteor.methods(
         Temp_Cobranzas.remove({ usuario: self.userId });
 
         // leemos las cuotas que corresponden a la compañía de la remesa (y la cia) y que están pendientes (ie: sin pagos 'completos'
-        var cuotasPendientes = Cuotas.find({ compania: remesa.compania, cia: remesa.cia, 'pagos.completo': { $nin: [true] } });
+        const cuotasPendientes = Cuotas.find({ compania: remesa.compania, cia: remesa.cia, 'pagos.completo': { $nin: [true] } }).fetch();
+
+        // -------------------------------------------------------------------------------------------------------------
+        // valores para reportar el progreso
+        let numberOfItems = cuotasPendientes.length;
+        let reportarCada = Math.floor(numberOfItems / 25);
+        let reportar = 0;
+        let cantidadRecs = 0;
+        let numberOfProcess = 1;
+        let currentProcess = 1;
+        let message = `leyendo cuotas pendientes ... `; 
+
+        // nótese que 'eventName' y 'eventSelector' no cambiarán a lo largo de la ejecución de este procedimiento
+        let eventName = "cobranzas.procesosVarios.reportProgress";
+        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cobranzas.procesosVarios' };
+        let eventData = { current: currentProcess, max: numberOfProcess, progress: '0 %', message: message, };
+
+        // sync call
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        // -------------------------------------------------------------------------------------------------------------
 
         var cantidadRegistrosAgregadosTablaTemporal = 0;
 
@@ -129,7 +149,6 @@ Meteor.methods(
                 }
             }
 
-
             // el monto pendiente para una cuota sin pagos es, simplemente, su monto ..
             cuotaPendiente.montoPendiente = cuota.monto;
 
@@ -150,6 +169,32 @@ Meteor.methods(
             Temp_Cobranzas.insert(cuotaPendiente);
 
             cantidadRegistrosAgregadosTablaTemporal++;
+
+            // -------------------------------------------------------------------------------------------------------
+            // vamos a reportar progreso al cliente; solo 20 veces ...
+            cantidadRecs++;
+            if (numberOfItems <= 25) {
+                // hay menos de 20 registros; reportamos siempre ...
+                eventData = {
+                              current: currentProcess, max: numberOfProcess,
+                              progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
+                              message: message
+                            };
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+            }
+            else {
+                reportar++;
+                if (reportar === reportarCada) {
+                    eventData = {
+                                  current: currentProcess, max: numberOfProcess,
+                                  progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
+                                  message: message
+                                };
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    reportar = 0;
+                }
+            }
+            // -------------------------------------------------------------------------------------------------------
         })
 
 
