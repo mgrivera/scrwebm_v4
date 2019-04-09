@@ -3,6 +3,7 @@
 import * as lodash from 'lodash'; 
 
 import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { Remesas } from 'imports/collections/principales/remesas'; 
 import { ReconversionMonetaria_log } from 'imports/collections/otros/reconversionMonetaria_log'; 
 
 Meteor.methods(
@@ -79,6 +80,56 @@ Meteor.methods(
         return { 
             error: false, 
             message: "Ok, el proceso de reconversión ha sido efectuado en forma satisfactoria.", 
+        }
+    }, 
+
+    'reconversionMonetaria_Remesas': function (monedaDefault, parametros, companiaSeleccionada) {
+
+        // calcumos el divisor en base a la cantidad de dígitos indicada 
+        let divisor = 1;
+
+        for (let i = 1; i <= parametros.cantidadDigitos; i++) {
+            divisor = divisor * 10;
+        }
+
+        // nótese como, deliveradamente, solo seleccionamos remesas anteriores al 22Ago2019 
+        const fechaHasta = new Date(2018, 8, 22); 
+        let remesas = Remesas.find({ cia: companiaSeleccionada._id, moneda: monedaDefault._id, fecha: { $lt: fechaHasta }, 'instrumentoPago.monto': { $exists: true }}).fetch(); 
+
+        let cantidadRemesasActualizadas = 0; 
+        let cantidadRemesasLeidas = 0; 
+
+        for (let remesa of remesas) { 
+
+            // actualizamos los montos de la remesa
+            let monto2 = lodash.round(remesa.instrumentoPago.monto / divisor, 2); 
+
+            Remesas.update({ _id: remesa._id, }, { $set: { 'instrumentoPago.monto': monto2 }}); 
+
+            cantidadRemesasActualizadas++; 
+            cantidadRemesasLeidas++; 
+        }
+
+        let message = `Proceso de reconversión Remesas ejecutado en forma satisfactoria. <br /><br /> 
+                       La cantidad de dígitos indicada fue ${parametros.cantidadDigitos.toString()} y el divisor que resultó es ${divisor.toString()}.
+                       En total, ${cantidadRemesasLeidas.toString()} remesas fueron leídas y, de éstas, ${cantidadRemesasActualizadas.toString()} fueron actualizadas. 
+                    `; 
+
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+        // agregamos un registro al log  
+        ReconversionMonetaria_log.insert({ 
+            _id: new Mongo.ObjectID()._str, 
+            fecha: new Date(), 
+            descripcion: message, 
+            cantidadDigitos: parametros.cantidadDigitos, 
+            user: Meteor.user().emails[0].address, 
+            cia: companiaSeleccionada._id, 
+        })
+
+        return { 
+            error: false, 
+            message: "Ok, el proceso de reconversión Remesas ha sido efectuado en forma satisfactoria.", 
         }
     }
 })

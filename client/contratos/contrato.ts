@@ -127,7 +127,7 @@ angular.module("scrwebm").controller("ContratoController",
             numero: 0,
             fechaEmision: new Date(),
             ingreso: new Date(),
-            usuario: Meteor.userId(),
+            usuario: Meteor.user().emails[0].address,
             cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
             docState: 1,
         };
@@ -1975,7 +1975,7 @@ angular.module("scrwebm").controller("ContratoController",
                 numero: 0,
                 fechaEmision: new Date(),
                 ingreso: new Date(),
-                usuario: Meteor.userId(),
+                usuario: Meteor.user().emails[0].address,
                 cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
                 docState: 1
             };

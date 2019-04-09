@@ -134,7 +134,7 @@ export default angular.module("scrwebm.remesas.remesa",
             moneda: monedaDefault ? monedaDefault._id : null, 
             instrumentoPago: {}, 
             ingreso: new Date(),
-            usuario: Meteor.userId(),
+            usuario: Meteor.user().emails[0].address,
             cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
             docState: 1
         };
@@ -219,78 +219,92 @@ export default angular.module("scrwebm.remesas.remesa",
     }
 
     function grabar2() { 
-    $scope.showProgress = true;
-    
-    // nótese como validamos antes de intentar guardar en el servidor
-    var isValid = false;
-    var errores = [];
 
-    var item = {};
-
-    item = $scope.remesa;
-
-    if (item.docState != 3) {
-        isValid = Remesas.simpleSchema().namedContext().validate(item);
-
-        if (!isValid) {
-            Remesas.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name +
-                            "'; error de tipo '" + error.type + ".");
-            });
-        }
-    }
-
-    if (errores && errores.length) {
-
-        $scope.alerts.length = 0;
-        $scope.alerts.push({
-            type: 'danger',
-            msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
-                errores.reduce(function (previous, current) {
-
-                    if (previous == "")
-                        // first value
-                        return current;
-                    else
-                        return previous + "<br />" + current;
-                }, "")
-        });
-
-        $scope.showProgress = false;
-        return;
-    }
-
-    Meteor.call('remesasSave', item, (err, result)  => {
+        $scope.showProgress = true;
         
-        if (err) {
-            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+        // nótese como validamos antes de intentar guardar en el servidor
+        var isValid = false;
+        var errores = [];
+
+        var item = {};
+
+        item = $scope.remesa;
+
+        if (item.docState != 3) {
+            isValid = Remesas.simpleSchema().namedContext().validate(item);
+
+            if (!isValid) {
+                Remesas.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name +
+                                "'; error de tipo '" + error.type + ".");
+                });
+            }
+        }
+
+        if (errores && errores.length) {
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'danger',
-                msg: errorMessage
+                msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
+                    errores.reduce(function (previous, current) {
+
+                        if (previous == "")
+                            // first value
+                            return current;
+                        else
+                            return previous + "<br />" + current;
+                    }, "")
             });
 
             $scope.showProgress = false;
-            $scope.$apply();
-
             return;
         }
 
-        $scope.alerts.length = 0;
-        $scope.alerts.push({
-            type: 'info',
-            msg: result
-        });
+        Meteor.call('remesasSave', item, (err, result)  => {
+            
+            if (err) {
+                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
-        // cuando el usuario agrega un nuevo item, y viene desde un filtro, el item no estará en la lista (a menos que cumpla con el 'criterio'
-        // de selección ???). Por eso, hacemos un subscription solo del nuevo item. Como no destruimos el 'handle' del subscription anterior
-        // (que creó la lista), el nuevo item se agregará a la lista ....
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: errorMessage
+                });
 
-        if (item.docState == 1) {
-            var filtro = { _id: item._id };
+                $scope.showProgress = false;
+                $scope.$apply();
 
-            Meteor.subscribe('remesas', JSON.stringify(filtro), () => {
+                return;
+            }
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'info',
+                msg: result
+            });
+
+            // cuando el usuario agrega un nuevo item, y viene desde un filtro, el item no estará en la lista (a menos que cumpla con el 'criterio'
+            // de selección ???). Por eso, hacemos un subscription solo del nuevo item. Como no destruimos el 'handle' del subscription anterior
+            // (que creó la lista), el nuevo item se agregará a la lista ....
+
+            if (item.docState == 1) {
+                var filtro = { _id: item._id };
+
+                Meteor.subscribe('remesas', JSON.stringify(filtro), () => {
+                    $scope.remesa = {};
+
+                    $scope.helpers({
+                        remesa: () => {
+                            return Remesas.findOne(item._id);
+                        },
+                    })
+                    
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                })
+            }
+            else {
                 $scope.remesa = {};
 
                 $scope.helpers({
@@ -298,24 +312,11 @@ export default angular.module("scrwebm.remesas.remesa",
                         return Remesas.findOne(item._id);
                     },
                 })
-                
+
                 $scope.showProgress = false;
                 $scope.$apply();
-            })
-        }
-        else {
-            $scope.remesa = {};
-
-            $scope.helpers({
-                remesa: () => {
-                    return Remesas.findOne(item._id);
-                },
-            })
-
-            $scope.showProgress = false;
-            $scope.$apply();
-        }
-    })
+            }
+        })
     }
 
     $scope.regresarALista = function () {

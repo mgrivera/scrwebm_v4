@@ -30,7 +30,7 @@
 
         <tabset style="text-align: left; margin-top: 10px; ">
 
-            <tab heading="Reconversión">
+            <tab heading="Reconversión cuotas">
                 <form role="form" 
                 id="forms.reconversionForm" 
                 name="forms.reconversionForm" 
@@ -67,6 +67,54 @@
             
                 <div>
                     <button type="submit" form="forms.reconversionForm" class="btn btn-sm pull-right btn-primary" style="margin-right: 15px; ">Reconvertir</button>
+                </div>
+            </tab>
+
+
+            <tab heading="Reconversión remesas">
+
+                <div style="margin: 25px; ">
+                        <p>La idea de este proceso es reconvertir los montos en las remesas. En forma específica, el monto del 
+                            <em></em>instrumento de pago</em> en las remesas. 
+                        </p>
+                </div>
+                
+                <form role="form" 
+                id="forms.reconversionRemesasForm" 
+                name="forms.reconversionRemesasForm" 
+                      ng-submit="reconversionRemesasForm_submit()" 
+                      novalidate 
+                      style="margin-top: 15px; ">
+            
+                    <div class="container-fluid">
+            
+                        <div class="row">
+            
+                            <!-- cantidadDigitos -->
+                            <div class="col-sm-3 col-sm-offset-0">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label">Cantidad dígitos: </label>
+                                    <input type="number" class="form-control input-sm myinput-sm" ng-model="parametros.cantidadDigitos"
+                                        ng-model-options="{ updateOn: 'blur' }" />
+                                </div>
+                            </div>
+            
+                            <!-- moneda -->
+                            <div class="col-sm-3 col-sm-offset-1">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label">Moneda (<em>default</em>): </label>
+                                    <div class="style=color: #337AB7; padding-left: 30px; ">
+                                        <p class="form-control-static pull-left">{{ moneda.descripcion }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                    </div>
+                </form>
+            
+                <div>
+                    <button type="submit" form="forms.reconversionRemesasForm" class="btn btn-sm pull-right btn-primary" style="margin-right: 15px; ">Reconvertir</button>
                 </div>
             </tab>
 

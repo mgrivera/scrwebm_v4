@@ -849,7 +849,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                 _id: new Mongo.ObjectID()._str,
                 numero: 0,
                 ingreso: new Date(),
-                usuario: Meteor.userId(),
+                usuario: Meteor.user().emails[0].address,
                 cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
                 movimientos: [],
                 docState: 1

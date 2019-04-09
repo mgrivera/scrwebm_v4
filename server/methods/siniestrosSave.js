@@ -2,6 +2,7 @@
 
 import moment from 'moment';
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
+import { calcularNumeroReferencia } from '/server/imports/general/calcularNumeroReferencia'; 
 
 Meteor.methods(
 {
@@ -23,7 +24,7 @@ Meteor.methods(
             // si la referencia viene en '0', asignamos una ...
             if (!item.referencia || item.referencia === '0') {
                 let ano = parseInt(moment(item.fechaEmision).format('YYYY'));
-                let result = ServerGlobal_Methods.calcularNumeroReferencia('sin', item.tipo, ano, item.cia);
+                let result = calcularNumeroReferencia('sin', item.tipo, ano, item.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",
@@ -44,7 +45,7 @@ Meteor.methods(
             delete item2._id;
 
             item2.ultAct = new Date();
-            item2.ultUsuario = this.userId;
+            item2.ultUsuario = Meteor.user().emails[0].address; 
 
             // si el número viene en '0', asignamos un número consecutivo al riesgo
             if (!item2.numero) {
@@ -58,7 +59,7 @@ Meteor.methods(
             // si la referencia viene en '0', asignamos una ...
             if (!item2.referencia || item2.referencia === '0') {
                 let ano = parseInt(moment(item2.fechaEmision).format('YYYY'));
-                let result = ServerGlobal_Methods.calcularNumeroReferencia('sin', item2.tipo, ano, item2.cia);
+                let result = calcularNumeroReferencia('sin', item2.tipo, ano, item2.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",

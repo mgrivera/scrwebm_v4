@@ -1724,7 +1724,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
                             liquidaciones: [], 
                             
                             ingreso: new Date(),
-                            usuario: Meteor.userId(),
+                            usuario: Meteor.user().emails[0].address,
                             cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
                             docState: 1
                         };
@@ -1773,7 +1773,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
                             reservas: [], 
                             liquidaciones: [], 
                             ingreso: new Date(),
-                            usuario: Meteor.userId(),
+                            usuario: Meteor.user().emails[0].address,
                             cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
 
                             docState: 1

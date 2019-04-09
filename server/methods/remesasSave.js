@@ -43,7 +43,7 @@ Meteor.methods(
             delete item2._id;
 
             item2.ultAct = new Date();
-            item2.ultUsuario = this.userId;
+            item2.ultUsuario = Meteor.user().emails[0].address; 
 
             // si el número viene en '0', asignamos un número consecutivo al remesa
             if (!item2.numero) {

@@ -243,6 +243,119 @@ angular.module("scrwebm").controller("Utilitarios_Reconversion_Controller", ['$s
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $scope.reconversionRemesasForm_submit = function () {
+
+        $scope.submitted = true;
+        $scope.alerts.length = 0;
+
+        if (!monedaDefault) {
+
+            let message = `Error: no hemos encontrado una moneda marcada como 'defecto'. <br /> 
+                           Esta moneda debe existir pues será la moneda para la cual se efectuará la reconversión. <br /><br /> 
+                           Por favor abra la tabla Monedas y marque una como 'defecto'.
+            `; 
+
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: message
+            });
+
+            return;
+        }
+
+        if (!$scope.parametros.cantidadDigitos) {
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: "Ud. debe indicar los valores requeridos para el la ejecución de la reconversión."
+            });
+
+            return;
+        }
+
+        $scope.showProgress = true; 
+
+        if ($scope.forms.reconversionRemesasForm.$valid) {
+
+            $scope.submitted = false;
+            $scope.forms.reconversionRemesasForm.$setPristine();    // para que la clase 'ng-submitted deje de aplicarse a la forma ... button
+
+            Meteor.call('reconversionMonetaria_Remesas', monedaDefault, $scope.parametros, $scope.companiaSeleccionada, (err, result) => {
+
+                if (err) {
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+    
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: errorMessage
+                    });
+    
+                    $scope.showProgress = false;
+                    $scope.$apply();
+    
+                    return;
+                }
+
+                if (result.error) {
+                    
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: result.message
+                    });
+    
+                    $scope.showProgress = false;
+                    $scope.$apply();
+    
+                    return;
+                }
+    
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'info',
+                    msg: result.message
+                })
+    
+                reconversionSubscribe($scope, $scope.companiaSeleccionada); 
+            })
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     reconversionSubscribe($scope, $scope.companiaSeleccionada); 
   }
 ])
