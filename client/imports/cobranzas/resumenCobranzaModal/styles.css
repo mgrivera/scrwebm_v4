@@ -9,6 +9,7 @@
   
   .operaciones td, .operaciones th {
     border: 1px solid #ddd;
+    text-align: center;
     padding: 4px 4px 4px 4px;
   }
   
@@ -18,7 +19,6 @@
   
   .operaciones th {
     padding: 6px 4px 6px 4px;
-    text-align: left;
     background-color: #428BCA;
     color: white;
   }

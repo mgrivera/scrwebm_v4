@@ -254,7 +254,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
         })
 
         resumenArray.forEach(x => { 
-            const moneda = Monedas.findOne(x.monedaID, { fields: { simbolo: true, }}); 
+            const moneda = Monedas.findOne(x.monedaID, { fields: { simbolo: true, defecto: true, }}); 
             x.simboloMoneda = moneda.simbolo; 
             x.monedaDefecto = moneda.defecto ? moneda.defecto : false; 
         })
