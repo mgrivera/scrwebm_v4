@@ -79,7 +79,7 @@ Meteor.methods({
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         // nótese que, para el caso de proporcionales, no leemos sus cuotas. Más bien, leemos los registros que se ha grabado para: 
@@ -192,7 +192,7 @@ Meteor.methods({
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -202,14 +202,12 @@ Meteor.methods({
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 };
             };
             // -------------------------------------------------------------------------------------------------------
         })
-
-
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -226,7 +224,7 @@ Meteor.methods({
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
 
@@ -330,7 +328,7 @@ Meteor.methods({
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -340,7 +338,7 @@ Meteor.methods({
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }
@@ -374,7 +372,7 @@ Meteor.methods({
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         let cuotasCobradasPagadas = Cuotas.find({ 'pagos.fecha': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, cia: periodoCierre.cia }).fetch(); 
@@ -529,7 +527,7 @@ Meteor.methods({
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -539,7 +537,7 @@ Meteor.methods({
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 };
             };

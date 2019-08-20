@@ -149,12 +149,16 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
         }
 
         if (itemSeleccionado.cerradoFlag) {
+
+            let message = `El período a cerrar que Ud. ha seleccionado debe estar abierto.<br />
+            Si Ud. desea cerrar un período que <b>ya fue cerrado antes</b>, debe ir a la opción <em>cierre/registros de cierre</em> y 
+            abrir el período. Una vez (re) abierto, Ud. puede regresar y cerrar <em>nuevamente</em> el período. 
+           `; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
             DialogModal($modal,
                 `<em>scrwebm - cierre de un período</em>`,
-                `El período a cerrar que Ud. ha seleccionado debe estar abierto.<br />
-                 Si Ud. desea cerrar un período que <b>ya fue cerrado antes</b>, debe ir a la opción <em>cierre/registros de cierre</em> y 
-                 abrir el período. Una vez (re) abierto, Ud. puede regresar y cerrar <em>nuevamente</em> el período. 
-                `, 
+                message, 
                 false).then();
             return;
         }
@@ -167,10 +171,13 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
             return;
         }
 
+        let message = `Período a cerrar: desde <b>${moment(itemSeleccionado.desde).format("DD-MMM-YYYY")}</b> hasta <b>${moment(itemSeleccionado.hasta).format("DD-MMM-YYYY")}</b>.<br /><br />
+        Desea continuar con este proceso y cerrar el período?`; 
+        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
         DialogModal($modal,
             `<em>scrwebm - cierre de un período</em>`,
-             `Período a cerrar: desde <b>${moment(itemSeleccionado.desde).format("DD-MMM-YYYY")}</b> hasta <b>${moment(itemSeleccionado.hasta).format("DD-MMM-YYYY")}</b>.<br /><br />
-              Desea continuar con este proceso y cerrar el período?`,
+             message,
             true).then(
             function () { cerrarPeriodo2(itemSeleccionado); },
             function () { return; });
@@ -205,7 +212,6 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
 
                 return;
             }
-
 
             if (result.validationError) { 
                 // se encontraron errores de validación (simple-schema) en los parámetros pasados al method ... 
@@ -287,14 +293,17 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
             }
         })
 
+        let message = `Seleccione un período a cerrar en la lista y haga un click en <b><em>Cerrar período seleccionado</em></b> 
+        - El período seleccionado debe estar abierto.<br />
+        O agregue un nuevo período y selecciónelo ...<br />
+        Nota: para agregar períodos de cierre, Ud. debe usar la opción <em>Cierre / Períodos de cierre</em>.  
+        `; 
+        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
         $scope.alerts.length = 0;
         $scope.alerts.push({
             type: 'info',
-            msg: `Seleccione un período a cerrar en la lista y haga un click en <b><em>Cerrar período seleccionado</em></b> 
-                  - El período seleccionado debe estar abierto.<br />
-                  O agregue un nuevo período y selecciónelo ...<br />
-                  Nota: para agregar períodos de cierre, Ud. debe usar la opción <em>Cierre / Períodos de cierre</em>.  
-            `
+            msg: message, 
         });
 
         $scope.cierre_ui_grid.data = $scope.cierres; 

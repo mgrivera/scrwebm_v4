@@ -460,7 +460,6 @@ angular.module("scrwebm").controller("Cierre.Registro.Controller", ['$scope', '$
         $scope.activeTab = { tab1: false, tab2: true };
     }
 
-
     // ------------------------------------------------------------------------------------------------------
     // si hay un filtro anterior, lo usamos
     // los filtros (solo del usuario) se publican en forma automática cuando se inicia la aplicación
@@ -532,11 +531,14 @@ angular.module("scrwebm").controller("Cierre.Registro.Controller", ['$scope', '$
 
             $scope.registro_ui_grid.data = $scope.registro;
 
+            let message = `${numeral($scope.registro.length).format('0,0')} registros
+            (<b>de ${numeral(recordCount).format('0,0')}</b>) han sido seleccionados ...`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'info',
-                msg: `${numeral($scope.registro.length).format('0,0')} registros
-                    (<b>de ${numeral(recordCount).format('0,0')}</b>) han sido seleccionados ...`
+                msg: message, 
             });
 
             $scope.showProgress = false;
@@ -567,9 +569,12 @@ angular.module("scrwebm").controller("Cierre.Registro.Controller", ['$scope', '$
         }); 
 
         if (!hayEdiciones) {
+            let message = `Aparentemente, <em>no se han efectuado cambios</em> en el registro.
+            No hay nada que grabar.`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
             DialogModal($modal, "<em>Cierre - Registro</em>",
-                                `Aparentemente, <em>no se han efectuado cambios</em> en el registro.
-                                No hay nada que grabar.`,
+                                message,
                                 false).then();
             return;
         };
@@ -773,5 +778,3 @@ function construirFiltro(criterioSeleccion) {
 
     return filtro; 
 }
-
-

@@ -519,11 +519,14 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
 
             $scope.consulta_ui_grid.data = $scope.temp_consulta_cierreRegistro;
 
+            let message = `${numeral($scope.temp_consulta_cierreRegistro.length).format('0,0')} registros
+            (<b>de ${numeral(recordCount).format('0,0')}</b>) han sido seleccionados ...`; 
+            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'info',
-                msg: `${numeral($scope.temp_consulta_cierreRegistro.length).format('0,0')} registros
-                    (<b>de ${numeral(recordCount).format('0,0')}</b>) han sido seleccionados ...`
+                msg: message, 
             });
 
             $scope.showProgress = false;
