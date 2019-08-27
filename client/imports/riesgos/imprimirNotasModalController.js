@@ -81,10 +81,15 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                         var reasegurador = { _id: r.compania, nombre: Companias.findOne(r.compania).abreviatura };
                         $scope.reaseguradoresLista.push(reasegurador);
                     });
+
+                    const d = movimientoSeleccionado.fechaEmision; 
+
+                    $scope.parametros.fecha = `Caracas, ${moment(d).format("D")} de ${moment(d).format("MMMM")} de ${moment(d).format("YYYY")}`;
                 }
-                else
+                else { 
                     return;
-            });
+                }
+            })
         },
 
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
@@ -95,7 +100,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
         getRowIdentity: function (row) {
             return row._id;
         }
-    };
+    }
 
     $scope.movimientos_ui_grid.columnDefs = [
           {
@@ -120,13 +125,24 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
               enableColumnMenu: false,
               enableCellEdit: false,
               type: 'string'
-          }
-    ];
+          }, 
+          {
+            name: 'fechaEmision',
+            field: 'fechaEmision',
+            displayName: 'F emisión',
+            cellFilter: 'dateFilter',
+            width: 100,
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableSorting: false,
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            type: 'date'
+        },
+    ]
 
     $scope.submitted = false;
     $scope.parametros = {};
-
-    $scope.parametros.fecha = "Caracas, " + moment().format("D") + " de " + moment().format("MMMM") + " de " + moment().format("YYYY");
 
     // para mostrar los links que permiten al usuario hacer el download de las notas
     $scope.downLoadWordDocument_cedente = false;
@@ -240,13 +256,13 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                 }
 
                 if (result.error) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
-
                     $scope.alerts.length = 0;
-                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
+                    $scope.alerts.push({ type: 'danger', msg: result.message });
 
                     $scope.showProgress = false;
                     $scope.$apply();
+
+                    return; 
                 }
         
                 $scope.alerts.length = 0;
@@ -283,13 +299,13 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                 }
 
                 if (result.error) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
-
                     $scope.alerts.length = 0;
-                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
+                    $scope.alerts.push({ type: 'danger', msg: result.message });
 
                     $scope.showProgress = false;
                     $scope.$apply();
+
+                    return;
                 }
 
                 $scope.alerts.length = 0;
