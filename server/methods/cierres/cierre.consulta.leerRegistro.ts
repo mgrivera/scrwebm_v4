@@ -50,12 +50,14 @@ Meteor.methods({
         let eventName = "cierre_consulta_reportProgress";
         let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_consulta' };
         let eventData = {
-                          current: currentProcess, max: numberOfProcess, progress: '0 %',
+                          current: currentProcess, 
+                          max: numberOfProcess, 
+                          progress: '0 %',
                           message: message
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         let monedas = Monedas.find({}, { fields: { descripcion: 1, simbolo: 1, }}).fetch(); 
@@ -72,9 +74,9 @@ Meteor.methods({
         // luego, en un paso posterior, agregaremos registros con los saldos iniciales para el período seleccionado ... 
         CierreRegistro.find(filtro).forEach((item) => { 
 
-            let moneda = monedas.find((x) => { return x._id === item.moneda; }); 
-            let compania = companias.find((x) => { return x._id === item.compania; }); 
-            let cedente = companias.find((x) => { return x._id === item.cedente; });    // aunque viene casi siempre, puede no venir
+            const moneda = monedas.find((x) => { return x._id === item.moneda; }); 
+            const compania = companias.find((x) => { return x._id === item.compania; }); 
+            const cedente = companias.find((x) => { return x._id === item.cedente; });    // aunque viene casi siempre, puede no venir
 
             if (!moneda) { 
                 throw new Meteor.Error('error-base-datos', `Error inesperado: no hemos podido leer un registro para la moneda 
@@ -291,38 +293,39 @@ Meteor.methods({
             }
 
             
-
             // -------------------------------------------------------------------------------------------------------
             // vamos a reportar progreso al cliente; solo 20 veces ...
             cantidadRecs++;
             if (numberOfItems <= 25) {
                 // hay menos de 20 registros; reportamos siempre ...
                 eventData = {
-                              current: currentProcess, max: numberOfProcess,
+                              current: currentProcess, 
+                              max: numberOfProcess,
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
                 if (reportar === reportarCada) {
                     eventData = {
-                                  current: currentProcess, max: numberOfProcess,
+                                  current: currentProcess, 
+                                  max: numberOfProcess,
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 };
             };
             // -------------------------------------------------------------------------------------------------------
         })
 
-        // ahora leemos los registros agregados pero agrupamos por moneda-compania; la idea es agregar un registro con el saldo inicial para 
-        // cada uno de estos grupos. Para calcular el saldo inicial, debemos leer los registros de cierre anteriores a la fecha inicial del 
-        // período y obtener la suma de sus montos ... 
-        let registroConsulta = Temp_consulta_cierreRegistro.find({ user: Meteor.userId }).fetch(); 
+        // ahora leemos los registros agregados pero agrupamos por moneda-compania; la idea es agregar un registro con el  
+        // saldo inicial para cada uno de estos grupos. Para calcular el saldo inicial, debemos leer los registros de 
+        // cierre anteriores a la fecha inicial del período y obtener la suma de sus montos ... 
+        let registroConsulta = Temp_consulta_cierreRegistro.find({ user: Meteor.userId() }).fetch(); 
 
         // NOTA IMPORTANTE: si el usuario quiere las cuenta corrientes, debemos agregar la referencia a la agrupación que sigue. 
         // La referencia contiene siempre el *código* del contrato en registros de proporcionales. La idea es, en consulta de 
@@ -349,7 +352,7 @@ Meteor.methods({
         message = `determinando saldos iniciales ... `
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         for (const key in registro_groupBy_moneda_compania) { 
@@ -357,7 +360,8 @@ Meteor.methods({
             let primerItemGrupo = registro_groupBy_moneda_compania[key][0]; 
 
             // usamos mongo aggregation para obtener el sum para el saldo inicial ... 
-            // al igual que la agrupación, los saldos iniciales incluyen la referencia (contrato) para consultas de cuentas corrientes (Prop)
+            // al igual que la agrupación, los saldos iniciales incluyen la referencia (contrato) para 
+            // consultas de cuentas corrientes (Prop)
             let sumOfMontoArray = 0; 
 
             if (cuentasCorrientes) { 
@@ -420,7 +424,7 @@ Meteor.methods({
                 serie: null,
                 tipoNegocio: null,
 
-                referencia: primerItemGrupo.referencia,
+                referencia: cuentasCorrientes ? primerItemGrupo.referencia : "",
                 descripcion: "Saldo inicial del período",
                 monto: saldoInicialPeriodo, 
 
@@ -443,27 +447,28 @@ Meteor.methods({
             if (numberOfItems <= 25) {
                 // hay menos de 20 registros; reportamos siempre ...
                 eventData = {
-                              current: currentProcess, max: numberOfProcess,
+                              current: currentProcess, 
+                              max: numberOfProcess,
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
                 if (reportar === reportarCada) {
                     eventData = {
-                                  current: currentProcess, max: numberOfProcess,
+                                  current: currentProcess, 
+                                  max: numberOfProcess,
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 };
-            };
+            }
             // -------------------------------------------------------------------------------------------------------
         }
-
 
         return { 
             error: false, 

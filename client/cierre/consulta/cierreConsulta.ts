@@ -547,8 +547,8 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
 
      // ------------------------------------------------------------------------------------------------------
      // para recibir los eventos desde la tarea en el servidor ...
-     EventDDP.setClient({ myuserId: Meteor.userId(), app: 'bancos', process: 'leerBancosProveedoresDesdeSqlServer' });
-     EventDDP.addListener('bancos_proveedores_reportProgressDesdeSqlServer', function(process) {
+     EventDDP.setClient({ myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_consulta' });
+     EventDDP.addListener('cierre_consulta_reportProgress', function(process) {
 
          $scope.processProgress.current = process.current;
          $scope.processProgress.max = process.max;
