@@ -41,6 +41,7 @@ Meteor.methods(
 
         // nos aseguramos que el usuario tenga un nombre en la tabla de usuarios 
         const usuario = Meteor.user(); 
+        let message = ""; 
 
         if (!usuario || !usuario.personales || !usuario.personales.nombre) { 
             message = `Error: el usuario no tiene un nombre asociado en la tabla de usuarios. <br /> 

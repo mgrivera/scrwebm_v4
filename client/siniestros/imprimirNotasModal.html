@@ -32,8 +32,9 @@
         <div class="row">
             <div class="col-sm-12" style="font-size: small; ">
                 <ol>
-                    <li>Seleccione un registro de <em>reserva</em> o de <em>liquidación</em> (más no ambos)</li>
-                    <li>Haga <em>click</em> en una plantilla para construir el documento</li>
+                    <li>Seleccione, en alguna de las listas, un registro de <em>reserva</em> o de <em>liquidación</em> (más no ambos)</li>
+                    <li>Seleccione un tipo de plantilla</li>
+                    <li><em>Click</em> en una plantilla para construir el documento</li>
                     <li>Espere que el proceso temine</li>
                     <li>Abajo se mostrará un <em>link</em> para descargar (<em>download</em>) el documento</li>
                 </ol>
@@ -64,6 +65,24 @@
 
         <br />
 
+        <div class="row">
+            <div class="col-sm-12">
+                <div style="margin: 0 20px; ">
+                    <fieldset class="scheduler-border-radioButtons-noBold" style="text-align: left; ">
+                        <legend class="scheduler-border-radioButtons-noBold" style="font-weight: normal; ">Tipo de plantilla (Word): </legend>
+                        <label class="radio-inline">
+                            <input type="radio" name="tipoPlantillaWord" ng-model="tipoPlantillaWord" value='reserva'> reserva
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="tipoPlantillaWord" ng-model="tipoPlantillaWord" value='liquidacion'> liquidacion
+                        </label>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        <br />
+
         <div class="row" style="margin-top: 10px; ">
 
             <div class="col-sm-6">
@@ -81,9 +100,9 @@
                     <tbody>
                         <tr ng-repeat="file in template_files">
                             <td style="text-align: left; ">
-                                <a href="#" ng-click="obtenerDocumentoWord(file)">{{ file.original.name }}</a>
+                                <a href="#" ng-click="obtenerDocumentoWord(file)">{{ file.name }}</a>
                             </td>
-                            <td style="text-align: left; ">{{ file.metadata.tipo }}</td>
+                            <td style="text-align: left; ">{{ file.type }}</td>
                         </tr>
                     </tbody>
                     <tfoot>

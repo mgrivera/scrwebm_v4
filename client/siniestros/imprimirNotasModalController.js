@@ -10,10 +10,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import { CollectionFS_templates } from '/client/imports/collectionFS/Files_CollectionFS_templates'; 
-
-angular.module("scrwebm").controller('ImprimirNotasModalController',
-['$scope', '$modalInstance', '$modal', 'siniestro',
+angular.module("scrwebm").controller('ImprimirNotasModalController', ['$scope', '$modalInstance', '$modal', 'siniestro',
 function ($scope, $modalInstance, $modal, siniestro) {
 
     $scope.siniestro = siniestro;
@@ -23,15 +20,15 @@ function ($scope, $modalInstance, $modal, siniestro) {
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
-    };
+    }
 
     $scope.ok = function () {
         $modalInstance.close("Ok");
-    };
+    }
 
     $scope.cancel = function () {
         $modalInstance.dismiss("Cancel");
-    };
+    }
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
@@ -85,7 +82,7 @@ function ($scope, $modalInstance, $modal, siniestro) {
       getRowIdentity: function (row) {
           return row._id;
       }
-    };
+    }
 
     $scope.reservas_ui_grid.columnDefs = [
         {
@@ -141,7 +138,7 @@ function ($scope, $modalInstance, $modal, siniestro) {
             enableColumnMenu: false,
             type: 'number'
         }
-    ];
+    ]
 
 
     var registroLiquidacionesSeleccionado = {};
@@ -177,7 +174,7 @@ function ($scope, $modalInstance, $modal, siniestro) {
       getRowIdentity: function (row) {
           return row._id;
       }
-    };
+    }
 
     $scope.liquidaciones_ui_grid.columnDefs = [
         {
@@ -234,7 +231,7 @@ function ($scope, $modalInstance, $modal, siniestro) {
             enableColumnMenu: false,
             type: 'number'
         }
-    ];
+    ]
 
 
     $scope.reservas_ui_grid.data = [];
@@ -248,15 +245,7 @@ function ($scope, $modalInstance, $modal, siniestro) {
         $scope.liquidaciones_ui_grid.data = $scope.siniestro.liquidaciones;
     }
 
-
-    // para mostrar los links que permiten al usuario hacer el download de las notas
-    $scope.downLoadWordDocument_reservas = false;
-    $scope.selectedFile_reservas = {};
-    $scope.downLoadLink_reservas = "";
-
-    $scope.downLoadWordDocument_liquidaciones = false;
-    $scope.selectedFile_liquidaciones = {};
-    $scope.downLoadLink_liquidaciones = "";
+    $scope.tipoPlantillaWord = null; 
 
     $scope.obtenerDocumentoWord = function (file) {
 
@@ -281,55 +270,77 @@ function ($scope, $modalInstance, $modal, siniestro) {
                         `Ud. debe indicar la fecha que se mostrará en el documento.<br /> Ejemplo: Caracas, 25 de Abril del 2.015.`,
                         false).then();
             return;
-        };
+        }
+
+        if (!$scope.tipoPlantillaWord) {
+            DialogModal($modal, "<em>Siniestros - Construcción de notas de siniestro</em>",
+                        `Ud. debe indicar el <em>tipo</em> de plantilla que será usada para construir el documento.<br /><br />
+                         Los tipos de plantilla que pueden ser usados para obtener las notas de siniestro son: 
+                         <em>Reservas</em>, <em>Liquidaciones</em>. <br /><br />
+                         De acuerdo a cual plantilla y su tipo que Ud. indique, será construído el documento Word
+                         que resulta de este proceso.  
+                        `,
+                        false).then();
+            return;
+        }
 
         $scope.alerts.length = 0;
         $scope.showProgress = true;
 
         // nota de reservas
-        if (file.metadata.tipo === "TMP-SNTR-NOTA-RES") {
+        if ($scope.tipoPlantillaWord === 'reserva') {
             Meteor.call('siniestros.obtenerNotasReserva',
-                         file._id,
+                         "/siniestros/notas", 
+                         file.name,
                          siniestro._id,
                          registroReservaSeleccionado._id,
-                         $scope.parametros.fecha, (err, result) => {
+                         $scope.parametros.fecha, 
+                         (err, result) => {
 
-                     if (err) {
-                         let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    if (err) {
+                        let errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
-                         $scope.alerts.length = 0;
-                         $scope.alerts.push({ type: 'danger', msg: errorMessage });
+                        $scope.alerts.length = 0;
+                        $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
-                         $scope.showProgress = false;
-                         $scope.$apply();
+                        $scope.showProgress = false;
+                        $scope.$apply();
 
-                         return;
-                     }
+                        return;
+                    }
+
+                    if (result.error) {
+                        $scope.alerts.length = 0;
+                        $scope.alerts.push({ type: 'danger', msg: result.message });
+
+                        $scope.showProgress = false;
+                        $scope.$apply();
+
+                        return;
+                    }
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
                         type: 'info',
-                        msg: `Ok, el documento ha sido construido en forma exitosa.<br />
-                              Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
+                        msg: result.message,
                     });
 
-                    $scope.selectedFile_reservas = file;
-                    $scope.downLoadLink_reservas = result;
-                    $scope.downLoadWordDocument_reservas = true;
+                    $scope.tipoPlantillaWord = null;
 
                     $scope.showProgress = false;
                     $scope.$apply();
             })
         }
 
-
         // nota de liquidacion
-        if (file.metadata.tipo === "TMP-SNTR-NOTA-LIQ") {
+        if ($scope.tipoPlantillaWord === 'liquidacion') {
             Meteor.call('siniestros.obtenerNotasLiquidacion',
-                         file._id,
+                         "/siniestros/notas", 
+                         file.name,
                          siniestro._id,
                          registroLiquidacionesSeleccionado._id,
-                         $scope.parametros.fecha, (err, result) => {
+                         $scope.parametros.fecha, 
+                         (err, result) => {
 
                      if (err) {
                          let errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -343,16 +354,23 @@ function ($scope, $modalInstance, $modal, siniestro) {
                          return;
                      }
 
+                     if (result.error) {
+                        $scope.alerts.length = 0;
+                        $scope.alerts.push({ type: 'danger', msg: result.message });
+
+                        $scope.showProgress = false;
+                        $scope.$apply();
+
+                        return;
+                    }
+
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
                         type: 'info',
-                        msg: `Ok, el documento ha sido construido en forma exitosa.<br />
-                              Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
+                        msg: result.message,
                     });
 
-                    $scope.selectedFile_liquidaciones = file;
-                    $scope.downLoadLink_liquidaciones = result;
-                    $scope.downLoadWordDocument_liquidaciones = true;
+                    $scope.tipoPlantillaWord = null;
 
                     $scope.showProgress = false;
                     $scope.$apply();
@@ -360,29 +378,47 @@ function ($scope, $modalInstance, $modal, siniestro) {
         }
     }
 
-    $scope.helpers({
-        template_files: () => {
-            return CollectionFS_templates.find({
-                // regresamos solo archivos cuyo tipo comienza así (TMP-SNTR-NOTA) ...
-                'metadata.tipo': { $regex: /^TMP-SNTR-NOTA/ },
-            });
-        },
-    });
-
-
     // leemos las plantillas que corresponden a notas de cobertura impresas (cuyo tipo es: TMP-FAC-NOTA-CED, TMP-FAC-NOTA-REA, ...)
     $scope.showProgress = true;
 
-    $scope.subscribe("collectionFS_files", () => { return ['TMP-SNTR-NOTA']; }, {
-        onReady: function () {
-          $scope.showProgress = false;
-          $scope.$apply();
-        },
-        onStop: function (error) {
-          $scope.showProgress = false;
-          $scope.$apply();
-      }
-  });
+    // ejecutamos un método que lee y regresa desde dropbox las plantillas para notas de cobertura 
+    Meteor.call('plantillas.obtenerListaArchivosDesdeDirectorio', "/siniestros/notas", (err, result) => {
 
-}
-]);
+        if (err) {
+            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({ type: 'danger', msg: errorMessage });
+
+            $scope.showProgress = false;
+            $scope.$apply();
+
+            return;
+        }
+
+        if (result.error) {
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: result.message
+            });
+
+            $scope.showProgress = false;
+            $scope.$apply();
+
+            return;
+        }
+
+        $scope.alerts.length = 0;
+        $scope.alerts.push({
+            type: 'info',
+            msg: result.message,
+        });
+
+        $scope.template_files = result && result.files && Array.isArray(result.files) ? result.files : [{ name: "indefinido", type: "indefinido" }];
+
+        $scope.showProgress = false;
+        $scope.$apply();
+    })
+
+}])

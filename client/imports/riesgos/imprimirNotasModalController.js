@@ -366,5 +366,4 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
         $scope.showProgress = false;
         $scope.$apply();
     })
-}
-]);
+}])
