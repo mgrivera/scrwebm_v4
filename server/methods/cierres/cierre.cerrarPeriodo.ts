@@ -2,7 +2,6 @@
 
 /// <reference path="../../../typings/simpl-schema.d.ts" />      // porque estos types no se importaron desde npm types@/... 
 
-import * as SimpleSchema from "simpl-schema"; 
 import * as moment from 'moment'; 
 import * as numeral from 'numeral'; 
 import { Mongo } from 'meteor/mongo'; 
@@ -74,7 +73,9 @@ Meteor.methods({
         let eventName = "cierre_procesoCierre_reportProgress";
         let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_procesoCierre' };
         let eventData = {
-                          current: currentProcess, max: numberOfProcess, progress: '0 %',
+                          current: currentProcess, 
+                          max: numberOfProcess, 
+                          progress: '0 %',
                           message: message
                         };
 
@@ -188,7 +189,8 @@ Meteor.methods({
             if (numberOfItems <= 25) {
                 // hay menos de 20 registros; reportamos siempre ...
                 eventData = {
-                              current: currentProcess, max: numberOfProcess,
+                              current: currentProcess, 
+                              max: numberOfProcess,
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
@@ -198,14 +200,15 @@ Meteor.methods({
                 reportar++;
                 if (reportar === reportarCada) {
                     eventData = {
-                                  current: currentProcess, max: numberOfProcess,
+                                  current: currentProcess, 
+                                  max: numberOfProcess,
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
                     Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
         })
 
@@ -324,7 +327,8 @@ Meteor.methods({
             if (numberOfItems <= 25) {
                 // hay menos de 20 registros; reportamos siempre ...
                 eventData = {
-                              current: currentProcess, max: numberOfProcess,
+                              current: currentProcess, 
+                              max: numberOfProcess,
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
@@ -334,7 +338,8 @@ Meteor.methods({
                 reportar++;
                 if (reportar === reportarCada) {
                     eventData = {
-                                  current: currentProcess, max: numberOfProcess,
+                                  current: currentProcess, 
+                                  max: numberOfProcess,
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };

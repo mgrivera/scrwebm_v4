@@ -110,7 +110,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
             name: 'desde',
             field: 'desde',
             displayName: 'Desde',
-            width: '100',
+            width: 120,
             enableFiltering: false, 
             // nota: este cell es editable por el usuario solo para el 1er. row; cuando hay otros rows (más de 1), el cell 
             // no es editable ... (nótese que el $scope es el scope del cell y no nuestro $scope)
@@ -126,7 +126,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
             name: 'hasta',
             field: 'hasta',
             displayName: 'Hasta',
-            width: '100',
+            width: 120,
             enableFiltering: false,
             cellFilter: 'dateFilterFullMonthAndYear',
             headerCellClass: 'ui-grid-centerCell',
