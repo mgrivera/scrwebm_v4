@@ -39,6 +39,15 @@
                             <li><a href="#" ng-click="goToState('cuadre')" class="navbar_custom_small_node" ng-class="currentStateName === 'Cuadre' ? 'disabled' : ''">Cuadre</a></li>
                         </ul>
                     </li>
+
+                    <li ng-if="origen=='edicion'" class="divider-vertical-small"></li>
+
+                    <li class="dropdown" ng-if="origen=='edicion'">
+                        <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button" aria-expanded="false">Copiar <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="importarRemesa()" class="navbar_custom_small_node">Importar (desde un archivo de texto)&nbsp;&nbsp;<span class="fa fa-reply"></span></a></li>
+                        </ul>
+                    </li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -63,6 +72,14 @@
             </alert>
         </div>
     </div>
+
+    <input type="file"
+           id = "fileInput"
+           accept = ".txt"
+           multiple = "false"
+           onchange = "angular.element(this).scope().uploadFile(this.files)"
+           ng-show="false" />
+
 
     <div ui-view></div>
 </div>

@@ -1,5 +1,8 @@
 
 
+import angular from 'angular';
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
 import lodash from 'lodash'; 
 
 import { ProtegerEntidades } from '/client/imports/generales/protegerEntidades'; 
@@ -86,7 +89,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = null;
 
     if (companiaSeleccionada) {
@@ -125,7 +128,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
     $scope.nuevo = function () {
         // si existe una moneda 'por defecto', la asignamos
-        let monedaDefault = Monedas.findOne({ defecto: true });
+        const monedaDefault = Monedas.findOne({ defecto: true });
 
         $scope.remesa = {};
         $scope.remesa = {
@@ -138,6 +141,8 @@ export default angular.module("scrwebm.remesas.remesa",
             cia: $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : null,
             docState: 1
         };
+
+        $scope.alerts.length = 0;
 
         // inicialmente, mostramos el state 'generales'
         $state.go("remesa.generales");
@@ -171,7 +176,7 @@ export default angular.module("scrwebm.remesas.remesa",
             abreviaturaBanco = Bancos.findOne(x.banco).abreviatura;
         }
 
-        let cuentaBancaria = {
+        const cuentaBancaria = {
             _id: x._id,
             descripcion: `${abreviaturaBanco} ${simboloMoneda} ${x.tipo} ${x.numero}`,
         }
@@ -193,7 +198,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
         if ($scope.remesa.fechaCerrada) {
             // si la remesa está cerrada, solo permitimos modificar su asiento contable 
-            let asientoContableModificado = lodash.some($scope.remesa.asientoContable, (p) => { return p.docState; }); 
+            const asientoContableModificado = lodash.some($scope.remesa.asientoContable, (p) => { return p.docState; }); 
 
             if (asientoContableModificado && $scope.remesa.docState != 3) { 
                 DialogModal($modal, "<em>Remesas</em>",
@@ -264,7 +269,7 @@ export default angular.module("scrwebm.remesas.remesa",
         Meteor.call('remesasSave', item, (err, result)  => {
             
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -328,10 +333,10 @@ export default angular.module("scrwebm.remesas.remesa",
                                     true);
 
             promise.then(
-                function (resolve) {
+                function () {
                     $state.go('remesasLista', { origen: $scope.origen, pageNumber: $scope.pageNumber });
                 },
-                function (err) {
+                function () {
                     return true;
                 });
 
@@ -368,10 +373,10 @@ export default angular.module("scrwebm.remesas.remesa",
                                     true);
 
             promise.then(
-                function (resolve) {
+                function () {
                     inicializarItem();
                 },
-                function (err) {
+                function () {
                     return true;
                 });
 
@@ -387,7 +392,7 @@ export default angular.module("scrwebm.remesas.remesa",
         if (fieldName === 'compania') {
             // asignamos el mi/su dependiendo del tipo de la compañía 
             if ($scope.remesa.compania) {
-                let compania = Companias.findOne($scope.remesa.compania);
+                const compania = Companias.findOne($scope.remesa.compania);
                 if (compania) {
                     switch (compania.tipo) { 
                         case 'SEG': 
@@ -404,7 +409,7 @@ export default angular.module("scrwebm.remesas.remesa",
         if (fieldName === 'cuentaBancaria') {
             // asignamos el banco, cada vez que el usuario cambia la cuenta bancaria
             if ($scope.remesa.instrumentoPago.cuentaBancaria) {
-                let cuentaBancaria = CuentasBancarias.findOne($scope.remesa.instrumentoPago.cuentaBancaria);
+                const cuentaBancaria = CuentasBancarias.findOne($scope.remesa.instrumentoPago.cuentaBancaria);
                 if (cuentaBancaria) {
                     $scope.remesa.instrumentoPago.banco = cuentaBancaria.banco;
                 }
@@ -414,7 +419,7 @@ export default angular.module("scrwebm.remesas.remesa",
         if (fieldName === 'banco') {
             // cuando el usuario indica el banco, asignamos la 1ra. de sus cuentas bancarias 
             if ($scope.remesa.instrumentoPago.banco) { 
-                let cuentaBancaria = CuentasBancarias.findOne({ banco: $scope.remesa.instrumentoPago.banco }); 
+                const cuentaBancaria = CuentasBancarias.findOne({ banco: $scope.remesa.instrumentoPago.banco }); 
 
                 $scope.remesa.instrumentoPago.cuentaBancaria = null; 
                 if (cuentaBancaria) { 
@@ -433,7 +438,7 @@ export default angular.module("scrwebm.remesas.remesa",
                 Meteor.call('remesas.leerFactorCambioRemesaReciente', $scope.remesa.fecha, (err, result) => {
 
                     if (err) {
-                        let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                        const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                         $scope.alerts.length = 0;
                         $scope.alerts.push({
@@ -448,7 +453,7 @@ export default angular.module("scrwebm.remesas.remesa",
                     }
 
                     if (result.error) { 
-                        let errorMessage = result.message;
+                        const errorMessage = result.message;
 
                         $scope.alerts.length = 0;
                         $scope.alerts.push({
@@ -491,10 +496,10 @@ export default angular.module("scrwebm.remesas.remesa",
             },
         },
     }).result.then(
-        function (resolve) {
+        function () {
             return true;
         },
-        function (cancel) {
+        function () {
             return true;
         })
     }
@@ -522,10 +527,10 @@ export default angular.module("scrwebm.remesas.remesa",
                 },
             },
         }).result.then(
-              function (resolve) {
+              function () {
                   return true;
               },
-              function (cancel) {
+              function () {
                   return true;
               });
     }
@@ -534,7 +539,6 @@ export default angular.module("scrwebm.remesas.remesa",
     // ---------------------------------------------------------------------------
     // grid para mostrar el 'cuadre' de la remesa
     // ---------------------------------------------------------------------------
-    let cuadrePartidaSeleccionada = {};
     let cuadreRemesas_ui_grid_gridApi = null;
 
     $scope.cuadreRemesas_ui_grid = {
@@ -554,16 +558,6 @@ export default angular.module("scrwebm.remesas.remesa",
 
         onRegisterApi: function( gridApi ) {
             cuadreRemesas_ui_grid_gridApi = gridApi;
-
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                //debugger;
-                cuadrePartidaSeleccionada = {};
-
-                if (row.isSelected)
-                    cuadrePartidaSeleccionada = row.entity;
-                else
-                    return;
-            });
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -763,11 +757,8 @@ export default angular.module("scrwebm.remesas.remesa",
             if ($scope.vieneDeAfuera) { 
                 // cuando la página se abre en un nuevo window, los catálogos, etc., no están en minimongo y hay que 
                 // cargarlos; en este caso, la remesa tampoco existe y debe ser cargada con un subscribe ...    
-                Remesas_SubscriptionHandle = null;
 
                 // con la remesa leemos y cargamos también las compañías, para que existan en minimongo .. 
-
-                Remesas_SubscriptionHandle = 
                 Meteor.subscribe('remesas.vieneDeAfuera', $scope.id, () => { 
 
                     $scope.helpers({
@@ -778,7 +769,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
                     // ------------------------------------------------------------------------------------------------
                     // leemos la compañía seleccionada
-                    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+                    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
                     let companiaSeleccionadaDoc = null;
 
                     if (companiaSeleccionada) {
@@ -847,7 +838,7 @@ export default angular.module("scrwebm.remesas.remesa",
                             mostrarCuadreRemesa(); 
         
                             // protegemos la entidad si corresponde a un período cerrado ... 
-                            let protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
+                            const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
                             protegeEntidad.proteger_periodoCerrado(); 
         
                             $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
@@ -917,7 +908,7 @@ export default angular.module("scrwebm.remesas.remesa",
                         mostrarCuadreRemesa(); 
     
                         // protegemos la entidad si corresponde a un período cerrado ... 
-                        let protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
+                        const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
                         protegeEntidad.proteger_periodoCerrado(); 
     
                         $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
@@ -950,7 +941,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
         if ($scope.remesa.protegida && $scope.remesa.protegida.protegida) {
 
-            let razonProteccion = $scope.remesa.protegida.razon ? $scope.remesa.protegida.razon : "Razón invalida - Por favor revise."; 
+            const razonProteccion = $scope.remesa.protegida.razon ? $scope.remesa.protegida.razon : "Razón invalida - Por favor revise."; 
         
             DialogModal($modal, "<em>Remesas</em>",
                                 `La remesa está <em><b>protegida</b></em>. No puede ser alterada.<br />
@@ -976,10 +967,10 @@ export default angular.module("scrwebm.remesas.remesa",
     function revertirRemesa() {
         $scope.showProgress = true;
 
-        Meteor.call('remesas.revertir', $scope.remesa._id, (err, result)  => {
+        Meteor.call('remesas.revertir', $scope.remesa._id, (err)  => {
         
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -1008,7 +999,7 @@ export default angular.module("scrwebm.remesas.remesa",
         })
     }
 
-    $scope.obtenerCuadreRemesa = remesaID => {
+    $scope.obtenerCuadreRemesa = () => {
         if ($scope.remesa.docState && $scope.origen == 'edicion') {
             DialogModal($modal, "<em>Remesas</em>",
                                 "Aparentemente, la remesa ha recibido cambios; por favor " +
@@ -1038,11 +1029,11 @@ export default angular.module("scrwebm.remesas.remesa",
                                 será construido y registrado en su lugar.<br /><br />
                                 Desea continuar y registrar un nuevo <em>cuadre</em> para la remesa?`,
                                 true).then(
-                function (resolve) {
+                function () {
                     obtenerCuadreRemesa($scope.remesa._id);
                     mostrarCuadreRemesa(); 
                 },
-                function (err) { return true; }
+                function () { return true; }
                 );
 
             return;
@@ -1069,7 +1060,7 @@ export default angular.module("scrwebm.remesas.remesa",
                 },
             },
         }).result.then(
-            function (resolve) {
+            function () {
                 // el cuadre se construyó y registró en el servidor. No debe estar en el cliente ahora. Por eso, hacemos un subscribe 
                 // de la remesa ... 
                 Meteor.subscribe('remesas', JSON.stringify({ '_id': remesaID }), () => { 
@@ -1094,10 +1085,10 @@ export default angular.module("scrwebm.remesas.remesa",
                     // muestre en forma jararquica. probablemente, en un futuro, ui-grid podrá manejar el arreglo
                     // con un graph más complejo
                     if (lodash.isArray($scope.remesa.cuadre)) {
-                        let simpleArray = [];
+                        const simpleArray = [];
                         $scope.remesa.cuadre.forEach(item => {
                             item.partidas.forEach(p => {
-                                let partida = { numeroTransaccion: item.transaccion.numero,
+                                const partida = { numeroTransaccion: item.transaccion.numero,
                                     descripcionTransaccion: `${item.transaccion.numero} - ${item.transaccion.descripcion}`,
                                     numero: p.numero,
                                     tipo: p.tipo,
@@ -1132,16 +1123,16 @@ export default angular.module("scrwebm.remesas.remesa",
                         "<em>Remesas</em>",
                         `Ok, el <em>cuadre de la remesa</em> ha sido construido.<br /><br />
                         `, false).then(
-                            function (resolve) {
+                            function () {
                                 $scope.goToState('cuadre'); 
                             },
-                            function (err) { 
+                            function () { 
                                 $scope.goToState('cuadre'); 
                             }
                         )
             })
         },
-        function (cancel) {
+        function () {
             // el usuario cerro el modal sin produjo el cuadre ...
             return true;
         })
@@ -1153,10 +1144,10 @@ export default angular.module("scrwebm.remesas.remesa",
         // la idea es pasar a ui-grid un arreglo simple (y no de objetos con objetos), para que lo muestre en forma
         // jararquica. probablemente, en un futuro, ui-grid podrá manejar el arreglo con un graph más complejo
         if (lodash.isArray($scope.remesa.cuadre)) {
-            let simpleArray = [];
+            const simpleArray = [];
             $scope.remesa.cuadre.forEach(item => {
                 item.partidas.forEach(p => {
-                    let partida = { numeroTransaccion: item.transaccion.numero,
+                    const partida = { numeroTransaccion: item.transaccion.numero,
                                     descripcionTransaccion: `${item.transaccion.numero} - ${item.transaccion.descripcion}`,
                                     numero: p.numero,
                                     tipo: p.tipo,
@@ -1176,6 +1167,158 @@ export default angular.module("scrwebm.remesas.remesa",
             }
         }
     }
+
+    $scope.importarRemesa = function() {
+        // permitimos al usuario leer, en un nuevo asiento contable, alguno que se haya exportado a un text file ...
+        const inputFile = angular.element("#fileInput");
+        if (inputFile) { 
+            inputFile.click();        // simulamos un click al input (file)
+        }
+    }
+
+    $scope.uploadFile = function (files) {
+
+        const userSelectedFile = files[0];
+
+        if (!userSelectedFile) {
+
+            const message = `Aparentemente, Ud. no ha seleccionado un archivo.<br />
+                             Por favor seleccione un archivo que corresponda a un movimiento bancario 
+                             <em>exportado desde contabm / bancos</em> antes.`; 
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: message
+            });
+
+            const inputFile = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) { 
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            }
+                
+            return;
+        }
+
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            try {
+                var content = e.target.result;
+                const remesa = JSON.parse(content);
+
+                // el movimiento bancario en contabm tiene muchos más tipos; si no es alguno de estos tres, no inicializamos 
+                switch (remesa.tipo) { 
+                    case 'CH': 
+                        $scope.remesa.instrumentoPago.tipo = "CH"; 
+                        break; 
+                    case 'DP': 
+                        $scope.remesa.instrumentoPago.tipo = "DP"; 
+                        break; 
+                    case 'TR': 
+                        $scope.remesa.instrumentoPago.tipo = "TR"; 
+                        break; 
+                }
+
+                $scope.remesa.fecha = new Date(remesa.fecha); 
+                $scope.remesa.instrumentoPago.fecha = new Date(remesa.fecha); 
+
+                if (remesa.monto >= 0) { 
+                    $scope.remesa.miSu = "MI"; 
+                } else { 
+                    $scope.remesa.miSu = "SU"; 
+                }
+
+                $scope.remesa.instrumentoPago.numero = remesa.transaccion; 
+                $scope.remesa.observaciones = remesa.concepto; 
+
+                $scope.remesa.instrumentoPago.monto = Math.abs(remesa.monto); 
+
+                // el factor de cambio puede o no venir; en contabm lo tomamos del asiento asociado al movimiento bancario, pero 
+                // éste no siempre existe 
+                if (remesa.factorCambio) { 
+                    $scope.remesa.factorCambio = remesa.factorCambio; 
+                }
+
+                const message = `Ok, los datos básicos de la remesa han sido importados desde el archivo de texto 
+                                 que Ud. ha seleccionado.`; 
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'info',
+                    msg: message
+                });
+
+                // con el método leemos la compañía (por su abreviatura) y la cuenta bancaria (por su número); 
+                // junto con la cuenta bancaria traemos la moneda y el banco 
+
+                // la compañía puede no venir, pues hay movimientos bancarios sin ella ... 
+                const compania = remesa.compania && remesa.compania.abreviatura ? remesa.compania.abreviatura : ""; 
+
+                Meteor.call('leerInfoAutos.importarRemesas', remesa.cuentaBancaria, compania, (err, result)  => {
+            
+                    if (err) {
+                        const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+        
+                        $scope.alerts.length = 0;
+                        $scope.alerts.push({
+                            type: 'danger',
+                            msg: errorMessage
+                        });
+        
+                        $scope.showProgress = false;
+                        $scope.$apply();
+        
+                        return;
+                    }
+
+                    if (result.compania && result.compania._id) { 
+                        $scope.remesa.compania = result.compania._id; 
+                    }
+
+                    if (result.cuentaBancaria) { 
+                        $scope.remesa.instrumentoPago.cuentaBancaria = result.cuentaBancaria._id; 
+                        $scope.remesa.moneda = result.cuentaBancaria.moneda; 
+                        $scope.remesa.instrumentoPago.banco = result.cuentaBancaria.banco; 
+                    }
+
+                    const inputFile = angular.element("#fileInput");
+                    if (inputFile && inputFile[0] && inputFile[0].value) {
+                        // para que el input type file "limpie" el file indicado por el usuario
+                        inputFile[0].value = null;
+                    }
+        
+                    if (result.error) { 
+                        $scope.alerts.push({
+                            type: 'danger',
+                            msg: result.message
+                        });
+                    }
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                })
+            }
+
+            catch(err) {
+                const message = err.message ? err.message : err.toString();
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: message
+                });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+            }
+        }
+
+        $scope.showProgress = true; 
+        reader.readAsText(userSelectedFile);
+    }
+
 
       // -------------------------------------------------------
       // pager - en 'detalles' (pagos) de la remesa
