@@ -2,10 +2,12 @@
 
 import * as angular from 'angular'; 
 import * as lodash from 'lodash';
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("UsuariosRolesController",
- ['$scope', '$stateParams', '$meteor', '$modal', function ($scope, $stateParams, $meteor, $modal) {
+import "./usuariosRoles.html"; 
+
+export default angular.module("scrwebm.administracion.usuariosRoles", [])
+                      .controller("UsuariosRolesController", ['$scope', '$meteor', '$modal', function ($scope, $meteor, $modal) {
 
       $scope.showProgress = false;
 

@@ -1,5 +1,8 @@
 ﻿
 
+import { Meteor } from 'meteor/meteor'
+import angular from 'angular';
+
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
@@ -62,6 +65,8 @@ export default angular.module("scrwebm.cobranzas", [ CobranzasSeleccionRemesaMod
     $scope.companias = $scope.$meteorCollection(Companias, false);
     $scope.bancos = $scope.$meteorCollection(Bancos, false);
 
+    let remesas_subscriptionHandle = null; 
+
     // aplicamos el filtro indicado por el usuario y abrimos la lista
     function leerRemesasAbiertas() {
 
@@ -69,11 +74,11 @@ export default angular.module("scrwebm.cobranzas", [ CobranzasSeleccionRemesaMod
         $scope.processProgress.message = "leyendo remesas abiertas ..."; 
 
         // si se efectuó un subscription al collection antes, la detenemos ...
-        if (Remesas_SubscriptionHandle) { 
-            Remesas_SubscriptionHandle.stop();
+        if (remesas_subscriptionHandle) { 
+            remesas_subscriptionHandle.stop();
         }
             
-        Remesas_SubscriptionHandle = null;
+        remesas_subscriptionHandle = null;
 
         // preparamos el filtro (selector)
         var filtro = {};
@@ -84,7 +89,7 @@ export default angular.module("scrwebm.cobranzas", [ CobranzasSeleccionRemesaMod
 
         $meteor.subscribe('remesas', JSON.stringify(filtro)).then(
             function (subscriptionHandle) {
-                Remesas_SubscriptionHandle = subscriptionHandle;
+                remesas_subscriptionHandle = subscriptionHandle;
 
                 if (Remesas.find().count() == 0) {
                     $scope.alerts.length = 0;

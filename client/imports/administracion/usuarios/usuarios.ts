@@ -3,12 +3,13 @@
 import * as angular from 'angular'; 
 import * as lodash from 'lodash';
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
-import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("UsuariosDatosPersonalesController",
- ['$scope', '$stateParams', '$meteor', '$modal',
-  function ($scope, $stateParams, $meteor, $modal) {
+import "./usuarios.html"; 
+
+export default angular.module("scrwebm.administracion.usuarios", [])
+       .controller("UsuariosDatosPersonalesController", ['$scope', '$meteor', '$modal', function ($scope, $meteor, $modal) {
 
       $scope.showProgress = false;
 

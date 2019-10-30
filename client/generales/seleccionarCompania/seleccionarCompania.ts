@@ -63,33 +63,6 @@ angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController"
             }
         ];
 
-        // las empresasUsuarias y compañía seleccionada ya están en miniMongo ...
-        $scope.helpers({
-            empresasUsuarias: () => {
-                return EmpresasUsuarias.find({}, { sort: { nombre: 1 } });
-            },
-        });
-
-        $scope.seleccionarCompania_ui_grid.data = $scope.empresasUsuarias;
-
-        let ciaSeleccionadaAntes = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-
-        if (ciaSeleccionadaAntes && ciaSeleccionadaAntes.companiaID) {
-            // el usuario ya tenía una compañía seleccionada; lo indicamos ...
-            $scope.empresasUsuarias.forEach(function (compania, index) {
-                if (compania._id == ciaSeleccionadaAntes.companiaID) {
-                    //$scope.gridOptions.selectRow(2, true);
-
-                    $scope.alerts.length = 0;
-                    $scope.alerts.push({
-                        type: 'info',
-                        msg: "La compañía <b><em>" + compania.nombre + "</em></b> está ahora seleccionada."
-                    });
-                }
-            });
-        };
-
-
         $scope.seleccionarCompania = function () {
             if (!companiaSeleccionada || lodash.isEmpty(companiaSeleccionada)) {
                 $scope.alerts.length = 0;
@@ -144,5 +117,84 @@ angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController"
                     false).then();
             }
         }
+
+        // leemos las empresas para mostrarlas en la lista. El método revisa si el usuario tiene *solo* algunas empresa asignadas 
+        // y solo regresa éstas ... 
+        $scope.showProgress = true;
+
+        leerEmpresasUsuarias()
+            .then((result: { error: boolean, message: string, empresasUsuarias: {}}) => {
+
+                if (result.error) { 
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: result.message
+                    });
+
+                    $scope.showProgress = false; 
+                    $scope.$apply();
+                    
+                    return; 
+                }
+
+                $scope.helpers({
+                    empresasUsuarias: () => {
+                        return result.empresasUsuarias
+                    },
+                });
+
+                $scope.seleccionarCompania_ui_grid.data = $scope.empresasUsuarias;
+
+                let ciaSeleccionadaAntes = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+
+                if (ciaSeleccionadaAntes && ciaSeleccionadaAntes.companiaID) {
+                    // el usuario ya tenía una compañía seleccionada; lo indicamos ...
+                    $scope.empresasUsuarias.forEach(function (compania, index) {
+                        if (compania._id == ciaSeleccionadaAntes.companiaID) {
+                            //$scope.gridOptions.selectRow(2, true);
+
+                            $scope.alerts.length = 0;
+                            $scope.alerts.push({
+                                type: 'info',
+                                msg: "La compañía <b><em>" + compania.nombre + "</em></b> está ahora seleccionada."
+                            });
+                        }
+                    })
+                }
+
+                $scope.showProgress = false; 
+                $scope.$apply();
+            })
+            .catch((error) => {
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: error.message
+                });
+            })
     }
-]);
+])
+
+
+// meteor method para usuario y empresas
+const leerEmpresasUsuarias = () => { 
+    return new Promise((resolve, reject) => { 
+
+        Meteor.call('leerEmpresasUsuarias', (err, result) => {
+
+            if (err) {
+                reject(err); 
+                return; 
+            }
+    
+            if (result.error) { 
+                reject(result); 
+                return; 
+            }
+    
+            resolve(result)
+        })
+    })
+}

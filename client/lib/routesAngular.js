@@ -546,13 +546,17 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ---------------------------------------------------------------- /consultas/pendientesCobroVencimientos/filtro
         .state('usuarioRoles', {
             url: '/administracion/usuariosYRoles',
-            templateUrl: 'client/administracion/usuariosRoles/usuariosRoles.html',
+            templateUrl: 'client/imports/administracion/usuariosRoles/usuariosRoles.html',
             controller: 'UsuariosRolesController'
         })
         .state('usuarios', {
             url: '/administracion/usuarios',
-            templateUrl: 'client/administracion/usuarios/usuarios.html',
+            templateUrl: 'client/imports/administracion/usuarios/usuarios.html',
             controller: 'UsuariosDatosPersonalesController'
+        })
+        .state('usuariosEmpresas', {
+            url: '/administracion/usuariosEmpresas',
+            template: '<usuarios-empresas />',
         })
 
         // ----------------------------------------------------------------
