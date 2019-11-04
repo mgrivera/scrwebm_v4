@@ -10,7 +10,7 @@ Meteor.methods(
 {
     leerEmpresasUsuarias: function () {
 
-        const empresasUsuarias = EmpresasUsuarias.find({}, { fields: { nombre: 1, nombreCorto: 1, }, 
+        const empresasUsuarias = EmpresasUsuarias.find({}, { fields: { nombre: 1, nombreCorto: 1, companiaNosotros: 1, }, 
                                                              sort: { nombre: 1, }})
                                                  .fetch(); 
 

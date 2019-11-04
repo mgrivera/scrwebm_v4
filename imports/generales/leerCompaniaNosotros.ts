@@ -8,7 +8,7 @@ import { Companias } from 'imports/collections/catalogos/companias';
 // para el usuario 
 export const LeerCompaniaNosotros = function(userID: string) { 
 
-    let empresaUsuariaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let empresaUsuariaSeleccionada = CompaniaSeleccionada.findOne({ userID: userID });
 
     if (!empresaUsuariaSeleccionada) { 
         let message = `Error (inesperado): no hemos podido leer una empresa usuaria seleccionada para el usuario. 
