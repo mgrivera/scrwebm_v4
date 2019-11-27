@@ -1,5 +1,7 @@
 
 
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 import numeral from 'numeral';
 import lodash from 'lodash';
@@ -66,7 +68,7 @@ Meteor.methods(
             }
         } 
 
-        let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+        const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
         if (!companiaSeleccionada) {
             message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
@@ -80,7 +82,7 @@ Meteor.methods(
         }
 
         // antes que nada, leemos el riesgo
-        let riesgo = Riesgos.findOne(riesgoID);
+        const riesgo = Riesgos.findOne(riesgoID);
 
         if (!riesgo) {
             message = `Error inesperado: no pudimos leer el riesgo en la base de datos.`; 
@@ -92,7 +94,7 @@ Meteor.methods(
             }
         }
 
-        let movimiento = lodash.find(riesgo.movimientos, (x) => { return x._id === movimientoID; });
+        const movimiento = lodash.find(riesgo.movimientos, (x) => { return x._id === movimientoID; });
 
         if (!movimiento) {
             message = `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`; 
@@ -104,16 +106,16 @@ Meteor.methods(
             }
         }
 
-        let compania = Companias.findOne(riesgo.compania);
-        let asegurado = Asegurados.findOne(riesgo.asegurado);
-        let ramo = Ramos.findOne(riesgo.ramo);
-        let moneda = Monedas.findOne(riesgo.moneda);
-        let indole = Indoles.findOne(riesgo.indole);
+        const compania = Companias.findOne(riesgo.compania);
+        const asegurado = Asegurados.findOne(riesgo.asegurado);
+        const ramo = Ramos.findOne(riesgo.ramo);
+        const moneda = Monedas.findOne(riesgo.moneda);
+        const indole = Indoles.findOne(riesgo.indole);
 
         // leemos la póliza en el array de documentos del riesgo
         let poliza = "";
         if (riesgo.documentos && Array.isArray(riesgo.documentos) && riesgo.documentos.length) {
-            let polizaItem = lodash.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
+            const polizaItem = lodash.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
             if (polizaItem) {
                 poliza = polizaItem.numero;
             }
@@ -123,19 +125,19 @@ Meteor.methods(
         let cesion = "";
         let recibo = "";
         if (movimiento.documentos && Array.isArray(movimiento.documentos) && movimiento.documentos.length) {
-            let cesionItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
+            const cesionItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
             if (cesionItem) {
                 cesion = cesionItem.numero;
             }
 
-            let reciboItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'REC'; });
+            const reciboItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'REC'; });
             if (reciboItem) {
                 recibo = reciboItem.numero;
             }
         }
 
         // nótese como obtenemos nuestra parte (para luego obtener la retención del cedente) ...
-        let nosotros = movimiento && movimiento.companias && Array.isArray(movimiento.companias) ?
+        const nosotros = movimiento && movimiento.companias && Array.isArray(movimiento.companias) ?
                        lodash.find(movimiento.companias, (x) => { return x.nosotros; }) :
                        {};
 
@@ -146,12 +148,11 @@ Meteor.methods(
 
 
         // leemos los reaseguradores y creamos un documento para cada uno
-        let reaseguradores = movimiento && movimiento.companias && Array.isArray(movimiento.companias) ?
+        const reaseguradores = movimiento && movimiento.companias && Array.isArray(movimiento.companias) ?
                              lodash.filter(movimiento.companias, (x) => { return !x.nosotros; }) :
                              [];
 
-        let reaseguradoresArray = [];
-        let reaseguradorItem = {};
+        const reaseguradoresArray = [];
 
         reaseguradores.forEach((reasegurador) => {
 
@@ -161,46 +162,46 @@ Meteor.methods(
             // leemos las persona definida para el reasegurador
             let persona = "";
             if (riesgo.personas && Array.isArray(riesgo.personas) && riesgo.personas.length) {
-                let personaItem = lodash.find(riesgo.personas, (x) => { return x.compania === reasegurador.compania; });
+                const personaItem = lodash.find(riesgo.personas, (x) => { return x.compania === reasegurador.compania; });
                 if (personaItem) {
                     persona = `${personaItem.titulo} ${personaItem.nombre}`;
                 }
             }
 
             // seleccionamos el movimiento de primas que corresponde al reasegurador
-            let primas = lodash.find(movimiento.primas, (x) => { return x.compania === reasegurador.compania; });
+            const primas = lodash.find(movimiento.primas, (x) => { return x.compania === reasegurador.compania; });
 
             // la suma asegurada, reasegurada, etc., está en el array coberturasCompanias, pero debemos sumarizar ...
-            let valoresARiesgo = lodash(movimiento.coberturasCompanias).
+            const valoresARiesgo = lodash(movimiento.coberturasCompanias).
                                 filter((x) => { return x.compania === reasegurador.compania; }).
                                 sumBy('valorARiesgo');
 
-            let sumaAsegurada = lodash(movimiento.coberturasCompanias).
+            const sumaAsegurada = lodash(movimiento.coberturasCompanias).
                                 filter((x) => { return x.compania === reasegurador.compania; }).
                                 sumBy('sumaAsegurada');
 
-            let sumaReasegurada = lodash(movimiento.coberturasCompanias).
+            const sumaReasegurada = lodash(movimiento.coberturasCompanias).
                                 filter((x) => { return x.compania === reasegurador.compania; }).
                                 sumBy('sumaReasegurada');
 
-            let prima = lodash(movimiento.coberturasCompanias).
+            const prima = lodash(movimiento.coberturasCompanias).
                                 filter((x) => { return x.compania === reasegurador.compania; }).
                                 sumBy('prima');
 
-            let cuotas = [];
+            const cuotas = [];
             Cuotas.find({
                             'source.entityID': riesgo._id,
                             'source.subEntityID': movimiento._id,
                             compania: reasegurador.compania, },
                         { sort: { fecha: 1, }}).
                    forEach((x) => {
-                            let cuota = {
+                        const cuota = {
                                 fecha: moment(x.fecha).format('DD-MMM-YYYY'),
                                 vencimiento: moment(x.fechaVencimiento).format('DD-MMM-YYYY'),
                                 monto: numeral(abs(x.monto)).format('0,0.00'),
-                };
-                cuotas.push(cuota);
-            });
+                        };
+                        cuotas.push(cuota);
+                    });
 
             // -------------------------------------------------------------------------------------------------------------------------------
             // determinamos una especie de corretaje para el reasegurador; este corretaje no será perfecto; 
@@ -229,11 +230,11 @@ Meteor.methods(
             let corretajePorc = 0; 
 
             if (primaNetaReaseguradores) { 
-                let proporcionReasegurador = primaNetaEsteReasegurador * 100 / primaNetaReaseguradores; 
+                const proporcionReasegurador = primaNetaEsteReasegurador * 100 / primaNetaReaseguradores; 
                 corretajeReasegurador = corretaje * proporcionReasegurador / 100; 
 
                 // finalmente, calculamos el %corretaje como la proporción entre el corretaje y la prima bruta del reasegurador 
-                let primaBrutaEsteReasegurador = movimiento.primas.find(x => x.compania === reasegurador.compania).primaBruta;
+                const primaBrutaEsteReasegurador = movimiento.primas.find(x => x.compania === reasegurador.compania).primaBruta;
 
                 if (primaBrutaEsteReasegurador) { 
                     corretajePorc = corretajeReasegurador * 100 / primaBrutaEsteReasegurador; 
@@ -246,6 +247,11 @@ Meteor.methods(
             if (ramo.tipoRamo && ramo.tipoRamo === 'automovil') { 
                 infoAutos = leerInfoAutos(riesgoID, movimientoID); 
             }
+
+            const primaBruta = primas && primas.primaBruta ? primas.primaBruta : 0; 
+            const comision = primas && primas.comision ? primas.comision : 0; 
+            const impuesto = primas && primas.impuesto ? primas.impuesto : 0; 
+            const primaNetaAntesCorretaje = primaBruta + comision + impuesto;   // sumamos pues la com/imp ya son de signo contrario 
 
             reaseguradorItem = {
                 nombreReasegurador: reaseguradorItem && reaseguradorItem.nombre ? reaseguradorItem.nombre : 'Indefinido',
@@ -284,11 +290,12 @@ Meteor.methods(
                 sumaReasegurada: numeral(abs(sumaReasegurada)).format('0,0.00'),
                 suOrdenPorc: reasegurador.ordenPorc ? `${numeral(abs(reasegurador.ordenPorc)).format('0,0.00')}` : numeral(0).format('0,0.00'),
                 prima: numeral(abs(prima)).format('0,0.00'),
-                primaBruta: primas && primas.primaBruta ? numeral(abs(primas.primaBruta)).format('0,0.00'): numeral(0).format('0,0.00'),
+                primaBruta: numeral(abs(primaBruta)).format('0,0.00'),
                 comisionPorc: primas && primas.comisionPorc ? `${numeral(abs(primas.comisionPorc)).format('0,0.00')}%`: numeral(0).format('0,0.00'),
-                comision: primas && primas.comision ? numeral(abs(primas.comision)).format('0,0.00'): "0,00",
+                comision: numeral(abs(comision)).format('0,0.00'),
                 impuestoPorc: primas && primas.impuestoPorc ? `${numeral(abs(primas.impuestoPorc)).format('0,0.00')}%` : numeral(0).format('0,0.00'),
-                impuesto: primas && primas.impuesto ? numeral(abs(primas.impuesto)).format('0,0.00'): numeral(0).format('0,0.00'),
+                impuesto: numeral(abs(impuesto)).format('0,0.00'),
+                primaNeta_antesCorretaje: numeral(abs(primaNetaAntesCorretaje)).format('0,0.00'),
                 primaNeta_antesImpSPN: primas && primas.primaNeta0 ? numeral(abs(primas.primaNeta0)).format('0,0.00'): numeral(0).format('0,0.00'),
                 primaNeta: primas && primas.primaNeta ? numeral(abs(primas.primaNeta)).format('0,0.00'): numeral(0).format('0,0.00'),
                 corretajeReasegurador: numeral(abs(corretajeReasegurador)).format('0,0.00'),
@@ -342,8 +349,8 @@ Meteor.methods(
             }
         } 
 
-        let zip = new JSZip(content);
-        let doc = new Docxtemplater();
+        const zip = new JSZip(content);
+        const doc = new Docxtemplater();
         doc.loadZip(zip);
 
         //set the templateVariables
@@ -370,22 +377,22 @@ Meteor.methods(
         }
 
 
-        let buf = doc.getZip().generate({ type:"nodebuffer" });
+        const buf = doc.getZip().generate({ type:"nodebuffer" });
 
         // -----------------------------------------------------------------------------------------------
-        let nombreUsuario = usuario.personales.nombre;
+        const nombreUsuario = usuario.personales.nombre;
 
         let nombreUsuario2 = nombreUsuario.replace(/\./g, "_");           // nombre del usuario: reemplazamos un posible '.' por un '_' 
-        nombreUsuario2 = nombreUsuario2.replace(/\@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
+        nombreUsuario2 = nombreUsuario2.replace(/@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
         
         // construimos un id único para el archivo, para que el usuario pueda tener más de un resultado para la misma 
         // plantilla. La fecha está en Dropbox ... 
-        let fileId = new Mongo.ObjectID()._str.substring(0, 6); 
+        const fileId = new Mongo.ObjectID()._str.substring(0, 6); 
 
-        let fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
+        const fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
 
         // finalmente, escribimos el archivo resultado, al directorio tmp 
-        filePath2 = path.join(folderPath, "tmp", fileName2); 
+        let filePath2 = path.join(folderPath, "tmp", fileName2); 
 
         // en windows, path regresa back en vez de forward slashes ... 
         filePath2 = filePath2.replace(/\\/g,"/");
