@@ -206,54 +206,55 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
             };
 
             Meteor.call('contratosProp_configuracion_listaCodigos_Save', editedItems, function (error, result) {
-            if (error) {
 
-                let errorMessage = mensajeErrorDesdeMethod_preparar(error);
+                if (error) {
 
-                $scope.alerts.length = 0;
-                $scope.alerts.push({
-                    type: 'danger',
-                    msg: errorMessage
-                });
-
-                $scope.showProgress = false;
-                $scope.$apply();
-
-                return;
-            };
-
-            // por alguna razón, que aún no entendemos del todo, si no hacemos el subscribe nuevamente,
-            // se queda el '*' para registros nuevos en el ui-grid ...
-            $scope.contratosProp_configuracion_listaCodigos = [];
-            $scope.codigosContrato_ui_grid.data = [];
-            itemSeleccionado = {};
-
-            $scope.subscribe('contratosProp.configuracion.listaCodigos', () => [companiaSeleccionada._id], {
-                onReady: function () {
-                    $scope.helpers({
-                        contratosProp_configuracion_listaCodigos: () => {
-                            return ContratosProp_Configuracion_ListaCodigos.find({ cia: companiaSeleccionada._id });
-                        },
-                    });
-
-                    $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
+                    let errorMessage = mensajeErrorDesdeMethod_preparar(error);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
-                        type: 'info',
-                        msg: result
+                        type: 'danger',
+                        msg: errorMessage
                     });
 
                     $scope.showProgress = false;
                     $scope.$apply();
-                },
-                onStop: function(err) {
-                    if (err) {
-                    } else {
+
+                    return;
+                };
+
+                // por alguna razón, que aún no entendemos del todo, si no hacemos el subscribe nuevamente,
+                // se queda el '*' para registros nuevos en el ui-grid ...
+                $scope.contratosProp_configuracion_listaCodigos = [];
+                $scope.codigosContrato_ui_grid.data = [];
+                itemSeleccionado = {};
+
+                $scope.subscribe('contratosProp.configuracion.listaCodigos', () => [companiaSeleccionada._id], {
+                    onReady: function () {
+                        $scope.helpers({
+                            contratosProp_configuracion_listaCodigos: () => {
+                                return ContratosProp_Configuracion_ListaCodigos.find({ cia: companiaSeleccionada._id });
+                            },
+                        });
+
+                        $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
+
+                        $scope.alerts.length = 0;
+                        $scope.alerts.push({
+                            type: 'info',
+                            msg: result
+                        });
+
+                        $scope.showProgress = false;
+                        $scope.$apply();
+                    },
+                    onStop: function(err) {
+                        if (err) {
+                        } else {
+                        }
                     }
-                }
+                })
             })
-        })
     }
 
     $scope.showProgress = true;
@@ -261,7 +262,8 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
         onReady: function () {
             $scope.helpers({
                 contratosProp_configuracion_listaCodigos: () => {
-                    return ContratosProp_Configuracion_ListaCodigos.find({ cia: companiaSeleccionada._id });
+                    return ContratosProp_Configuracion_ListaCodigos
+                                .find({ cia: companiaSeleccionada._id }, { sort: { codigo: 1, }});
                 },
             });
 

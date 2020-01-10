@@ -1,12 +1,11 @@
 
 
+import { Meteor } from 'meteor/meteor';
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
-let leerTablaConfiguracion = function ($q, codigoContrato, moneda, anoContrato, companiaSeleccionadaID) {
+const leerTablaConfiguracion = function ($q, codigoContrato, moneda, anoContrato, companiaSeleccionadaID) {
 
     var defer = $q.defer();
-
-    let message = ``;
 
     Meteor.call('contratosProporcionales.leerTablaConfiguracion.producirResumenPrimasSiniestros',
                 codigoContrato, moneda, anoContrato, companiaSeleccionadaID, function (error, result) {
@@ -20,9 +19,9 @@ let leerTablaConfiguracion = function ($q, codigoContrato, moneda, anoContrato, 
             defer.resolve(result);
         }
 
-        let resumenPrimasSiniestros_array = JSON.parse(result.resumenPrimasSiniestros_array);
+        const resumenPrimasSiniestros_array = JSON.parse(result.resumenPrimasSiniestros_array);
 
-        let resolve = {
+        const resolve = {
             error: false,
             message: result.message,
             resumenPrimasSiniestros_array: resumenPrimasSiniestros_array,

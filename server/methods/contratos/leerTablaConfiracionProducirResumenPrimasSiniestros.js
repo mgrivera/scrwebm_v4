@@ -1,4 +1,6 @@
 
+
+import { Meteor } from 'meteor/meteor';
 import SimpleSchema from 'simpl-schema';
 import lodash from 'lodash'; 
 
@@ -18,16 +20,23 @@ Meteor.methods(
             ciaSeleccionadaID: { type: String, optional: false },
         }).validate({ codigoContrato, anoContrato, ciaSeleccionadaID, });
 
-        // TODO: leer tabla de configuración para el código/cia; si no hay registros, error ...
-        let tablaConfiguracion = ContratosProp_Configuracion_Tablas.find({
+        // sumamos un año para leer los registros en la tabla de configuración. La razón es que contratos 
+        // que se inician en un año, ej: 2.019, pueden querer leer y mostrar series del año 2.020 y anteriores; 
+        // es decir, un contrato que se inicia en un año (2019) debe leer series desde el próximo año (2.020) 
+        // y anteriores 
+        const anoContrato2 = anoContrato + 1; 
+
+        const tablaConfiguracion = ContratosProp_Configuracion_Tablas.find({
                                                     codigo: codigoContrato,
                                                     moneda: moneda,
-                                                    ano: { $lte: anoContrato },
+                                                    ano: { $lte: anoContrato2 },
                                                     cia: ciaSeleccionadaID,
                                                 }).fetch();
 
+        
+
         if (!tablaConfiguracion.length) {
-            let message = `Error: no hemos podido leer registros en la <em>tabla de configuración</em> para el código
+            const message = `Error: no hemos podido leer registros en la <em>tabla de configuración</em> para el código
                            de contrato <b><em>${codigoContrato}</em></b>, años anteriores o iguales a
                            <b><em>${anoContrato.toString()}</em></b>, la moneda de la definición de cuentas técnicas
                            y la compañía seleccionada.<br /><br />
@@ -49,7 +58,7 @@ Meteor.methods(
         // 1) producimos un array con los valores: 'mon-ramo-tipo-año'
         // 2) aplicamos lodash 'uniq' al array anterior para obtener solo las diferentes
         // 3) separamos cada valor con 'split('-')'
-        let tablaConfiguracion2 = lodash(tablaConfiguracion).
+        const tablaConfiguracion2 = lodash(tablaConfiguracion).
                                     map((x) =>
                                         {
                                             return `${x.moneda}-${x.ramo}-${x.tipoContrato}-${x.ano.toString()}`;
@@ -58,10 +67,10 @@ Meteor.methods(
                                     value();
 
         // finalmente, separamos: moneda, ramo, tipo y año, usando split('-') ...
-        let tablaConfiguracion3 = [];
+        const tablaConfiguracion3 = [];
 
         tablaConfiguracion2.forEach((x) => {
-            let values = x.split('-');
+            const values = x.split('-');
 
             tablaConfiguracion3.push({
                 moneda: values[0],
@@ -77,4 +86,4 @@ Meteor.methods(
             resumenPrimasSiniestros_array: JSON.stringify(tablaConfiguracion3),
         };
     }
-});
+})

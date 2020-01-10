@@ -1,4 +1,8 @@
 
+
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo'; 
+
 import lodash from 'lodash';
 import SimpleSchema from 'simpl-schema';
 
@@ -14,13 +18,13 @@ Meteor.methods(
             ciaSeleccionadaID: { type: String, optional: false },
         }).validate({ ciaSeleccionadaID, });
 
-        let codigosContato_list = [];
+        const codigosContato_list = [];
 
-        let codigos = Contratos.find({ $and: [
+        const codigos = Contratos.find({ $and: [
             { codigo: { $exists: true }}, { codigo: { $ne: null }}, { cia: ciaSeleccionadaID }
         ]}, { fields: { codigo: true, _id: false, }}).fetch();
 
-        let codigos2 = lodash.uniqBy(codigos, 'codigo');
+        const codigos2 = lodash.uniqBy(codigos, 'codigo');
 
         codigos2.forEach((x) => {
             codigosContato_list.push({ _id: new Mongo.ObjectID()._str, codigo: x.codigo, });
