@@ -379,6 +379,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                     '<span ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableColumnMenu: false,
+            enableFiltering: false, 
             pinnedLeft: true,
             width: 25
         },
@@ -803,6 +804,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             cellTemplate: '<span ng-click="grid.appScope.deleteItem_distribucionPrimasSiniestros(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableSorting: false,
+            enableFiltering: false, 
             width: 25
         },
     ]
@@ -840,7 +842,10 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         let filtro = {
             codigo: codigo,
             moneda: moneda,
-            ano: { $lte: ano },
+            // quitamos el año del filtro para que el código traiga cualquier seríe que el usuario haya incluído en la 
+            // tabla de definición. Un contrato puede ser del 2.018, pero tener series muy posteriores; 
+            // ej: 2019, 2020, 2021, 2022, ...
+            // ano: { $lte: ano },
             cia: ciaSeleccionadaID,
         };
 
@@ -1125,6 +1130,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                     '<span ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableColumnMenu: false,
+            enableFiltering: false, 
             pinnedLeft: true,
             width: 25
         },
@@ -1437,6 +1443,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             cellTemplate: '<span ng-click="grid.appScope.deleteItem_contrPropSaldos(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableSorting: false,
+            enableFiltering: false, 
             // pinnedRight: true,
             width: 25
         },
