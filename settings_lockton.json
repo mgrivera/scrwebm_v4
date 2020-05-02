@@ -1,0 +1,21 @@
+
+{
+    "galaxy.meteor.com": { 
+        "env": { 
+            "MONGO_URL": "mongodb://contabm_user:locktonve01@cluster0-shard-00-00-8jpsb.mongodb.net:27017,cluster0-shard-00-01-8jpsb.mongodb.net:27017,cluster0-shard-00-02-8jpsb.mongodb.net:27017/scrwebm_lockton?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+        }
+    }, 
+    "mail_url": "smtp://postmaster%40sandbox97940b25b88540ed9170da22e4193dcb.mailgun.org:2a4979d048e9d1aa8bb1372feda9449f@smtp.mailgun.org:587",
+    
+    "public": {
+        "collectionFS_path": "c:/scrwebm_files",
+
+        "collectionFS_path_tempFiles": "c:/scrwebm_files/temp",
+        "collectionFS_path_templates": "c:/scrwebm_files/templates",
+        "collectionFS_path_logos": "c:/scrwebm_files/logos", 
+        "scrwebm_net_app_address": "http://manuelrivera-001-site3.gtempurl.com/", 
+                                           
+
+		"dropBox_appToken": "lU-Yy9lFOiAAAAAAAAAADJKTNZ3tEn7YS5KtGs9jt2GwKnuPb2qaRBzOz1LpqLVP"
+    }
+}

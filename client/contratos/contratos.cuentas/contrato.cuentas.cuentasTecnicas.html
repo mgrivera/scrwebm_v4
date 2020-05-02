@@ -104,6 +104,14 @@
                     <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
                             <li><a href="#" class="navbar_custom_small_header">Cuentas técnicas - Saldos (finales) de compañías</a></li>
+
+                            <li><a href="#" 
+                                   ng-click="saldosFinales_calcular()" 
+                                   popover="Nota: para re-calcular: saldo final y res técnico; *solo* cuando se han hecho cambios manuales en la lista." 
+                                   popover-trigger="mouseenter"
+                                   class="navbar_custom_xsmall_node">
+                                    Re-calcular (cambios manuales)
+                            </a></li>
                         </ul>
                     </div>
                 </div>

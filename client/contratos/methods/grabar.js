@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -20,7 +20,7 @@ import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, 
 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
-let grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
+const grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
 
     if (!$scope.dataHasBeenEdited) {
         DialogModal($modal,
@@ -38,8 +38,8 @@ let grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
         $scope.contrato.referencia = '0';
     }
 
-    let isValid = false;
-    let errores = [];
+    const isValid = false;
+    const errores = [];
 
     // validamos el contenido del item contra el simple-schema que se ha asociado al mongo collection 
     validarItemContraSchema($scope.contrato, Contratos, errores); 
@@ -128,7 +128,7 @@ let grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
                                 (err, contratoSave_result) => {
 
         if (err) {
-            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -142,14 +142,14 @@ let grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
         }
 
         // cuando el contrato es eliminado, ya no existe (y no es encontrado) ...
-        let contratoID = $scope.contrato ? $scope.contrato._id : "xyzxyz***";
+        const contratoID = $scope.contrato ? $scope.contrato._id : "xyzxyz***";
 
         // si se efectuó un subscription al collection antes, la detenemos ...
         if (Contratos_SubscriptionHandle) {
             Contratos_SubscriptionHandle.stop();
         }
 
-        Contratos_SubscriptionHandle = null;
+        let Contratos_SubscriptionHandle = null;
 
         Contratos_SubscriptionHandle = 
         Meteor.subscribe('contrato', contratoID, () => { 

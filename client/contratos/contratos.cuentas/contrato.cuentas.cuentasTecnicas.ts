@@ -349,11 +349,18 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
 
-                if (newValue != oldValue)
-                    if (!$scope.contrato.docState) { 
+                // actualizamos el docState en el item 
+                if (!rowEntity.docState) {
+                    rowEntity.docState = 2;
+                }
+
+                // actualizamos el docState en el contrato 
+                if (newValue != oldValue) { 
+                    if (!$scope.contrato.docState) {
                         $scope.contrato.docState = 2;
-                        $scope.$parent.$parent.dataHasBeenEdited = true; 
+                        $scope.$parent.$parent.dataHasBeenEdited = true;
                     }    
+                }
             })
         },
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
@@ -1100,6 +1107,12 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
 
                 if (newValue != oldValue) { 
+                    // actualizamos el docState en el item 
+                    if (!rowEntity.docState) {
+                        rowEntity.docState = 2;
+                    } 
+
+                    // actualizamos el docState en el contrato 
                     if (!$scope.contrato.docState) { 
                         $scope.contrato.docState = 2;
                         $scope.$parent.$parent.dataHasBeenEdited = true; 
@@ -1464,6 +1477,54 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         $scope.cuentasTecnicas_Saldos_ui_grid.data = 
                 $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID); 
         
+        $scope.$parent.$parent.dataHasBeenEdited = true; 
+    }
+
+    $scope.saldosFinales_calcular = () => {
+
+        // determinamos cada saldo final para cada compañía 
+        // Nota: normalmente, el usuario no hará un click en esta opción; estos saldos son calculados desde la lista anterior; 
+        // sin embargo, en ocasiones, el usuario puede hacer una modificación manual a esta lista y recalcular. Esto no es frecuente ... 
+
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;
+        const saldosFinales_array = $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionSeleccionadaID);
+
+        saldosFinales_array.forEach(x => {
+
+            // TODO: obtener esta orden desde el array de la lista de arriba ... 
+            // x.primaBruta = x.prima * x.ordenPorc / 100;
+            // x.comision = (x.primaBruta && x.comisionPorc) ? (x.primaBruta * x.comisionPorc / 100) * -1 : 0;
+            // x.imp1 = (x.primaBruta && x.imp1Porc) ? (x.primaBruta * x.imp1Porc / 100) * -1 : 0;
+            // x.imp2 = (x.primaBruta && x.imp2Porc) ? (x.primaBruta * x.imp2Porc / 100) * -1 : 0;
+            // x.imp3 = (x.primaBruta && x.imp3Porc) ? (x.primaBruta * x.imp3Porc / 100) * -1 : 0;
+
+            x.primaNetaAntesCorretaje = x.primaBruta;
+            x.primaNetaAntesCorretaje += x.comision ? x.comision : 0;
+            x.primaNetaAntesCorretaje += x.imp1 ? x.imp1 : 0;
+            x.primaNetaAntesCorretaje += x.imp2 ? x.imp2 : 0;
+            x.primaNetaAntesCorretaje += x.imp3 ? x.imp3 : 0;
+
+            // x.corretaje = (x.primaBruta && x.corretajePorc) ? (x.primaBruta * x.corretajePorc / 100) * -1 : 0;
+
+            x.primaNeta = x.primaNetaAntesCorretaje;
+            x.primaNeta += x.corretaje ? x.corretaje : 0;
+
+            // x.siniestros_suParte = x.siniestros ? x.siniestros * x.ordenPorc / 100 : 0;
+
+            x.saldo = 0;
+            x.saldo += x.primaNeta ? x.primaNeta : 0;
+            x.saldo += x.siniestros_suParte;
+
+            // el saldo es ya neto de corretaje. Es decir, no contiene el corretaje. Este monto que sigue, resultado técnico, es el saldo 
+            // de la compañía sin la deducción del corretaje ... 
+            x.resultadoTecnico = x.saldo + (x.corretaje ? -x.corretaje : 0);   // el corretaje es, normalmente, de signo contrario al saldo 
+
+            if (!x.docState) {
+                x.docState = 2;
+            }
+        })
+
+        // siempre nos aseguramos que el contrato, como un todo, se marque como modificado 
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
