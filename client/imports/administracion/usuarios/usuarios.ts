@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor';
 
 import * as angular from 'angular'; 
 import * as lodash from 'lodash';
@@ -6,7 +7,7 @@ import * as lodash from 'lodash';
 import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import "./usuarios.html"; 
+// import "client/imports/administracion/usuarios/usuarios.html"; 
 
 export default angular.module("scrwebm.administracion.usuarios", [])
        .controller("UsuariosDatosPersonalesController", ['$scope', '$meteor', '$modal', function ($scope, $meteor, $modal) {
@@ -19,8 +20,6 @@ export default angular.module("scrwebm.administracion.usuarios", [])
       $scope.closeAlert = function (index) {
           $scope.alerts.splice(index, 1);
       };
-
-      let usuarioSeleccionado = {};
 
       $scope.usuarios_ui_grid = {
 
@@ -36,18 +35,6 @@ export default angular.module("scrwebm.administracion.usuarios", [])
           rowHeight: 25,
 
           onRegisterApi: function (gridApi) {
-
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-              usuarioSeleccionado = {};
-
-              if (row.isSelected) {
-                    usuarioSeleccionado = row.entity;
-                }
-                else
-                    return;
-                });
-
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
                 if (newValue != oldValue)
@@ -63,7 +50,6 @@ export default angular.module("scrwebm.administracion.usuarios", [])
               return row._id;
           }
       };
-
 
       $scope.usuarios_ui_grid.columnDefs = [
                {
@@ -138,7 +124,7 @@ export default angular.module("scrwebm.administracion.usuarios", [])
                                     `Aparentemente, <em>no se han efectuado cambios</em> en los datos.
                                      No hay nada que grabar.`, false).then();
                 return;
-            };
+            }
 
           $scope.showProgress = true;
 
@@ -157,7 +143,7 @@ export default angular.module("scrwebm.administracion.usuarios", [])
             },
             function (err) {
 
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -173,7 +159,7 @@ export default angular.module("scrwebm.administracion.usuarios", [])
       $scope.showProgress = true;
 
       $meteor.subscribe("allUsers").then(
-          function(subscriptionHandle) {
+          function() {
 
               $scope.helpers({
                   users: () => {
@@ -192,4 +178,4 @@ export default angular.module("scrwebm.administracion.usuarios", [])
           return lodash.some($scope.users, u => { return u.docState; });
       };
   }
-]);
+])

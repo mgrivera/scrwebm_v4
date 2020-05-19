@@ -1,4 +1,8 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
+import { Match } from 'meteor/check'
 
 import * as moment from 'moment';
 import * as lodash from 'lodash';
@@ -99,7 +103,7 @@ Meteor.methods(
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         let result = Cumulos_Registro.aggregate(pipeline);
@@ -136,7 +140,7 @@ Meteor.methods(
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         result.forEach(item => {

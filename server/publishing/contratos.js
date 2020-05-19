@@ -1,11 +1,14 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash';
+import moment from 'moment';
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
 
 Meteor.publish("contratos", function (filtro) {
 
-    var filtro = JSON.parse(filtro);
-    var selector = {};
+    filtro = JSON.parse(filtro);
+    const selector = {};
 
     // nótese como los 'dates' vienen como strings y deben ser convertidos ...
     if (filtro.desde)
@@ -28,22 +31,22 @@ Meteor.publish("contratos", function (filtro) {
                 selector.hasta = moment(filtro.hasta).toDate();
 
     if (filtro.compania) {
-        var array = _.clone(filtro.compania);
+        const array = lodash.clone(filtro.compania);
         selector.compania = { $in: array };
-    };
+    }
 
     if (filtro.tipo) {
-        var array = _.clone(filtro.tipo);
+        const array = lodash.clone(filtro.tipo);
         selector.tipo = { $in: array };
-    };
+    }
 
     if (filtro.codigo) {
-        var search = new RegExp(filtro.codigo, 'i');
+        const search = new RegExp(filtro.codigo, 'i');
         selector.codigo = search;
     }
 
     if (filtro.descripcion) {
-        var search = new RegExp(filtro.descripcion, 'i');
+        const search = new RegExp(filtro.descripcion, 'i');
         selector.descripcion = search;
     }
 
@@ -52,4 +55,4 @@ Meteor.publish("contratos", function (filtro) {
     }
 
     return Contratos.find(selector);
-});
+})

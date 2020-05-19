@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+
 import { Riesgos } from '/imports/collections/principales/riesgos';   
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 import { Contratos } from '/imports/collections/principales/contratos'; 
@@ -9,7 +11,7 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 Monedas.before.remove(function (userId, doc) {
     // -------------------------------------------------------------------
     // riesgos
-    let riesgo = Riesgos.findOne({
+    const riesgo = Riesgos.findOne({
         $or: [
             { moneda: doc._id },
             { 'movimientos.coberturas.moneda': doc._id },
@@ -31,7 +33,7 @@ Monedas.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // contratos
-    let contrato = Contratos.findOne({
+    const contrato = Contratos.findOne({
         $or: [
             { 'capas.moneda': doc._id },
             { 'capasPrimasCompanias.moneda': doc._id },
@@ -52,7 +54,7 @@ Monedas.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // siniestros
-    let siniestro = Siniestros.findOne({
+    const siniestro = Siniestros.findOne({
         $or: [
             { moneda: doc._id },
             { 'reservas.moneda': doc._id },
@@ -73,7 +75,7 @@ Monedas.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // remesas
-    let remesa = Remesas.findOne({ moneda: doc._id }, { fields: { numero: true } });
+    const remesa = Remesas.findOne({ moneda: doc._id }, { fields: { numero: true } });
 
     if (remesa) {
         throw new Meteor.Error("dataBaseError",
@@ -86,7 +88,7 @@ Monedas.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // cuotas
-    let cuota = Cuotas.findOne({ moneda: doc._id });
+    const cuota = Cuotas.findOne({ moneda: doc._id });
 
     if (cuota) {
         throw new Meteor.Error("dataBaseError",

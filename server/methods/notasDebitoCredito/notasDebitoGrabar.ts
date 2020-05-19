@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
 
 Meteor.methods(

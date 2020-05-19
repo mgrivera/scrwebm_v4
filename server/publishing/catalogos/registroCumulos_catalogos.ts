@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor';
 import { Monedas } from 'imports/collections/catalogos/monedas'; 
 import { Companias } from 'imports/collections/catalogos/companias'; 
 import { Ramos } from 'imports/collections/catalogos/ramos';  

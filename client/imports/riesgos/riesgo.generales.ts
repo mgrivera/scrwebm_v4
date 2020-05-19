@@ -128,7 +128,7 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
     return new Promise((resolve, reject) => {
       
         var modalInstance = $modal.open({
-            templateUrl: 'client/imports/generales/agregarNuevoAsegurado.html',
+            templateUrl: 'client/html/generales/agregarNuevoAsegurado.html',
             controller: 'AgregarNuevoAsegurado_ModalController',
             size: 'md',
             resolve: {

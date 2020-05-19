@@ -11,16 +11,16 @@ import { Bancos } from '/imports/collections/catalogos/bancos';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
 
-import './cobranzas.html'; 
+// import './cobranzas.html'; 
 
 // angular modules 
-import './cobranzas.seleccionRemesa.html'; 
+// import './cobranzas.seleccionRemesa.html'; 
 import CobranzasSeleccionRemesaModule from './cobranzasSeleccionRemesaModule'; 
 
-import './cobranzas.aplicarPagos.html';
+// import './cobranzas.aplicarPagos.html';
 import CobranzasAplicarPagosModule from  './cobranzasAplicarPagosModule'; 
 
-import './cobranzas.resultados.html'; 
+// import './cobranzas.resultados.html'; 
 import CobranzasResultadosModule from  './cobranzasResultadosModule'; 
 
 export default angular.module("scrwebm.cobranzas", [ CobranzasSeleccionRemesaModule.name, 

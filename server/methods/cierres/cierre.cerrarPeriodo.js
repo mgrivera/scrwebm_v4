@@ -1,41 +1,39 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
-/// <reference path="../../../typings/simpl-schema.d.ts" />      // porque estos types no se importaron desde npm types@/... 
-
-import * as moment from 'moment'; 
-import * as numeral from 'numeral'; 
+import moment from 'moment'; 
+import numeral from 'numeral'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import { CierreRegistro } from 'imports/collections/cierre/registroCierre'; 
-import { Cierre, Cierre_schema } from 'imports/collections/cierre/cierre'; 
-import { Riesgos } from 'imports/collections/principales/riesgos';  
-import { Siniestros } from 'imports/collections/principales/siniestros'; 
-import { Contratos } from 'imports/collections/principales/contratos'; 
-import { Remesas } from 'imports/collections/principales/remesas';  
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Bancos } from 'imports/collections/catalogos/bancos'; 
-import { CuentasBancarias } from 'imports/collections/catalogos/cuentasBancarias'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
-import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
+import { Cierre, Cierre_schema } from '/imports/collections/cierre/cierre'; 
+import { Riesgos } from '/imports/collections/principales/riesgos';  
+import { Siniestros } from '/imports/collections/principales/siniestros'; 
+import { Contratos } from '/imports/collections/principales/contratos'; 
+import { Remesas } from '/imports/collections/principales/remesas';  
+import { Bancos } from '/imports/collections/catalogos/bancos'; 
+import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
+import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
+import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
 // siguen todos las tablas (collections) para el registro de contratos proporcionales 
-import { ContratosProp_cuentas_saldos, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_comAdic_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_partBeneficios_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_entCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_entCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_retCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_retCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_comAdic_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_partBeneficios_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_entCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_entCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
 
 Meteor.methods({
 
     'cierre.cerrarPeriodo': function (periodoCierre) {
 
-        let isValid = Cierre_schema.namedContext().validate(periodoCierre);
+        const isValid = Cierre_schema.namedContext().validate(periodoCierre);
             
         if (!isValid) { 
-            let errorsArray = Cierre_schema.namedContext().validationErrors(); 
+            const errorsArray = Cierre_schema.namedContext().validationErrors(); 
             return { 
                 validationError: true, 
                 validationErrors: errorsArray, 
@@ -51,7 +49,7 @@ Meteor.methods({
 
         // -----------------------------------------------------------------------------------------------------------------
         // leemos la cuotas para el período y las grabamos al registro
-        let userEmail = Meteor.user().emails[0].address;
+        const userEmail = Meteor.user().emails[0].address;
         
         let cuotasAgregadas = 0; 
 
@@ -65,13 +63,13 @@ Meteor.methods({
         let reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 3;
+        const numberOfProcess = 3;
         let currentProcess = 1;
         let message = `leyendo las cuotas (fac, capas, sinFac) ... `
 
         // nótese que 'eventName' y 'eventSelector' no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "cierre_procesoCierre_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_procesoCierre' };
+        const eventName = "cierre_procesoCierre_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_procesoCierre' };
         let eventData = {
                           current: currentProcess, 
                           max: numberOfProcess, 
@@ -92,18 +90,18 @@ Meteor.methods({
             }).forEach((cuota) => { 
 
             // leemos la entidad de origen, para obtener la referencia 
-            let referenciaEntidadOrigen: string = ""; 
-            let tipoNegocio: string = ""; 
-            let categoria: string = ""; 
-            let origen_keys: string[] = []; 
+            let referenciaEntidadOrigen = ""; 
+            let tipoNegocio = ""; 
+            let categoria = ""; 
+            let origen_keys = []; 
             let cedente = ""; 
 
             switch(cuota.source.origen) { 
                 case 'fac': { 
-                    let riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
+                    const riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                     if (riesgo) { 
                         cedente = riesgo.compania; 
-                        let asegurado = Asegurados.findOne({ _id: riesgo.asegurado }, { fields: { abreviatura: true, }}); 
+                        const asegurado = Asegurados.findOne({ _id: riesgo.asegurado }, { fields: { abreviatura: true, }}); 
                         if (asegurado) { 
                             referenciaEntidadOrigen = asegurado.abreviatura; 
                         }
@@ -118,7 +116,7 @@ Meteor.methods({
                     break; 
                 }
                 case 'capa': { 
-                    let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
+                    const contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
                     if (contrato) { 
                         cedente = contrato.compania; 
                         referenciaEntidadOrigen = contrato.codigo ? contrato.codigo : "Indefinida"; 
@@ -131,10 +129,10 @@ Meteor.methods({
                     break; 
                 }
                 case 'sinFac': { 
-                    let siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
+                    const siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                     if (siniestro) { 
                         cedente = siniestro.compania; 
-                        let asegurado = Asegurados.findOne({ _id: siniestro.asegurado }, { fields: { abreviatura: true, }}); 
+                        const asegurado = Asegurados.findOne({ _id: siniestro.asegurado }, { fields: { abreviatura: true, }}); 
                         if (asegurado) { 
                             referenciaEntidadOrigen = asegurado.abreviatura; 
                         }
@@ -152,7 +150,7 @@ Meteor.methods({
                 referenciaEntidadOrigen = "indefinida (???)"; 
             }
 
-            let registro = {
+            const registro = {
                 _id: new Mongo.ObjectID()._str,
                 
                 fecha: cuota.fecha,
@@ -237,7 +235,7 @@ Meteor.methods({
         // ahora leemos registros, cuentas y complementarios, de contratos proporcionales. Para hacerlo, debemos leer los contratos de 
         // la compañía seleccionada que tengan una definición para la fecha del cierre. Entonces, con el _id del contrato y de la 
         // definición, leeremos sus registros (cuentas y complementarios) 
-        let contratosProporcionales = Contratos.find({ 
+        const contratosProporcionales = Contratos.find({ 
             'cuentasTecnicas_definicion.desde': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, 
             cia: periodoCierre.cia, 
         }, { fields: { _id: 1, numero: 1, codigo: 1, cuentasTecnicas_definicion: 1, compania: 1, }}).fetch(); 
@@ -246,22 +244,22 @@ Meteor.methods({
 
         let cantidadCuentasYComp_contProp = 0; 
 
-        for (let contrato of contratosProporcionales) { 
+        for (const contrato of contratosProporcionales) { 
 
             // el contrato tiene varias definiciones; obtenemos la que corresponden al período del cierre 
-            let definiciones = contrato.cuentasTecnicas_definicion.filter((d) => { return d.desde >= periodoCierre.desde && d.desde <= periodoCierre.hasta }); 
+            const definiciones = contrato.cuentasTecnicas_definicion.filter((d) => { return d.desde >= periodoCierre.desde && d.desde <= periodoCierre.hasta }); 
 
-            for (let definicion of definiciones) { 
+            for (const definicion of definiciones) { 
                 
                 // ahora leemos las cuentas y complementarios para el contrato y definición ... 
-                let contratosProp_cuentas_saldos = ContratosProp_cuentas_saldos
+                const contratosProp_cuentas_saldos = ContratosProp_cuentas_saldos
                     .find({ contratoID: contrato._id, definicionID: definicion._id }, 
                           { fields: { compania: 1, nosotros: 1, moneda: 1, serie: 1, saldo: 1, }})
                     .fetch(); 
 
-                for (let cuenta of contratosProp_cuentas_saldos) { 
+                for (const cuenta of contratosProp_cuentas_saldos) { 
                     
-                    let registro = {
+                    const registro = {
                         _id: new Mongo.ObjectID()._str,
                 
                         fecha: definicion.desde,
@@ -357,10 +355,10 @@ Meteor.methods({
         // ahora grabamos las remesas al registro 
         let cobrosPagosAgregados = 0; 
         let erroresEncontrados = 0; 
-        let erroresArray = []; 
+        const erroresArray = []; 
 
         // contamos las cuotas que leeremos más abajo, para mostrar el meteor en el cliente 
-        let cantidadCuotasConPagos = Cuotas.find({ 'pagos.fecha': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, cia: periodoCierre.cia }).count(); 
+        const cantidadCuotasConPagos = Cuotas.find({ 'pagos.fecha': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, cia: periodoCierre.cia }).count(); 
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -380,25 +378,25 @@ Meteor.methods({
         Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-        let cuotasCobradasPagadas = Cuotas.find({ 'pagos.fecha': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, cia: periodoCierre.cia }).fetch(); 
+        const cuotasCobradasPagadas = Cuotas.find({ 'pagos.fecha': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, cia: periodoCierre.cia }).fetch(); 
 
-        for (let cuota of cuotasCobradasPagadas) { 
+        for (const cuota of cuotasCobradasPagadas) { 
 
             // la cuota puede tener varios pagos, aunque no es muy usual; leemos solo los que apliquen ... 
-            let pagos = cuota.pagos.filter(p => p.fecha >= periodoCierre.desde && p.fecha <= periodoCierre.hasta); 
+            const pagos = cuota.pagos.filter(p => p.fecha >= periodoCierre.desde && p.fecha <= periodoCierre.hasta); 
 
-            for (let p of pagos) { 
+            for (const p of pagos) { 
 
-                let remesa = Remesas.findOne(p.remesaID, { fields: { 
+                const remesa = Remesas.findOne(p.remesaID, { fields: { 
                     fecha: 1, instrumentoPago: 1, compania: 1, moneda: 1, numero: 1, miSu: 1, 
                 }}); 
 
                 if (!remesa) {  
-                    let message = `Error: no hemos podido leer la remesa que corresponde a uno de los pagos registrados en el período de cierre. <br />
+                    const message = `Error: no hemos podido leer la remesa que corresponde a uno de los pagos registrados en el período de cierre. <br />
                                 Los datos del pago mencionado son: origen: <b>${cuota.source.origen} ${cuota.source.numero}</b>, 
                                 fecha: <b>${moment(p.fecha).format("DD-MMM-YYYY")}</b>, 
                                 monto: <b>${numeral(p.monto).format("0,0.00")}</b>.  
-                    ` as never; 
+                    `; 
 
                     erroresArray.push(message); 
                     erroresEncontrados++; 
@@ -406,30 +404,27 @@ Meteor.methods({
                     continue; 
                 }
 
-                let banco = Bancos.findOne(remesa.instrumentoPago && remesa.instrumentoPago.banco ? remesa.instrumentoPago.banco : null, { fields: { abreviatura: 1 }});
-                let compania = Companias.findOne(cuota.compania, { fields: { abreviatura: 1 }});  
-                let cuentaBancaria = CuentasBancarias.findOne(remesa.instrumentoPago && remesa.instrumentoPago.cuentaBancaria ? remesa.instrumentoPago.cuentaBancaria : null, { numero: 1, tipo: 1 })
-                let moneda = Monedas.findOne(p.moneda, { simbolo: 1 }); 
-
+                const banco = Bancos.findOne(remesa.instrumentoPago && remesa.instrumentoPago.banco ? remesa.instrumentoPago.banco : null, { fields: { abreviatura: 1 }});
+                const compania = Companias.findOne(cuota.compania, { fields: { abreviatura: 1 }});  
+                const cuentaBancaria = CuentasBancarias.findOne(remesa.instrumentoPago && remesa.instrumentoPago.cuentaBancaria ? remesa.instrumentoPago.cuentaBancaria : null, { numero: 1, tipo: 1 })
+                
                 // leemos la entidad de origen, para obtener la referencia 
                 let referenciaEntidadOrigen = null; 
                 let tipoNegocio = ""; 
-                let categoria = ""; 
-                let origen_keys: string[] = []; 
+                let origen_keys = []; 
                 let cedente = ""; 
 
                 switch(cuota.source.origen) { 
                     case 'fac': { 
-                        let riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
+                        const riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                         if (riesgo) { 
                             cedente = riesgo.compania; 
-                            let asegurado = Asegurados.findOne({ _id: riesgo.asegurado }, { fields: { abreviatura: true, }}); 
+                            const asegurado = Asegurados.findOne({ _id: riesgo.asegurado }, { fields: { abreviatura: true, }}); 
                             if (asegurado) { 
                                 referenciaEntidadOrigen = asegurado.abreviatura; 
                             }
                         }
                         tipoNegocio = "Fac"; 
-                        categoria = "PagPr"; 
 
                         // para, por ejemplo, en consultas posteriores, poder encontrar fácilmente, el registro (cuota) que dió origen 
                         // a éste ... 
@@ -437,28 +432,28 @@ Meteor.methods({
 
                         break; 
                     }
-                    case 'cuenta':  // la verdad es que éstas ahora no se leen 
-                        let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
+                    case 'cuenta':  { // la verdad es que éstas ahora no se leen 
+                        const contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
+
                         if (contrato) { 
                             cedente = contrato.compania; 
                             referenciaEntidadOrigen = contrato.codigo ? contrato.codigo : "Indefinida"; 
                         }
                         tipoNegocio = "Prop"; 
-                        categoria = "PagSin";       // al menos por ahora no existe en el programa un registro de siniestros de contProp 
 
                         // para, por ejemplo, en consultas posteriores, poder encontrar fácilmente, el registro (cuota) que dió origen 
                         // a éste ... 
                         origen_keys = [ cuota._id, ];   
 
                         break; 
+                    }
                     case 'capa': { 
-                        let contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
+                        const contrato = Contratos.findOne(cuota.source.entityID, { fields: { codigo: true, compania: 1, }}); 
                         if (contrato) { 
                             cedente = contrato.compania; 
                             referenciaEntidadOrigen = contrato.codigo ? contrato.codigo : "Indefinida"; 
                         }
                         tipoNegocio = "NoProp"; 
-                        categoria = "PagSin";       // al menos por ahora no existe en el programa un registro de siniestros de contNoProp 
 
                         // para, por ejemplo, en consultas posteriores, poder encontrar fácilmente, el registro (cuota) que dió origen 
                         // a éste ... 
@@ -467,16 +462,15 @@ Meteor.methods({
                         break; 
                     }
                     case 'sinFac': { 
-                        let siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
+                        const siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1, compania: 1, }}); 
                         if (siniestro) { 
                             cedente = siniestro.compania; 
-                            let asegurado = Asegurados.findOne({ _id: siniestro.asegurado }, { fields: { abreviatura: true, }}); 
+                            const asegurado = Asegurados.findOne({ _id: siniestro.asegurado }, { fields: { abreviatura: true, }}); 
                             if (asegurado) { 
                                 referenciaEntidadOrigen = asegurado.abreviatura; 
                             }
                         }
                         tipoNegocio = "Fac"; 
-                        categoria = "PagSin"; 
 
                         // para, por ejemplo, en consultas posteriores, poder encontrar fácilmente, el registro (cuota) que dió origen 
                         // a éste ... 
@@ -491,7 +485,7 @@ Meteor.methods({
                     pagoCompletoParcial = "parcial"; 
                 }
 
-                let registro = {
+                const registro = {
                     _id: new Mongo.ObjectID()._str,
                     
                     fecha: p.fecha,
@@ -544,15 +538,15 @@ Meteor.methods({
                                 };
                     Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
         }
 
         // finalmente, grabamos el cierre; si el período ya se había cerrado, lo actualizamos; de otra forma, lo agregamos ... 
-        let cierreEfectuado = Cierre.findOne(periodoCierre._id); 
+        const cierreEfectuado = Cierre.findOne(periodoCierre._id); 
 
-        let itemUsuariosArray = { 
+        const itemUsuariosArray = { 
             _id: new Mongo.ObjectID()._str,
             user: userEmail, 
             fecha: new Date(), 
@@ -605,7 +599,7 @@ Meteor.methods({
                         `
 
             let times = 0; 
-            for (let e of erroresArray) { 
+            for (const e of erroresArray) { 
                 message += `<br /><br /> ${e}`
 
                 times++; 
@@ -623,13 +617,13 @@ Meteor.methods({
 })
 
 
-function grabarAlCierreRegistrosComplementario(tipoComplementario, contrato, definicion, ciaSeleccionada, mongoCollection): number { 
+function grabarAlCierreRegistrosComplementario(tipoComplementario, contrato, definicion, ciaSeleccionada, mongoCollection) { 
 
     // en esta función leemos registros de un complementario en particular, comAdic, partBenef, entCartPr, etc., y los grabamos a 
     // la tabla de registros del cierre. Como son hasta seis tipos de complementario diferentes, centralizamos este código en esta
     // función para no repetirlo por cada tipo de complementario 
-    let userEmail = Meteor.user().emails[0].address;
-    let descripcion: string = ""; 
+    const userEmail = Meteor.user().emails[0].address;
+    let descripcion = ""; 
     let categoria = ""; 
     
     switch (tipoComplementario) { 
@@ -671,15 +665,15 @@ function grabarAlCierreRegistrosComplementario(tipoComplementario, contrato, def
         }
     }
 
-    let complementarioArray = mongoCollection.find({ contratoID: contrato._id, definicionID: definicion._id }, 
+    const complementarioArray = mongoCollection.find({ contratoID: contrato._id, definicionID: definicion._id }, 
                                                    { fields: { compania: 1, nosotros: 1, moneda: 1, serie: 1, monto: 1, }})
                                              .fetch(); 
 
     let cantidadRegistrosAgregados = 0; 
 
-    for (let complementario of complementarioArray) { 
+    for (const complementario of complementarioArray) { 
         
-        let registro = {
+        const registro = {
             _id: new Mongo.ObjectID()._str,
 
             fecha: definicion.desde,

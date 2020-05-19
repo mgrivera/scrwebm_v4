@@ -1,5 +1,5 @@
 
-
+import { Mongo } from 'meteor/mongo'; 
 import * as lodash from 'lodash';
 
 import { TiposContrato } from 'imports/collections/catalogos/tiposContrato'; 
@@ -60,7 +60,6 @@ export const calcularNumeroReferencia = function(origen, tipoID, ano, ciaID) {
             };
     }
 
-
     // leemos el consecutivo para el año, origien (fac, contr, tipo y cia); en la tabla de referencias
     // si no existe agregamos un registro
     let referenciaItem = Referencias.findOne({
@@ -84,7 +83,6 @@ export const calcularNumeroReferencia = function(origen, tipoID, ano, ciaID) {
               { $inc: { consecutivo: 1 } },
         );
     }
-
 
     let consecutivo = referenciaItem.consecutivo;
     let consecutivoEditado = lodash.padStart(consecutivo.toString(), 4, '0');       // 90 -> 0090, ...

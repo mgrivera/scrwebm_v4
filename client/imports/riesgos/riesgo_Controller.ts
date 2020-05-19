@@ -1,5 +1,4 @@
 
-
 import * as lodash from 'lodash';
 import * as angular from 'angular';
 import saveAs from 'save-as'; 
@@ -28,39 +27,35 @@ import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros';
 import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
 // esto es un angular module 
-import '../generales/agregarNuevoAsegurado.html';           // html: el path *debe* ser relativo y *no* absoluto (???!!!)        
+// import '../generales/agregarNuevoAsegurado.html';           // html: el path *debe* ser relativo y *no* absoluto (???!!!)        
 import AgregarNuevoAsegurado from "../generales/agregarNuevoAseguradoController"; 
 
-// importamos los files necesarios para el registro de cúmulos ... 
-import '../generales/cumulos/registro/registroCumulos.html'; 
-import 'client/imports/generales/cumulos/registro/registroCumulos'; 
-
 // importamos el resto del código, otros states, html files etc., que se necesitan para manejar el riesgo 
-import './riesgo.generales.html';
+// import './riesgo.generales.html';
 import RiesgosGenerales from 'client/imports/riesgos/riesgo.generales';
 
-import './riesgo.movimientos.html'; 
+// import './riesgo.movimientos.html';
 import RiesgoMovimientos from 'client/imports/riesgos/riesgo.movimientos'; 
 
-import './riesgo.infoRamo_autos.html'; 
+// import './riesgo.infoRamo_autos.html';
 import RiesgosInfoRamo from 'client/imports/riesgos/riesgo.infoRamo_autos'; 
 
-import './riesgo.productores.html'; 
+// import './riesgo.productores.html';
 import RiesgoProductores from 'client/imports/riesgos/riesgo.productores'; 
 
-import './riesgo.cuotas.html'; 
+// import './riesgo.cuotas.html';
 import RiesgoCuotas from './riesgo.cuotas'; 
 
 // para imprimir las cuotas; obtener las notas de cobertura 
-import './imprimirNotasModal.html'; 
+// import './imprimirNotasModal.html';
 import RiesgoImprimirNotasCobertura from './imprimirNotasModalController'; 
 
 // para hacer la renovación de un riesgo 
-import './renovarRiesgo/renovarRiesgoModal.html'; 
+// import './renovarRiesgo/renovarRiesgoModal.html';
 import RenovarRiesgo from './renovarRiesgo/renovarRiesgoController'; 
 
 // construir notas de débito 
-import './notasDebito/notasDebito.html'; 
+// import './notasDebito/notasDebito.html';
 import ConstruirNotasDebito from './notasDebito/notasDebito'; 
 
 
@@ -76,7 +71,8 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     RenovarRiesgo.name, 
     ConstruirNotasDebito.name, 
 ])
-.controller("Riesgo_Controller", ['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
+    .controller("Riesgo_Controller", ['$scope', '$state', '$stateParams', '$modal', '$location', 
+                             function ($scope, $state, $stateParams, $modal, $location) {
 
     $scope.showProgress = true;
 
@@ -281,7 +277,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         }
 
         $modal.open({
-            templateUrl: 'client/imports/riesgos/renovarRiesgo/renovarRiesgoModal.html',
+            templateUrl: 'client/html/riesgos/renovarRiesgo/renovarRiesgoModal.html',
             controller: 'RenovarRiesgo_ModalController',
             size: 'md',
             resolve: {
@@ -567,7 +563,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         };
 
         $modal.open({
-            templateUrl: 'client/imports/riesgos/imprimirNotasModal.html',
+            templateUrl: 'client/html/riesgos/imprimirNotasModal.html',
             controller: 'ImprimirNotasRiesgosModalController',
             size: 'lg',
             resolve: {
@@ -815,8 +811,16 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             cia: $scope.companiaSeleccionada._id, 
         }; 
 
+        // TODO: aquí debemos ir al state: 'cumulos.registro'; desde este state se monta el angular component
+        // RegistroCumulos, que es un angular component, que monta, a su vez, un react component del mismo nombre 
+        $state.go('cumulos.registro', { origen: 'riesgos', 
+                                        entityId: riesgo._id, 
+                                        subEntityId: movimiento._id, 
+                                        url: $location.url() });
+        return; 
+
         $modal.open({
-            templateUrl: 'client/imports/generales/cumulos/registro/registroCumulos.html',
+            templateUrl: 'client/html/generales/cumulos/registro/registroCumulos.html',
             controller: 'RegistroCumulos_Controller',
             size: 'lg',
             resolve: {

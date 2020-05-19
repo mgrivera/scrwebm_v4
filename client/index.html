@@ -1,8 +1,9 @@
 
 <head>
     <title>scrwebm</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
 </head>
 
 <!-- el navbar (navbar-fixed-top) en bootstrap (3.0) necesita un padding-top de 70px; sin embargo, cuando
@@ -88,6 +89,13 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                         <li class="dropdown" ng-show="userHasRole_consultas">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Consultas <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown dropdown-submenu">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Primas emitidas</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a ui-sref="consultas.primasEmitidas.reaseguradores">Reaseguradores</a></li>
+                                    </ul>
+                                </li>
+                                <li class="divider"></li>
                                 <li><a href="/consultas/pendientes/filtro">Montos pendientes</a></li>
                                 <li><a ui-sref="pendientesCobro_vencimientos_consulta">Montos por cobrar - vencimientos</a></li>
                                 <li><a ui-sref="pendientesPago_vencimientos_consulta">Montos por pagar - vencimientos</a></li>

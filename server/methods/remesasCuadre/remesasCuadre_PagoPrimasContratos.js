@@ -1,4 +1,5 @@
 
+import { Mongo } from 'meteor/mongo'; 
 import lodash from 'lodash'; 
 import { leerCuentaContableAsociada } from '/server/imports/general/leerCuentaContableAsociada'; 
 

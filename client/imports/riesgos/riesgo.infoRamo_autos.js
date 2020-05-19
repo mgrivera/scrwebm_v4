@@ -1,23 +1,22 @@
 
+import { Mongo } from 'meteor/mongo'; 
+import angular from 'angular';
+import lodash from 'lodash'; 
 
+import { AutosMarcas } from '/imports/collections/catalogos/autosMarcas'; 
 
-import * as angular from 'angular';
-import * as lodash from 'lodash'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-import { AutosMarcas } from 'imports/collections/catalogos/autosMarcas'; 
-
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
-
-// cargamos los files que permiten abrir un modal para que el usuario edite la información ... 
-import './infoRamo/editarInfoRamoModal.html'; 
 import EditarInfoRamo from './infoRamo/editarInfoRamo'; 
+// cargamos los files que permiten abrir un modal para que el usuario edite la información ... 
+// import '/client/imports/riesgos/infoRamo/editarInfoRamoModal.html'; 
 
 export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name ]).controller("RiesgoInfoRamo_autos_Controller",
 ['$scope', '$modal', function ($scope, $modal) {
 
     $scope.showProgress = true; 
 
-    let movimientoSeleccionado = {} as any; 
+    let movimientoSeleccionado = {}; 
     $scope.numeroMovimientoSeleccinado = 1; 
     
     if ($scope.movimientoSeleccionado) { 
@@ -32,7 +31,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
     // -------------------------------------------------------------------------
     // grid de productores
     // -------------------------------------------------------------------------
-    let infoRamoSeleccionado = {} as any;
+    let infoRamoSeleccionado = {};
 
     $scope.infoRamo_ui_grid = {
         enableSorting: false,
@@ -192,13 +191,13 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
         }
 
         $modal.open({
-            templateUrl: 'client/imports/riesgos/infoRamo/editarInfoRamoModal.html',
+            templateUrl: 'client/html/riesgos/infoRamo/editarInfoRamoModal.html',
             controller: 'InfoRamo_editarItem_ModalController',
             size: 'md',
             resolve: {
                 infoRamo: function () {
                     // creasmos un nuevo item y lo pasamos al modal 
-                    let infoRamo = {
+                    const infoRamo = {
                         _id: new Mongo.ObjectID()._str, 
                         riesgoID: $scope.riesgo._id, 
                         movimientoID: movimientoSeleccionado._id, 
@@ -221,7 +220,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
 
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             })
     }
@@ -246,7 +245,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
         }
 
         $modal.open({
-            templateUrl: 'client/imports/riesgos/infoRamo/editarInfoRamoModal.html',
+            templateUrl: 'client/html/riesgos/infoRamo/editarInfoRamoModal.html',
             controller: 'InfoRamo_editarItem_ModalController',
             size: 'md',
             resolve: {
@@ -259,7 +258,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
                 },
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 if (!infoRamoSeleccionado.docState) {
                     infoRamoSeleccionado.docState = 2;
                 }
@@ -270,7 +269,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
 
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             })
     }
@@ -278,7 +277,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
     $scope.eliminarInfoRamo = function (entity) {
 
         if (entity.docState && entity.docState === 1) {
-            lodash.remove($scope.riesgos_infoRamo, (x: any) => x._id === entity._id);
+            lodash.remove($scope.riesgos_infoRamo, (x => x._id === entity._id));
 
             if (!$scope.riesgo.docState) {
                 $scope.riesgo.docState = 2;
@@ -301,18 +300,18 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
 
 // definimos los angular filters que usa el ui-grid 
 angular.module("scrwebm.riesgos.infoRamo").filter('marcaAutoFilter', function () {
-    return function (marcaID: any) {
-        let marca = AutosMarcas.findOne(marcaID);
+    return function (marcaID) {
+        const marca = AutosMarcas.findOne(marcaID);
         return marca ? marca.marca : "Indefinido";
     };
 })
 
 angular.module("scrwebm.riesgos.infoRamo").filter('modeloAutoFilter', function () {
-    return function (modeloID: any, entity: any) {
-        let marca = AutosMarcas.findOne(entity.marca);
+    return function (modeloID, entity) {
+        const marca = AutosMarcas.findOne(entity.marca);
         
-        let modelos = marca && marca.modelos ? marca.modelos : []; 
-        let modelo = modelos.find((x: any) => x._id === modeloID); 
+        const modelos = marca && marca.modelos ? marca.modelos : []; 
+        let modelo = modelos.find((x) => x._id === modeloID); 
 
         if (!modelo) { 
             modelo = "Indefinido"; 
@@ -322,11 +321,11 @@ angular.module("scrwebm.riesgos.infoRamo").filter('modeloAutoFilter', function (
 })
 
 angular.module("scrwebm.riesgos.infoRamo").filter('numeroMovimientoFilter', function () {
-    return function (movimientoID: any, entity: any, gridScope: any) {
+    return function (movimientoID, entity, gridScope) {
         // nótese como leemos el riesgo en el parent scope y luego sus movimientos; así encontramos el número del movimiento 
-        let movimientos = gridScope.$parent && gridScope.$parent.riesgo && gridScope.$parent.riesgo.movimientos ?
+        const movimientos = gridScope.$parent && gridScope.$parent.riesgo && gridScope.$parent.riesgo.movimientos ?
                                                                            gridScope.$parent.riesgo.movimientos : []; 
-        let movimiento = movimientos.find(x => x._id === movimientoID); 
+        const movimiento = movimientos.find(x => x._id === movimientoID); 
 
         return movimiento && movimiento.numero ? movimiento.numero : 0;
     };

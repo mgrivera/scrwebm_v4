@@ -2,7 +2,7 @@
 
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
-import { Mongo } from 'meteor/mongo'; 
+
 import * as numeral from 'numeral'; 
 
 import { Remesas } from 'imports/collections/principales/remesas'; 

@@ -1,4 +1,11 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
+
+import moment from 'moment';
+import lodash from 'lodash';
+import numeral from 'numeral';
 
 import { Riesgos } from '/imports/collections/principales/riesgos';  
 import { Contratos } from '/imports/collections/principales/contratos'; 
@@ -19,7 +26,6 @@ Meteor.methods(
 {
     consultas_MontosPendientesCobro_GrabarTiposEmail: function (cuotas_tiposEmailAsignados) {
 
-        // debugger;
         check(cuotas_tiposEmailAsignados, [
             {
                 cuotaID: String,
@@ -56,12 +62,12 @@ Meteor.methods(
         // 1) genera el e-mail respectivo (usa la plantilla que corresponde al tipo de e-mail asignado)
         // 2) actualiza el array de e-mails enviados en la cuota
 
-        let fs = Npm.require('fs');
-        let path = Npm.require('path');
-        let Future = Npm.require('fibers/future');
+        const fs = Npm.require('fs');
+        const path = Npm.require('path');
+        const Future = Npm.require('fibers/future');
 
         // primero revisamos que existan, y estén correctamente registradas, las personas en las compañías
-        let condicionesEmail =
+        const condicionesEmail =
         EmailsCobranzaCuotasPendientes.findOne({ cia: ciaSeleccionada });
 
         if (!condicionesEmail) {
@@ -75,24 +81,24 @@ Meteor.methods(
         // ---------------------------------------------------------------------------------------------------
         // leemos las condiciones indicadas por el usuario; intentamos construir un e-mail para 'from' y
         // dos arrays de e-mails: uno para 'cc' y otro para 'bcc' (éstos dos arrays pueden estar vacíos) ...
-        let fromUserID = lodash.find(condicionesEmail.usuarios, (x) => { return x.tipo == "From"; });
-        let ccUsersID_array = lodash(condicionesEmail.usuarios).
+        const fromUserID = lodash.find(condicionesEmail.usuarios, (x) => { return x.tipo == "From"; });
+        const ccUsersID_array = lodash(condicionesEmail.usuarios).
                               filter((x) => { return x.tipo == "cc"; }).
                               map((x) => { return x.userID; }).
                               value();
-        let bccUsersID_array = lodash(condicionesEmail.usuarios).
+        const bccUsersID_array = lodash(condicionesEmail.usuarios).
                                filter((x) => { return x.tipo == "bcc"; }).
                                map((x) => { return x.userID; }).
                                value();
 
-        let fromUserEmail = Meteor.users.findOne(fromUserID.userID).emails[0].address;
+        const fromUserEmail = Meteor.users.findOne(fromUserID.userID).emails[0].address;
 
-        let ccUsersEmail_array = [];
+        const ccUsersEmail_array = [];
         Meteor.users.find({ _id: { $in: ccUsersID_array }}).forEach((x) => {
             ccUsersEmail_array.push(x.emails[0].address);
         });
 
-        let bccUsersEmail_array = [];
+        const bccUsersEmail_array = [];
         Meteor.users.find({ _id: { $in: bccUsersID_array }}).forEach((x) => {
             bccUsersEmail_array.push(x.emails[0].address);
         });
@@ -102,7 +108,7 @@ Meteor.methods(
                                     e-mails a nosotros mismos, se debe indicar al menos un usuario como
                                     tipo 'cc', para que reciba los e-mails que este proceso envíe.
                                    `);
-        };
+        }
         // ---------------------------------------------------------------------------------------------------
 
 
@@ -114,7 +120,7 @@ Meteor.methods(
             throw new Meteor.Error(`Error: Ud. debe indicar, en el campo Atención, las personas
                                     que deben recibir el e-mail.
                                    `);
-        };
+        }
 
         if (!condicionesEmail.atencion.nombre1 &&
             !condicionesEmail.atencion.nombre2 &&
@@ -124,9 +130,9 @@ Meteor.methods(
             throw new Meteor.Error(`Error: Ud. debe indicar, en el campo Atención, las personas
                                     que deben recibir el e-mail.
                                    `);
-        };
+        }
 
-        let atencion_personas_array = [];
+        const atencion_personas_array = [];
 
         // pueden haber un max de 5 personas en el campo Atención ...
         if (condicionesEmail.atencion.nombre1) atencion_personas_array.push(1);
@@ -138,26 +144,26 @@ Meteor.methods(
 
         // verificamos que las compañías seleccionadas tengan, todas, las personas que se indica
         // en el array 'Atención'; además, que sus datos (email, cargo, ...) estén completos
-        let companias =
+        const companias =
         Consulta_MontosPendientesCobro_Vencimientos.find(
             { user: this.userId, tipoEmail: { $ne: null } },
             { fields: { compania: 1 }}).
             fetch();
 
         // nótese que procesamos cada campañía una sola vez; pueden venir muchas cuotas para una misma compañía
-        let companiasDiferentes = lodash.groupBy(companias, "compania");
-        let companiasConErrores_array = [];
+        const companiasDiferentes = lodash.groupBy(companias, "compania");
+        const companiasConErrores_array = [];
 
         // para registrar las personas en cada compañía y poder leerlas más adelante, cuando construyamos los e-mails
-        let companias_nombresYCargos_array = [];
+        const companias_nombresYCargos_array = [];
 
-        for (let companiaID in companiasDiferentes) {
+        for (const companiaID in companiasDiferentes) {
 
-            let compania = Companias.findOne(companiaID);
+            const compania = Companias.findOne(companiaID);
 
             if (!compania) {
                 throw new Meteor.Error(`Error inesperado: no hemos podido leer la compañía cuyo id es: ${companiaID}.`);
-            };
+            }
 
             if (!compania.personas || !compania.personas.length) {
                 companiasConErrores_array.push(compania.abreviatura);
@@ -166,12 +172,12 @@ Meteor.methods(
                 // campo 'atención' ...
                 let error = false;
                 atencion_personas_array.forEach((atencionNumero) => {
-                    let persona = _.find(compania.personas, (x) => { return x.emailCobranzas == atencionNumero; });
+                    const persona = lodash.find(compania.personas, (x) => { return x.emailCobranzas == atencionNumero; });
                     if (!persona) {
                         if (!error) {
                             companiasConErrores_array.push(compania.abreviatura);
                             error = true;
-                        };
+                        }
                     } else if (!persona.titulo || !persona.nombre || !persona.cargo || !persona.email) {
                         if (!error) {
                             companiasConErrores_array.push(compania.abreviatura);
@@ -187,11 +193,11 @@ Meteor.methods(
                             nombre: persona.nombre,
                             email: persona.email,
                             cargo: persona.cargo,
-                        });
-                    };
-                });
-            };
-        };
+                        })
+                    }
+                })
+            }
+        }
 
         if (companiasConErrores_array.length) {
             let mensajeError = `Error: Las siguientes compañías no contienen una persona que corresponda
@@ -204,25 +210,25 @@ Meteor.methods(
             });
 
             throw new Meteor.Error(mensajeError);
-        };
+        }
         // ---------------------------------------------------------------------------------------------
 
         // leemos y cargamos las cuentas bancarias en un array
-        if (!condicionesEmail.cuentasBancarias || !_.isArray(condicionesEmail.cuentasBancarias)) {
-            let mensajeError = `Error: aparentemente, no se han indicado las cuentas bancarias a ser usadas
+        if (!condicionesEmail.cuentasBancarias || !lodash.isArray(condicionesEmail.cuentasBancarias)) {
+            const mensajeError = `Error: aparentemente, no se han indicado las cuentas bancarias a ser usadas
                                 en la construcción de los e-mails.
                                 `;
             throw new Meteor.Error(mensajeError);
-        };
+        }
 
-        let cuentasBancarias_array = [];
+        const cuentasBancarias_array = [];
 
         condicionesEmail.cuentasBancarias.forEach((c) => {
-            let cuentaBancaria = CuentasBancarias.findOne(c.cuentaBancariaID);
+            const cuentaBancaria = CuentasBancarias.findOne(c.cuentaBancariaID);
             cuentasBancarias_array.push(cuentaBancaria);
         });
 
-        let emailData = {
+        const emailData = {
             // datos genéricos a todos los e-mails
             fecha: condicionesEmail.fecha,
         };
@@ -230,7 +236,7 @@ Meteor.methods(
         // agregamos los firmantes a los datos del e-mail
         lodash(condicionesEmail.firmantes).sortBy(['numero'], ['asc']).forEach((x) => {
 
-            let user = Meteor.users.findOne(x.userID);
+            const user = Meteor.users.findOne(x.userID);
 
             if (user) {
                 switch (x.numero) {
@@ -239,7 +245,7 @@ Meteor.methods(
                             emailData.representanteNosotros1 = user.personales.titulo + " " +
                                                                  user.personales.nombre;
                             emailData.representanteNosotros1_cargo  = user.personales.cargo;
-                        };
+                        }
 
                         break;
                     case 2:
@@ -247,17 +253,17 @@ Meteor.methods(
                             emailData.representanteNosotros2 = user.personales.titulo + " " +
                                                                  user.personales.nombre;
                             emailData.representanteNosotros2_cargo = user.personales.cargo;
-                        };
+                        }
 
                         break;
                     default:
-                };
-            };
+                }
+            }
         });
 
 
         // leemos las cuotas a las cuales se enviarán e-mails
-        let cuotasSeleccionadas = Consulta_MontosPendientesCobro_Vencimientos.find(
+        const cuotasSeleccionadas = Consulta_MontosPendientesCobro_Vencimientos.find(
                                     {
                                         user: this.userId,
                                         tipoEmail: { $ne: null },
@@ -266,48 +272,48 @@ Meteor.methods(
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
-        let numberOfItems = cuotasSeleccionadas.length;
-        let reportarCada = Math.floor(numberOfItems / 25);
+        const numberOfItems = cuotasSeleccionadas.length;
+        const reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 1;
-        let currentProcess = 1;
+        const numberOfProcess = 1;
+        const currentProcess = 1;
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "montosPendientesCobro_envioEmails_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesCobro_envioEmails' };
+        const eventName = "montosPendientesCobro_envioEmails_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesCobro_envioEmails' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: `enviando los e-mails ... `
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
 
-        let userEmail = Meteor.users.findOne(this.userId).emails[0].address;
+        const userEmail = Meteor.users.findOne(this.userId).emails[0].address;
 
         // para leer cada tipo de asiento una sola vez y agrupar todas las cuotas para cada tipo de e-mail
-        let tiposEmail_array = lodash.groupBy(cuotasSeleccionadas, 'tipoEmail');
+        const tiposEmail_array = lodash.groupBy(cuotasSeleccionadas, 'tipoEmail');
 
         // -------------------------------------------------------------------------------------
         // las plantillas están guardadas (por collectionFS) en este directorio
-        let filesPath = Meteor.settings.public.collectionFS_path_templates;
+        const filesPath = Meteor.settings.public.collectionFS_path_templates;
 
         if (!filesPath) {
-            let mensajeError = `Error: aparentemente, no existe, en el archivo de configuración (settings.json),
+            const mensajeError = `Error: aparentemente, no existe, en el archivo de configuración (settings.json),
                                 una entrada que indique el directorio en el cual se deben guardar las
                                 plantillas (.html) que usa este proceso para generar los e-mails.<br />
                                 Por favor revise esta situación.
                                 `;
 
             throw new Meteor.Error(mensajeError);
-        };
+        }
 
         // -------------------------------------------------------------------------------------
         // validamos que las plantillas necesarias exitan (collectionFS)
-        for (let tipoEmail in tiposEmail_array) {
+        for (const tipoEmail in tiposEmail_array) {
 
             let tipoPlantillaAsociada = null;
 
@@ -327,23 +333,23 @@ Meteor.methods(
                 case "Email #5":
                     tipoPlantillaAsociada = "TMP-CB-EMAIL5";
                     break;
-                default:
-                    let mensajeError = `Error: el tipo de email asociado a alguna de las cuota no es correcto.<br />
+                default: { const mensajeError = `Error: el tipo de email asociado a alguna de las cuota no es correcto.<br />
                                         Los tipos de e-mail asociados a las cuotas deben ser:
                                         'Email #1', 'Email #2', 'Email #3', ... <br />
                                         Por favor revise.
                                         `;
 
-                    throw new Meteor.Error(mensajeError);
-            };
+                            throw new Meteor.Error(mensajeError);
+                }
+            }
 
-            let plantillaHTML = CollectionFS_templates.findOne({
+            const plantillaHTML = CollectionFS_templates.findOne({
                 'metadata.tipo': tipoPlantillaAsociada,
                 'metadata.cia': ciaSeleccionada
             });
 
             if (!plantillaHTML) {
-                let mensajeError = `Error: no hemos podido leer la plantilla (arhivo.html) que corresponde
+                const mensajeError = `Error: no hemos podido leer la plantilla (arhivo.html) que corresponde
                                     al tipo de e-mail <em>${tipoPlantillaAsociada}</em>.<br />
                                     Las plantillas que usa este proceso para construir los e-mails, deben ser
                                     registradas al programa mediante la opción <em>Guardar archivos</em>, en el menú
@@ -352,15 +358,15 @@ Meteor.methods(
                                     `;
 
                 throw new Meteor.Error(mensajeError);
-            };
-        };
+            }
+        }
 
         // aqui vamos a ir agregando cada e-mail, para tenerlos todos al final en un solo texto.
         // la idea es grabar este archivo para que el usuario lo pueda revisar para saber como
         // serán los e-mails antes de enviarlos
         let mergedFiles = "";
 
-        for (let tipoEmail in tiposEmail_array) {
+        for (const tipoEmail in tiposEmail_array) {
 
             let tipoPlantillaAsociada = null;
 
@@ -380,17 +386,17 @@ Meteor.methods(
                 case "Email #5":
                     tipoPlantillaAsociada = "TMP-CB-EMAIL5";
                     break;
-            };
+            }
 
             // nótese que, más arriba, validamos que estos items existen (en collectionfs)
-            let plantillaHTML = CollectionFS_templates.findOne({
+            const plantillaHTML = CollectionFS_templates.findOne({
                 'metadata.tipo': tipoPlantillaAsociada,
                 'metadata.cia': ciaSeleccionada
             });
 
             // nótese que el nombre 'real' que asigna collectionFS cuando el usuario hace el download del archivo,
             // lo encontramos en el item en collectionFS
-            let fileNameWithPath = path.join(filesPath, plantillaHTML.copies.collectionFS_templates.key);
+            const fileNameWithPath = path.join(filesPath, plantillaHTML.copies.collectionFS_templates.key);
 
             // ----------------------------------------------------------------------------------------------------
             // ahora intentamos abrir el archivo con fs (node file system)
@@ -406,7 +412,7 @@ Meteor.methods(
             try {
                 SSR.compileTemplate('htmlEmail', fileContent);
             } catch (e) {
-                let mensajeError = `Error: hemos obtenido un error al intentar compilar la plantilla (html).<br />
+                const mensajeError = `Error: hemos obtenido un error al intentar compilar la plantilla (html).<br />
                                     Probablemente, la plantilla no está bien formada. <br />
                                     Por favor revise la
                                     plantilla; corrija cualquier error que pueda encontrar y regístrela nuevamente.<br />
@@ -414,7 +420,7 @@ Meteor.methods(
                                     `;
 
                 throw new Meteor.Error(mensajeError);
-            };
+            }
 
 
             // tratamos, separadamente, cada cuota asociada a este tipo de e-mail
@@ -422,7 +428,7 @@ Meteor.methods(
 
                 // leemos el contrato (agregar posibilidad de riesgos, siniestros, etc.)
                 // antes leemos la cuota
-                let datosCuota = Cuotas.findOne(cuota.cuotaID);
+                const datosCuota = Cuotas.findOne(cuota.cuotaID);
 
                 let origen = null;
                 let tipoContrato = null;
@@ -440,7 +446,7 @@ Meteor.methods(
                 }
 
                 if (!origen) {
-                    let mensajeError = `Error: aparentemente, existe una cuota que no pertenece a un
+                    const mensajeError = `Error: aparentemente, existe una cuota que no pertenece a un
                                         origen (o entidad) determinado.<br />
                                         Por ejemplo, una cuota de un riesgo que se ha eliminado.<br />
                                         El origen indicado en la cuota es:
@@ -448,24 +454,24 @@ Meteor.methods(
                                         Por favor revise.
                                         `;
                     throw new Meteor.Error(mensajeError);
-                };
+                }
 
-                let ramo = origen.ramo ? Ramos.findOne(origen.ramo) : null;
-                let suscriptor = Suscriptores.findOne(origen.suscriptor);
-                let compania = Companias.findOne(cuota.compania);
-                let moneda = Monedas.findOne(cuota.moneda);
+                const ramo = origen.ramo ? Ramos.findOne(origen.ramo) : null;
+                const suscriptor = Suscriptores.findOne(origen.suscriptor);
+                const compania = Companias.findOne(cuota.compania);
+                const moneda = Monedas.findOne(cuota.moneda);
 
-                let cuentaBancaria = _.find(cuentasBancarias_array, (x) => { return x.moneda === cuota.moneda; });
+                const cuentaBancaria = lodash.find(cuentasBancarias_array, (x) => { return x.moneda === cuota.moneda; });
 
                 if (!cuentaBancaria) {
-                    let mensajeError = `Error: entre las cuentas bancarias indicadas, no hemos encontrado una
+                    const mensajeError = `Error: entre las cuentas bancarias indicadas, no hemos encontrado una
                                         para la moneda ${moneda.descripcion}.<br />
                                         Ud. debe seleccionar una cuenta bancaria para cada una de las monedas
                                         usadas en los montos de las cuotas pendientes.
                                         `;
 
                     throw new Meteor.Error(mensajeError);
-                };
+                }
 
                 emailData.datosCuentaBancaria = cuentaBancaria.descripcionPlantillas;
 
@@ -492,10 +498,10 @@ Meteor.methods(
                 // personas (1 y 2) en la compañía de la cuota
                 // debugger;
 
-                toUsersEmail_array = [];    // direcciones de correo en el cliente ...
+                const toUsersEmail_array = [];    // direcciones de correo en el cliente ...
 
                 for (let i = 1; i <= 2; i++) {
-                    let persona = lodash.find(companias_nombresYCargos_array,
+                    const persona = lodash.find(companias_nombresYCargos_array,
                         (x) => { return x.atencionNumero === i && x.companiaID === cuota.compania; });
 
                     if (persona) {
@@ -505,12 +511,12 @@ Meteor.methods(
 
                         if (persona.email) {
                             toUsersEmail_array.push(persona.email);
-                        };
-                    };
-                };
+                        }
+                    }
+                }
                 // -------------------------------------------------------------------------------------
                 // 'combinamos' el template, que ya está compilado, con los datos de la cuota
-                let emailHtmlContent = SSR.render('htmlEmail', emailData);
+                const emailHtmlContent = SSR.render('htmlEmail', emailData);
                 // ----------------------------------------------------------------------------------------
                 // finalmente, enviamos el e-mail
                 // ----------------------------------------------------------------------------------------
@@ -527,7 +533,7 @@ Meteor.methods(
                                       html: emailHtmlContent,
                                     });
                     } catch (e) {
-                        let mensajeError = `Error: hemos obtenido un error al intentar enviar un e-mail.<br />
+                        const mensajeError = `Error: hemos obtenido un error al intentar enviar un e-mail.<br />
                                             El mensaje específico del error es: ${e.toString()}
                                             `;
                         throw new Meteor.Error(mensajeError);
@@ -544,15 +550,15 @@ Meteor.methods(
                                       html: emailHtmlContent,
                                     });
                     } catch (e) {
-                        let mensajeError = `Error: hemos obtenido un error al intentar enviar un e-mail.<br />
+                        const mensajeError = `Error: hemos obtenido un error al intentar enviar un e-mail.<br />
                                             El mensaje específico del error es: ${e.toString()}
                                             `;
                         throw new Meteor.Error(mensajeError);
-                    };
-                };
+                    }
+                }
 
                 // luego de enviar el e-mail, lo registramos en el array de emails enviados en la cuota
-                let emailEnviado = {
+                const emailEnviado = {
                     _id: new Mongo.ObjectID()._str,
                     tipoEmail: cuota.tipoEmail,
                     fecha: new Date(),
@@ -567,7 +573,7 @@ Meteor.methods(
                     // proceso, nuevamente, de inmediato; nótese que cada cuota se actualiza en el client por
                     // reactivity  ...
                     Consulta_MontosPendientesCobro_Vencimientos.update(cuota._id, { $inc: { cantEmailsEnviadosAntes: 1 }});
-                };
+                }
 
                 // vamos acumulando el contenido de cada email, en un string que será luego guardado a disk como un
                 // archivo, para que el usuario pueda hacer un download de este string
@@ -583,7 +589,7 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: `enviando los e-mails ... `
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                 }
                 else {
                     reportar++;
@@ -593,13 +599,13 @@ Meteor.methods(
                                       progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                       message: `enviando los e-mails ... `
                                     };
-                        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                         reportar = 0;
-                    };
-                };
+                    }
+                }
                 // -----------------------------------------------------------------------------------------------
             });
-        };
+        }
 
         // guardamos el contenido de todos los e-mails a un archivo en el disco duro ...
         // debugger;
@@ -617,13 +623,15 @@ Meteor.methods(
         // el método regresa *antes* que la ejecución de este código que es asyncrono. Usamos Future para
         // que el método espere a que todo termine para regresar ...
 
-        let future = new Future();
+        const future = new Future();
 
         var newFile = new FS.File();
 
         // nótese como convertimos el string a un buffer, pues collectionfs no acepta un string como
         // contenido del file que se intenta guardar
-        mergedFiles = new Buffer(mergedFiles);
+        // mergedFiles = new Buffer(mergedFiles);           // deprecated 
+        mergedFiles = Buffer.from(mergedFiles); 
+
         newFile.attachData( mergedFiles, {type: 'html'}, function( err )
         {
             if(err)
@@ -655,7 +663,7 @@ Meteor.methods(
                          El nombre del directorio en el servidor es: ${Meteor.settings.public.collectionFS_path_tempFiles}.
                          El mensaje de error recibido es: ${err.toString()}.
                         `);
-                };
+                }
 
                 // tenemos que esperar que el file efectivamente se guarde, para poder acceder su url ...
                 // nótese como Meteor indica que debemos agregar un 'fiber' para correr el callback, pues
@@ -677,4 +685,4 @@ Meteor.methods(
         // Wait for async to finish before returning the result
         return future.wait();
     }
-});
+})

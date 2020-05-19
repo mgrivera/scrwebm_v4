@@ -1,17 +1,18 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash';
+
 Meteor.publish('allUsers', function () {
 
-    // debugger;
-
     // fallamos con un error si el usuario no tiene el rol admin
-    let currentUser = Meteor.users.findOne(this.userId);
+    const currentUser = Meteor.users.findOne(this.userId);
 
-    if (!currentUser || !_.isArray(currentUser.roles)) {
+    if (!currentUser || !Array.isArray(currentUser.roles)) {
         this.ready();
         return;
     }
 
-    rolAdmin = _.find(currentUser.roles, rol => { return rol === 'admin'; });
+    const rolAdmin = lodash.find(currentUser.roles, rol => { return rol === 'admin'; });
 
     if (!rolAdmin){
         this.ready();
@@ -19,4 +20,4 @@ Meteor.publish('allUsers', function () {
     }
 
     return Meteor.users.find();
-});
+})

@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { Riesgos } from '/imports/collections/principales/riesgos'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
@@ -9,7 +10,7 @@ Riesgos.before.remove(function (userId, doc) {
     // ---------------------------------------------------------------------------------------------------------------------
     // siniestros
 
-    let siniestro = Siniestros.findOne({
+    const siniestro = Siniestros.findOne({
         $or: [
             { 'source.entityID': doc._id },
         ]
@@ -27,7 +28,7 @@ Riesgos.before.remove(function (userId, doc) {
 
     // cuotas
     // impedimos eliminar un riesgo que tenga cuotas asociadas. El usuario debe eliminarlas primero ... 
-    let cuota = Cuotas.findOne({ 'source.entityID': doc._id, });
+    const cuota = Cuotas.findOne({ 'source.entityID': doc._id, });
 
     if (cuota) {
         throw new Meteor.Error("dataBaseError",

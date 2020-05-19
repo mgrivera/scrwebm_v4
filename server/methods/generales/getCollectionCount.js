@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import SimpleSchema from 'simpl-schema';
 
 import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
@@ -7,6 +7,7 @@ import { Cierre } from '/imports/collections/cierre/cierre';
 import { Temp_consulta_cierreRegistro } from '/imports/collections/consultas/temp_consulta_cierreRegistro'; 
 import { Temp_Consulta_NotasDebitoCredito } from '/imports/collections/consultas/tempConsultaNotasDebitoCredito'; 
 import { Temp_Consulta_Riesgos } from '/imports/collections/consultas/tempConsultaRiesgos'; 
+import { Temp_Consulta_Contratos } from '/imports/collections/consultas/tempConsultaContratos'; 
 
 Meteor.methods({
    getCollectionCount: function (collectionName, filtro = "") {

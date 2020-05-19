@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import moment from 'moment';
 import numeral from 'numeral';
@@ -35,7 +36,7 @@ Meteor.methods(
         }).validate({ fileID, contratoId, fecha, });
 
         // TODO: recuperar el file (collectionFS)
-        let template = CollectionFS_templates.findOne(fileID);
+        const template = CollectionFS_templates.findOne(fileID);
 
         if (!template) {
             throw new Meteor.Error('db-registro-no-encontrado',
@@ -43,12 +44,12 @@ Meteor.methods(
         }
 
         // el template debe ser siempre un documento word ...
-        let nombreArchivo = template.original.name;
+        const nombreArchivo = template.original.name;
         if (!nombreArchivo || !nombreArchivo.endsWith('.docx')) {
             throw new Meteor.Error('archivo-debe-ser-word-doc', 'El archivo debe ser un documento Word (.docx).');
         }
 
-        let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+        const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
         if (!companiaSeleccionada) {
             throw new Meteor.Error('db-registro-no-encontrado',
@@ -58,72 +59,72 @@ Meteor.methods(
         }
 
         // leemos el contrato
-        let contrato = Contratos.findOne(contratoId);
+        const contrato = Contratos.findOne(contratoId);
 
         if (!contrato) {
             throw new Meteor.Error('db-registro-no-encontrado',
             `Error inesperado: no pudimos leer el contrato en la base de datos.`);
         }
 
-         let cedente = Companias.findOne(contrato.compania);
-         let ramo = Ramos.findOne(contrato.ramo);
-         let tipo = TiposContrato.findOne(contrato.tipo);
+         const cedente = Companias.findOne(contrato.compania);
+         const ramo = Ramos.findOne(contrato.ramo);
+         const tipo = TiposContrato.findOne(contrato.tipo);
 
         // ----------------------------------------------------------------------------------------------------
         // obtenemos el directorio en el server donde están las plantillas (guardadas por el usuario mediante collectionFS)
         // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
-        let filePath = Meteor.settings.public.collectionFS_path_templates;
+        const filePath = Meteor.settings.public.collectionFS_path_templates;
         // nótese que el nombre 'real' que asigna collectionFS cuando el usuario hace el download del archivo,
         // lo encontramos en el item en collectionFS
-        let fileNameWithPath = filePath + "/" + template.copies.collectionFS_templates.key;
+        const fileNameWithPath = filePath + "/" + template.copies.collectionFS_templates.key;
 
         // ----------------------------------------------------------------------------------------------------
         // ahora intentamos abrir el archivo con fs (node file system)
         // leemos el contenido del archivo (plantilla) en el server ...
-        let content = fs.readFileSync(fileNameWithPath, "binary");
+        const content = fs.readFileSync(fileNameWithPath, "binary");
 
-        let zip = new JSZip(content);
-        let doc = new Docxtemplater();
+        const zip = new JSZip(content);
+        const doc = new Docxtemplater();
         doc.loadZip(zip);
 
         // construimos un array con las compañías diferentes a 'nosotros'; es decir, los reaseguradores
-        let reaseguradoresArray = [];
+        const reaseguradoresArray = [];
 
-        let groupByReaseguradores = lodash(contrato.capasPrimasCompanias).filter((x) => { return !x.nosotros; }).groupBy('compania').value();
+        const groupByReaseguradores = lodash(contrato.capasPrimasCompanias).filter((x) => { return !x.nosotros; }).groupBy('compania').value();
 
-        for (r in groupByReaseguradores) {
+        for (const r in groupByReaseguradores) {
             reaseguradoresArray.push(r);
         }
 
-        let reaseguradoresWordData = [];
+        const reaseguradoresWordData = [];
         let reaseguradorWordData = {};
 
         reaseguradoresArray.forEach((r) => {
 
             reaseguradorWordData = {};
 
-            let compania = Companias.findOne(r);
+            const compania = Companias.findOne(r);
 
             // leemos las personas definidas para el contrato
             let persona = "";
-            if (contrato.personas && _.isArray(contrato.personas) && contrato.personas.length) {
-                let personaItem = _.find(contrato.personas, (x) => { return x.compania === r; });
+            if (contrato.personas && lodash.isArray(contrato.personas) && contrato.personas.length) {
+                const personaItem = lodash.find(contrato.personas, (x) => { return x.compania === r; });
                 if (personaItem) {
                     persona = `${personaItem.titulo} ${personaItem.nombre}`;
                 }
             }
 
             // preparamos un array para mostrar los montos para cada capa y compañía
-            let primasCapas = [];
+            const primasCapas = [];
             let primaCapa = {};
 
             let sum_pb = 0, sum_imp = 0, sum_corr = 0,	sum_pn = 0;
 
-            // _.tap recibe el array y hace algo con él; luego el chaining continúa
+            // lodash.tap recibe el array y hace algo con él; luego el chaining continúa
             // nótese que la idea es sustituir un 'foreach()', pues este método *no* es chainable en lodash ...
             lodash(contrato.capasPrimasCompanias).chain().filter((x) => { return x.compania === r; }).tap((x) => {
                 x.forEach((x) => {
-                    let moneda = Monedas.findOne(x.moneda);
+                    const moneda = Monedas.findOne(x.moneda);
                     let impuestos = 0;
                     impuestos += x.imp1 ? x.imp1 : 0;
                     impuestos += x.imp2 ? x.imp2 : 0;
@@ -154,13 +155,13 @@ Meteor.methods(
 
 
             // preparamos un array para mostrar las cuotas de las diferentes capas del contrato
-            let cuotas = [];
+            const cuotas = [];
             let cuota = {};
             let sum_monto_cuota = 0;
 
             Cuotas.find({ 'source.entityID': contrato._id, 'source.origen': 'capa', compania: r }).forEach((x) => {
 
-                let moneda = Monedas.findOne(x.moneda);
+                const moneda = Monedas.findOne(x.moneda);
 
                 cuota = {
                     cuota: x.numero.toString(),
@@ -205,8 +206,6 @@ Meteor.methods(
             reaseguradoresWordData.push(reaseguradorWordData)
         })
 
-
-
         doc.setData({
             reaseguradores: reaseguradoresWordData,
         });
@@ -229,23 +228,23 @@ Meteor.methods(
                 `);
         }
 
-        let buf = doc.getZip().generate({ type:"nodebuffer" });
+        const buf = doc.getZip().generate({ type:"nodebuffer" });
 
         // agregamos un nombre del archivo al 'metadata' en collectionFS; así, identificamos este archivo
         // en particular, y lo podemos eliminar en un futuro, antes de volver a registrarlo ...
-        let userID = Meteor.user().emails[0].address;
+        const userID = Meteor.user().emails[0].address;
 
         let userID2 = userID.replace(/\./g, "_");
         userID2 = userID2.replace(/\@/g, "_");
-        let nombreArchivo2 = nombreArchivo.replace('.docx', `_${userID2}.docx`);
+        const nombreArchivo2 = nombreArchivo.replace('.docx', `_${userID2}.docx`);
 
-        let removedFiles = CollectionFS_tempFiles.remove({ 'original.name': nombreArchivo2 });
+        const removedFiles = CollectionFS_tempFiles.remove({ 'original.name': nombreArchivo2 });
 
         // el tipo del archivo debe estar guardado con el 'template'
-        let tipoArchivo = template.metadata.tipo;
+        const tipoArchivo = template.metadata.tipo;
 
         // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
         // promise y no el promise object ...
         return grabarDatosACollectionFS_regresarUrl(buf, nombreArchivo2, tipoArchivo, 'scrwebm', companiaSeleccionada, Meteor.user(), 'docx');
     }
-});
+})

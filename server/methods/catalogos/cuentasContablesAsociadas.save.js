@@ -1,5 +1,6 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
 
 import { CuentasContablesAsociadas } from '/imports/collections/catalogos/cuentasContablesAsociadas';
 
@@ -7,26 +8,25 @@ Meteor.methods(
 {
     'cuentasContablesAsociadas.save': function (cuentasContablesAsociadas) {
 
-        if (!_.isArray(cuentasContablesAsociadas) || cuentasContablesAsociadas.length == 0) {
+        if (!lodash.isArray(cuentasContablesAsociadas) || cuentasContablesAsociadas.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(cuentasContablesAsociadas).
+        var inserts = lodash.chain(cuentasContablesAsociadas).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
 
 
         inserts.forEach(function (item) {
-            CuentasContablesAsociadas.insert(item, function (error, result) {
+            CuentasContablesAsociadas.insert(item, function (error) {
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
                 }
             })
         })
 
-
-        var updates = _.chain(cuentasContablesAsociadas).
+        var updates = lodash.chain(cuentasContablesAsociadas).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -34,7 +34,7 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            CuentasContablesAsociadas.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            CuentasContablesAsociadas.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
@@ -42,7 +42,7 @@ Meteor.methods(
             })
         })
 
-        var removes = _.filter(cuentasContablesAsociadas, function (item) { return item.docState && item.docState == 3; });
+        var removes = lodash.filter(cuentasContablesAsociadas, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             CuentasContablesAsociadas.remove({ _id: item._id });

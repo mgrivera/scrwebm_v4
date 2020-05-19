@@ -1,5 +1,5 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor'; 
 
 import lodash from 'lodash'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
@@ -37,7 +37,7 @@ Meteor.methods(
 
         if (item.docState && item.docState == 2) {
 
-            var item2 = _.clone(item, true);
+            var item2 = lodash.clone(item, true);
 
             delete item2.docState;
             delete item2._id;

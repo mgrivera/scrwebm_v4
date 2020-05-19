@@ -1,5 +1,4 @@
 
-
 import { Temp_consulta_riesgosEmitidos_config, Temp_consulta_riesgosEmitidos } from 'imports/collections/consultas/temp_consulta_riesgosEmitidos'; 
 import { Temp_Consulta_Riesgos } from 'imports/collections/consultas/tempConsultaRiesgos'; 
 import { Riesgos } from 'imports/collections/principales/riesgos'; 
@@ -35,28 +34,28 @@ Meteor.methods(
         }); 
 
 
-        let monedas = Monedas.find({}, { fields: { _id: 1, simbolo: true, descripcion: true, }}).fetch();
-        let companias = Companias.find({}, { fields: { _id: 1, nombre: true, abreviatura: true, }}).fetch();
-        let ramos = Ramos.find({}, { fields: { _id: 1, descripcion: true, abreviatura: true, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: 1, simbolo: true, descripcion: true, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: 1, nombre: true, abreviatura: true, }}).fetch();
+        const ramos = Ramos.find({}, { fields: { _id: 1, descripcion: true, abreviatura: true, }}).fetch();
 
 
         // leemos los riesgos que el usuario ha seleccionado, completamos con las cifras de emisión y grabamos a un collection en mongo para 
         // que el proceso que ejecuta el report (asp.net) los lea y muestre en el report 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
-        let riesgos = Temp_Consulta_Riesgos.find({ user: this.userId }).fetch();
+        const riesgos = Temp_Consulta_Riesgos.find({ user: this.userId }).fetch();
 
-        let numberOfItems = riesgos.length;
-        let reportarCada = Math.floor(numberOfItems / 25);
+        const numberOfItems = riesgos.length;
+        const reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 1;
-        let currentProcess = 1;
-        let message = `leyendo los riesgos seleccionados ... `; 
+        const numberOfProcess = 1;
+        const currentProcess = 1;
+        const message = `leyendo los riesgos seleccionados ... `; 
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "riesgos.consulta.riesgosEmitidos.reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'riesgos.consulta.riesgosEmitidos' };
+        const eventName = "riesgos.consulta.riesgosEmitidos.reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'riesgos.consulta.riesgosEmitidos' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: message
@@ -77,13 +76,13 @@ Meteor.methods(
             let corretaje = 0;
 
             // leemos el riesgo para obtener otros datos: suma asegurada, prima, etc.
-            let riesgo2 = Riesgos.findOne(riesgo.id);
+            const riesgo2 = Riesgos.findOne(riesgo.id);
 
             if (riesgo2 && riesgo2.movimientos && lodash.isArray(riesgo2.movimientos)) {
                 // leemos el 1er. movimiento del riesgo (puede haber más)
-                let movimiento: any = lodash.find(riesgo2.movimientos, (x: any) => { return x.numero === 1; });
+                const movimiento = lodash.find(riesgo2.movimientos, (x) => { return x.numero === 1; });
                 if (movimiento && movimiento.coberturasCompanias && lodash.isArray(movimiento.coberturasCompanias)) {
-                    let coberturasCompania = lodash.filter(movimiento.coberturasCompanias, (x: any) => { return x.nosotros; });
+                    const coberturasCompania = lodash.filter(movimiento.coberturasCompanias, (x) => { return x.nosotros; });
                     if (coberturasCompania && lodash.isArray(coberturasCompania)) {
                         // coberturasCompania es siempre un array, aunque puede ser de 1 solo item. Pueden
                         // venir cifras para varias coberturas y debemos sumar todos estos montos ...
@@ -101,12 +100,12 @@ Meteor.methods(
 
                 // ahora leemos comisión, impuestos y prima neta en el array de primas ...
                 if (movimiento && movimiento.primas && lodash.isArray(movimiento.primas)) {
-                    let primas = lodash.filter(movimiento.primas, (x: any) => { return x.nosotros; });
+                    const primas = lodash.filter(movimiento.primas, (x) => { return x.nosotros; });
                     if (primas && lodash.isArray(primas)) {
 
-                        let comision = lodash.sumBy(primas, 'comision');
-                        let impuesto = lodash.sumBy(primas, 'impuesto');
-                        let impSobrePN = lodash.sumBy(primas, 'impuestoSobrePN');
+                        const comision = lodash.sumBy(primas, 'comision');
+                        const impuesto = lodash.sumBy(primas, 'impuesto');
+                        const impSobrePN = lodash.sumBy(primas, 'impuestoSobrePN');
 
                         comMasImp += comision ? comision : 0;
                         comMasImp += impuesto ? impuesto : 0;
@@ -123,11 +122,11 @@ Meteor.methods(
                 }
             }
 
-            let moneda = lodash.find(monedas, (x: any) => { return x._id === riesgo2.moneda; });
-            let compania = lodash.find(companias, (x: any) => { return x._id === riesgo2.compania; });
-            let ramo = lodash.find(ramos, (x: any) => { return x._id === riesgo2.ramo; });
+            const moneda = lodash.find(monedas, (x) => { return x._id === riesgo2.moneda; });
+            const compania = lodash.find(companias, (x) => { return x._id === riesgo2.compania; });
+            const ramo = lodash.find(ramos, (x) => { return x._id === riesgo2.ramo; });
 
-            let item = {
+            const item = {
                 _id: new Mongo.ObjectID()._str,
                 numero: riesgo.numero,
                 estado: riesgo.estado,

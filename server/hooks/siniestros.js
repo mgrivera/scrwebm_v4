@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
@@ -6,7 +7,7 @@ import { Siniestros } from '/imports/collections/principales/siniestros';
 Siniestros.before.remove(function (userId, doc) {
 
     // cuotas
-    let cuota = Cuotas.findOne({ 'source.entityID': doc._id });
+    const cuota = Cuotas.findOne({ 'source.entityID': doc._id });
 
     if (cuota) {
         throw new Meteor.Error("dataBaseError",

@@ -1,12 +1,12 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
 Cuotas.before.remove(function (userId, doc) {
 
     // cuotas
     // impedimos eliminar una cuota que haya sido cobrada/pagada
-    let cuota = Cuotas.findOne({ _id: doc._id, $and: [ { pagos: { $exists: true }}, { pagos: { $ne: [] }}, ] });
+    const cuota = Cuotas.findOne({ _id: doc._id, $and: [ { pagos: { $exists: true }}, { pagos: { $ne: [] }}, ] });
 
     if (cuota) {
         throw new Meteor.Error("dataBaseError",

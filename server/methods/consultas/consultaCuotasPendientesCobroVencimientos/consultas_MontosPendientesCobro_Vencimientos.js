@@ -1,4 +1,9 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
+import { Match } from 'meteor/check'
+
 import moment from 'moment';
 import lodash from 'lodash';
 import numeral from 'numeral';
@@ -22,7 +27,7 @@ Meteor.methods(
 
         if (!filtro) {
             throw new Meteor.Error("Ud. debe indicar un criterio de selección a esta consulta.");
-        };
+        }
 
         // antes que nada, eliminamos del collection de la consulta, los registros de la consulta anterior
         Consulta_MontosPendientesCobro_Vencimientos.remove({ user: this.userId });
@@ -55,29 +60,19 @@ Meteor.methods(
             };
         }
 
-        if (filtro.compania && _.isArray(filtro.compania) && filtro.compania.length > 0) {
-            var array = _.clone(filtro.compania);
+        if (filtro.compania && Array.isArray(filtro.compania) && filtro.compania.length > 0) {
+            var array = lodash.clone(filtro.compania);
             matchCriteria.compania = { $in: array };
         }
 
-        if (filtro.moneda && _.isArray(filtro.moneda) && filtro.moneda.length > 0) {
-            var array = _.clone(filtro.moneda);
+        if (filtro.moneda && Array.isArray(filtro.moneda) && filtro.moneda.length > 0) {
+            const array = lodash.clone(filtro.moneda);
             matchCriteria.moneda = { $in: array };
         }
 
-        // usamos aggregation para leer las cuotas pendientes y agregarlas a consulta_montosPendientes
-
-        // cuotas para la cia seleccionada y que no tengan pagos o que tengan pagos pero ninguno 'completo'
-        // nótese que la fecha en el filtro viene, desde el cliente, como Date ...
-        let pipeline = [
-          {
-              $match: matchCriteria
-          }
-        ];
-
         // leemos las cuotas anteriores a la fecha 'fechaLeerHasta', que no tengan un pago completo, para la compañína seleccionada
         // y cuyo monto sea mayor que cero (solo montos por cobrar)
-        let result = Cuotas.aggregate(pipeline);
+        let result = Cuotas.find(matchCriteria).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -85,20 +80,20 @@ Meteor.methods(
         let reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 2;
+        const numberOfProcess = 2;
         let currentProcess = 1;
         let message = `leyendo las cuotas pendientes de cobro ... `;
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "montosPendientesCobro_vencimientos_consulta_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesCobro_vencimientos_consulta' };
+        const eventName = "montosPendientesCobro_vencimientos_consulta_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesCobro_vencimientos_consulta' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: message
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
 
@@ -112,7 +107,7 @@ Meteor.methods(
             switch (cuota.source.origen) {
 
                 case 'fac': {
-                    let riesgo = Riesgos.findOne(cuota.source.entityID, { suscritor: 1, asegurado: 1 });
+                    const riesgo = Riesgos.findOne(cuota.source.entityID, { suscritor: 1, asegurado: 1 });
 
                     if (riesgo) {
                         cuota.suscriptor = riesgo.suscriptor ? riesgo.suscriptor : null;
@@ -122,7 +117,7 @@ Meteor.methods(
                     break;
                 }
                 case 'sinFac': {
-                    let siniestro = Siniestros.findOne(cuota.source.entityID, { suscritor: 1, asegurado: 1 });
+                    const siniestro = Siniestros.findOne(cuota.source.entityID, { suscritor: 1, asegurado: 1 });
 
                     if (siniestro) {
                         cuota.suscriptor = siniestro.suscriptor ? siniestro.suscriptor : null;
@@ -133,7 +128,7 @@ Meteor.methods(
                 }
                 case 'capa':
                 case 'cuenta': {
-                    let contrato = Contratos.findOne(cuota.source.entityID, { suscritor: 1, codigo: 1, referencia: 1 });
+                    const contrato = Contratos.findOne(cuota.source.entityID, { suscritor: 1, codigo: 1, referencia: 1 });
 
                     if (contrato) {
                         cuota.suscriptor = contrato.suscriptor ? contrato.suscriptor : null;
@@ -154,7 +149,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -164,22 +159,19 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
         })
 
-
-
         // si el usuario indica filtros para: suscriptor, los aplicamos ahora (con lodash)
-        if (filtro.suscriptor && lodash.isArray(filtro.suscriptor) && filtro.suscriptor.length > 0) {
+        if (filtro.suscriptor && Array.isArray(filtro.suscriptor) && filtro.suscriptor.length > 0) {
             result = lodash.filter(result, r => {
-                return r.suscriptor && _.some(filtro.suscriptor, a => { return a === r.suscriptor; });
+                return r.suscriptor && lodash.some(filtro.suscriptor, a => { return a === r.suscriptor; });
             })
         }
-
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -191,7 +183,7 @@ Meteor.methods(
          message = `leyendo las cuotas pendientes de cobro ... `;
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         let cantidadRegistrosAgregados = 0;
@@ -211,11 +203,11 @@ Meteor.methods(
                 // arriba asignamos la referencia del contrato como asegurado ... 
                 asegurado = cuota.asegurado; 
             } else { 
-                let abreviaturaAsegurado = Asegurados.findOne(cuota.asegurado, { fields: { abreviatura : 1 }});
+                const abreviaturaAsegurado = Asegurados.findOne(cuota.asegurado, { fields: { abreviatura : 1 }});
                 asegurado = abreviaturaAsegurado ? abreviaturaAsegurado.abreviatura : "Indef"; 
             }
 
-            let cuotaPendiente = {
+            const cuotaPendiente = {
                 _id: new Mongo.ObjectID()._str,
                 moneda: cuota.moneda,
                 monedaDescripcion: moneda ? moneda.descripcion : "Indef",
@@ -257,7 +249,7 @@ Meteor.methods(
             };
 
             // determinamos el monto cobrado y si se hizo con la misma moneda de la cuota  ...
-            if (lodash.isArray(cuota.pagos) && cuota.pagos.length) {
+            if (Array.isArray(cuota.pagos) && cuota.pagos.length) {
                 cuotaPendiente.montoCobrado = lodash.sumBy(cuota.pagos, 'monto');
                 cuotaPendiente.montoCobradoMismaMoneda = !lodash.some(cuota.pagos, (x) => { return x.moneda != cuota.moneda; });
             }
@@ -273,7 +265,7 @@ Meteor.methods(
                 cuotaPendiente.montoPorPagar += cuotaPago.monto;
 
                 // determinamos el monto pagado y si se hizo con la misma moneda de la cuota  ...
-                if (_.isArray(cuotaPago.pagos) && cuotaPago.pagos.length) {
+                if (Array.isArray(cuotaPago.pagos) && cuotaPago.pagos.length) {
                     cuotaPendiente.montoPagado += lodash.sumBy(cuotaPago.pagos, 'monto');
 
                     if (cuotaPendiente.montoPagadoMismaMoneda == null) {
@@ -323,7 +315,6 @@ Meteor.methods(
             Consulta_MontosPendientesCobro_Vencimientos.insert(cuotaPendiente);
             cantidadRegistrosAgregados++;
 
-
             // -------------------------------------------------------------------------------------------------------
             // vamos a reportar progreso al cliente; solo 25 veces ...
             cantidadRecs++;
@@ -334,7 +325,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -344,14 +335,15 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
-        });
+        })
 
         return "Ok, el proceso se ha ejecutado en forma satisfactoria.<br /><br />" +
-               "En total, " + cantidadRegistrosAgregados.toString() + " registros han sido seleccionados y conforman esta consulta.";
+               "En total, " + cantidadRegistrosAgregados.toString() + 
+               " registros han sido seleccionados y conforman esta consulta.";
     }
-});
+})

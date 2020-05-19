@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { Riesgos } from '/imports/collections/principales/riesgos';   
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
@@ -6,9 +7,7 @@ import { Suscriptores } from '/imports/collections/catalogos/suscriptores';
 
 Suscriptores.before.remove(function (userId, doc) {
 
-    // debugger;
-
-    let riesgo = Riesgos.findOne({ suscriptor: doc._id }, { fields: { numero: true } });
+    const riesgo = Riesgos.findOne({ suscriptor: doc._id }, { fields: { numero: true } });
 
     if (riesgo) {
         throw new Meteor.Error("dataBaseError",
@@ -17,9 +16,9 @@ Suscriptores.before.remove(function (userId, doc) {
                                ${ riesgo.numero }</em>. El suscriptor no puede ser eliminado.<br />
                                <b>Nota importante:</b> si otros registros fueron editados,
                                <em>pudieron haber sido grabados</em> en forma satisfactoria.`);
-    };
+    }
 
-    let siniestro = Siniestros.findOne({ suscriptor: doc._id }, { fields: { numero: true } });
+    const siniestro = Siniestros.findOne({ suscriptor: doc._id }, { fields: { numero: true } });
 
     if (siniestro) {
         throw new Meteor.Error("dataBaseError",
@@ -28,5 +27,5 @@ Suscriptores.before.remove(function (userId, doc) {
                                ${ siniestro.numero }</em>. El suscriptor no puede ser eliminado.<br />
                                <b>Nota importante:</b> si otros registros fueron editados,
                                <em>pudieron haber sido grabados</em> en forma satisfactoria.`);
-    };
-});
+    }
+})

@@ -2,7 +2,7 @@
 
 import * as angular from 'angular';
 
-import './notasDebitoCredito.html';
+// import './notasDebitoCredito.html';
 import NotasDebitoCreditoAngularComponent from './angularComponent/angularComponent'; 
 
 export default angular.module("scrwebm.notasDebitoCredito", [ NotasDebitoCreditoAngularComponent.name ])

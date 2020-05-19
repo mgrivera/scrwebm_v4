@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { CierreRegistro } from '/imports/collections/cierre/registroCierre';
 import lodash from 'lodash'; 

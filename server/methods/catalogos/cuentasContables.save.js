@@ -1,30 +1,32 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
+
 import { CuentasContables } from '/imports/collections/catalogos/cuentasContables';
 
 Meteor.methods(
 {
     'cuentasContables.save': function (cuentasContables) {
 
-        if (!_.isArray(cuentasContables) || cuentasContables.length == 0) {
+        if (!lodash.isArray(cuentasContables) || cuentasContables.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(cuentasContables).
+        var inserts = lodash.chain(cuentasContables).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
 
 
         inserts.forEach(function (item) {
-            CuentasContables.insert(item, function (error, result) {
+            CuentasContables.insert(item, function (error) {
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
                 }
             })
         })
 
-
-        var updates = _.chain(cuentasContables).
+        var updates = lodash.chain(cuentasContables).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -32,7 +34,7 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            CuentasContables.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            CuentasContables.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
@@ -40,7 +42,7 @@ Meteor.methods(
             })
         })
 
-        var removes = _.filter(cuentasContables, function (item) { return item.docState && item.docState == 3; });
+        var removes = lodash.filter(cuentasContables, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             CuentasContables.remove({ _id: item._id });

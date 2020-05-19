@@ -1,6 +1,8 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash';
 import moment from 'moment';
+
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 import { calcularNumeroReferencia } from '/server/imports/general/calcularNumeroReferencia'; 
 
@@ -23,8 +25,8 @@ Meteor.methods(
 
             // si la referencia viene en '0', asignamos una ...
             if (!item.referencia || item.referencia === '0') {
-                let ano = parseInt(moment(item.fechaEmision).format('YYYY'));
-                let result = calcularNumeroReferencia('sin', item.tipo, ano, item.cia);
+                const ano = parseInt(moment(item.fechaEmision).format('YYYY'));
+                const result = calcularNumeroReferencia('sin', item.tipo, ano, item.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",
@@ -36,10 +38,9 @@ Meteor.methods(
             Siniestros.insert(item);
         }
 
-
         if (item.docState && item.docState == 2) {
 
-            var item2 = _.clone(item, true);
+            var item2 = lodash.clone(item, true);
 
             delete item2.docState;
             delete item2._id;
@@ -49,7 +50,7 @@ Meteor.methods(
 
             // si el número viene en '0', asignamos un número consecutivo al riesgo
             if (!item2.numero) {
-                var numeroAnterior = Siniestros.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+                const numeroAnterior = Siniestros.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
                 if (!numeroAnterior.numero)
                     item2.numero = 1;
                 else
@@ -58,8 +59,8 @@ Meteor.methods(
 
             // si la referencia viene en '0', asignamos una ...
             if (!item2.referencia || item2.referencia === '0') {
-                let ano = parseInt(moment(item2.fechaEmision).format('YYYY'));
-                let result = calcularNumeroReferencia('sin', item2.tipo, ano, item2.cia);
+                const ano = parseInt(moment(item2.fechaEmision).format('YYYY'));
+                const result = calcularNumeroReferencia('sin', item2.tipo, ano, item2.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",
@@ -71,11 +72,10 @@ Meteor.methods(
             Siniestros.update({ _id: item._id }, { $set: item2 });
         }
 
-
         if (item.docState && item.docState == 3) {
             Siniestros.remove({ _id: item._id });
         }
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

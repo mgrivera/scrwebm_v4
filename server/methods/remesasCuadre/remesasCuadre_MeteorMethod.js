@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
 
 import lodash from 'lodash'; 
 import SimpleSchema from 'simpl-schema';

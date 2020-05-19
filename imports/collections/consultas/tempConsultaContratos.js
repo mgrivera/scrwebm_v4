@@ -2,7 +2,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-let schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false },
     id: { type: String, optional: false },
     numero: { type: Number, label: "Número", optional: false },
@@ -20,5 +20,8 @@ let schema = new SimpleSchema({
     user: { type: String, label: 'Mongo user', optional: false },
 })
 
-Temp_Consulta_Contratos = new Mongo.Collection("temp_consulta_contratos");
+const Temp_Consulta_Contratos = new Mongo.Collection("temp_consulta_contratos");
 Temp_Consulta_Contratos.attachSchema(schema);
+
+/** Make the collection and schema available to other code. */
+export { Temp_Consulta_Contratos }; 

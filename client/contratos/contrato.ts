@@ -28,14 +28,9 @@ import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, 
 import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
 import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
 
-// importamos los files necesarios para el registro de cúmulos ... 
-import '../imports/generales/cumulos/registro/registroCumulos.html'; 
-import '../imports/generales/cumulos/registro/registroCumulos'; 
-
-
 angular.module("scrwebm").controller("ContratoController",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q) {
+                          ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q', '$location', 
+                  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q, $location) {
 
     $scope.showProgress = false;
     $scope.dataHasBeenEdited = false; 
@@ -2300,8 +2295,17 @@ angular.module("scrwebm").controller("ContratoController",
             cia: contrato.cia, 
         }; 
 
+        // TODO: aquí debemos ir al state: 'cumulos.registro'; desde este state se monta el angular component
+        // RegistroCumulos, que es un angular component, que monta, a su vez, un react component del mismo nombre 
+        $state.go('cumulos.registro', { origen: 'contratos',
+                                        entityId: contrato._id,
+                                        subEntityId: '',
+                                        url: $location.url()
+        });
+        return; 
+
         $modal.open({
-            templateUrl: 'client/imports/generales/cumulos/registro/registroCumulos.html',
+            templateUrl: 'client/html/generales/cumulos/registro/registroCumulos.html',
             controller: 'RegistroCumulos_Controller',
             size: 'lg',
             resolve: {

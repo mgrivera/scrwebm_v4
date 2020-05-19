@@ -1,8 +1,9 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import moment from 'moment';
 import lodash from 'lodash';
-import JSZip from 'jszip';
+
 import XlsxInjector from 'xlsx-injector';
 import fs from 'fs';
 import path from 'path';
@@ -34,29 +35,29 @@ Meteor.methods(
         // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
         // nótese que la plantilla (doc excel) no es agregada por el usuario; debe existir siempre con el
         // mismo nombre ...
-        let templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
-        let temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
+        const templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
+        const temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
 
-        let templatePath = path.join(templates_DirPath, 'consultas', 'contratoCapas.xlsx');
+        const templatePath = path.join(templates_DirPath, 'consultas', 'contratoCapas.xlsx');
 
         // ----------------------------------------------------------------------------------------------------
         // nombre del archivo que contendrá los resultados ...
         let userID2 = Meteor.user().emails[0].address.replace(/\./g, "_");
         userID2 = userID2.replace(/\@/g, "_");
-        let outputFileName = 'contratoCapas.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
-        let outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
+        const outputFileName = 'contratoCapas.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
+        const outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
 
-        let contrato = Contratos.findOne(contratoID);
+        const contrato = Contratos.findOne(contratoID);
 
-        let cedente = Companias.findOne(contrato.compania);
-        let tipoContrato = TiposContrato.findOne(contrato.tipo);
-        let ramo = Ramos.findOne(contrato.ramo);
+        const cedente = Companias.findOne(contrato.compania);
+        const tipoContrato = TiposContrato.findOne(contrato.tipo);
+        const ramo = Ramos.findOne(contrato.ramo);
 
-        let infoCapasArray = [];
+        const infoCapasArray = [];
         let capaItem = {};
 
-        let companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
-        let monedas = Monedas.find({}, { fields: { _id: true, simbolo: true, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: true, simbolo: true, }}).fetch();
 
         let sumOfPB = 0;
         let sumOfImp1 = 0;
@@ -68,19 +69,19 @@ Meteor.methods(
         let sumOfPN3 = 0;
 
         // agrupamos por compañía para mostrar totales para éstas ...
-        let infoCapasGroupByCompania = lodash.groupBy(contrato.capasPrimasCompanias, 'compania');
+        const infoCapasGroupByCompania = lodash.groupBy(contrato.capasPrimasCompanias, 'compania');
 
         // nótese como ordenamos el objeto por su (unica) key ...
-        for (let compania in lodash(infoCapasGroupByCompania).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
+        for (const compania in lodash(infoCapasGroupByCompania).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
 
-            let infoCapasByCompania = infoCapasGroupByCompania[compania];
-            let companiaAbreviatura = _.find(companias, (x) => { return x._id === compania; }).abreviatura;
+            const infoCapasByCompania = infoCapasGroupByCompania[compania];
+            const companiaAbreviatura = lodash.find(companias, (x) => { return x._id === compania; }).abreviatura;
 
-            let pb = lodash.sumBy(infoCapasByCompania, 'primaBruta');
-            let imp1 = lodash.sumBy(infoCapasByCompania, 'imp1');
-            let imp2 = lodash.sumBy(infoCapasByCompania, 'imp2');
-            let corr = lodash.sumBy(infoCapasByCompania, 'corretaje');
-            let impSPN = lodash.sumBy(infoCapasByCompania, 'impSPN');
+            const pb = lodash.sumBy(infoCapasByCompania, 'primaBruta');
+            const imp1 = lodash.sumBy(infoCapasByCompania, 'imp1');
+            const imp2 = lodash.sumBy(infoCapasByCompania, 'imp2');
+            const corr = lodash.sumBy(infoCapasByCompania, 'corretaje');
+            const impSPN = lodash.sumBy(infoCapasByCompania, 'impSPN');
 
             let pnAntesCorretaje = pb;
             pnAntesCorretaje += imp1 ? imp1 : 0;
@@ -115,7 +116,7 @@ Meteor.methods(
             lodash.orderBy(infoCapasByCompania, ['numeroCapa'], ['asc']).
                    forEach((capa) => {
 
-                let monedaSimbolo = _.find(monedas, (x) => { return x._id === capa.moneda; }).simbolo;
+                const monedaSimbolo = lodash.find(monedas, (x) => { return x._id === capa.moneda; }).simbolo;
 
                 let pnAntesCorr = capa.primaBruta;
                 pnAntesCorr += capa.imp1 ? capa.imp1 : 0;
@@ -156,28 +157,28 @@ Meteor.methods(
                 sumOfImp3 += capa.impSPN ? capa.impSPN : 0;
                 sumOfPN3 += capa.primaNeta;
             });
-        };
+        }
 
 
         // --------------------------------------------------------------------------------------------
         // al igual que hicimos arriba para las primas, leemos las cuotas y agrupamos para construir un
         // array y combinar en Excel
-        let cuotas = Cuotas.find({
+        const cuotas = Cuotas.find({
             'source.entityID': contrato._id,
             'source.origen': 'capa',
         }).fetch();
-        let infoCuotasGroupByCompania = lodash.groupBy(cuotas, 'compania');
+        const infoCuotasGroupByCompania = lodash.groupBy(cuotas, 'compania');
 
-        let cuotasArray = [];
+        const cuotasArray = [];
         let cuotaItem = {};
 
         let sumOfMontoCuota = 0;
 
         // nótese como ordenamos el objeto por su (unica) key ...
-        for (let compania in lodash(infoCuotasGroupByCompania).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
+        for (const compania in lodash(infoCuotasGroupByCompania).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
 
-            let cuotasByCompania = infoCuotasGroupByCompania[compania];
-            let companiaAbreviatura = _.find(companias, (x) => { return x._id === compania; }).abreviatura;
+            const cuotasByCompania = infoCuotasGroupByCompania[compania];
+            const companiaAbreviatura = lodash.find(companias, (x) => { return x._id === compania; }).abreviatura;
 
             // nótese como ponemos 'nosotros' en 0 si las cuotas corresponden a la compañía cedente;
             // la idea es que se muestren de primera en la lista. Más abajo, al pasar el array para
@@ -200,7 +201,7 @@ Meteor.methods(
             // finalmente, leemos los items para la moneda/compañia y escribimos un row a Excel para cada uno ...
             cuotasByCompania.forEach((cuota) => {
 
-                let monedaSimbolo = _.find(monedas, (x) => { return x._id === cuota.moneda; }).simbolo;
+                const monedaSimbolo = lodash.find(monedas, (x) => { return x._id === cuota.moneda; }).simbolo;
 
                 cuotaItem = {
                     nosotros: cuota.compania === contrato.compania ? 0 : 1,
@@ -218,12 +219,12 @@ Meteor.methods(
 
                 sumOfMontoCuota += cuota.monto;
             });
-        };
+        }
 
 
 
         // Object containing attributes that match the placeholder tokens in the template
-        let values = {
+        const values = {
             fechaHoy: moment(new Date()).format("DD-MMM-YYYY"),
             nombreCiaContabSeleccionada: ciaSeleccionada.nombre,
             cedente: cedente.abreviatura,
@@ -250,8 +251,8 @@ Meteor.methods(
 
 
         // Open a workbook
-        let workbook = new XlsxInjector(templatePath);
-        let sheetNumber = 1;
+        const workbook = new XlsxInjector(templatePath);
+        const sheetNumber = 1;
         workbook.substitute(sheetNumber, values);
         // Save the workbook
         workbook.writeFile(outputPath);
@@ -259,7 +260,7 @@ Meteor.methods(
 
         // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
         // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
-        let buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
+        const buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
 
         // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
         // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...

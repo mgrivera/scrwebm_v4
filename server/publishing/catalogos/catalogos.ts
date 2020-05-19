@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor';
 import { CuentasContables } from 'imports/collections/catalogos/cuentasContables'; 
 import { CuentasContablesAsociadas } from 'imports/collections/catalogos/cuentasContablesAsociadas';
 import { Monedas } from 'imports/collections/catalogos/monedas'; 

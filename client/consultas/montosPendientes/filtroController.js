@@ -1,5 +1,6 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
+import angular from 'angular';
 import lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -13,9 +14,8 @@ import { Consulta_MontosPendientes } from '/imports/collections/consultas/consul
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-angular.module("scrwebm").controller("ConsultasMontosPendientesFiltroController",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+angular.module("scrwebm")
+       .controller("ConsultasMontosPendientesFiltroController", ['$scope', '$state', function ($scope, $state) {
 
     $scope.showProgress = false;
 
@@ -49,9 +49,11 @@ angular.module("scrwebm").controller("ConsultasMontosPendientesFiltroController"
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = {};
+
     if (companiaSeleccionada) { 
-    var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
     }
         
     $scope.companiaSeleccionada = {};
@@ -114,10 +116,10 @@ angular.module("scrwebm").controller("ConsultasMontosPendientesFiltroController"
         filtro = $scope.filtro;
         filtro.cia = $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : -999;
 
-        Meteor.call('consultas.montosPendientes', filtro, (err, result) => {
+        Meteor.call('consultas.montosPendientes', filtro, (err) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -176,7 +178,7 @@ angular.module("scrwebm").controller("ConsultasMontosPendientesFiltroController"
                 $scope.showProgress = false;
 
                 // abrimos el state Lista ...
-                let parametrosReporte = { fechaPendientesAl: filtro.fechaPendientesAl };
+                const parametrosReporte = { fechaPendientesAl: filtro.fechaPendientesAl };
                 $state.go('montosPendientesLista', {
                     companiaSeleccionada: JSON.stringify(companiaSeleccionada),
                     parametrosReporte: JSON.stringify(parametrosReporte)
@@ -196,5 +198,4 @@ angular.module("scrwebm").controller("ConsultasMontosPendientesFiltroController"
     if (filtroAnterior) { 
         $scope.filtro = _.clone(filtroAnterior.filtro);
     }
-  }
-]);
+  }])

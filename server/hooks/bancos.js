@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
@@ -6,7 +7,7 @@ import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancaria
 Bancos.before.remove(function (userId, doc) {
     // -------------------------------------------------------------------------
     // cuentas bancarias
-    let cuentaBancaria = CuentasBancarias.findOne({
+    const cuentaBancaria = CuentasBancarias.findOne({
         $or: [
             { banco: doc._id },
         ]

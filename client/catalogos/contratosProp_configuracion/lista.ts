@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import * as angular from 'angular'; 
 import * as lodash from 'lodash'; 
 
@@ -58,7 +58,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
 
             // ahora que tenemos la lista, la asociamos a la columna en el ui-grid, para que la muestre
             // como lista en el ddl ...
-            $scope.codigosContrato_ui_grid.columnDefs[1].editDropdownOptionsArray = codigosContato_list;
+            $scope.codigosContrato_ui_grid.columnDefs[1].editDropdownOptionsArray = lodash.sortBy(codigosContato_list, ["codigo"]);
 
             $scope.showProgress = false;
             $scope.$apply();

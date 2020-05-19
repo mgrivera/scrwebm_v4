@@ -1,5 +1,4 @@
 ﻿
-
 // este archivo es el que se carga primero en el cliente ... meteor carga el contenido de client/lib antes
 // que cualquier otro archivo que exista en cualquier otro directorio (en el cliente) ...
 
@@ -28,6 +27,57 @@ import Remesas from '/client/imports/remesas/remesasAngularModule';
 import NotasDebitoCredito from '/client/imports/notasDebitoCredito/notasDebitoCreditoModule'; 
 import Cobranzas from '/client/imports/cobranzas/cobranzasModule'; 
 import Administracion from '/client/imports/administracion/angularModule'; 
+import Consultas from '/client/imports/consultas/angularModule'; 
+
+
+// ---------------------------------------------------------------------------------------------------------------
+// NOTA: cuando pasamos a la versión 1.10, no pudimos mantener la ultima versión de angular-templates (1.0.9) 
+// tuvimos que hacer un downgrade de este package a la versión 1.0.3. Todos los imports de codigo html comenzó 
+// a fallar (???). Por eso lo pusimos aquí ... Pero debemos mantenerlo en su código de origen, pues tenerlo aquí 
+// no es elegante ... 
+
+// import '/client/imports/riesgos/infoRamo/editarInfoRamoModal.html'; 
+// import '/client/imports/riesgos/reportes/opcionesReportModal.html'; 
+// import '/client/imports/riesgos/filtro.html'; 
+// import '/client/imports/riesgos/lista.html';
+// import '/client/imports/riesgos/riesgo.html';
+// import '/client/imports/riesgos/riesgo.generales.html';
+// import '/client/imports/riesgos/riesgo.movimientos.html'; 
+// import '/client/imports/riesgos/riesgo.infoRamo_autos.html'; 
+// import '/client/imports/riesgos/riesgo.productores.html'; 
+// import '/client/imports/riesgos/riesgo.cuotas.html'; 
+// import '/client/imports/riesgos/imprimirNotasModal.html'; 
+// import '/client/imports/riesgos/renovarRiesgo/renovarRiesgoModal.html'; 
+// import '/client/imports/riesgos/notasDebito/notasDebito.html';
+// import '/client/imports/riesgos/prorratearPrimasModal.html'; 
+
+// import '/client/imports/remesas/remesa.generales.html'; 
+// import '/client/imports/remesas/remesa.detalle.html'; 
+// import '/client/imports/remesas/remesa.cuadre.html'; 
+// import '/client/imports/remesas/exportarExcelModal/remesaCuadreExportarExcel_Modal.html'; 
+// import '/client/imports/remesas/obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html';
+// import '/client/imports/remesas/asientoContable/asientoContable_Modal.html';
+// import '/client/imports/remesas/filtro.html'; 
+// import '/client/imports/remesas/lista.html';
+// import '/client/imports/remesas/remesa.html';
+
+// import '/client/imports/notasDebitoCredito/notasDebitoCredito.html';
+
+// import '/client/imports/cobranzas/cobranzas.html'; 
+// import '/client/imports/cobranzas/cobranzas.seleccionRemesa.html'; 
+// import '/client/imports/cobranzas/cobranzas.aplicarPagos.html';
+// import '/client/imports/cobranzas/cobranzas.resultados.html'; 
+
+// import '/client/imports/generales/mostrarPagosCuotaModal.html';
+
+// import "client/imports/administracion/usuarios/usuarios.html"; 
+// import "client/imports/administracion/usuariosRoles/usuariosRoles.html"; 
+ 
+// import '../imports/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado.html';
+// import '../imports/catalogos/cumulos/cumulos.html';
+
+// import 'client/imports/generales/cumulos/registro/registroCumulos.html'; 
+
 
 
 angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
@@ -37,6 +87,6 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
                             Generales.name, Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
-                            Administracion.name, 
+                            Administracion.name, Consultas.name
                           ]);
 

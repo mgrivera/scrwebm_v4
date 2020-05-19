@@ -1,4 +1,7 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
 
 import lodash from 'lodash';
 import numeral from 'numeral'; 
@@ -37,17 +40,17 @@ Meteor.methods(
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
-        let numberOfItems = cuotasPendientes.length;
-        let reportarCada = Math.floor(numberOfItems / 25);
+        const numberOfItems = cuotasPendientes.length;
+        const reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 1;
-        let currentProcess = 1;
-        let message = `leyendo cuotas pendientes ... `; 
+        const numberOfProcess = 1;
+        const currentProcess = 1;
+        const message = `leyendo cuotas pendientes ... `; 
 
         // nótese que 'eventName' y 'eventSelector' no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "cobranzas.procesosVarios.reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cobranzas.procesosVarios' };
+        const eventName = "cobranzas.procesosVarios.reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cobranzas.procesosVarios' };
         let eventData = { current: currentProcess, max: numberOfProcess, progress: '0 %', message: message, };
 
         // sync call
@@ -67,10 +70,10 @@ Meteor.methods(
             switch (cuota.source.origen) {
 
                 case 'fac': {
-                    let riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1 }});
+                    const riesgo = Riesgos.findOne(cuota.source.entityID, { fields: { asegurado: 1 }});
 
                     if (riesgo && riesgo.asegurado) { 
-                        let asegurado = Asegurados.findOne(riesgo.asegurado, { fields: { abreviatura: 1 }}); 
+                        const asegurado = Asegurados.findOne(riesgo.asegurado, { fields: { abreviatura: 1 }}); 
                         if (asegurado) { 
                             nombreAsegurado = asegurado.abreviatura; 
                         }
@@ -80,10 +83,10 @@ Meteor.methods(
                 }
 
                 case 'sinFac': {
-                    let siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1 }});
+                    const siniestro = Siniestros.findOne(cuota.source.entityID, { fields: { asegurado: 1 }});
 
                     if (siniestro && siniestro.asegurado) { 
-                        let asegurado = Asegurados.findOne(siniestro.asegurado, { fields: { abreviatura: 1 }}); 
+                        const asegurado = Asegurados.findOne(siniestro.asegurado, { fields: { abreviatura: 1 }}); 
                         if (asegurado) { 
                             nombreAsegurado = asegurado.abreviatura; 
                         }
@@ -94,7 +97,7 @@ Meteor.methods(
 
                 case 'capa':
                 case 'cuenta': {
-                    let contrato = Contratos.findOne(cuota.source.entityID);
+                    const contrato = Contratos.findOne(cuota.source.entityID);
 
                     if (contrato && contrato.codigo) {
                         nombreAsegurado = contrato.codigo; 
@@ -196,7 +199,6 @@ Meteor.methods(
             }
             // -------------------------------------------------------------------------------------------------------
         })
-
 
         if (cantidadRegistrosAgregadosTablaTemporal == 0) {
             throw new Meteor.Error("compania-sin-cuotas-pendientes",

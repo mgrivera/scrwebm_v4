@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import { NotasDebitoCredito_proxNumero } from 'imports/collections/catalogos/notasDebitoCredito_proxNumero'; 
 
 const determinarProxNumero = function(tipo: string, ano: number, cia: string) { 

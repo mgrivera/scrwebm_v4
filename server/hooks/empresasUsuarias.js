@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+
 import { Riesgos } from '/imports/collections/principales/riesgos';  
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
@@ -10,7 +12,7 @@ EmpresasUsuarias.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // riesgos
-    let riesgo = Riesgos.findOne({
+    const riesgo = Riesgos.findOne({
         $or: [
             { cia: doc._id },
         ]
@@ -28,7 +30,7 @@ EmpresasUsuarias.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // contratos
-    let contrato = Contratos.findOne({
+    const contrato = Contratos.findOne({
         $or: [
             { cia: doc._id },
         ]
@@ -46,7 +48,7 @@ EmpresasUsuarias.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // siniestros
-    let siniestro = Siniestros.findOne({
+    const siniestro = Siniestros.findOne({
         $or: [
             { cia: doc._id },
         ]
@@ -65,7 +67,7 @@ EmpresasUsuarias.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // remesas
-    let remesa = Remesas.findOne({
+    const remesa = Remesas.findOne({
         $or: [
              { cia: doc._id },
      ]},
@@ -82,7 +84,7 @@ EmpresasUsuarias.before.remove(function (userId, doc) {
 
     // -------------------------------------------------------------------
     // cuotas
-    let cuota = Cuotas.findOne({ cia: doc._id });
+    const cuota = Cuotas.findOne({ cia: doc._id });
 
     if (cuota) {
         throw new Meteor.Error("dataBaseError",

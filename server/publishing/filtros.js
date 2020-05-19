@@ -1,5 +1,5 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
 Meteor.publish(null, function () {

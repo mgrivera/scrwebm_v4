@@ -1,4 +1,6 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 
@@ -6,27 +8,25 @@ Meteor.methods(
 {
     companiasSave: function (companias) {
 
-        // debugger; 
-
-        if (!_.isArray(companias) || companias.length == 0) {
+        if (!lodash.isArray(companias) || companias.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(companias).
+        var inserts = lodash.chain(companias).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
 
 
         inserts.forEach(function (item) {
-            Companias.insert(item, function (error, result) {
+            Companias.insert(item, function (error) {
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
         });
 
 
-        var updates = _.chain(companias).
+        var updates = lodash.chain(companias).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -34,14 +34,14 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            Companias.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            Companias.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
         });
 
-        var removes = _.filter(companias, function (item) { return item.docState && item.docState == 3; });
+        var removes = lodash.filter(companias, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             Companias.remove({ _id: item._id });
@@ -49,4 +49,4 @@ Meteor.methods(
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

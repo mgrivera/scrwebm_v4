@@ -1,9 +1,13 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash';
+import moment from 'moment';
+
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
 
 Meteor.publish("siniestros", function (filtro) {
 
-    var filtro = JSON.parse(filtro);
+    filtro = JSON.parse(filtro);
     var selector = {};
 
     if (filtro.numero1)
@@ -13,12 +17,12 @@ Meteor.publish("siniestros", function (filtro) {
             selector.numero = filtro.numero1;
 
         if (filtro.codigo) {
-            var search = new RegExp(filtro.codigo, 'i');
+            const search = new RegExp(filtro.codigo, 'i');
             selector.codigo = search;
         }
 
         if (filtro.referencia) {
-            var search = new RegExp(filtro.referencia, 'i');
+            const search = new RegExp(filtro.referencia, 'i');
             selector.referencia = search;
         }
 
@@ -44,42 +48,42 @@ Meteor.publish("siniestros", function (filtro) {
 
 
     if (filtro.compania && filtro.compania.length) {
-        var array = _.clone(filtro.compania);
+        const array = lodash.clone(filtro.compania);
         selector.compania = { $in: array };
     }
 
     if (filtro.ajustador && filtro.ajustador.length) {
-        var array = _.clone(filtro.ajustador);
+        const array = lodash.clone(filtro.ajustador);
         selector.ajustador = { $in: array };
     }
 
     if (filtro.moneda && filtro.moneda.length) {
-        var array = _.clone(filtro.moneda);
+        const array = lodash.clone(filtro.moneda);
         selector.moneda = { $in: array };
     }
 
     if (filtro.causa && filtro.causa.length) {
-        var array = _.clone(filtro.causa);
+        const array = lodash.clone(filtro.causa);
         selector.causa = { $in: array };
     }
 
     if (filtro.ramo && filtro.ramo.length) {
-        var array = _.clone(filtro.ramo);
+        const array = lodash.clone(filtro.ramo);
         selector.ramo = { $in: array };
     }
 
     if (filtro.asegurado && filtro.asegurado.length) {
-        var array = _.clone(filtro.asegurado);
+        const array = lodash.clone(filtro.asegurado);
         selector.asegurado = { $in: array };
     }
 
     if (filtro.suscriptor && filtro.suscriptor.length) {
-        var array = _.clone(filtro.suscriptor);
+        const array = lodash.clone(filtro.suscriptor);
         selector.suscriptor = { $in: array };
     }
 
     if (filtro.tipo && filtro.tipo.length) {
-        var array = _.clone(filtro.tipo);
+        const array = lodash.clone(filtro.tipo);
         selector.tipo = { $in: array };
     }
 
@@ -87,4 +91,4 @@ Meteor.publish("siniestros", function (filtro) {
         selector.cia = filtro.cia;
 
     return Siniestros.find(selector);
-});
+})

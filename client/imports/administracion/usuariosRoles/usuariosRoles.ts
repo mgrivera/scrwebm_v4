@@ -4,7 +4,7 @@ import * as angular from 'angular';
 import * as lodash from 'lodash';
 import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
 
-import "./usuariosRoles.html"; 
+// import "client/imports/administracion/usuariosRoles/usuariosRoles.html"; 
 
 export default angular.module("scrwebm.administracion.usuariosRoles", [])
                       .controller("UsuariosRolesController", ['$scope', '$meteor', '$modal', function ($scope, $meteor, $modal) {

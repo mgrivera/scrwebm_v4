@@ -1,9 +1,7 @@
 
-
+import { Meteor } from 'meteor/meteor';
 import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
 import SimpleSchema from 'simpl-schema';
-import moment from 'moment'; 
-import lodash from 'lodash'; 
 
 Meteor.publish("cierre.leerRegistro", function (filtro, cantRecords) {
 

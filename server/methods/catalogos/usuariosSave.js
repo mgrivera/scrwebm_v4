@@ -1,14 +1,17 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
+
 Meteor.methods(
 {
     'usuarios.save': function (users) {
         // actualizamos los datos personales de los usuarios ...
-        if (!_.isArray(users) || users.length == 0) {
+        if (!lodash.isArray(users) || users.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
         users.forEach(function (user) {
-            let personales = {};
+            const personales = {};
 
             personales.titulo = user.personales && user.personales.titulo ? user.personales.titulo : null;
             personales.nombre = user.personales && user.personales.nombre ? user.personales.nombre : null;
@@ -19,4 +22,4 @@ Meteor.methods(
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

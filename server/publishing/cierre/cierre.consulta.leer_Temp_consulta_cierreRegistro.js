@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor';
 import SimpleSchema from 'simpl-schema';
 import { Temp_consulta_cierreRegistro } from '/imports/collections/consultas/temp_consulta_cierreRegistro'; 
 

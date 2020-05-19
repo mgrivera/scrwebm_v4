@@ -1,4 +1,9 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
+import { Match } from 'meteor/check'
+
 import moment from 'moment';
 import lodash from 'lodash';
 import numeral from 'numeral';
@@ -56,7 +61,7 @@ Meteor.methods(
 
         // leemos solo cuotas por cobrar; aquellas cuyo monto es positivo; también eliminamos las cuotas de siniestro de la
         // selección (los siniestro no generan corretaje)
-        var matchCriteria = {
+        const matchCriteria = {
             monto: { $gt: 0 },
             'source.origen' : { $not : /^sin/ },
             cia: filtro.cia,
@@ -97,15 +102,9 @@ Meteor.methods(
         }
 
         if (filtro.monedas && Array.isArray(filtro.monedas) && filtro.monedas.length > 0) {
-            var array = lodash.clone(filtro.monedas);
+            const array = lodash.clone(filtro.monedas);
             matchCriteria.moneda = { $in: array };
         }
-
-        let pipeline = [
-          {
-              $match: matchCriteria
-          }
-        ];
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -113,23 +112,23 @@ Meteor.methods(
         let reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 4;
+        const numberOfProcess = 4;
         let currentProcess = 1;
         let message = `leyendo las cuotas ... `
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "corretaje_consulta_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'corretaje_consulta' };
+        const eventName = "corretaje_consulta_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'corretaje_consulta' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: message
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-        let result = Cuotas.aggregate(pipeline);
+        let result = Cuotas.find(matchCriteria).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -146,7 +145,7 @@ Meteor.methods(
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
 
@@ -161,7 +160,7 @@ Meteor.methods(
             switch (cuota.source.origen) {
 
                 case 'fac': {
-                    let riesgo = Riesgos.findOne(cuota.source.entityID);
+                    const riesgo = Riesgos.findOne(cuota.source.entityID);
 
                     if (riesgo) {
                         cuota.suscriptor = riesgo.suscriptor ? riesgo.suscriptor : null;
@@ -174,7 +173,7 @@ Meteor.methods(
 
                 case 'capa':
                 case 'cuenta': {
-                    let contrato = Contratos.findOne(cuota.source.entityID);
+                    const contrato = Contratos.findOne(cuota.source.entityID);
 
                     if (contrato) {
                         if (contrato.suscriptor) {
@@ -201,7 +200,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -211,10 +210,10 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
         })
 
@@ -233,14 +232,14 @@ Meteor.methods(
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-        let monedas = Monedas.find({}, { fields: { simbolo: 1, descripcion: 1, }}).fetch();
-        let companias = Companias.find({}, { fields: { abreviatura : 1, nombre: 1, }}).fetch();
-        let ramos = Ramos.find({}, { fields: { abreviatura : 1, descripcion: 1, }}).fetch();
-        let suscriptores = Suscriptores.find({}, { fields: { abreviatura : 1 }}).fetch();
-        let asegurados = Asegurados.find({}, { fields: { abreviatura : 1 }}).fetch();
+        const monedas = Monedas.find({}, { fields: { simbolo: 1, descripcion: 1, }}).fetch();
+        const companias = Companias.find({}, { fields: { abreviatura : 1, nombre: 1, }}).fetch();
+        const ramos = Ramos.find({}, { fields: { abreviatura : 1, descripcion: 1, }}).fetch();
+        const suscriptores = Suscriptores.find({}, { fields: { abreviatura : 1 }}).fetch();
+        const asegurados = Asegurados.find({}, { fields: { abreviatura : 1 }}).fetch();
 
         // ---------------------------------------------------------------------------------------------------------
         // si el usuario indica filtros para: suscriptor o ramo, los aplicamos ahora (con lodash)
@@ -278,7 +277,7 @@ Meteor.methods(
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         result.forEach(cuota => {
@@ -289,7 +288,7 @@ Meteor.methods(
             suscriptor = suscriptores.find((x) => { return cuota.suscriptor === x._id; });
             asegurado = asegurados.find((x) => { return cuota.asegurado === x._id; });
 
-            let cuotaCorretaje = {
+            const cuotaCorretaje = {
                 _id: new Mongo.ObjectID()._str,
 
                 moneda: cuota.moneda,
@@ -367,7 +366,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -377,12 +376,12 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
-        });
+        })
 
         // eliminamos las cuotas que no han generado corretaje
         Consulta_Corretaje.remove({ montoCorretaje: { $eq: 0 }, user: this.userId });
@@ -408,4 +407,4 @@ Meteor.methods(
                 En total, ${cantidadRegistrosAgregados.toString()} registros han sido seleccionados y
                 conforman esta consulta.`;
     }
-});
+})

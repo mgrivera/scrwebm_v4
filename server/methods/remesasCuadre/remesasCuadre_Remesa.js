@@ -1,4 +1,5 @@
 
+import { Mongo } from 'meteor/mongo'; 
 import numeral from 'numeral';
 import lodash from 'lodash'; 
 

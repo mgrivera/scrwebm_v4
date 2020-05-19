@@ -1,4 +1,7 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+
 import numeral from 'numeral';
 import moment from 'moment';
 import lodash from 'lodash';
@@ -18,14 +21,14 @@ Meteor.methods(
 {
     'riesgos.leerDesdeMongo': function (filtro, ciaSeleccionadaID) {
 
-        let filtro2 = JSON.parse(filtro);
+        const filtro2 = JSON.parse(filtro);
 
         new SimpleSchema({
             filtro2: { type: Object, blackbox: true, optional: false, },
             ciaSeleccionadaID: { type: String, optional: false, },
         }).validate({ filtro2, ciaSeleccionadaID, });
 
-        let where = {};
+        const where = {};
 
         if (filtro2._id) { 
             where._id = filtro2._id;
@@ -46,7 +49,7 @@ Meteor.methods(
         }
 
         if (filtro2.referencia) {
-            var search = new RegExp(filtro2.referencia, 'i');
+            const search = new RegExp(filtro2.referencia, 'i');
             where.referencia = search;
         }
 
@@ -70,62 +73,62 @@ Meteor.methods(
         }
             
         if (filtro2.compania && filtro2.compania.length) {
-            let array = lodash.clone(filtro2.compania);
+            const array = lodash.clone(filtro2.compania);
             where.compania = { $in: array };
         }
 
         if (filtro2.reasegurador && filtro2.reasegurador.length) {
-            let array = lodash.clone(filtro2.reasegurador);
+            const array = lodash.clone(filtro2.reasegurador);
             where['movimientos.companias.compania'] = { $in: array };       // buscamos en el inner array ... 
         }
 
         if (filtro2.estado && filtro2.estado.length) {
-            let array = lodash.clone(filtro2.estado);
+            const array = lodash.clone(filtro2.estado);
             where.estado = { $in: array };
         }
 
         if (filtro2.moneda && filtro2.moneda.length) {
-            let array = lodash.clone(filtro2.moneda);
+            const array = lodash.clone(filtro2.moneda);
             where.moneda = { $in: array };
         }
 
         if (filtro2.indole && filtro2.indole.length) {
-            let array = lodash.clone(filtro2.indole);
+            const array = lodash.clone(filtro2.indole);
             where.indole = { $in: array };
         }
 
         if (filtro2.ramo && filtro2.ramo.length) {
-            let array = lodash.clone(filtro2.ramo);
+            const array = lodash.clone(filtro2.ramo);
             where.ramo = { $in: array };
         }
 
         if (filtro2.asegurado && filtro2.asegurado.length) {
-            let array = lodash.clone(filtro2.asegurado);
+            const array = lodash.clone(filtro2.asegurado);
             where.asegurado = { $in: array };
         }
 
         if (filtro2.corredor && filtro2.corredor.length) {
-            let array = lodash.clone(filtro2.corredor);
+            const array = lodash.clone(filtro2.corredor);
             where.corredor = { $in: array };
         }
 
         if (filtro2.suscriptor && filtro2.suscriptor.length) {
-            let array = lodash.clone(filtro2.suscriptor);
+            const array = lodash.clone(filtro2.suscriptor);
             where.suscriptor = { $in: array };
         }
 
         if (filtro2.tipo && filtro2.tipo.length) {
-            let array = lodash.clone(filtro2.tipo);
+            const array = lodash.clone(filtro2.tipo);
             where.tipo = { $in: array };
         }
 
         if (filtro2.tipoObjetoAsegurado && filtro2.tipoObjetoAsegurado.length) {
-            let array = lodash.clone(filtro2.tipoObjetoAsegurado);
+            const array = lodash.clone(filtro2.tipoObjetoAsegurado);
             where['objetoAsegurado.tipo'] = { $in: array };                 // buscamos en el inner array ... 
         }
 
         if (filtro2.comentarios) {
-            let search = new RegExp(filtro2.comentarios, 'i');
+            const search = new RegExp(filtro2.comentarios, 'i');
             where.comentarios = search;
         }
 
@@ -134,23 +137,23 @@ Meteor.methods(
         // eliminamos los asientos que el usuario pueda haber registrado antes ...
         Temp_Consulta_Riesgos.remove({ user: this.userId });
 
-        let riesgos = Riesgos.find(where).fetch();
+        const riesgos = Riesgos.find(where).fetch();
 
         if (riesgos.length == 0) {
             return "Cero registros han sido leídos desde la base de datos";
         }
 
-        let suscriptores = Suscriptores.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let monedas = Monedas.find({}, { fields: { _id: 1, simbolo: 1, }}).fetch();
-        let companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let ramos = Ramos.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let asegurados = Asegurados.find({}, { fields: { _id: 1, nombre: 1, abreviatura: 1, }}).fetch();
-        let tiposFacultativo = TiposFacultativo.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const suscriptores = Suscriptores.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: 1, simbolo: 1, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const ramos = Ramos.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const asegurados = Asegurados.find({}, { fields: { _id: 1, nombre: 1, abreviatura: 1, }}).fetch();
+        const tiposFacultativo = TiposFacultativo.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // para reportar progreso solo 30 veces; si hay menos de 20 registros, reportamos siempre ...
-        let numberOfItems = riesgos.length;
-        let reportarCada = Math.floor(numberOfItems / 30);
+        const numberOfItems = riesgos.length;
+        const reportarCada = Math.floor(numberOfItems / 30);
         let reportar = 0;
         let cantidadRecs = 0;
         EventDDP.matchEmit('riesgos_leerRiesgos_reportProgress',
@@ -160,31 +163,31 @@ Meteor.methods(
 
         riesgos.forEach((item) => {
 
-            let suscriptor = lodash.some(suscriptores, (x) => { return x._id === item.suscriptor; }) ?
+            const suscriptor = lodash.some(suscriptores, (x) => { return x._id === item.suscriptor; }) ?
                              lodash.find(suscriptores, (x) => { return x._id === item.suscriptor; }).abreviatura :
                              'Indefinido';
 
-            let moneda = lodash.some(monedas, (x) => { return x._id === item.moneda; }) ?
+            const moneda = lodash.some(monedas, (x) => { return x._id === item.moneda; }) ?
                          lodash.find(monedas, (x) => { return x._id === item.moneda; }).simbolo :
                          'Indefinido';
 
-            let compania = lodash.some(companias, (x) => { return x._id === item.compania; }) ?
+            const compania = lodash.some(companias, (x) => { return x._id === item.compania; }) ?
                            lodash.find(companias, (x) => { return x._id === item.compania; }).abreviatura :
                            'Indefinido';
 
-            let ramo = lodash.some(ramos, (x) => { return x._id === item.ramo; }) ?
+            const ramo = lodash.some(ramos, (x) => { return x._id === item.ramo; }) ?
                        lodash.find(ramos, (x) => { return x._id === item.ramo; }).abreviatura :
                        'Indefinido';
 
-           let asegurado = lodash.some(asegurados, (x) => { return x._id === item.asegurado; }) ?
+           const asegurado = lodash.some(asegurados, (x) => { return x._id === item.asegurado; }) ?
                            lodash.find(asegurados, (x) => { return x._id === item.asegurado; }) :
                            null;
 
-           let tipo = lodash.some(tiposFacultativo, (x) => { return x._id === item.tipo; }) ?
+           const tipo = lodash.some(tiposFacultativo, (x) => { return x._id === item.tipo; }) ?
                       lodash.find(tiposFacultativo, (x) => { return x._id === item.tipo; }).abreviatura :
                       'Indefinido';
 
-            let riesgo = {};
+            const riesgo = {};
 
             riesgo._id = new Mongo.ObjectID()._str;
             riesgo.user = Meteor.userId();
@@ -231,11 +234,11 @@ Meteor.methods(
         if (filtro2.registroCumulos && filtro2.registroCumulos != "todos") { 
 
             // para cada riesgo, leemos a ver si tiene o un cúmulo registrado 
-            let array = Temp_Consulta_Riesgos.find({ user: Meteor.userId() }).fetch(); 
+            const array = Temp_Consulta_Riesgos.find({ user: Meteor.userId() }).fetch(); 
 
             array.forEach((itemConsulta) => { 
 
-                let existe = Cumulos_Registro.findOne({ 'source.entityID': itemConsulta.id }); 
+                const existe = Cumulos_Registro.findOne({ 'source.entityID': itemConsulta.id }); 
 
                 switch (filtro2.registroCumulos) { 
                     case "con": { 

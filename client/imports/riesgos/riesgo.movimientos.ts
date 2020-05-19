@@ -8,7 +8,7 @@ import { DialogModal } from 'client/imports/generales/angularGenericModal';
 import { determinarSiExistenCuotasConCobrosAplicados } from 'client/imports/generales/determinarSiExistenCuotasCobradas'; 
 
 // controller (modal) para prorratear las primas brutas 
-import './prorratearPrimasModal.html'; 
+// import './prorratearPrimasModal.html'; 
 import ProrratearPrimasBrutas from './prorratearPrimasBrutasController'; 
 
 import ConstruirCuotas from './construirCuotasController'; 
@@ -1424,7 +1424,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
         }
 
         var modalInstance = $modal.open({
-            templateUrl: 'client/imports/riesgos/prorratearPrimasModal.html',
+            templateUrl: 'client/html/riesgos/prorratearPrimasModal.html',
             controller: 'Riesgos_ProrratearPrimasController',
             size: 'lg',
             resolve: {

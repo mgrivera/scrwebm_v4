@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import * as lodash from 'lodash'; 
 
 import { Cumulos_Registro } from 'imports/collections/principales/cumulos_registro';  

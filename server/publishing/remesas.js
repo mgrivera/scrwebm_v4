@@ -1,5 +1,5 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor'; 
 
 import lodash from 'lodash'; 
 import moment from 'moment'; 
@@ -9,7 +9,7 @@ Meteor.publish("remesas", function (filtro) {
 
     // TODO: nótese lo que vamos a intentar aquí: pasar el object como un string; la idea es poder pasar las propiedades de 'sub
     // collections' como 'a.b: 100', en vez de object.a.b: 100, pues no es fácil en mongo hacer un find usando propiedades ...
-    var filtro = JSON.parse(filtro);
+    filtro = JSON.parse(filtro);
     var selector = {};
 
     // número

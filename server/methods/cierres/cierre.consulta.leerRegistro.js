@@ -1,17 +1,17 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import SimpleSchema from 'simpl-schema';
-import * as moment from 'moment'; 
-import * as numeral from 'numeral'; 
-import * as lodash from 'lodash'; 
+import moment from 'moment'; 
+import numeral from 'numeral'; 
+import lodash from 'lodash'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import { CierreRegistro } from 'imports/collections/cierre/registroCierre'; 
-import { Temp_consulta_cierreRegistro } from 'imports/collections/consultas/temp_consulta_cierreRegistro'; 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias';
-import { Contratos, ContratosProp_cuentas_saldos } from 'imports/collections/principales/contratos'; 
+import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
+import { Temp_consulta_cierreRegistro } from '/imports/collections/consultas/temp_consulta_cierreRegistro'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
+import { Contratos, ContratosProp_cuentas_saldos } from '/imports/collections/principales/contratos'; 
 
 Meteor.methods({
 
@@ -42,13 +42,13 @@ Meteor.methods({
         let reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 2;
+        const numberOfProcess = 2;
         let currentProcess = 1;
         let message = `leyendo el registro ... `
 
         // nótese que 'eventName' y 'eventSelector' no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "cierre_consulta_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_consulta' };
+        const eventName = "cierre_consulta_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_consulta' };
         let eventData = {
                           current: currentProcess, 
                           max: numberOfProcess, 
@@ -60,9 +60,9 @@ Meteor.methods({
         Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-        let monedas = Monedas.find({}, { fields: { descripcion: 1, simbolo: 1, }}).fetch(); 
-        let companias = Companias.find({}, { fields: { nombre: 1, abreviatura: 1, }}).fetch(); 
-        let empresaSeleccionada = EmpresasUsuarias.findOne(ciaSeleccionada, { nombre: 1, abreviatura: 1, }); 
+        const monedas = Monedas.find({}, { fields: { descripcion: 1, simbolo: 1, }}).fetch(); 
+        const companias = Companias.find({}, { fields: { nombre: 1, abreviatura: 1, }}).fetch(); 
+        const empresaSeleccionada = EmpresasUsuarias.findOne(ciaSeleccionada, { nombre: 1, abreviatura: 1, }); 
 
         if (!empresaSeleccionada) { 
             throw new Meteor.Error('error-base-datos', `Error inesperado: no hemos podido leer 
@@ -107,7 +107,7 @@ Meteor.methods({
                     let saldoAntesCorretaje = item.monto; 
                     let corretaje = 0; 
 
-                    let cuentaTecnica_saldo = ContratosProp_cuentas_saldos.findOne(saldoCuentaTecnica_id, { fields: 
+                    const cuentaTecnica_saldo = ContratosProp_cuentas_saldos.findOne(saldoCuentaTecnica_id, { fields: 
                                                                                                             { 
                                                                                                                 contratoID: true, 
                                                                                                                 definicionID: true, 
@@ -121,7 +121,7 @@ Meteor.methods({
                         corretaje = cuentaTecnica_saldo.corretaje; 
                     }
 
-                    let tempItem = {
+                    const tempItem = {
                         _id: new Mongo.ObjectID()._str,
                         
                         // este valor nos permitirá ordenar la consulta, para mostrar primero el saldo inicial y luego los registros 
@@ -176,19 +176,19 @@ Meteor.methods({
 
                         // leemos la definción de cuenta técnica para obtener el período de la cuenta y contruir la descripción 
                         // para este registro ... 
-                        let contrato = Contratos.findOne(cuentaTecnica_saldo.contratoID, { fields: { cuentasTecnicas_definicion: true, }}); 
+                        const contrato = Contratos.findOne(cuentaTecnica_saldo.contratoID, { fields: { cuentasTecnicas_definicion: true, }}); 
 
                         let descripcionCorretaje = "Corretaje (contrato indefinido ???)"; 
 
                         if (contrato && contrato.cuentasTecnicas_definicion) { 
-                            let definicionCuentaTecnica = contrato.cuentasTecnicas_definicion.find(x => x._id === cuentaTecnica_saldo.definicionID); 
+                            const definicionCuentaTecnica = contrato.cuentasTecnicas_definicion.find(x => x._id === cuentaTecnica_saldo.definicionID); 
 
                             if (definicionCuentaTecnica) { 
                                 descripcionCorretaje = `Corretaje para el período ${moment(definicionCuentaTecnica.desde).format("DD-MMM-YYYY")} a ${moment(definicionCuentaTecnica.hasta).format("DD-MMM-YYYY")}`; 
                             }
                         }
 
-                        let tempItem = {
+                        const tempItem = {
                             _id: new Mongo.ObjectID()._str,
                             
                             // este valor nos permitirá ordenar la consulta, para mostrar primero el saldo inicial y luego los registros 
@@ -241,7 +241,7 @@ Meteor.methods({
 
             } else { 
 
-                let tempItem = {
+                const tempItem = {
                     _id: new Mongo.ObjectID()._str,
                     
                     // este valor nos permitirá ordenar la consulta, para mostrar primero el saldo inicial y luego los registros 
@@ -317,15 +317,15 @@ Meteor.methods({
                                 };
                     Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
         })
 
         // ahora leemos los registros agregados pero agrupamos por moneda-compania; la idea es agregar un registro con el  
         // saldo inicial para cada uno de estos grupos. Para calcular el saldo inicial, debemos leer los registros de 
         // cierre anteriores a la fecha inicial del período y obtener la suma de sus montos ... 
-        let registroConsulta = Temp_consulta_cierreRegistro.find({ user: Meteor.userId() }).fetch(); 
+        const registroConsulta = Temp_consulta_cierreRegistro.find({ user: Meteor.userId() }).fetch(); 
 
         // NOTA IMPORTANTE: si el usuario quiere las cuenta corrientes, debemos agregar la referencia a la agrupación que sigue. 
         // La referencia contiene siempre el *código* del contrato en registros de proporcionales. La idea es, en consulta de 
@@ -357,7 +357,7 @@ Meteor.methods({
 
         for (const key in registro_groupBy_moneda_compania) { 
             // obtenemos el 1er. registro del grupo, para obtener valores comunes, como: moneda, compania, cia, ... 
-            let primerItemGrupo = registro_groupBy_moneda_compania[key][0]; 
+            const primerItemGrupo = registro_groupBy_moneda_compania[key][0]; 
 
             // usamos mongo aggregation para obtener el sum para el saldo inicial ... 
             // al igual que la agrupación, los saldos iniciales incluyen la referencia (contrato) para 
@@ -395,10 +395,10 @@ Meteor.methods({
                  ); 
             }
             
-             let saldoInicialPeriodo = (sumOfMontoArray && Array.isArray(sumOfMontoArray) && sumOfMontoArray.length) ? sumOfMontoArray[0].sumOfMonto : 0; 
+             const saldoInicialPeriodo = (sumOfMontoArray && Array.isArray(sumOfMontoArray) && sumOfMontoArray.length) ? sumOfMontoArray[0].sumOfMonto : 0; 
 
             // Ok, ahora agregamos el registro para el saldo inicial ... 
-            let tempItem = {
+            const tempItem = {
                 _id: new Mongo.ObjectID()._str,
                 
                 // para ordenar la consulta y poder mostrar siempre el saldo inicial al principio, para cada mooneda-compañía 
@@ -465,7 +465,7 @@ Meteor.methods({
                                 };
                     Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
-                };
+                }
             }
             // -------------------------------------------------------------------------------------------------------
         }

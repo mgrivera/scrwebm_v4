@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 import { CollectionFS_templates } from '/server/imports/collectionFS/Files_CollectionFS_templates'; 
@@ -7,18 +7,18 @@ import { CollectionFS_logos } from '/server/imports/collectionFS/Files_Collectio
 
 Meteor.publish('collectionFS_files', function(tipoArchivo) {
     // regresamos registros solo para la cia seleccionada ...
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
     if (!companiaSeleccionada) {
         return [];
     }
 
-    let filtro = {
+    const filtro = {
         'metadata.cia': companiaSeleccionada.companiaID,
     };
 
     if (tipoArchivo) {
-        let search = new RegExp(tipoArchivo, 'i');
+        const search = new RegExp(tipoArchivo, 'i');
         filtro['metadata.tipo'] = search;
     }
 
@@ -26,4 +26,4 @@ Meteor.publish('collectionFS_files', function(tipoArchivo) {
         CollectionFS_logos.find(filtro),
         CollectionFS_templates.find(filtro),
     ];
-  });
+  })

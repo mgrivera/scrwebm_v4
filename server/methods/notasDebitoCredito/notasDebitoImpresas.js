@@ -1,5 +1,6 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
 import moment from 'moment';
 import numeral from 'numeral';
 import lodash from 'lodash';
@@ -20,7 +21,6 @@ import { Riesgos } from '/imports/collections/principales/riesgos';
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
-import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { NotasDebitoCredito } from '/imports/collections/principales/notasDebitoCredito'; 
 import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
@@ -65,7 +65,7 @@ Meteor.methods(
             }
         } 
 
-        let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+        const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
         if (!companiaSeleccionada) {
             message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
@@ -79,7 +79,7 @@ Meteor.methods(
         }
 
         // antes que nada, leemos el riesgo
-        let riesgo = Riesgos.findOne(riesgoID);
+        const riesgo = Riesgos.findOne(riesgoID);
 
         if (!riesgo) {
             message = `Error inesperado: no pudimos leer el riesgo en la base de datos.`; 
@@ -91,7 +91,7 @@ Meteor.methods(
             }
         }
 
-        let movimiento = riesgo.movimientos.find((x: any) => x._id === movimientoID);
+        const movimiento = riesgo.movimientos.find(x => x._id === movimientoID);
 
         if (!movimiento) {
             message = `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`; 
@@ -103,27 +103,12 @@ Meteor.methods(
             }
         }
 
-        // leemos la póliza en el array de documentos del riesgo
-        let poliza = "";
-        if (riesgo.documentos && Array.isArray(riesgo.documentos) && riesgo.documentos.length) {
-            let polizaItem = lodash.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
-            if (polizaItem) {
-                poliza = polizaItem.numero;
-            }
-        }
-
         // leemos la cesion y el recibo en el array de documentos del movimiento
         let cesion = "";
-        let recibo = "";
         if (movimiento.documentos && Array.isArray(movimiento.documentos) && movimiento.documentos.length) {
-            let cesionItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
+            const cesionItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'CES'; });
             if (cesionItem) {
                 cesion = cesionItem.numero;
-            }
-
-            let reciboItem = lodash.find(movimiento.documentos, (x) => { return x.tipo === 'REC'; });
-            if (reciboItem) {
-                recibo = reciboItem.numero;
             }
         }
 
@@ -140,19 +125,18 @@ Meteor.methods(
         }
 
         // leemos las notas de débito que puedan existir para el riesgo y movimiento indicados 
-        let notasDebito = NotasDebitoCredito.find({ 
+        const notasDebito = NotasDebitoCredito.find({ 
             'source.entityID': riesgo._id, 'source.subEntityID': movimiento._id }, { sort: { fecha: 1, }
         }).fetch(); 
 
-        let notasDebitoWord = []; 
+        const notasDebitoWord = []; 
 
         for (const nd of notasDebito) { 
 
-            let compania = Companias.findOne(nd.compania);
-            let moneda = Monedas.findOne(nd.moneda);
-            let cuotas = Cuotas.find(nd.cuota).fetch();      // tal vez en el futuro podrán haber más de una cuota para una nota de débito 
-            let tipoNegocio = TiposFacultativo.findOne(nd.tipoNegocio); 
-            let cuentaBancaria = CuentasBancarias.findOne(nd.cuentaBancaria); 
+            const compania = Companias.findOne(nd.compania);
+            const moneda = Monedas.findOne(nd.moneda);
+            const tipoNegocio = TiposFacultativo.findOne(nd.tipoNegocio); 
+            const cuentaBancaria = CuentasBancarias.findOne(nd.cuentaBancaria); 
 
             let cuentaBancariaBanco; 
             let cuentaBancariaMoneda; 
@@ -163,7 +147,7 @@ Meteor.methods(
             }
 
 
-            let notaDebito = {
+            const notaDebito = {
                 año: nd.ano, 
                 numero: nd.numero, 
                 fecha: moment(nd.fecha).format('DD-MMM-YYYY'),
@@ -189,7 +173,7 @@ Meteor.methods(
             }; 
 
             // tal vez en el futuro, una nd pueda tener más de una cuota de cobro. No por ahora ... 
-            let cuota = {
+            const cuota = {
                 fechaCuota: moment(nd.fechaCuota).format('DD-MMM-YYYY'),
                 fechaVencimientoCuota: moment(nd.fechaVencimientoCuota).format('DD-MMM-YYYY'),
                 monedaCuota: moneda.simbolo, 
@@ -254,8 +238,8 @@ Meteor.methods(
             }
         } 
         
-        let zip = new JSZip(content);
-        let doc = new Docxtemplater();
+        const zip = new JSZip(content);
+        const doc = new Docxtemplater();
         doc.loadZip(zip);
 
         //set the templateVariables
@@ -281,22 +265,22 @@ Meteor.methods(
                 `);
         }
 
-        let buf = doc.getZip().generate({ type:"nodebuffer" });
+        const buf = doc.getZip().generate({ type:"nodebuffer" });
 
         // -----------------------------------------------------------------------------------------------
-        let nombreUsuario = usuario.personales.nombre;
+        const nombreUsuario = usuario.personales.nombre;
 
         let nombreUsuario2 = nombreUsuario.replace(/\./g, "_");           // nombre del usuario: reemplazamos un posible '.' por un '_' 
         nombreUsuario2 = nombreUsuario2.replace(/\@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
         
         // construimos un id único para el archivo, para que el usuario pueda tener más de un resultado para la misma 
         // plantilla. La fecha está en Dropbox ... 
-        let fileId = new Mongo.ObjectID()._str.substring(0, 6); 
+        const fileId = new Mongo.ObjectID()._str.substring(0, 6); 
 
-        let fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
+        const fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
 
         // finalmente, escribimos el archivo resultado, al directorio tmp 
-        filePath2 = path.join(folderPath, "tmp", fileName2); 
+        let filePath2 = path.join(folderPath, "tmp", fileName2); 
 
         // en windows, path regresa back en vez de forward slashes ... 
         filePath2 = filePath2.replace(/\\/g,"/");

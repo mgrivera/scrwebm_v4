@@ -13,7 +13,7 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import "./opcionesObtenerAsiento_Modal.html"; 
+// import "./opcionesObtenerAsiento_Modal.html"; 
 import RemesaCuadreAsientoObtenerOpciones from "./opcionesObtenerAsiento_Modal_Controller"; 
 
 export default angular.module("scrwebm.remesas.remesa.cuadre.asientoContable", [ RemesaCuadreAsientoObtenerOpciones.name ])
@@ -48,7 +48,7 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
 
     $scope.obtenerAsientoContable = () => {
         $modal.open({
-            templateUrl: 'client/imports/remesas/asientoContable/opcionesObtenerAsiento_Modal.html',
+            templateUrl: 'client/html/remesas/asientoContable/opcionesObtenerAsiento_Modal.html',
             controller: 'RemesaCuadreAsientoContable_Opciones_Modal_Controller',
             size: 'md',
             resolve: {

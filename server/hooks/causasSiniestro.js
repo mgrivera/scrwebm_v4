@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
@@ -6,7 +7,7 @@ import { Siniestros } from '/imports/collections/principales/siniestros';
 CausasSiniestro.before.remove(function (userId, doc) {
     // ---------------------------------------------------------------------------------------------------------------------
     // siniestros
-    let siniestro = Siniestros.findOne({
+    const siniestro = Siniestros.findOne({
         $or: [
             { causa: doc._id },
         ]

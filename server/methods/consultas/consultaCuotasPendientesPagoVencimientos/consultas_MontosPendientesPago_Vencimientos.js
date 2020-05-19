@@ -1,4 +1,9 @@
 
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
+import { Match } from 'meteor/check'
+
 import moment from 'moment';
 import lodash from 'lodash';
 import numeral from 'numeral';
@@ -62,44 +67,36 @@ Meteor.methods(
         }
 
         if (filtro.moneda && lodash.isArray(filtro.moneda) && filtro.moneda.length > 0) {
-            var array = lodash.clone(filtro.moneda);
+            const array = lodash.clone(filtro.moneda);
             matchCriteria.moneda = { $in: array };
         }
 
-        // usamos aggregation para leer las cuotas pendientes (de pago) y agregarlas a consulta_montosPendientes
-
         // cuotas (por pagar; negativa) para la cia seleccionada y que no tengan pagos o que tengan
         // pagos pero ninguno 'completo'; nótese que la fecha en el filtro viene, desde el cliente, como Date ...
-        let pipeline = [
-          {
-              $match: matchCriteria
-          }
-        ];
-
-
+        
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
         let numberOfItems = 0;
         let reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 4;
+        const numberOfProcess = 4;
         let currentProcess = 1;
         let message = `leyendo las cuotas pendientes de pago ... `;
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "montosPendientesPago_vencimientos_consulta_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesPago_vencimientos_consulta' };
+        const eventName = "montosPendientesPago_vencimientos_consulta_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesPago_vencimientos_consulta' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: message,
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-        let result = Cuotas.aggregate(pipeline);
+        let result = Cuotas.find(matchCriteria).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -111,12 +108,12 @@ Meteor.methods(
         message = `asignando nombres desde catálogos ... `;
 
         eventData = {
-                          current: currentProcess, max: numberOfProcess, progress: '0 %',
-                          message: message,
-                        };
+                        current: currentProcess, max: numberOfProcess, progress: '0 %',
+                        message: message,
+                    };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
         // leemos y recorremos los items seleccionados arriba, para asignar nombres de catálogos (asegurado, suscritor, ...)
         result.forEach(cuota => {
@@ -127,7 +124,7 @@ Meteor.methods(
             switch (cuota.source.origen) {
 
                 case 'fac': {
-                    let riesgo = Riesgos.findOne(cuota.source.entityID, { suscriptor: 1, asegurado: 1, });
+                    const riesgo = Riesgos.findOne(cuota.source.entityID, { suscriptor: 1, asegurado: 1, });
 
                     if (riesgo) {
                         cuota.suscriptor = riesgo.suscriptor ? riesgo.suscriptor : null;
@@ -138,7 +135,7 @@ Meteor.methods(
                 }
 
                 case 'sinFac': {
-                    let siniestro = Siniestros.findOne(cuota.source.entityID, { suscriptor: 1, asegurado: 1, });
+                    const siniestro = Siniestros.findOne(cuota.source.entityID, { suscriptor: 1, asegurado: 1, });
 
                     if (siniestro) {
                         cuota.suscriptor = siniestro.suscriptor ? siniestro.suscriptor : null;
@@ -150,7 +147,7 @@ Meteor.methods(
 
                 case 'capa':
                 case 'cuenta': {
-                    let contrato = Contratos.findOne(cuota.source.entityID, { suscriptor: 1, referencia: 1, });
+                    const contrato = Contratos.findOne(cuota.source.entityID, { suscriptor: 1, referencia: 1, });
 
                     if (contrato) {
                         cuota.suscriptor = contrato.suscriptor ? contrato.suscriptor : null;
@@ -171,7 +168,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -181,7 +178,7 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }
@@ -203,11 +200,8 @@ Meteor.methods(
                         };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
-
-
-
         // si el usuario indica filtros para: suscriptor, los aplicamos ahora (con lodash)
         // (pues el suscriptor no está en la cuota; lo leemos en el riesgo, siniestro, etc.)
 
@@ -233,7 +227,7 @@ Meteor.methods(
                         };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
         let cantidadRegistrosAgregados = 0;
 
@@ -249,7 +243,7 @@ Meteor.methods(
             suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura : 1 }});
             asegurado = Asegurados.findOne(cuota.asegurado, { fields: { abreviatura : 1 }});
 
-            let cuotaPendiente = {
+            const cuotaPendiente = {
                 _id: new Mongo.ObjectID()._str,
                 moneda: cuota.moneda,
                 monedaDescripcion: moneda ? moneda.descripcion : "Indef",
@@ -312,7 +306,7 @@ Meteor.methods(
             },
             { fields: { pagos: 1 }} ).
             forEach((cuotaPago) => {
-                let montoYaCobrado = lodash.sumBy(cuotaPago.pagos, 'monto');
+                const montoYaCobrado = lodash.sumBy(cuotaPago.pagos, 'monto');
                 cuotaPendiente.montoYaCobrado = montoYaCobrado ? montoYaCobrado : 0;
             });
 
@@ -332,7 +326,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: `leyendo las cuotas pendientes de pago ... `
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -342,7 +336,7 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }
@@ -360,4 +354,4 @@ Meteor.methods(
         return "Ok, el proceso se ha ejecutado en forma satisfactoria.<br /><br />" +
                "En total, " + cantidadRegistrosAgregados.toString() + " registros han sido seleccionados y conforman esta consulta.";
     }
-});
+})

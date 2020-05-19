@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo'; 
 
 import * as lodash from 'lodash'; 
 
@@ -17,29 +19,29 @@ Meteor.methods(
             divisor = divisor * 10;
         }
 
-        let cuotas = Cuotas.find({ cia: companiaSeleccionada._id, moneda: monedaDefault._id }).fetch(); 
+        const cuotas = Cuotas.find({ cia: companiaSeleccionada._id, moneda: monedaDefault._id }).fetch(); 
 
         let cantidadCuotasActualizadas = 0; 
         let cantidadPagosActualizados = 0; 
         let cantidadCuotasPendientes = 0; 
         let cantidadCuotasConPagosAsociados = 0; 
 
-        for (let cuota of cuotas) { 
+        for (const cuota of cuotas) { 
 
             // actualizamos los montos de la cuota (original y monto) 
-            let montoOriginal2 = lodash.round(cuota.montoOriginal / divisor, 2); 
-            let monto2 = lodash.round(cuota.monto / divisor, 2); 
+            const montoOriginal2 = lodash.round(cuota.montoOriginal / divisor, 2); 
+            const monto2 = lodash.round(cuota.monto / divisor, 2); 
 
             Cuotas.update({ _id: cuota._id, }, { $set: { montoOriginal: montoOriginal2, monto: monto2, }}); 
 
             if (cuota.pagos && Array.isArray(cuota.pagos) && cuota.pagos.length) { 
 
-                for (let pago of cuota.pagos) { 
+                for (const pago of cuota.pagos) { 
 
                     if (pago.moneda === monedaDefault._id) { 
 
                         // actualizamos el monto del pago ... 
-                        let monto2 = lodash.round(pago.monto / divisor, 2); 
+                        const monto2 = lodash.round(pago.monto / divisor, 2); 
 
                         Cuotas.update({ _id: cuota._id, "pagos._id": pago._id }, { $set: { "pagos.$.monto": monto2, }}); 
 
@@ -94,15 +96,15 @@ Meteor.methods(
 
         // nótese como, deliveradamente, solo seleccionamos remesas anteriores al 22Ago2019 
         const fechaHasta = new Date(2018, 8, 22); 
-        let remesas = Remesas.find({ cia: companiaSeleccionada._id, moneda: monedaDefault._id, fecha: { $lt: fechaHasta }, 'instrumentoPago.monto': { $exists: true }}).fetch(); 
+        const remesas = Remesas.find({ cia: companiaSeleccionada._id, moneda: monedaDefault._id, fecha: { $lt: fechaHasta }, 'instrumentoPago.monto': { $exists: true }}).fetch(); 
 
         let cantidadRemesasActualizadas = 0; 
         let cantidadRemesasLeidas = 0; 
 
-        for (let remesa of remesas) { 
+        for (const remesa of remesas) { 
 
             // actualizamos los montos de la remesa
-            let monto2 = lodash.round(remesa.instrumentoPago.monto / divisor, 2); 
+            const monto2 = lodash.round(remesa.instrumentoPago.monto / divisor, 2); 
 
             Remesas.update({ _id: remesa._id, }, { $set: { 'instrumentoPago.monto': monto2 }}); 
 

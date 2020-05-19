@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
 import { Riesgos } from '/imports/collections/principales/riesgos';   
@@ -6,7 +7,7 @@ import { Riesgos } from '/imports/collections/principales/riesgos';
 Indoles.before.remove(function (userId, doc) {
     // -------------------------------------------------------------------
     // riesgos
-    let riesgo = Riesgos.findOne({
+    const riesgo = Riesgos.findOne({
         $or: [
             { 'indole': doc._id },
         ]

@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+
 import SimpleSchema from 'simpl-schema';
 import { Temp_Consulta_Riesgos } from '/imports/collections/consultas/tempConsultaRiesgos'; 
 
@@ -18,4 +20,4 @@ Meteor.publish("temp.consulta.riesgos.list", function (cantRecords) {
         { user: this.userId },
         options
     );
-});
+})

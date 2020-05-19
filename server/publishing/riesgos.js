@@ -1,11 +1,12 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor';
+import moment from 'moment'; 
 
 import { Riesgos } from '/imports/collections/principales/riesgos'; 
 
 Meteor.publish("riesgos", function (filtro) {
 
-    var filtro = JSON.parse(filtro);
+    filtro = JSON.parse(filtro);
     var selector = {};
 
     if (filtro._id)
@@ -38,49 +39,49 @@ Meteor.publish("riesgos", function (filtro) {
 
 
     if (filtro.compania && filtro.compania.length) {
-        var array = _.clone(filtro.compania);
+        var array = lodash.clone(filtro.compania);
         selector.compania = { $in: array };
     }
 
     if (filtro.estado && filtro.estado.length) {
-        var array = _.clone(filtro.estado);
+        const array = lodash.clone(filtro.estado);
         selector.estado = { $in: array };
     }
 
     if (filtro.moneda && filtro.moneda.length) {
-        var array = _.clone(filtro.moneda);
+        const array = lodash.clone(filtro.moneda);
         selector.moneda = { $in: array };
     }
 
     if (filtro.indole && filtro.indole.length) {
-        var array = _.clone(filtro.indole);
+        const array = lodash.clone(filtro.indole);
         selector.indole = { $in: array };
     }
 
     if (filtro.ramo && filtro.ramo.length) {
-        var array = _.clone(filtro.ramo);
+        const array = lodash.clone(filtro.ramo);
         selector.ramo = { $in: array };
     }
 
     if (filtro.asegurado && filtro.asegurado.length) {
-        var array = _.clone(filtro.asegurado);
+        const array = lodash.clone(filtro.asegurado);
         selector.asegurado = { $in: array };
-    };
+    }
 
     if (filtro.corredor && filtro.corredor.length) {
-        var array = _.clone(filtro.corredor);
+        const array = lodash.clone(filtro.corredor);
         selector.corredor = { $in: array };
-    };
+    }
 
     if (filtro.suscriptor && filtro.suscriptor.length) {
-        var array = _.clone(filtro.suscriptor);
+        const array = lodash.clone(filtro.suscriptor);
         selector.suscriptor = { $in: array };
-    };
+    }
 
     if (filtro.comentarios) {
-        var search = new RegExp(filtro.comentarios, 'i');
+        const search = new RegExp(filtro.comentarios, 'i');
         selector.comentarios = search;
-    };
+    }
 
     if (filtro.cia)
         selector.cia = filtro.cia;
@@ -105,7 +106,7 @@ Meteor.publish("riesgos", function (filtro) {
 
         if (filtro.siniestrosNuevo.cia)
             selector.cia = filtro.siniestrosNuevo.cia;
-    };
+    }
 
     return Riesgos.find(selector);
 });

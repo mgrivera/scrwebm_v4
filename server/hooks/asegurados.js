@@ -1,11 +1,13 @@
 
+import { Meteor } from 'meteor/meteor'; 
+
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Riesgos } from '/imports/collections/principales/riesgos';  
 
 Asegurados.before.remove(function (userId, doc) {
     // ------------------------------------------------------------------------
     // riesgos
-    let riesgo = Riesgos.findOne({ $or: [ { 'asegurado': doc._id }, ] }, { fields: { numero: true } });
+    const riesgo = Riesgos.findOne({ $or: [ { 'asegurado': doc._id }, ] }, { fields: { numero: true } });
 
     if (riesgo) {
         throw new Meteor.Error("dataBaseError",

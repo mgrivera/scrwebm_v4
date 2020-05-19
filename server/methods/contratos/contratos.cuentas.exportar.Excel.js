@@ -1,7 +1,9 @@
 
+import { Meteor } from 'meteor/meteor'; 
+
 import moment from 'moment';
 import lodash from 'lodash';
-import JSZip from 'jszip';
+
 import XlsxInjector from 'xlsx-injector';
 import fs from 'fs';
 import path from 'path';
@@ -35,37 +37,37 @@ Meteor.methods(
         // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
         // nótese que la plantilla (doc excel) no es agregada por el usuario; debe existir siempre con el
         // mismo nombre ...
-        let templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
-        let temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
+        const templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
+        const temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
 
-        let templatePath = path.join(templates_DirPath, 'consultas', 'contratoCuentas.xlsx');
+        const templatePath = path.join(templates_DirPath, 'consultas', 'contratoCuentas.xlsx');
 
         // ----------------------------------------------------------------------------------------------------
         // nombre del archivo que contendrá los resultados ...
         let userID2 = Meteor.user().emails[0].address.replace(/\./g, "_");
         userID2 = userID2.replace(/\@/g, "_");
-        let outputFileName = 'contratoCuentas.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
-        let outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
+        const outputFileName = 'contratoCuentas.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
+        const outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
 
-        let companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
-        let monedas = Monedas.find({}, { fields: { _id: true, descripcion: true, simbolo: true, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: true, descripcion: true, simbolo: true, }}).fetch();
 
-        let contrato = Contratos.findOne(contratoID);
-        let definicionCuentaTecnicaSeleccionada = _.find(contrato.cuentasTecnicas_definicion, (x) => { return x._id === definicionCuentaTecnicaID; });
+        const contrato = Contratos.findOne(contratoID);
+        const definicionCuentaTecnicaSeleccionada = lodash.find(contrato.cuentasTecnicas_definicion, (x) => { return x._id === definicionCuentaTecnicaID; });
 
-        let infoDefinicionCuentaTecnicaSeleccionada =
-            `Cifras para la cuenta técnica ${definicionCuentaTecnicaSeleccionada.numero.toString()} - ${_.find(monedas, (x) => { return x._id === definicionCuentaTecnicaSeleccionada.moneda; }).descripcion} - ${moment(definicionCuentaTecnicaSeleccionada.fecha).format('DD-MMM-YYYY')}`;
+        const infoDefinicionCuentaTecnicaSeleccionada =
+            `Cifras para la cuenta técnica ${definicionCuentaTecnicaSeleccionada.numero.toString()} - ${lodash.find(monedas, (x) => { return x._id === definicionCuentaTecnicaSeleccionada.moneda; }).descripcion} - ${moment(definicionCuentaTecnicaSeleccionada.fecha).format('DD-MMM-YYYY')}`;
 
-        let cedente = Companias.findOne(contrato.compania);
-        let tipoContrato = TiposContrato.findOne(contrato.tipo);
-        let ramo = Ramos.findOne(contrato.ramo);
+        const cedente = Companias.findOne(contrato.compania);
+        const tipoContrato = TiposContrato.findOne(contrato.tipo);
+        const ramo = Ramos.findOne(contrato.ramo);
 
-        let definicionesArray = [];
+        const definicionesArray = [];
         let definicion = {};
 
         contrato.cuentasTecnicas_definicion.forEach((def) => {
 
-            let moneda = monedas.find((x) => { return x._id === def.moneda; });
+            const moneda = monedas.find((x) => { return x._id === def.moneda; });
 
             definicion = {
                 numero: def.numero,
@@ -84,29 +86,29 @@ Meteor.methods(
         // leemos el contenido de las tablas de cuentas técnicas: resumen, distribución y saldos, y los ponemos en 
         // arrays, para tener estos registros disponibles en lo sucesivo. Nótese como filtramos usando el id de la 
         // definición seleccionada 
-        let cuentas_resumen = ContratosProp_cuentas_resumen.find({ contratoID: contratoID, definicionID: definicionCuentaTecnicaID }).fetch(); 
-        let cuentas_distribucion = ContratosProp_cuentas_distribucion.find({ contratoID: contratoID, definicionID: definicionCuentaTecnicaID }).fetch(); 
-        let cuentas_saldos = ContratosProp_cuentas_saldos.find({ contratoID: contratoID, definicionID: definicionCuentaTecnicaID }).fetch(); 
+        const cuentas_resumen = ContratosProp_cuentas_resumen.find({ contratoID: contratoID, definicionID: definicionCuentaTecnicaID }).fetch(); 
+        const cuentas_distribucion = ContratosProp_cuentas_distribucion.find({ contratoID: contratoID, definicionID: definicionCuentaTecnicaID }).fetch(); 
+        const cuentas_saldos = ContratosProp_cuentas_saldos.find({ contratoID: contratoID, definicionID: definicionCuentaTecnicaID }).fetch(); 
 
         // ------------------------------------------------------------------------------------------------------
         // resumen de primas y siniestros
-        let resumenPrimasSiniestrosArray = [];
+        const resumenPrimasSiniestrosArray = [];
         let resumenPrimasSiniestros = {};
 
-        let ramos = Ramos.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
-        let tiposContrato = TiposContrato.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const ramos = Ramos.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const tiposContrato = TiposContrato.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
 
-        let resumenPrSin_GroupByMoneda = lodash.groupBy(cuentas_resumen, 'moneda');
+        const resumenPrSin_GroupByMoneda = lodash.groupBy(cuentas_resumen, 'moneda');
 
-        for (let monedaKey in resumenPrSin_GroupByMoneda) {
+        for (const monedaKey in resumenPrSin_GroupByMoneda) {
 
-            let resumenPrSin_GroupByMoneda_array = resumenPrSin_GroupByMoneda[monedaKey];
+            const resumenPrSin_GroupByMoneda_array = resumenPrSin_GroupByMoneda[monedaKey];
 
             resumenPrSin_GroupByMoneda_array.forEach((resumen) => {
 
-                let moneda = monedas.find((x) => { return x._id === resumen.moneda; });
-                let ramo = ramos.find((x) => { return x._id === resumen.ramo; });
-                let tipoContrato = tiposContrato.find((x) => { return x._id === resumen.tipoContrato; });
+                const moneda = monedas.find((x) => { return x._id === resumen.moneda; });
+                const ramo = ramos.find((x) => { return x._id === resumen.ramo; });
+                const tipoContrato = tiposContrato.find((x) => { return x._id === resumen.tipoContrato; });
 
                 resumenPrimasSiniestros = {
                     moneda: moneda.simbolo ? moneda.simbolo : 'Indef',
@@ -124,9 +126,9 @@ Meteor.methods(
 
             // agregamos un total para la moneda
             // leemos la moneda del 1er. item en el array; todos tienen la misma maneda ...
-            let moneda = monedas.find((x) => { return x._id === resumenPrSin_GroupByMoneda_array[0].moneda; });
-            let sumOfPrimas_byMoneda = lodash.sumBy(resumenPrSin_GroupByMoneda_array, 'primas');
-            let sumOfSiniestros_byMoneda = lodash.sumBy(resumenPrSin_GroupByMoneda_array, 'siniestros');
+            const moneda = monedas.find((x) => { return x._id === resumenPrSin_GroupByMoneda_array[0].moneda; });
+            const sumOfPrimas_byMoneda = lodash.sumBy(resumenPrSin_GroupByMoneda_array, 'primas');
+            const sumOfSiniestros_byMoneda = lodash.sumBy(resumenPrSin_GroupByMoneda_array, 'siniestros');
 
             resumenPrimasSiniestros = {
                 moneda: moneda.simbolo ? moneda.simbolo : 'Indef',
@@ -143,32 +145,32 @@ Meteor.methods(
 
         // ------------------------------------------------------------------------------------------------------
         // mostramos la distribución de primas y siniestros en compañías ... agrupamos por moneda y compañía
-        let distribucionArray = [];
+        const distribucionArray = [];
         let distribucion = {};
 
-        let distribucion_groupByMoneda = lodash.groupBy(cuentas_distribucion, 'moneda');
+        const distribucion_groupByMoneda = lodash.groupBy(cuentas_distribucion, 'moneda');
 
-        for (let monedaKey in distribucion_groupByMoneda) {
+        for (const monedaKey in distribucion_groupByMoneda) {
 
             // ahora agrupamos por compañía
             distribucion_groupByMoneda_array = distribucion_groupByMoneda[monedaKey];
             let firstItemInArray = distribucion_groupByMoneda_array[0];
 
-            let moneda = monedas.find((x) => { return x._id === firstItemInArray.moneda; });
+            const moneda = monedas.find((x) => { return x._id === firstItemInArray.moneda; });
 
-            let distribucion_groupByMonComp = lodash.groupBy(distribucion_groupByMoneda_array, 'compania');
+            const distribucion_groupByMonComp = lodash.groupBy(distribucion_groupByMoneda_array, 'compania');
 
-            for (companiaKey in distribucion_groupByMonComp) {
+            for (const companiaKey in distribucion_groupByMonComp) {
 
-                distribucion_groupByMonComp_array = distribucion_groupByMonComp[companiaKey];
-                let firstItemInArray = distribucion_groupByMonComp_array[0];
+                const distribucion_groupByMonComp_array = distribucion_groupByMonComp[companiaKey];
+                const firstItemInArray = distribucion_groupByMonComp_array[0];
 
-                let compania = companias.find((x) => { return x._id === firstItemInArray.compania; });
+                const compania = companias.find((x) => { return x._id === firstItemInArray.compania; });
 
                 distribucion_groupByMonComp_array.forEach((dist) => {
 
-                    let ramo = ramos.find((x) => { return x._id === dist.ramo; });
-                    let tipoContrato = tiposContrato.find((x) => { return x._id === dist.tipoContrato; });
+                    const ramo = ramos.find((x) => { return x._id === dist.ramo; });
+                    const tipoContrato = tiposContrato.find((x) => { return x._id === dist.tipoContrato; });
 
                     distribucion = {
                         moneda: moneda.simbolo ? moneda.simbolo : 'Indef',
@@ -204,18 +206,18 @@ Meteor.methods(
                 })
 
                 // agregamos total para la compañía
-                let sumByMonCom_primas = lodash.sumBy(distribucion_groupByMonComp_array, 'prima');
-                let sumByMonCom_primaBruta = lodash.sumBy(distribucion_groupByMonComp_array, 'primaBruta');
-                let sumByMonCom_comision = lodash.sumBy(distribucion_groupByMonComp_array, 'comision');
-                let sumByMonCom_imp1 = lodash.sumBy(distribucion_groupByMonComp_array, 'imp1');
-                let sumByMonCom_imp2 = lodash.sumBy(distribucion_groupByMonComp_array, 'imp2');
-                let sumByMonCom_imp3 = lodash.sumBy(distribucion_groupByMonComp_array, 'imp3');
-                let sumByMonCom_primaNetaAntesCorretaje = lodash.sumBy(distribucion_groupByMonComp_array, 'primaNetaAntesCorretaje');
-                let sumByMonCom_corretaje = lodash.sumBy(distribucion_groupByMonComp_array, 'corretaje');
-                let sumByMonCom_primaNeta = lodash.sumBy(distribucion_groupByMonComp_array, 'primaNeta');
-                let sumByMonCom_siniestros = lodash.sumBy(distribucion_groupByMonComp_array, 'siniestros');
-                let sumByMonCom_siniestros_suParte = lodash.sumBy(distribucion_groupByMonComp_array, 'siniestros_suParte');
-                let sumByMonCom_saldo = lodash.sumBy(distribucion_groupByMonComp_array, 'saldo');
+                const sumByMonCom_primas = lodash.sumBy(distribucion_groupByMonComp_array, 'prima');
+                const sumByMonCom_primaBruta = lodash.sumBy(distribucion_groupByMonComp_array, 'primaBruta');
+                const sumByMonCom_comision = lodash.sumBy(distribucion_groupByMonComp_array, 'comision');
+                const sumByMonCom_imp1 = lodash.sumBy(distribucion_groupByMonComp_array, 'imp1');
+                const sumByMonCom_imp2 = lodash.sumBy(distribucion_groupByMonComp_array, 'imp2');
+                const sumByMonCom_imp3 = lodash.sumBy(distribucion_groupByMonComp_array, 'imp3');
+                const sumByMonCom_primaNetaAntesCorretaje = lodash.sumBy(distribucion_groupByMonComp_array, 'primaNetaAntesCorretaje');
+                const sumByMonCom_corretaje = lodash.sumBy(distribucion_groupByMonComp_array, 'corretaje');
+                const sumByMonCom_primaNeta = lodash.sumBy(distribucion_groupByMonComp_array, 'primaNeta');
+                const sumByMonCom_siniestros = lodash.sumBy(distribucion_groupByMonComp_array, 'siniestros');
+                const sumByMonCom_siniestros_suParte = lodash.sumBy(distribucion_groupByMonComp_array, 'siniestros_suParte');
+                const sumByMonCom_saldo = lodash.sumBy(distribucion_groupByMonComp_array, 'saldo');
 
                 distribucion = {
                     moneda: moneda.simbolo,
@@ -251,18 +253,18 @@ Meteor.methods(
 
 
             // agregamos total para la moneda
-            let sumByMon_primas = lodash.sumBy(distribucion_groupByMoneda_array, 'prima');
-            let sumByMon_primaBruta = lodash.sumBy(distribucion_groupByMoneda_array, 'primaBruta');
-            let sumByMon_comision = lodash.sumBy(distribucion_groupByMoneda_array, 'comision');
-            let sumByMon_imp1 = lodash.sumBy(distribucion_groupByMoneda_array, 'imp1');
-            let sumByMon_imp2 = lodash.sumBy(distribucion_groupByMoneda_array, 'imp2');
-            let sumByMon_imp3 = lodash.sumBy(distribucion_groupByMoneda_array, 'imp3');
-            let sumByMon_primaNetaAntesCorretaje = lodash.sumBy(distribucion_groupByMoneda_array, 'primaNetaAntesCorretaje');
-            let sumByMon_corretaje = lodash.sumBy(distribucion_groupByMoneda_array, 'corretaje');
-            let sumByMon_primaNeta = lodash.sumBy(distribucion_groupByMoneda_array, 'primaNeta');
-            let sumByMon_siniestros = lodash.sumBy(distribucion_groupByMoneda_array, 'siniestros');
-            let sumByMon_siniestros_suParte = lodash.sumBy(distribucion_groupByMoneda_array, 'siniestros_suParte');
-            let sumByMon_saldo = lodash.sumBy(distribucion_groupByMoneda_array, 'saldo');
+            const sumByMon_primas = lodash.sumBy(distribucion_groupByMoneda_array, 'prima');
+            const sumByMon_primaBruta = lodash.sumBy(distribucion_groupByMoneda_array, 'primaBruta');
+            const sumByMon_comision = lodash.sumBy(distribucion_groupByMoneda_array, 'comision');
+            const sumByMon_imp1 = lodash.sumBy(distribucion_groupByMoneda_array, 'imp1');
+            const sumByMon_imp2 = lodash.sumBy(distribucion_groupByMoneda_array, 'imp2');
+            const sumByMon_imp3 = lodash.sumBy(distribucion_groupByMoneda_array, 'imp3');
+            const sumByMon_primaNetaAntesCorretaje = lodash.sumBy(distribucion_groupByMoneda_array, 'primaNetaAntesCorretaje');
+            const sumByMon_corretaje = lodash.sumBy(distribucion_groupByMoneda_array, 'corretaje');
+            const sumByMon_primaNeta = lodash.sumBy(distribucion_groupByMoneda_array, 'primaNeta');
+            const sumByMon_siniestros = lodash.sumBy(distribucion_groupByMoneda_array, 'siniestros');
+            const sumByMon_siniestros_suParte = lodash.sumBy(distribucion_groupByMoneda_array, 'siniestros_suParte');
+            const sumByMon_saldo = lodash.sumBy(distribucion_groupByMoneda_array, 'saldo');
 
             distribucion = {
                 moneda: moneda.simbolo,
@@ -299,16 +301,16 @@ Meteor.methods(
 
         // ----------------------------------------------------------------------------------------------
         // saldos de compañías
-        let saldosArray = [];
+        const saldosArray = [];
         let saldo = {};
 
-        let saldos_GroupByMoneda = lodash.groupBy(cuentas_saldos, 'moneda');
+        const saldos_GroupByMoneda = lodash.groupBy(cuentas_saldos, 'moneda');
 
-        for (let monedaKey in saldos_GroupByMoneda) {
+        for (const monedaKey in saldos_GroupByMoneda) {
 
-            let saldos_GroupByMoneda_array = saldos_GroupByMoneda[monedaKey];
-            let firstMonedaItem = saldos_GroupByMoneda_array[0];
-            let moneda = monedas.find((x) => { return x._id === firstMonedaItem.moneda; });
+            const saldos_GroupByMoneda_array = saldos_GroupByMoneda[monedaKey];
+            const firstMonedaItem = saldos_GroupByMoneda_array[0];
+            const moneda = monedas.find((x) => { return x._id === firstMonedaItem.moneda; });
 
             saldos_GroupByMoneda_array.forEach((s) => {
                 saldo = {
@@ -335,18 +337,18 @@ Meteor.methods(
             })
 
             // agregamos un total para la moneda
-            let sumByMon_primas = lodash.sumBy(saldos_GroupByMoneda_array, 'prima');
-            let sumByMon_primaBruta = lodash.sumBy(saldos_GroupByMoneda_array, 'primaBruta');
-            let sumByMon_comision = lodash.sumBy(saldos_GroupByMoneda_array, 'comision');
-            let sumByMon_imp1 = lodash.sumBy(saldos_GroupByMoneda_array, 'imp1');
-            let sumByMon_imp2 = lodash.sumBy(saldos_GroupByMoneda_array, 'imp2');
-            let sumByMon_imp3 = lodash.sumBy(saldos_GroupByMoneda_array, 'imp3');
-            let sumByMon_primaNetaAntesCorretaje = lodash.sumBy(saldos_GroupByMoneda_array, 'primaNetaAntesCorretaje');
-            let sumByMon_corretaje = lodash.sumBy(saldos_GroupByMoneda_array, 'corretaje');
-            let sumByMon_primaNeta = lodash.sumBy(saldos_GroupByMoneda_array, 'primaNeta');
-            let sumByMon_siniestros = lodash.sumBy(saldos_GroupByMoneda_array, 'siniestros');
-            let sumByMon_siniestros_suParte = lodash.sumBy(saldos_GroupByMoneda_array, 'siniestros_suParte');
-            let sumByMon_saldo = lodash.sumBy(saldos_GroupByMoneda_array, 'saldo');
+            const sumByMon_primas = lodash.sumBy(saldos_GroupByMoneda_array, 'prima');
+            const sumByMon_primaBruta = lodash.sumBy(saldos_GroupByMoneda_array, 'primaBruta');
+            const sumByMon_comision = lodash.sumBy(saldos_GroupByMoneda_array, 'comision');
+            const sumByMon_imp1 = lodash.sumBy(saldos_GroupByMoneda_array, 'imp1');
+            const sumByMon_imp2 = lodash.sumBy(saldos_GroupByMoneda_array, 'imp2');
+            const sumByMon_imp3 = lodash.sumBy(saldos_GroupByMoneda_array, 'imp3');
+            const sumByMon_primaNetaAntesCorretaje = lodash.sumBy(saldos_GroupByMoneda_array, 'primaNetaAntesCorretaje');
+            const sumByMon_corretaje = lodash.sumBy(saldos_GroupByMoneda_array, 'corretaje');
+            const sumByMon_primaNeta = lodash.sumBy(saldos_GroupByMoneda_array, 'primaNeta');
+            const sumByMon_siniestros = lodash.sumBy(saldos_GroupByMoneda_array, 'siniestros');
+            const sumByMon_siniestros_suParte = lodash.sumBy(saldos_GroupByMoneda_array, 'siniestros_suParte');
+            const sumByMon_saldo = lodash.sumBy(saldos_GroupByMoneda_array, 'saldo');
 
             saldo = {
                 moneda: moneda.simbolo ? moneda.simbolo : 'Indef',
@@ -373,20 +375,20 @@ Meteor.methods(
 
         // ----------------------------------------------------------------------------------------------
         // cuotas - las cuotas están en un collection diferente
-        let cuotas = Cuotas.find({ 'source.entityID': contratoID,
+        const cuotas = Cuotas.find({ 'source.entityID': contratoID,
                                    'source.subEntityID': definicionCuentaTecnicaID
                          }).fetch();
 
-        let cuotasArray = [];
-        let cuota = {};
+        const cuotasArray = [];
+        const cuota = {};
 
         let cuotas_GroupByMoneda = lodash.groupBy(cuotas, 'moneda');
 
-        for (let monedaKey in cuotas_GroupByMoneda) {
+        for (const monedaKey in cuotas_GroupByMoneda) {
 
-            let cuotas_GroupByMoneda_items = cuotas_GroupByMoneda[monedaKey];
-            let firstMonedaItem = cuotas_GroupByMoneda_items[0];
-            let moneda = monedas.find((x) => { return x._id === firstMonedaItem.moneda; });
+            const cuotas_GroupByMoneda_items = cuotas_GroupByMoneda[monedaKey];
+            const firstMonedaItem = cuotas_GroupByMoneda_items[0];
+            const moneda = monedas.find((x) => { return x._id === firstMonedaItem.moneda; });
 
             cuotas_GroupByMoneda_items.forEach((c) => {
                 saldo = {
@@ -403,7 +405,7 @@ Meteor.methods(
             })
 
             // agregamos un total para la moneda
-            let sumByMon_monto = lodash.sumBy(cuotas_GroupByMoneda_items, 'monto');
+            const sumByMon_monto = lodash.sumBy(cuotas_GroupByMoneda_items, 'monto');
 
             saldo = {
                 moneda: moneda.simbolo ? moneda.simbolo : 'Indef',
@@ -420,7 +422,7 @@ Meteor.methods(
 
         // ----------------------------------------------------------------------------------
         // Object containing attributes that match the placeholder tokens in the template
-        let values = {
+        const values = {
             fechaHoy: moment(new Date()).format("DD-MMM-YYYY"),
             nombreCiaContabSeleccionada: ciaSeleccionada.nombre,
             cedente: cedente.abreviatura,
@@ -450,8 +452,8 @@ Meteor.methods(
 
 
         // Open a workbook
-        let workbook = new XlsxInjector(templatePath);
-        let sheetNumber = 1;
+        const workbook = new XlsxInjector(templatePath);
+        const sheetNumber = 1;
         workbook.substitute(sheetNumber, values);
         // Save the workbook
         workbook.writeFile(outputPath);
@@ -459,7 +461,7 @@ Meteor.methods(
 
         // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
         // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
-        let buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
+        const buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
 
         // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
         // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...
@@ -469,4 +471,4 @@ Meteor.methods(
         // en excel y no tiene un tipo definido ...
         return grabarDatosACollectionFS_regresarUrl(buf, outputFileName, 'no aplica', 'scrwebm', ciaSeleccionada, Meteor.user(), 'xlsx');
     }
-});
+})

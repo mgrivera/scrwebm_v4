@@ -1,5 +1,8 @@
 
+import { Meteor } from 'meteor/meteor'; 
 import SimpleSchema from 'simpl-schema';
+
+import { Temp_Consulta_Contratos } from '/imports/collections/consultas/tempConsultaContratos'; 
 
 Meteor.publish("temp.consulta.contratos.list", function (cantRecords) {
     // nótese como en estos casos de consultas, siempre regresamos, simplemente,
@@ -17,4 +20,4 @@ Meteor.publish("temp.consulta.contratos.list", function (cantRecords) {
         { user: this.userId },
         options
     );
-});
+})

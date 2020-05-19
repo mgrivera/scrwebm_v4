@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import * as angular from 'angular'; 
 
 import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
@@ -12,7 +12,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Controller", [
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = {};
 
     if (companiaSeleccionada) { 

@@ -1,4 +1,6 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
 
 import { Indoles } from '/imports/collections/catalogos/indoles'; 
 
@@ -6,25 +8,25 @@ Meteor.methods(
 {
     indolesSave: function (indoles) {
 
-        if (!_.isArray(indoles) || indoles.length == 0) {
+        if (!lodash.isArray(indoles) || indoles.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(indoles).
+        var inserts = lodash.chain(indoles).
                       filter(item => { return item.docState && item.docState == 1; }).
                       map(item => { delete item.docState; return item; }).
                       value();
 
 
         inserts.forEach(function (item) {
-            Indoles.insert(item, (error, result) => {
+            Indoles.insert(item, (error) => {
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
         });
 
 
-        var updates = _.chain(indoles).
+        var updates = lodash.chain(indoles).
                         filter(item =>  { return item.docState && item.docState == 2; }).
                         map(item =>  { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(item =>  { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -32,14 +34,14 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            Indoles.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            Indoles.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
         });
 
-        var removes = _.filter(indoles, item => { return item.docState && item.docState == 3; });
+        var removes = lodash.filter(indoles, item => { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             Indoles.remove({ _id: item._id });
@@ -47,4 +49,4 @@ Meteor.methods(
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

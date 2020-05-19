@@ -129,6 +129,13 @@ nav {
     padding: 10px;
 }
 
+.ui-viewBorder-left-aligned {
+    border-radius: 5px;
+    border: solid 1px lightgray;
+    text-align: left;
+    padding: 10px 40px 10px 40px;
+}
+
 .ui-viewBorder {
     border-radius: 5px;
     border: solid 1px lightgray;

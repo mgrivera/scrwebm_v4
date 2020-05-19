@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor';
 import { Consulta_Cumulos } from 'imports/collections/consultas/consulta_cumulos'; 
 
 Meteor.publish("consultas.cumulos", function () {

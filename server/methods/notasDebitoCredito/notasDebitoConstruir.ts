@@ -1,5 +1,6 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
 
 import { Riesgos } from 'imports/collections/principales/riesgos'; 
 import { Cuotas } from 'imports/collections/principales/cuotas'; 
@@ -13,7 +14,6 @@ Meteor.methods(
     'notasDebito_construir': function (entityID: string, subEntityID: string) {
 
         // NOTA: inicialmente, esta función tratará solo notas para riesgos; luego, para otras entidades: contratos, siniestros, ...
-
         let riesgo = Riesgos.findOne(entityID); 
 
         if (!riesgo) {

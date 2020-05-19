@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+
 import * as lodash from 'lodash'; 
 import * as moment from 'moment';
 

@@ -1,4 +1,9 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
+import { Match } from 'meteor/check'
+
 import lodash from 'lodash';
 import numeral from 'numeral';
 import { Riesgos } from '/imports/collections/principales/riesgos';  
@@ -26,19 +31,19 @@ Meteor.methods(
         // antes que nada, eliminamos del collection de la consulta, los registros de la consulta anterior
         Consulta_MontosPendientes.remove({ user: this.userId });
 
-        var matchCriteria = {
+        const matchCriteria = {
             cia: filtro.cia,
             $or: [{ pagos: { $exists: false }}, {'pagos.completo': { $ne: true }}],
             fecha: { $lte: filtro.fechaPendientesAl }
         }
 
-        if (filtro.compania) {
-            var array = lodash.clone(filtro.compania);
+        if (filtro.compania && Array.isArray(filtro.compania) && filtro.compania.length) {
+            const array = lodash.clone(filtro.compania);
             matchCriteria.compania = { $in: array };
         }
 
-        if (filtro.moneda) {
-            var array = lodash.clone(filtro.moneda);
+        if (filtro.moneda && Array.isArray(filtro.moneda) && filtro.moneda.length) {
+            const array = lodash.clone(filtro.moneda);
             matchCriteria.moneda = { $in: array };
         }
 
@@ -49,7 +54,7 @@ Meteor.methods(
         // el usuario puede agregar un filtro para el origen de las cuotas ...
         if (filtro.origen && !filtro.origen.todo) {
 
-            let arrayOrigen = [];
+            const arrayOrigen = [];
 
             if (filtro.origen.primasProporcional) {
                 arrayOrigen.push('cuenta');
@@ -70,39 +75,32 @@ Meteor.methods(
             matchCriteria['source.origen'] = { $in: arrayOrigen };
         }
 
-        // usamos aggregation para leer las cuotas pendientes y agregarlas a consulta_montosPendientes
-
         // cuotas para la cia seleccionada y que no tengan pagos o que tengan pagos pero ninguno 'completo'
         // nótese que la fecha en el filtro viene, desde el cliente, como Date ...
-        let pipeline = [
-          {
-              $match: matchCriteria
-          }
-        ];
-
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
         let numberOfItems = 1;
         let reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 3;
+        const numberOfProcess = 3;
         let currentProcess = 1;
         let message = `leyendo las cuotas pendientes ... `;
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "montosPendientesCobroYPago_consulta_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesCobroYPago' };
+        const eventName = "montosPendientesCobroYPago_consulta_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'montosPendientesCobroYPago' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: message
                         };
 
         // sync call
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        // Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        EventDDP.matchEmit(eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-        let result = Cuotas.aggregate(pipeline);
+        let result = Cuotas.find(matchCriteria).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -119,7 +117,8 @@ Meteor.methods(
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        // Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        EventDDP.matchEmit(eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         // leemos valores para asegurado, suscriptor y ramo
@@ -130,7 +129,7 @@ Meteor.methods(
 
                 case 'cuenta':
                 case 'capa': {
-                    let contrato = Contratos.findOne(cuota.source.entityID);
+                    const contrato = Contratos.findOne(cuota.source.entityID);
 
                     if (contrato) {
                         if (contrato.codigo) {
@@ -157,24 +156,24 @@ Meteor.methods(
                 }
 
                 case 'fac': {
-                    let riesgo = Riesgos.findOne(cuota.source.entityID);
+                    const riesgo = Riesgos.findOne(cuota.source.entityID);
 
                     if (riesgo) {
-                        if (riesgo.asegurado) { cuota.asegurado = riesgo.asegurado };
-                        if (riesgo.ramo) { cuota.ramo = riesgo.ramo };
-                        if (riesgo.suscriptor) { cuota.suscriptor = riesgo.suscriptor };
+                        if (riesgo.asegurado) { cuota.asegurado = riesgo.asegurado }
+                        if (riesgo.ramo) { cuota.ramo = riesgo.ramo }
+                        if (riesgo.suscriptor) { cuota.suscriptor = riesgo.suscriptor }
                     }
 
                     break;
                 }
 
                 case 'sinFac': {
-                    let siniestro = Siniestros.findOne(cuota.source.entityID);
+                    const siniestro = Siniestros.findOne(cuota.source.entityID);
 
                     if (siniestro) {
-                        if (siniestro.asegurado) { cuota.asegurado = siniestro.asegurado };
-                        if (siniestro.ramo) { cuota.ramo = siniestro.ramo };
-                        if (siniestro.suscriptor) { cuota.suscriptor = siniestro.suscriptor };
+                        if (siniestro.asegurado) { cuota.asegurado = siniestro.asegurado }
+                        if (siniestro.ramo) { cuota.ramo = siniestro.ramo }
+                        if (siniestro.suscriptor) { cuota.suscriptor = siniestro.suscriptor }
                     }
 
                     break;
@@ -192,7 +191,8 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                // Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                EventDDP.matchEmit(eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -202,7 +202,8 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    // Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    EventDDP.matchEmit(eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }
@@ -235,11 +236,11 @@ Meteor.methods(
 
         // ---------------------------------------------------------------------------------------------------------
 
-        let monedas = Monedas.find({}, { fields: { descripcion: 1, simbolo: 1, }}).fetch(); 
-        let companias = Companias.find({}, { fields: { nombre: 1, abreviatura: 1, }}).fetch(); 
-        let ramos = Ramos.find({}, { fields: { descripcion: 1, abreviatura: 1, }}).fetch(); 
-        let asegurados = Asegurados.find({}, { fields: { abreviatura: 1, }}).fetch(); 
-        let suscriptores = Suscriptores.find({}, { fields: { abreviatura: 1, }}).fetch(); 
+        const monedas = Monedas.find({}, { fields: { descripcion: 1, simbolo: 1, }}).fetch(); 
+        const companias = Companias.find({}, { fields: { nombre: 1, abreviatura: 1, }}).fetch(); 
+        const ramos = Ramos.find({}, { fields: { descripcion: 1, abreviatura: 1, }}).fetch(); 
+        const asegurados = Asegurados.find({}, { fields: { abreviatura: 1, }}).fetch(); 
+        const suscriptores = Suscriptores.find({}, { fields: { abreviatura: 1, }}).fetch(); 
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
@@ -256,20 +257,21 @@ Meteor.methods(
                     };
 
         // sync call
-        methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        // Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        EventDDP.matchEmit(eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         let cantidadRegistrosAgregados = 0;
 
         result.forEach(cuota => {
 
-            let moneda = lodash.find(monedas, (x) => { return x._id === cuota.moneda; }); 
-            let compania = lodash.find(companias, (x) => { return x._id === cuota.compania; }); 
-            let ramo = lodash.find(ramos, (x) => { return x._id === (cuota.ramo ? cuota.ramo : "..."); }); 
-            let asegurado = lodash.find(asegurados, (x) => { return x._id === (cuota.asegurado ? cuota.asegurado : "..."); }); 
-            let suscriptor = lodash.find(suscriptores, (x) => { return x._id === (cuota.suscriptor ? cuota.suscriptor : "..."); }); 
+            const moneda = lodash.find(monedas, (x) => { return x._id === cuota.moneda; }); 
+            const compania = lodash.find(companias, (x) => { return x._id === cuota.compania; }); 
+            const ramo = lodash.find(ramos, (x) => { return x._id === (cuota.ramo ? cuota.ramo : "..."); }); 
+            const asegurado = lodash.find(asegurados, (x) => { return x._id === (cuota.asegurado ? cuota.asegurado : "..."); }); 
+            const suscriptor = lodash.find(suscriptores, (x) => { return x._id === (cuota.suscriptor ? cuota.suscriptor : "..."); }); 
 
-            let cuotaPendiente = {
+            const cuotaPendiente = {
                 _id: new Mongo.ObjectID()._str,
                 moneda: cuota.moneda,
 
@@ -354,7 +356,7 @@ Meteor.methods(
                     cantidadPagosParciales++;
                     montoPagos += pago.monto;
                 });
-            };
+            }
 
             if (pagosMismaMoneda)
                 montoPendiente += montoPagos;       // ya el monto pagado viene (siempre) con el signo contrario
@@ -375,7 +377,8 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                // Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                EventDDP.matchEmit(eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -385,7 +388,8 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    // Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    EventDDP.matchEmit(eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }
@@ -395,4 +399,4 @@ Meteor.methods(
         return "Ok, el proceso se ha ejecutado en forma satisfactoria.<br /><br />" +
                "En total, " + cantidadRegistrosAgregados.toString() + " registros han sido seleccionados y conforman esta consulta.";
     }
-});
+})

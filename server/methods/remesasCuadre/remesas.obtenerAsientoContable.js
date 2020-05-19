@@ -1,4 +1,7 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+
 import moment from 'moment';
 import lodash from 'lodash';
 import numeral from 'numeral';
@@ -51,15 +54,15 @@ Meteor.methods(
 
         }
 
-        let instrumentoPago = remesa.instrumentoPago;
+        const instrumentoPago = remesa.instrumentoPago;
 
-        let companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
-        let monedas = Monedas.find({}, { fields: { _id: true, simbolo: true, }}).fetch();
-        let bancos = Bancos.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: true, simbolo: true, }}).fetch();
+        const bancos = Bancos.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
 
-        let compania = companias.find((x) => { return x._id === remesa.compania; });
-        let moneda = monedas.find((x) => { return x._id === remesa.moneda; });
-        let banco = bancos.find((x) => { return x._id === instrumentoPago.banco });
+        const compania = companias.find((x) => { return x._id === remesa.compania; });
+        const moneda = monedas.find((x) => { return x._id === remesa.moneda; });
+        const banco = bancos.find((x) => { return x._id === instrumentoPago.banco });
         let cuentaBancaria = null;
 
         if (instrumentoPago && instrumentoPago.banco && instrumentoPago.cuentaBancaria) {
@@ -70,15 +73,15 @@ Meteor.methods(
         // resumimos las partidas del cuadre para obtener el asiento contable; además, obviamos las partidas 
         // nota: primero creamos un array simple con las partidas del asiento (obtenidas desde el cuadre); luego, 
         // iteramos el array para resumirlo por tipo, cuenta, moneda, compañía, etc. 
-        let partidasArray = [];
+        const partidasArray = [];
         let consecutivo = 1; 
 
         remesa.cuadre.forEach((transaccion) => {
             transaccion.partidas.forEach((p) => {
                 let partida = {};
 
-                let compania = companias.find((x) => { return x._id === p.compania; });
-                let moneda = monedas.find((x) => { return x._id === p.moneda; });
+                const compania = companias.find((x) => { return x._id === p.compania; });
+                const moneda = monedas.find((x) => { return x._id === p.moneda; });
 
                 // el usuario puede decidir si resumir por cuenta contable o no. De no hacerlo, agregamos un valor diferente 
                 // para cada partida abajo, para que el código nunca agrupe ... 
@@ -105,26 +108,26 @@ Meteor.methods(
             })
         })
 
-        let partidasResumenArray = [];
-        partida = {};
-        granTotal = 0;
+        const partidasResumenArray = [];
+        const partida = {};
+        let granTotal = 0;
         let numero = 0; 
-        let partidasGroupByTipoCodigoCompaniaMoneda_array = lodash.groupBy(partidasArray, 'grupo');
+        const partidasGroupByTipoCodigoCompaniaMoneda_array = lodash.groupBy(partidasArray, 'grupo');
 
-        for (let key in partidasGroupByTipoCodigoCompaniaMoneda_array) {
+        for (const key in partidasGroupByTipoCodigoCompaniaMoneda_array) {
 
-            let groupArray = partidasGroupByTipoCodigoCompaniaMoneda_array[key];
-            let firstItemInGroup = groupArray[0];
+            const groupArray = partidasGroupByTipoCodigoCompaniaMoneda_array[key];
+            const firstItemInGroup = groupArray[0];
 
-            let rubro = firstItemInGroup.tipo;
-            let codigo = firstItemInGroup.codigo;
-            let compania = firstItemInGroup.compania;
-            let moneda = firstItemInGroup.moneda;
+            const rubro = firstItemInGroup.tipo;
+            const codigo = firstItemInGroup.codigo;
+            const compania = firstItemInGroup.compania;
+            const moneda = firstItemInGroup.moneda;
 
-            let sumOfMonto = lodash.sumBy(groupArray, 'monto');
+            const sumOfMonto = lodash.sumBy(groupArray, 'monto');
             numero += 10; 
 
-            partida = {
+            const partida = {
                 _id: new Mongo.ObjectID()._str, 
                 numero: numero, 
                 moneda: moneda,
@@ -149,58 +152,3 @@ Meteor.methods(
         return 'Ok, el asiento contable para la remesa ha sido construido en forma satisfactoria.'; 
     }
 })
-
-
-function descripcionTipoPartida(rubro) {
-    // esta función regresa el nombre del rubro, para que sirva como descripción en el resumen de la
-    // remesa ...
-    switch (rubro) {
-        case 10: {
-            return 'Monto cobrado/pagado en la remesa';
-            break;
-        }
-        case 100: {
-            return 'Primas cobradas - facultativo';
-            break;
-        }
-        case 200: {
-            return 'Primas por pagar - facultativo';
-            break;
-        }
-        case 300: {
-            return 'Corretaje - facultativo';
-            break;
-        }
-        case 400: {
-            return 'Prima pagada - facultativo';
-            break;
-        }
-        case 600: {
-            return 'Siniestros cobrados';
-            break;
-        }
-        case 700: {
-            return 'Siniestros por pagar';
-            break;
-        }
-        case 800: {
-            return 'Siniestros pagados';
-            break;
-        }
-        case 900: {
-            return 'Primas cobradas - contratos';
-            break;
-        }
-        case 1000: {
-            return 'Primas por pagar - contratos';
-            break;
-        }
-        case 1100: {
-            return 'Corretaje - contratos';
-            break;
-        }
-        default: { 
-            return 'Rubro indefinido';
-        }
-    }
-}

@@ -20,17 +20,17 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import '/client/imports/remesas/remesa.generales.html'; 
-import '/client/imports/remesas/remesa.detalle.html'; 
-import '/client/imports/remesas/remesa.cuadre.html'; 
+// import '/client/imports/remesas/remesa.generales.html'; 
+// import '/client/imports/remesas/remesa.detalle.html'; 
+// import '/client/imports/remesas/remesa.cuadre.html'; 
 
 import RemesasRemesaCuadreExportarExcel from './exportarExcelModal/remesaCuadreExportarExcel_Modal_Controller'; 
-import './exportarExcelModal/remesaCuadreExportarExcel_Modal.html'; 
+// import './exportarExcelModal/remesaCuadreExportarExcel_Modal.html'; 
 
 import RemesasRemesaObtenerCuadreRemesa from './obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal'; 
-import './obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html';
+// import './obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html';
 
-import './asientoContable/asientoContable_Modal.html';
+// import './asientoContable/asientoContable_Modal.html';
 import RemesaCuadreAsientoContable from './asientoContable/asientoContable'; 
 
 export default angular.module("scrwebm.remesas.remesa", 
@@ -484,7 +484,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
     $scope.exportarCuadreRemesaMicrosoftExcel = () => {
     $modal.open({
-        templateUrl: 'client/imports/remesas/exportarExcelModal/remesaCuadreExportarExcel_Modal.html',
+        templateUrl: 'client/html/remesas/exportarExcelModal/remesaCuadreExportarExcel_Modal.html',
         controller: 'RemesaCuadreExportarExcel_Modal_Controller',
         size: 'md',
         resolve: {
@@ -506,7 +506,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
     $scope.remesaCuadreAsientoContable = () => {
         $modal.open({
-            templateUrl: 'client/imports/remesas/asientoContable/asientoContable_Modal.html',
+            templateUrl: 'client/html/remesas/asientoContable/asientoContable_Modal.html',
             controller: 'RemesaCuadreAsientoContable_Modal_Controller',
             size: 'lg',
             resolve: {
@@ -1048,7 +1048,7 @@ export default angular.module("scrwebm.remesas.remesa",
     function obtenerCuadreRemesa(remesaID) {
 
         $modal.open({
-            templateUrl: 'client/imports/remesas/obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html',
+            templateUrl: 'client/html/remesas/obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html',
             controller: 'RemesaCuadreObtener_Modal_Controller',
             size: 'md',
             resolve: {

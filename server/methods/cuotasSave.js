@@ -1,5 +1,5 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor'; 
 
 import lodash from 'lodash'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 

@@ -1,4 +1,5 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { Remesas } from '/imports/collections/principales/remesas';  
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
@@ -6,7 +7,7 @@ import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancaria
 CuentasBancarias.before.remove(function (userId, doc) {
     // -------------------------------------------------------------------------
     // remesas
-    let remesa = Remesas.findOne({
+    const remesa = Remesas.findOne({
         $or: [
             { 'instrumentoPago.cuentaBancaria': doc._id },
         ]

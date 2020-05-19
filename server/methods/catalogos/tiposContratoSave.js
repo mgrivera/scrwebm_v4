@@ -1,29 +1,30 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
+
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 Meteor.methods(
 {
     tiposContratoSave: function (tiposContrato) {
 
-        if (!_.isArray(tiposContrato) || tiposContrato.length == 0) {
+        if (!lodash.isArray(tiposContrato) || tiposContrato.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(tiposContrato).
+        var inserts = lodash.chain(tiposContrato).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
 
-
         inserts.forEach(function (item) {
-            TiposContrato.insert(item, function (error, result) {
+            TiposContrato.insert(item, function (error) {
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
         });
 
-
-        var updates = _.chain(tiposContrato).
+        var updates = lodash.chain(tiposContrato).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto 
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto 
@@ -31,14 +32,14 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            TiposContrato.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            TiposContrato.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
             });
         });
 
-        var removes = _.filter(tiposContrato, function (item) { return item.docState && item.docState == 3; });
+        var removes = lodash.filter(tiposContrato, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             TiposContrato.remove({ _id: item._id });
@@ -46,4 +47,4 @@ Meteor.methods(
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

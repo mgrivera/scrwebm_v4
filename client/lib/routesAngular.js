@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import angular from 'angular';
 
 angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
   function ($urlRouterProvider, $stateProvider, $locationProvider) {
@@ -94,12 +96,12 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('catalogos.tiposObjetoAsegurado', {
             url: '/tiposObjetoAsegurado',
-            templateUrl: 'client/imports/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado.html',
+            templateUrl: 'client/html/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado.html',
             controller: 'TiposObjetoAseguradoController'
         })
         .state('catalogos.cumulos', {
             url: '/cumulos',
-            templateUrl: 'client/imports/catalogos/cumulos/cumulos.html',
+            templateUrl: 'client/html/catalogos/cumulos/cumulos.html',
             controller: 'CumulosController'
         })
         .state('catalogos.suscriptores', {
@@ -240,50 +242,50 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('riesgosFiltro', {
             url: '/riesgos/filtro?origen',
-            templateUrl: 'client/imports/riesgos/filtro.html',
+            templateUrl: 'client/html/riesgos/filtro.html',
             controller: 'RiesgosFiltro_Controller',
             params: { 'origen': null, },
         })
         .state('riesgosLista', {
             url: '/riesgos/lista?origen&limit',
-            templateUrl: 'client/imports/riesgos/lista.html',
+            templateUrl: 'client/html/riesgos/lista.html',
             controller: 'RiesgosLista_Controller',
             params: { 'origen': null, 'limit': null, },
         })
         .state('riesgo', {
             url: '/riesgos/riesgo?origen&id&limit&vieneDeAfuera',
-            templateUrl: 'client/imports/riesgos/riesgo.html',
+            templateUrl: 'client/html/riesgos/riesgo.html',
             controller: 'Riesgo_Controller',
             params: { 'origen': null, 'id': null, 'limit': null, 'vieneDeAfuera': null },
         })
 
         .state('riesgo.generales', {
-            templateUrl: 'client/imports/riesgos/riesgo.generales.html',
+            templateUrl: 'client/html/riesgos/riesgo.generales.html',
             controller: 'RiesgoGenerales_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.movimientos', {
-            templateUrl: 'client/imports/riesgos/riesgo.movimientos.html',
+            templateUrl: 'client/html/riesgos/riesgo.movimientos.html',
             controller: 'RiesgoMovimientos_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.infoRamo_autos', {
-            templateUrl: 'client/imports/riesgos/riesgo.infoRamo_autos.html',
+            templateUrl: 'client/html/riesgos/riesgo.infoRamo_autos.html',
             controller: 'RiesgoInfoRamo_autos_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.productores', {
-            templateUrl: 'client/imports/riesgos/riesgo.productores.html',
+            templateUrl: 'client/html/riesgos/riesgo.productores.html',
             controller: 'RiesgoProductores_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.cuotas', {
-            templateUrl: 'client/imports/riesgos/riesgo.cuotas.html',
+            templateUrl: 'client/html/riesgos/riesgo.cuotas.html',
             controller: 'RiesgoCuotas_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.notasDebito', {
-            templateUrl: 'client/imports/riesgos/notasDebito/notasDebito.html',
+            templateUrl: 'client/html/riesgos/notasDebito/notasDebito.html',
             controller: 'NotasDebitoController',
             parent: 'riesgo'
         })
@@ -293,31 +295,31 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('remesasFiltro', {
             url: '/remesas/filtro?origen',
-            templateUrl: 'client/imports/remesas/filtro.html',
+            templateUrl: 'client/html/remesas/filtro.html',
             controller: 'RemesasFiltroController'
         })
         .state('remesasLista', {
             url: '/remesas/lista?origen&pageNumber',
-            templateUrl: 'client/imports/remesas/lista.html',
+            templateUrl: 'client/html/remesas/lista.html',
             controller: 'RemesasListaController',
             params: { 'origen': null, 'pageNumber': null }
         })
         .state('remesa', {
             url: '/remesas/remesa?origen&id&pageNumber&vieneDeAfuera',
-            templateUrl: 'client/imports/remesas/remesa.html',
+            templateUrl: 'client/html/remesas/remesa.html',
             controller: 'RemesaController',
             params: { 'origen': null, 'id': null, 'pageNumber': null, 'vieneDeAfuera': null }
         })
         .state('remesa.generales', {
-            templateUrl: 'client/imports/remesas/remesa.generales.html',
+            templateUrl: 'client/html/remesas/remesa.generales.html',
             parent: 'remesa'
         })
         .state('remesa.detalle', {
-            templateUrl: 'client/imports/remesas/remesa.detalle.html',
+            templateUrl: 'client/html/remesas/remesa.detalle.html',
             parent: 'remesa'
         })
         .state('remesa.cuadre', {
-            templateUrl: 'client/imports/remesas/remesa.cuadre.html',
+            templateUrl: 'client/html/remesas/remesa.cuadre.html',
             parent: 'remesa'
         })
 
@@ -326,23 +328,23 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('cobranzas', {
             url: '/cobranzas',
-            templateUrl: 'client/imports/cobranzas/cobranzas.html',
+            templateUrl: 'client/html/cobranzas/cobranzas.html',
             controller: 'CobranzasController'
         })
         .state('cobranzas.seleccionRemesa', {
             url: '/cobranzas/seleccionRemesa',
-            templateUrl: 'client/imports/cobranzas/cobranzas.seleccionRemesa.html',
+            templateUrl: 'client/html/cobranzas/cobranzas.seleccionRemesa.html',
             controller: 'CobranzasSeleccionRemesaController'
         })
         .state('cobranzas.aplicarPagos', {
             url: '/cobranzas/aplicarPagos?remesaPK',
-            templateUrl: 'client/imports/cobranzas/cobranzas.aplicarPagos.html',
+            templateUrl: 'client/html/cobranzas/cobranzas.aplicarPagos.html',
             controller: 'CobranzasAplicarPagosController',
             params: { 'remesaPK': null }
         })
         .state('cobranzas.resultados', {
             url: '/cobranzas/resultados?remesaID&cantPagos',
-            templateUrl: 'client/imports/cobranzas/cobranzas.resultados.html',
+            templateUrl: 'client/html/cobranzas/cobranzas.resultados.html',
             controller: 'CobranzasResultadosController',
             params: { 'remesaID': null, 'cantPagos': null }
         })
@@ -399,8 +401,55 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
 
 
         // ----------------------------------------------------------------
-        // consultas
+        // consultas            
         // ----------------------------------------------------------------
+        .state('consultas', {
+            url: '/consultas',
+            abstract: true,
+            template: '<div class="row" ui-view></div>'
+        })
+
+        .state('consultas.primasEmitidas', {
+            url: '/primasEmitidas',
+            abstract: true,
+            template: '<div class="row" ui-view></div>', 
+            parent: 'consultas'
+        })
+
+        .state('consultas.primasEmitidas.reaseguradores', {
+            url: '/reaseguradores',
+            template: '<consultas-primas-emitidas-reaseguradores />',
+            parent: 'consultas.primasEmitidas', 
+        })   
+
+        // IMPORTANTE: nótese lo que hacemos para pasar props al react component. En realidad, aquí se pasan al angular 
+        // component; luego, con react2angular, al react component. En resolve, obtenemos los datos que necesitamos; en este 
+        // caso, usamos un meteor method. Luego, en el (inline) controller, usamos this para mantener estos datos. Para 
+        // poder pasarlos al template, usamos controllerAs, para crear un controller (ctrl) que es el que se pasa 
+        // en el template (upppssss!) 
+        .state('consultas.primasEmitidas.reaseguradores-lista', {
+            url: '/reaseguradores-lista',
+
+            resolve: {
+                recCount: () => {
+                    return new Promise((resolve) => {
+                        Meteor.call('consultas.primasEmitidas.reaseguradores.getRecCount', Meteor.userId(), (err, result) => {
+                            this.recCount = result.recordCount; 
+                            resolve(result.recordCount); 
+                        })
+                    })
+                }
+            },
+
+            controller: ['recCount', function (recCount) {
+                this.recCount = recCount;
+            }],
+            controllerAs: 'ctrl',
+
+            template: `<consultas-primas-emitidas-reaseguradores-lista record-count="ctrl.recCount" />`,
+            parent: 'consultas.primasEmitidas'
+        })      
+        
         .state('montosPendientesFiltro', {
             url: '/consultas/pendientes/filtro',
             templateUrl: 'client/consultas/montosPendientes/filtro.html',
@@ -490,6 +539,29 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
 
         // ----------------------------------------------------------------
+        // cumulos            
+        // ----------------------------------------------------------------
+        .state('cumulos', {
+            url: '/cumulos',
+            abstract: true,
+            template: '<div class="row" ui-view></div>', 
+        })
+
+        .state('cumulos.registro', {
+            url: '/registro?origen&entityId&subEntityId&url',
+            controller: ['$stateParams', function ($stateParams) {
+                this.origen = $stateParams.origen;
+                this.entityId = $stateParams.entityId;
+                this.subEntityId = $stateParams.subEntityId;
+                this.url = $stateParams.url; 
+            }],
+            controllerAs: 'ctrl',
+            params: { origen: null, entityId: "", subEntityId: "", url: "" },
+            template: '<registro-cumulos origen="ctrl.origen" entity-id="ctrl.entityId" sub-entity-id="ctrl.subEntityId" url="ctrl.url" />',
+            parent: 'cumulos'
+        })
+
+        // ----------------------------------------------------------------
         // cierre
         // ----------------------------------------------------------------
         .state('cierre', {
@@ -546,17 +618,17 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ---------------------------------------------------------------- /consultas/pendientesCobroVencimientos/filtro
         .state('usuarioRoles', {
             url: '/administracion/usuariosYRoles',
-            templateUrl: 'client/imports/administracion/usuariosRoles/usuariosRoles.html',
+            templateUrl: 'client/html/administracion/usuariosRoles/usuariosRoles.html',
             controller: 'UsuariosRolesController'
         })
         .state('usuarios', {
             url: '/administracion/usuarios',
-            templateUrl: 'client/imports/administracion/usuarios/usuarios.html',
+            templateUrl: 'client/html/administracion/usuarios/usuarios.html',
             controller: 'UsuariosDatosPersonalesController'
         })
         .state('usuariosEmpresas', {
             url: '/administracion/usuariosEmpresas',
-            template: '<usuarios-empresas />',
+            template: '<usuarios-empresas />'
         })
 
         // ----------------------------------------------------------------
@@ -564,7 +636,7 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('notasDebitoCredito', {
             url: '/notasDebitoCredito?origen',
-            templateUrl: 'client/imports/notasDebitoCredito/notasDebitoCredito.html', 
+            templateUrl: 'client/html/notasDebitoCredito/notasDebitoCredito.html', 
             controller: 'NotasDebitoCredito_Controller', 
             params: { 'origen': null }
         })

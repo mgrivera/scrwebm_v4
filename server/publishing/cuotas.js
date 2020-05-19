@@ -1,5 +1,5 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
 Meteor.publish("cuotas", function (filtro) {

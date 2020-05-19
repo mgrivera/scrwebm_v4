@@ -1,5 +1,8 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
 
+import lodash from 'lodash'; 
 import numeral from 'numeral';
 import moment from 'moment';
 import SimpleSchema from 'simpl-schema';
@@ -10,19 +13,20 @@ import { Contratos } from '/imports/collections/principales/contratos';
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Cumulos_Registro } from '/imports/collections/principales/cumulos_registro'; 
+import { Temp_Consulta_Contratos } from '/imports/collections/consultas/tempConsultaContratos'; 
 
 Meteor.methods(
 {
     'contratos.leerDesdeMongo': function (filtro, ciaSeleccionadaID) {
 
-        let filtro2 = JSON.parse(filtro);
+        const filtro2 = JSON.parse(filtro);
 
         new SimpleSchema({
             filtro2: { type: Object, blackbox: true, optional: false, },
             ciaSeleccionadaID: { type: String, optional: false, },
         }).validate({ filtro2, ciaSeleccionadaID, });
 
-        let where = {};
+        const where = {};
 
         if (filtro2._id)
             where._id = filtro2._id;
@@ -39,7 +43,7 @@ Meteor.methods(
         }
 
         if (filtro2.referencia) {
-            var search = new RegExp(filtro2.referencia, 'i');
+            const search = new RegExp(filtro2.referencia, 'i');
             where.referencia = search;
         }
 
@@ -57,50 +61,50 @@ Meteor.methods(
                 where.hasta = moment(filtro2.hasta1).toDate();
 
         if (filtro2.compania && filtro2.compania.length) {
-            let array = _.clone(filtro2.compania);
+            const array = lodash.clone(filtro2.compania);
             where.compania = { $in: array };
         }
 
         if (filtro2.tipo && filtro2.tipo.length) {
-            let array = _.clone(filtro2.tipo);
+            const array = lodash.clone(filtro2.tipo);
             where.tipo = { $in: array };
         }
 
         if (filtro2.ramo && filtro2.ramo.length) {
-            let array = _.clone(filtro2.ramo);
+            const array = lodash.clone(filtro2.ramo);
             where.ramo = { $in: array };
         }
 
         if (filtro2.suscriptor && filtro2.suscriptor.length) {
-            let array = _.clone(filtro2.suscriptor);
+            const array = lodash.clone(filtro2.suscriptor);
             where.suscriptor = { $in: array };
         }
 
         if (filtro2.descripcion) {
-            let search = new RegExp(filtro2.descripcion, 'i');
+            const search = new RegExp(filtro2.descripcion, 'i');
             where.descripcion = search;
-        };
+        }
 
         where.cia = ciaSeleccionadaID;
 
         // eliminamos los items que el usuario pueda haber registrado antes ...
         Temp_Consulta_Contratos.remove({ user: this.userId });
 
-        let contratos = Contratos.find(where).fetch();
+        const contratos = Contratos.find(where).fetch();
 
         if (contratos.length == 0) {
             return "Cero registros han sido leídos desde la base de datos";
         }
 
-        let companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let suscriptores = Suscriptores.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let tipos = TiposContrato.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let ramos = Ramos.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const suscriptores = Suscriptores.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const tipos = TiposContrato.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const ramos = Ramos.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // para reportar progreso solo 30 veces; si hay menos de 20 registros, reportamos siempre ...
-        let numberOfItems = contratos.length;
-        let reportarCada = Math.floor(numberOfItems / 30);
+        const numberOfItems = contratos.length;
+        const reportarCada = Math.floor(numberOfItems / 30);
         let reportar = 0;
         let cantidadRecs = 0;
         EventDDP.matchEmit('contratos_leerContratos_reportProgress',
@@ -110,23 +114,23 @@ Meteor.methods(
 
         contratos.forEach((item) => {
 
-            let suscriptor = _.some(suscriptores, (x) => { return x._id === item.suscriptor; }) ?
-                             _.find(suscriptores, (x) => { return x._id === item.suscriptor; }).abreviatura :
+            const suscriptor = lodash.some(suscriptores, (x) => { return x._id === item.suscriptor; }) ?
+                             lodash.find(suscriptores, (x) => { return x._id === item.suscriptor; }).abreviatura :
                              'Indefinido';
 
-            let tipo = _.some(tipos, (x) => { return x._id === item.tipo; }) ?
-                         _.find(tipos, (x) => { return x._id === item.tipo; }).abreviatura :
+            const tipo = lodash.some(tipos, (x) => { return x._id === item.tipo; }) ?
+                         lodash.find(tipos, (x) => { return x._id === item.tipo; }).abreviatura :
                          'Indefinido';
 
-            let compania = _.some(companias, (x) => { return x._id === item.compania; }) ?
-                           _.find(companias, (x) => { return x._id === item.compania; }).abreviatura :
+            const compania = lodash.some(companias, (x) => { return x._id === item.compania; }) ?
+                           lodash.find(companias, (x) => { return x._id === item.compania; }).abreviatura :
                            'Indefinido';
 
-            let ramo = _.some(ramos, (x) => { return x._id === item.ramo; }) ?
-                       _.find(ramos, (x) => { return x._id === item.ramo; }).abreviatura :
+            const ramo = lodash.some(ramos, (x) => { return x._id === item.ramo; }) ?
+                       lodash.find(ramos, (x) => { return x._id === item.ramo; }).abreviatura :
                        'Indefinido';
 
-            let contrato = {};
+            const contrato = {};
 
             contrato._id = new Mongo.ObjectID()._str;
 
@@ -163,19 +167,19 @@ Meteor.methods(
                                         { myuserId: this.userId, app: 'contratos', process: 'leerContratos' },
                                         { current: 1, max: 1, progress: numeral(cantidadRecs / numberOfItems).format("0 %") });
                     reportar = 0;
-                };
-            };
+                }
+            }
             // -------------------------------------------------------------------------------------------------------
         })
 
         if (filtro2.registroCumulos && filtro2.registroCumulos != "todos") { 
 
             // para cada riesgo, leemos a ver si tiene o un cúmulo registrado 
-            let array = Temp_Consulta_Contratos.find({ user: Meteor.userId() }).fetch(); 
+            const array = Temp_Consulta_Contratos.find({ user: Meteor.userId() }).fetch(); 
 
             array.forEach((itemConsulta) => { 
 
-                let existe = Cumulos_Registro.findOne({ 'source.entityID': itemConsulta.id }); 
+                const existe = Cumulos_Registro.findOne({ 'source.entityID': itemConsulta.id }); 
 
                 switch (filtro2.registroCumulos) { 
                     case "con": { 
@@ -196,4 +200,4 @@ Meteor.methods(
 
         return "Ok, los contratos que cumplen el criterio indicado, han sido leídos desde la base de datos.";
     }
-});
+})

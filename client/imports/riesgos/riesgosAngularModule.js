@@ -3,9 +3,9 @@
 import angular from 'angular';
 import angularMeteor from 'angular-meteor';
 
-import '/client/imports/riesgos/filtro.html'; 
-import '/client/imports/riesgos/lista.html';
-import '/client/imports/riesgos/riesgo.html';
+// import '/client/imports/riesgos/filtro.html'; 
+// import '/client/imports/riesgos/lista.html';
+// import '/client/imports/riesgos/riesgo.html';
 
 import RiesgosFiltro from '/client/imports/riesgos/riesgoFiltroController';
 import RiesgosLista from '/client/imports/riesgos/riesgoListaController';

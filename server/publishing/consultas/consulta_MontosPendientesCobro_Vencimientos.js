@@ -1,4 +1,5 @@
 ﻿
+import { Meteor } from 'meteor/meteor';
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
 
 Meteor.publish("consulta_MontosPendientesCobro_Vencimientos", function () {

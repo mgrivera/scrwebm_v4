@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash';
 
 import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalogos/ContratosProp_Configuracion'; 
 
@@ -6,11 +8,11 @@ Meteor.methods(
 {
     contratosProp_configuracion_tablas_Save: function (configItems) {
 
-        if (!_.isArray(configItems) || configItems.length == 0) {
+        if (!lodash.isArray(configItems) || configItems.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(configItems).
+        var inserts = lodash.chain(configItems).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
@@ -26,8 +28,7 @@ Meteor.methods(
             }
         });
 
-
-        var updates = _.chain(configItems).
+        var updates = lodash.chain(configItems).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -42,7 +43,7 @@ Meteor.methods(
             });
         });
 
-        var removes = _.filter(configItems, function (item) { return item.docState && item.docState == 3; });
+        var removes = lodash.filter(configItems, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             ContratosProp_Configuracion_Tablas.remove({ _id: item._id });
@@ -50,4 +51,4 @@ Meteor.methods(
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

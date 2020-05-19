@@ -1,11 +1,12 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
 TiposContrato.before.remove(function (userId, doc) {
 
-    let contrato = Contratos.findOne({
+    const contrato = Contratos.findOne({
         $or: [
             { tipo: doc._id },
         ]
@@ -19,5 +20,5 @@ TiposContrato.before.remove(function (userId, doc) {
                                ${ contrato.numero }</em>. El tipo de contrato no puede ser eliminado.<br />
                                <b>Nota importante:</b> si otros registros fueron editados,
                                <em>pudieron haber sido grabados</em> en forma satisfactoria.`);
-    };
-});
+    }
+})

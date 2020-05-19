@@ -1,15 +1,17 @@
 
-
-
+import { Meteor } from 'meteor/meteor'; 
+import angular from 'angular';
 import numeral from 'numeral';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Temp_Consulta_Contratos } from '/imports/collections/consultas/tempConsultaContratos'; 
 
-angular.module("scrwebm").controller("ContratosListaController",
-['$scope', '$state', '$stateParams', '$meteor',
- function ($scope, $state, $stateParams, $meteor) {
+angular.module("scrwebm")
+       .controller("ContratosListaController", ['$scope', '$state', '$stateParams',
+
+ function ($scope, $state, $stateParams) {
 
       $scope.showProgress = false;
 
@@ -50,8 +52,6 @@ angular.module("scrwebm").controller("ContratosListaController",
           $state.go('contratosFiltro', { origen: $scope.origen });
       };
 
-
-      let list_ui_grid_api = null;
       let itemSeleccionadoEnLaLista = {};
 
       $scope.list_ui_grid = {
@@ -68,8 +68,6 @@ angular.module("scrwebm").controller("ContratosListaController",
           rowHeight: 25,
 
           onRegisterApi: function (gridApi) {
-
-              list_ui_grid_api = gridApi;
 
               gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                   itemSeleccionadoEnLaLista = {};
@@ -246,7 +244,7 @@ angular.module("scrwebm").controller("ContratosListaController",
           // de los subscriptions también ...
           if (subscriptionHandle && subscriptionHandle.stop) {
               subscriptionHandle.stop();
-          };
+          }
 
           subscriptionHandle =
           Meteor.subscribe('temp.consulta.contratos.list', limit, () => {
@@ -279,7 +277,7 @@ angular.module("scrwebm").controller("ContratosListaController",
       Meteor.call('getCollectionCount', 'Temp_Consulta_Contratos', (err, result) => {
 
           if (err) {
-              let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+              const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
               $scope.alerts.length = 0;
               $scope.alerts.push({
@@ -290,7 +288,7 @@ angular.module("scrwebm").controller("ContratosListaController",
               $scope.showProgress = false;
               $scope.$apply();
               return;
-          };
+          }
 
           // el método regresa la cantidad de items en el collection (siempre para el usuario)
           recordCount = result;
@@ -315,7 +313,7 @@ angular.module("scrwebm").controller("ContratosListaController",
       $scope.$on('$destroy', function() {
           if (subscriptionHandle && subscriptionHandle.stop) {
               subscriptionHandle.stop();
-          };
+          }
       });
   }
-]);
+])

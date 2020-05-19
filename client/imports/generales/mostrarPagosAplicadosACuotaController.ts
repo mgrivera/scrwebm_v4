@@ -8,7 +8,7 @@ import { userHasRole } from './userHasRole';
 import { Cuotas } from 'imports/collections/principales/cuotas'; 
 
 // nótese como importamos la plantilla (html) para que browser la encuentre cuando se indique más abajo
-import './mostrarPagosCuotaModal.html';         
+// import './mostrarPagosCuotaModal.html';         
 
 // -----------------------------------------------------------------------------
 // para mostrar los pagos aplicados a una cuota en particular
@@ -36,7 +36,7 @@ export function MostrarPagosEnCuotas($modal: any, cuota: any, origen: any, cuota
 function mostrarPagosEnCuotas2($modal: any, cuota: any, origen: any) {
 
     var modalInstance = $modal.open({
-        templateUrl: 'client/imports/generales/mostrarPagosCuotaModal.html',
+        templateUrl: 'client/html/generales/mostrarPagosCuotaModal.html',
         controller: 'MostrarPagosAplicadosACuotaController',
         size: 'md',
         resolve: {

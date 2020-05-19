@@ -1,5 +1,5 @@
 
-
+import angular from 'angular';
 import numeral from 'numeral';
 
 import { Temp_Consulta_Riesgos } from '/imports/collections/consultas/tempConsultaRiesgos'; 
@@ -9,11 +9,11 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 // tenemos que importar los archivos que se usan para abrir el modal del reporte ... 
-import '/client/imports/riesgos/reportes/opcionesReportModal.html'; 
+// import '/client/imports/riesgos/reportes/opcionesReportModal.html'; 
 import Riesgos_opcionesReportController from '/client/imports/riesgos/reportes/opcionesReportModal'; 
 
 export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportController.name ]).controller("RiesgosLista_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', function ($scope, $state, $stateParams, $meteor, $modal) {
+['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
 
     $scope.showProgress = false;
 
@@ -365,7 +365,7 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
 
     $scope.reporteOpcionesModal = function() { 
         $modal.open({
-            templateUrl: 'client/imports/riesgos/reportes/opcionesReportModal.html',
+            templateUrl: 'client/html/riesgos/reportes/opcionesReportModal.html',
             controller: 'Riesgos_opcionesReportController',
             size: 'md',
             resolve: {

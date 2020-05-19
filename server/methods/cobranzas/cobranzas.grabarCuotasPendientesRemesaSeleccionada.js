@@ -1,5 +1,7 @@
 
-import lodash from 'lodash';
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
+import { check } from 'meteor/check';
 
 import { Remesas } from '/imports/collections/principales/remesas';  
 import { Cuotas } from '/imports/collections/principales/cuotas'; 

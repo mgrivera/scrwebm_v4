@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+
 import { Riesgos } from '/imports/collections/principales/riesgos';  
 import { Remesas } from '/imports/collections/principales/remesas';  
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
@@ -9,7 +11,7 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 Companias.before.remove(function (userId, doc) {
     // -----------------------------------------------------------------------
     // riesgos
-    let riesgo = Riesgos.findOne({
+    const riesgo = Riesgos.findOne({
         $or: [
             { compania: doc._id },
             { corredor: doc._id },
@@ -33,7 +35,7 @@ Companias.before.remove(function (userId, doc) {
 
     // -----------------------------------------------------------------------
     // contratos
-    let contrato = Contratos.findOne({
+    const contrato = Contratos.findOne({
         $or: [
             { compania: doc._id },
             { 'capas.reaseguradores.compania': doc._id },
@@ -56,7 +58,7 @@ Companias.before.remove(function (userId, doc) {
 
     // -----------------------------------------------------------------------
     // siniestros
-    let siniestro = Siniestros.findOne({
+    const siniestro = Siniestros.findOne({
         $or: [
             { compania: doc._id },
             { 'companias.compania': doc._id },
@@ -77,7 +79,7 @@ Companias.before.remove(function (userId, doc) {
 
     // -----------------------------------------------------------------------
     // remesas
-    let remesa = Remesas.findOne({
+    const remesa = Remesas.findOne({
         $or: [
              { compania: doc._id },
              { 'remesas.cuadre.partidas.compania': doc._id },
@@ -95,7 +97,7 @@ Companias.before.remove(function (userId, doc) {
 
     // -----------------------------------------------------------------------
     // cuotas
-    let cuota = Cuotas.findOne({ compania: doc._id });
+    const cuota = Cuotas.findOne({ compania: doc._id });
 
     if (cuota) {
         throw new Meteor.Error("dataBaseError",

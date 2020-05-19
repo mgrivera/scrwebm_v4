@@ -1,15 +1,18 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
+
 import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
 
 Meteor.methods(
 {
     tiposFacultativoSave: function (tiposFacultativo) {
 
-        if (!_.isArray(tiposFacultativo) || tiposFacultativo.length == 0) {
+        if (!lodash.isArray(tiposFacultativo) || tiposFacultativo.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = _.chain(tiposFacultativo).
+        var inserts = lodash.chain(tiposFacultativo).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
@@ -22,8 +25,7 @@ Meteor.methods(
             });
         });
 
-
-        var updates = _.chain(tiposFacultativo).
+        var updates = lodash.chain(tiposFacultativo).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -38,7 +40,7 @@ Meteor.methods(
             });
         });
 
-        var removes = _.filter(tiposFacultativo, function (item) { return item.docState && item.docState == 3; });
+        var removes = lodash.filter(tiposFacultativo, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             TiposFacultativo.remove({ _id: item._id });
@@ -46,4 +48,4 @@ Meteor.methods(
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

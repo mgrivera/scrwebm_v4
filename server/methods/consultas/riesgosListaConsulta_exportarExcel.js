@@ -1,9 +1,11 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo'; 
 
 import moment from 'moment';
 import lodash from 'lodash';
 import numeral from 'numeral';
-import JSZip from 'jszip';
+
 import XlsxInjector from 'xlsx-injector';
 import fs from 'fs';
 import path from 'path';
@@ -30,26 +32,26 @@ Meteor.methods(
         // antes que nada, eliminamos del collection de la consulta, los registros de la consulta anterior
         Temp_Consulta_Riesgos_ExportExcel.remove({ user: this.userId });
 
-        let riesgos = Temp_Consulta_Riesgos.find({ user: this.userId }).fetch();
+        const riesgos = Temp_Consulta_Riesgos.find({ user: this.userId }).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
-        let numberOfItems = riesgos.length;
-        let reportarCada = Math.floor(numberOfItems / 25);
+        const numberOfItems = riesgos.length;
+        const reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 1;
-        let currentProcess = 1;
+        const numberOfProcess = 1;
+        const currentProcess = 1;
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "riesgosEmitidosLista_consulta_reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'riesgosEmitidosLista_consulta' };
+        const eventName = "riesgosEmitidosLista_consulta_reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'riesgosEmitidosLista_consulta' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: `leyendo los riesgos seleccionados ... `
                         };
 
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         riesgos.forEach(riesgo => {
@@ -64,14 +66,14 @@ Meteor.methods(
             let corretaje = 0;
 
             // leemos el riesgo para obtener otros datos: suma asegurada, prima, etc.
-            let riesgo2 = Riesgos.findOne(riesgo.id);
+            const riesgo2 = Riesgos.findOne(riesgo.id);
 
-            if (riesgo2 && riesgo2.movimientos && _.isArray(riesgo2.movimientos)) {
+            if (riesgo2 && riesgo2.movimientos && lodash.isArray(riesgo2.movimientos)) {
                 // leemos el 1er. movimiento del riesgo (puede haber más)
-                let movimiento = _.find(riesgo2.movimientos, (x) => { return x.numero === 1; });
-                if (movimiento && movimiento.coberturasCompanias && _.isArray(movimiento.coberturasCompanias)) {
-                    let coberturasCompania = _.filter(movimiento.coberturasCompanias, (x) => { return x.nosotros; });
-                    if (coberturasCompania && _.isArray(coberturasCompania)) {
+                const movimiento = lodash.find(riesgo2.movimientos, (x) => { return x.numero === 1; });
+                if (movimiento && movimiento.coberturasCompanias && lodash.isArray(movimiento.coberturasCompanias)) {
+                    const coberturasCompania = lodash.filter(movimiento.coberturasCompanias, (x) => { return x.nosotros; });
+                    if (coberturasCompania && lodash.isArray(coberturasCompania)) {
                         // coberturasCompania es siempre un array, aunque puede ser de 1 solo item. Pueden
                         // venir cifras para varias coberturas y debemos sumar todos estos montos ...
                         sumaAsegurada = lodash.sumBy(coberturasCompania, 'sumaAsegurada');
@@ -87,13 +89,13 @@ Meteor.methods(
                 }
 
                 // ahora leemos comisión, impuestos y prima neta en el array de primas ...
-                if (movimiento && movimiento.primas && _.isArray(movimiento.primas)) {
-                    let primas = _.filter(movimiento.primas, (x) => { return x.nosotros; });
-                    if (primas && _.isArray(primas)) {
+                if (movimiento && movimiento.primas && lodash.isArray(movimiento.primas)) {
+                    const primas = lodash.filter(movimiento.primas, (x) => { return x.nosotros; });
+                    if (primas && lodash.isArray(primas)) {
 
-                        let comision = lodash.sumBy(primas, 'comision');
-                        let impuesto = lodash.sumBy(primas, 'impuesto');
-                        let impSobrePN = lodash.sumBy(primas, 'impuestoSobrePN');
+                        const comision = lodash.sumBy(primas, 'comision');
+                        const impuesto = lodash.sumBy(primas, 'impuesto');
+                        const impSobrePN = lodash.sumBy(primas, 'impuestoSobrePN');
 
                         comMasImp += comision ? comision : 0;
                         comMasImp += impuesto ? impuesto : 0;
@@ -105,12 +107,12 @@ Meteor.methods(
 
                 // finalmente, obtenemos el corretaje, como la sumatoria de todas las primas netas del
                 // movimiento ...
-                if (movimiento && movimiento.primas && _.isArray(movimiento.primas)) {
+                if (movimiento && movimiento.primas && lodash.isArray(movimiento.primas)) {
                     corretaje = lodash.sumBy(movimiento.primas, 'primaNeta');
                 }
             }
 
-            let item = {
+            const item = {
                 _id: new Mongo.ObjectID()._str,
                 numero: riesgo.numero,
                 estado: riesgo.estado,
@@ -147,7 +149,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: `leyendo los riesgos seleccionados ... `
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -157,7 +159,7 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: `leyendo los riesgos seleccionados ... `
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }
@@ -170,19 +172,19 @@ Meteor.methods(
         // let path = Npm.require('path');
 
         // leemos los riesgos que el usuario selecciono para la lista
-        let consultaRiesgosEmitidos = Temp_Consulta_Riesgos_ExportExcel.find({ user: this.userId }).fetch();
+        const consultaRiesgosEmitidos = Temp_Consulta_Riesgos_ExportExcel.find({ user: this.userId }).fetch();
 
-        let riesgosEmitidosArray = [];
+        const riesgosEmitidosArray = [];
         let riesgosEmitidosItem = {};
 
         // agrupamos por moneda y luego por compañía, para mostrar las cifras en esa forma
         // en el documento Excel
-        let riesgosEmitidosGroupByMoneda = lodash.groupBy(consultaRiesgosEmitidos, 'moneda');
+        const riesgosEmitidosGroupByMoneda = lodash.groupBy(consultaRiesgosEmitidos, 'moneda');
 
         // nótese como ordenamos el objeto por su (unica) key ...
-        for (let moneda in lodash(riesgosEmitidosGroupByMoneda).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
+        for (const moneda in lodash(riesgosEmitidosGroupByMoneda).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
 
-            let riesgosEmitidosByMoneda = riesgosEmitidosGroupByMoneda[moneda];
+            const riesgosEmitidosByMoneda = riesgosEmitidosGroupByMoneda[moneda];
 
             riesgosEmitidosItem = {
                 moneda: riesgosEmitidosByMoneda[0].moneda,
@@ -211,12 +213,12 @@ Meteor.methods(
             riesgosEmitidosArray.push(riesgosEmitidosItem);
 
             // agrupamos por año ...
-            let riesgosEmitidosGroupByMonedaCompania = lodash.groupBy(riesgosEmitidosByMoneda, 'compania');
+            const riesgosEmitidosGroupByMonedaCompania = lodash.groupBy(riesgosEmitidosByMoneda, 'compania');
 
             // nótese como ordenamos el objeto por su (unica) key ...
-            for (let compania in lodash(riesgosEmitidosGroupByMonedaCompania).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
+            for (const compania in lodash(riesgosEmitidosGroupByMonedaCompania).map((v, k) => [k, v]).sortBy(0).fromPairs().value()) {
 
-                let riesgosEmitidosByMonedaCompania = riesgosEmitidosGroupByMonedaCompania[compania];
+                const riesgosEmitidosByMonedaCompania = riesgosEmitidosGroupByMonedaCompania[compania];
 
                 // TODO: totalizamos los items para la compañía y escrimos un row a excel
                 riesgosEmitidosItem = {
@@ -277,12 +279,11 @@ Meteor.methods(
                     };
                     riesgosEmitidosArray.push(riesgosEmitidosItem);
                 });
-            };
-        };
-
+            }
+        }
 
         // Object containing attributes that match the placeholder tokens in the template
-        let values = {
+        const values = {
             fechaHoy: moment(new Date()).format("DD-MMM-YYYY"),
             nombreCiaContabSeleccionada: ciaSeleccionada.nombre,
             items: riesgosEmitidosArray,
@@ -293,29 +294,29 @@ Meteor.methods(
         // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
         // nótese que la plantilla (doc excel) no es agregada por el usuario; debe existir siempre con el
         // mismo nombre ...
-        let templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
-        let temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
+        const templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
+        const temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
 
-        let templatePath = path.join(templates_DirPath, 'consultas', 'consultaRiesgosEmitidosLista.xlsx');
+        const templatePath = path.join(templates_DirPath, 'consultas', 'consultaRiesgosEmitidosLista.xlsx');
 
         // ----------------------------------------------------------------------------------------------------
         // nombre del archivo que contendrá los resultados ...
         let userID2 = Meteor.user().emails[0].address.replace(/\./g, "_");
         userID2 = userID2.replace(/\@/g, "_");
-        let outputFileName = 'consultaRiesgosEmitidosLista.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
-        let outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
+        const outputFileName = 'consultaRiesgosEmitidosLista.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
+        const outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
         // ----------------------------------------------------------------------------------------------------
 
         // Open a workbook
-        let workbook = new XlsxInjector(templatePath);
-        let sheetNumber = 1;
+        const workbook = new XlsxInjector(templatePath);
+        const sheetNumber = 1;
         workbook.substitute(sheetNumber, values);
         // Save the workbook
         workbook.writeFile(outputPath);
 
         // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
         // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
-        let buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
+        const buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
 
         // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
         // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...
@@ -325,4 +326,4 @@ Meteor.methods(
         // en excel y no tiene un tipo definido ...
         return grabarDatosACollectionFS_regresarUrl(buf, outputFileName, 'no aplica', 'scrwebm', ciaSeleccionada, Meteor.user(), 'xlsx');
     }
-});
+})
