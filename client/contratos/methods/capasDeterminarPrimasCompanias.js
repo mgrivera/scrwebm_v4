@@ -1,13 +1,15 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
-let capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
+const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
 
-    let contrato = $scope.contrato;
+    const contrato = $scope.contrato;
 
     // debe haber una capa seleccionada
     if (contrato.capasPrimasCompanias && contrato.capasPrimasCompanias.length) {
@@ -30,7 +32,7 @@ let capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
     // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
     // justamente, tendrá 'nuestra orden'
     let companiaNosotros = {};
-    let result = LeerCompaniaNosotros(Meteor.userId()); 
+    const result = LeerCompaniaNosotros(Meteor.userId()); 
 
     if (result.error) {
         DialogModal($modal, "<em>Contratos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
@@ -42,12 +44,12 @@ let capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
     // cada capa debe tener un array de reaseguradores
     let error = false;
 
-    if (!contrato.capas || !_.isArray(contrato.capas) || !contrato.capas.length) {
+    if (!contrato.capas || !Array.isArray(contrato.capas) || !contrato.capas.length) {
         error = true;
     }
 
     contrato.capas.forEach((c) => {
-        if (!c.reaseguradores || !_.isArray(c.reaseguradores) || !c.reaseguradores.length) {
+        if (!c.reaseguradores || !Array.isArray(c.reaseguradores) || !c.reaseguradores.length) {
             error = true;
         }
     })
@@ -64,7 +66,7 @@ let capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
 
 function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
 
-    let contrato = $scope.contrato;
+    const contrato = $scope.contrato;
 
     if (contrato.capasPrimasCompanias && contrato.capasPrimasCompanias.length) { 
         contrato.capasPrimasCompanias.length = 0;
@@ -77,7 +79,7 @@ function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
         
     contrato.capas.forEach(function(capa) {
 
-        let primaCompania = {};
+        const primaCompania = {};
 
         // primero grabamos un registro para 'nosotros'; luego, un registro para cada reasegurador
         primaCompania._id = new Mongo.ObjectID()._str;
@@ -97,7 +99,7 @@ function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
 
         capa.reaseguradores.forEach(function(reasegurador) {
 
-            let primaCompania = {};
+            const primaCompania = {};
 
             // primero grabamos un registro para 'nosotros'; luego, un registro para cada reasegurador
             primaCompania._id = new Mongo.ObjectID()._str;
@@ -120,7 +122,7 @@ function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
 
     $scope.capasPrimasCompanias_ui_grid.data = [];
 
-    if (_.isArray($scope.contrato.capasPrimasCompanias)) { 
+    if (Array.isArray($scope.contrato.capasPrimasCompanias)) { 
         $scope.capasPrimasCompanias_ui_grid.data = $scope.contrato.capasPrimasCompanias;
     }   
         

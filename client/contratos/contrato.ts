@@ -441,7 +441,7 @@ angular.module("scrwebm").controller("ContratoController",
         enableRowSelection: true,
         enableRowHeaderSelection: true,
         multiSelect: false,
-        enableSelectAll: true,
+        enableSelectAll: false,
         selectionRowHeaderWidth: 25, 
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
@@ -719,7 +719,7 @@ angular.module("scrwebm").controller("ContratoController",
         enableRowSelection: true,
         enableRowHeaderSelection: true,
         multiSelect: false,
-        enableSelectAll: true,
+        enableSelectAll: false,
         selectionRowHeaderWidth: 25, 
         rowHeight: 25,
 
@@ -858,7 +858,6 @@ angular.module("scrwebm").controller("ContratoController",
     ]
 
     $scope.agregarCapaReasegurador = function () {
-        //debugger;
         // aquí está la capa seleccionada por el usuario ...
         if (!$scope.capaSeleccionada || lodash.isEmpty($scope.capaSeleccionada)) {
             DialogModal($modal,
@@ -885,7 +884,7 @@ angular.module("scrwebm").controller("ContratoController",
             
         reasegurador._id = new Mongo.ObjectID()._str;
 
-        if (ultimoReasegurador) {
+        if (ultimoReasegurador && !lodash.isEmpty(ultimoReasegurador)) {
             reasegurador.ordenPorc = ultimoReasegurador.ordenPorc;
             reasegurador.imp1Porc = ultimoReasegurador.imp1Porc;
             reasegurador.imp2Porc = ultimoReasegurador.imp2Porc;
@@ -973,7 +972,7 @@ angular.module("scrwebm").controller("ContratoController",
         enableRowSelection: true,
         enableRowHeaderSelection: true,
         multiSelect: false,
-        enableSelectAll: true,
+        enableSelectAll: false,
         selectionRowHeaderWidth: 25, 
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
@@ -1282,7 +1281,26 @@ angular.module("scrwebm").controller("ContratoController",
             footerCellFilter: 'currencyFilter',
             footerCellClass: 'ui-grid-rightCell'
         },
+        {
+            name: 'delButton',
+            displayName: '',
+            cellTemplate: '<span ng-click="grid.appScope.eliminarCapaPrimaCompania(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+            enableCellEdit: false,
+            enableSorting: false,
+            width: 25
+        }
     ]
+
+    $scope.eliminarCapaPrimaCompania = (entity) => { 
+
+        // para eliminar el registro, hacemos un filter que excluya al item seleccionado en el array 
+        lodash.remove($scope.contrato.capasPrimasCompanias, (x: any) => x._id === entity._id); 
+
+        if (!$scope.contrato.docState) {
+            $scope.contrato.docState = 2;
+            $scope.dataHasBeenEdited = true;
+        } 
+    }
 
     $scope.capasPrimasCompaniasCalcular = () => {
         // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero. Si solo usamos
@@ -1290,7 +1308,7 @@ angular.module("scrwebm").controller("ContratoController",
         if (!$scope.contrato.capasPrimasCompanias || !Array.isArray($scope.contrato.capasPrimasCompanias) ||
             !$scope.contrato.capasPrimasCompanias.length) { 
                 return;
-            }
+        }
             
 
         $scope.contrato.capasPrimasCompanias.forEach(function (p) {
@@ -1407,7 +1425,7 @@ angular.module("scrwebm").controller("ContratoController",
         enableRowSelection: true,
         enableRowHeaderSelection: true,
         multiSelect: false,
-        enableSelectAll: true,
+        enableSelectAll: false,
         selectionRowHeaderWidth: 25, 
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
@@ -1460,6 +1478,7 @@ angular.module("scrwebm").controller("ContratoController",
             enableCellEdit: false,
             enableColumnMenu: false,
             pinnedLeft: true,
+            enableFiltering: false, 
             width: 25
         },
         {
@@ -1679,6 +1698,7 @@ angular.module("scrwebm").controller("ContratoController",
             enableSorting: false,
             enableColumnMenu: false,
             enableCellEdit: false,
+            enableFiltering: false, 
             type: 'string'
         },
         {
@@ -1687,6 +1707,7 @@ angular.module("scrwebm").controller("ContratoController",
             cellTemplate: '<span ng-click="grid.appScope.eliminarCapaCuota(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableSorting: false,
+            enableFiltering: false, 
             width: 25
         }
     ]

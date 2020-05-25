@@ -133,7 +133,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
             editableCellTemplate: 'ui-grid/dropdownEditor',
             editDropdownIdLabel: 'codigo',
             editDropdownValueLabel: 'codigo',
-            editDropdownOptionsArray: $scope.$parent.codigosContato_list,
+            editDropdownOptionsArray: [],
             // no necesitamos un cellFilter pues el id y descripción son el mismo en esta lista
             // cellFilter: 'mapDropdown:row.grid.appScope.monedas:"codigo":"codigo"',
             enableColumnMenu: false,
