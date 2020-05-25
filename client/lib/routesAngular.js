@@ -548,16 +548,17 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
 
         .state('cumulos.registro', {
-            url: '/registro?origen&entityId&subEntityId&url',
+            url: '/registro?modo&origen&entityId&subEntityId&url',
             controller: ['$stateParams', function ($stateParams) {
+                this.modo = $stateParams.modo;
                 this.origen = $stateParams.origen;
                 this.entityId = $stateParams.entityId;
                 this.subEntityId = $stateParams.subEntityId;
                 this.url = $stateParams.url; 
             }],
             controllerAs: 'ctrl',
-            params: { origen: null, entityId: "", subEntityId: "", url: "" },
-            template: '<registro-cumulos origen="ctrl.origen" entity-id="ctrl.entityId" sub-entity-id="ctrl.subEntityId" url="ctrl.url" />',
+            params: { modo: null, origen: null, entityId: "", subEntityId: "", url: "" },
+            template: '<registro-cumulos modo="ctrl.modo" origen="ctrl.origen" entity-id="ctrl.entityId" sub-entity-id="ctrl.subEntityId" url="ctrl.url" />',
             parent: 'cumulos'
         })
 

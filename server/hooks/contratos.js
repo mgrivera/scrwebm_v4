@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Cumulos_Registro } from '/imports/collections/principales/cumulos_registro'; 
 
 Contratos.before.remove(function (userId, doc) {
     // cuotas
@@ -18,5 +19,13 @@ Contratos.before.remove(function (userId, doc) {
                         Solo luego podrá regresar y eliminar el contrato. 
                         `);
         }
+    }
+
+    const cumulosRegistroCount = Cumulos_Registro.find({ entityId: doc._id }).count(); 
+    if (cumulosRegistroCount) { 
+        throw new Meteor.Error("dataBaseError",
+                        "Existen registros asociados.",
+                        `Existen cúmulos asociados al contrato. El contrato no puede ser eliminado.<br />
+                        `);
     }
 })

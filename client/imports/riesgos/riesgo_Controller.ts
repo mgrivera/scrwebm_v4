@@ -743,104 +743,16 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
         // movimientoSeleccionado es inicializado en $scope.$parent cuando se selecciona un movimiento; luego está disponible en los 
         // (children) controllers una vez que se ha inializado ... 
-        let riesgo = $scope.riesgo; 
-        let movimiento = $scope.movimientoSeleccionado; 
-
-        let valoresARiesgo = 0; 
-        let sumaAsegurada = 0; 
-        let prima = 0; 
-        let nuestraOrdenPorc = 0; 
-        let sumaReasegurada = 0; 
-        let primaBruta = 0; 
-              
-        // determinamos nuestra orden 
-        if (movimiento.companias) { 
-            nuestraOrdenPorc = movimiento.companias.find(x => x.nosotros).ordenPorc;
-        }
-
-        if (movimiento.coberturas) { 
-            valoresARiesgo = lodash.round(lodash.sumBy(movimiento.coberturas, 'valorARiesgo'), 2); 
-            sumaAsegurada = lodash.round(lodash.sumBy(movimiento.coberturas, 'sumaAsegurada'), 2); 
-            prima = lodash.round(lodash.sumBy(movimiento.coberturas, 'prima'), 2); 
-            sumaReasegurada = lodash.round(sumaAsegurada * nuestraOrdenPorc / 100, 2);  
-            primaBruta = lodash.round(prima * nuestraOrdenPorc / 100, 2);  
-        }
-
-        let reaseguradores = []; 
-
-        if (movimiento.companias) { 
-            movimiento.companias.filter(x => !x.nosotros).forEach((x) => { 
-                reaseguradores.push({ 
-                    _id: new Mongo.ObjectID()._str,
-                    compania: x.compania, 
-                    ordenPorc: x.ordenPorc, 
-                } as never); 
-            })
-        }
-
-        let infoCumulos = {
-
-            _id: new Mongo.ObjectID()._str,
-
-            source : {
-                entityID : riesgo._id,
-                subEntityID : movimiento._id,
-                origen : "fac",
-                numero : `${riesgo.numero}-${movimiento.numero}`
-            },
-            
-            desde: movimiento.desde, 
-            hasta: movimiento.hasta, 
-            tipoCumulo: null, 
-            zona: null, 
-            moneda: riesgo.moneda,  
-            cedente: riesgo.compania, 
-            indole: riesgo.indole, 
-            ramo: riesgo.ramo,  
-            tipoObjetoAsegurado: riesgo.objetoAsegurado && riesgo.objetoAsegurado.tipo ? riesgo.objetoAsegurado.tipo : null,  
-
-            valoresARiesgo: valoresARiesgo, 
-            sumaAsegurada: sumaAsegurada,  
-            prima: prima,  
-            nuestraOrdenPorc: nuestraOrdenPorc,  
-            sumaReasegurada: sumaReasegurada, 
-            primaBruta: primaBruta,  
-
-            reaseguradores: reaseguradores, 
-
-            cia: $scope.companiaSeleccionada._id, 
-        }; 
-
+        const riesgo = $scope.riesgo; 
+        const movimiento = $scope.movimientoSeleccionado; 
+ 
         // TODO: aquí debemos ir al state: 'cumulos.registro'; desde este state se monta el angular component
         // RegistroCumulos, que es un angular component, que monta, a su vez, un react component del mismo nombre 
-        $state.go('cumulos.registro', { origen: 'riesgos', 
+        $state.go('cumulos.registro', { modo: $scope.origen, 
+                                        origen: 'fac', 
                                         entityId: riesgo._id, 
                                         subEntityId: movimiento._id, 
                                         url: $location.url() });
-        return; 
-
-        $modal.open({
-            templateUrl: 'client/html/generales/cumulos/registro/registroCumulos.html',
-            controller: 'RegistroCumulos_Controller',
-            size: 'lg',
-            resolve: {
-                infoCumulos: function () {
-                    return infoCumulos;
-                },
-                origen: function() { 
-                    return $scope.origen;           // edición / consulta 
-                }, 
-                companiaSeleccionada: function() { 
-                    return $scope.companiaSeleccionada; 
-                }
-            }
-        }).result.then(
-            function (resolve) {
-                return true;
-            },
-            function (cancel) {
-                return true;
-            });
     }
 
     // -------------------------------------------------------------------------

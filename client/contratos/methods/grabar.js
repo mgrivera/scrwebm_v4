@@ -94,6 +94,7 @@ const grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
         return;
     }
 
+    let Contratos_SubscriptionHandle = null;
 
     Meteor.call('contratos.save', $scope.contrato, $scope.cuotas.filter((x) => { return x.docState; }), 
 
@@ -148,8 +149,6 @@ const grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
         if (Contratos_SubscriptionHandle) {
             Contratos_SubscriptionHandle.stop();
         }
-
-        let Contratos_SubscriptionHandle = null;
 
         Contratos_SubscriptionHandle = 
         Meteor.subscribe('contrato', contratoID, () => { 

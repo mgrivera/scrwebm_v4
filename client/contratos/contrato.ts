@@ -2184,20 +2184,13 @@ angular.module("scrwebm").controller("ContratoController",
         let contrato = $scope.contrato; 
         // let movimiento = $scope.movimientoSeleccionado; 
 
-        let valoresARiesgo = 0; 
-        let sumaAsegurada = 0; 
-        let prima = 0; 
-        let nuestraOrdenPorc = 0; 
-        let sumaReasegurada = 0; 
-        let primaBruta = 0; 
-              
         // TODO: aquí debemos determinar el tipo de contrato: capa / cuenta
         let tipoContrato = ""; 
 
         if (contrato && contrato.capas && contrato.capas.length) { 
-            tipoContrato = "capa"; 
+            tipoContrato = "noProp"; 
         } else if (contrato && contrato.cuentasTecnicas_definicion && contrato.cuentasTecnicas_definicion.length) { 
-            tipoContrato = "cuenta"; 
+            tipoContrato = "prop"; 
         }
 
         if (!tipoContrato) {
@@ -2209,122 +2202,12 @@ angular.module("scrwebm").controller("ContratoController",
             return;
         }
 
-        // determinamos las cifras del cúmulo, de acuerdo al tipo de contrato: prop / no prop 
-
-        // TODO: nótese que no determinamos sumas aseguradas, etc., pues por ahora no existen en el registro del contrato. Lo que 
-        // único que el usuario registra en el contrato no proporcional es su prima ... 
-
-        if (tipoContrato === "capa") { 
-            valoresARiesgo = 0; 
-            sumaAsegurada = 0; 
-            prima = lodash.round(lodash(contrato.capasPrimasCompanias).filter(x => x.nosotros).sumBy('pmd'), 2); 
-            sumaReasegurada = 0;  
-            primaBruta = lodash.round(lodash(contrato.capasPrimasCompanias).filter(x => x.nosotros).sumBy('primaBruta'), 2); 
-
-            // determinamos nuestra orden 
-            if (prima) { 
-                nuestraOrdenPorc = primaBruta * 100 / prima;
-            }
-        }
-
-        let moneda = ""; 
-        let reaseguradores = []; 
-
-        if (tipoContrato === "capa") { 
-            moneda = contrato.capas[0].moneda; 
-
-            if (contrato.capas[0].reaseguradores) { 
-                contrato.capas[0].reaseguradores.forEach((x) => { 
-                    reaseguradores.push({ 
-                        _id: new Mongo.ObjectID()._str,
-                        compania: x.compania, 
-                        ordenPorc: x.ordenPorc, 
-                    } as never); 
-                })
-            }
-        } else { 
-            moneda = contrato.cuentasTecnicas_definicion[0].moneda; 
-
-            // NOTA: por ahora, simplemente, leemos los reasegurados en la tabla de saldos para la primera de las cuentas técnicas 
-            let reaseguradoresContratoProp = ContratosProp_cuentas_saldos.find({ 
-                contratoID: contrato._id, 
-                definicionID: contrato.cuentasTecnicas_definicion[0]._id, 
-                nosotros: { $ne: true } }).fetch(); 
-
-            if (reaseguradoresContratoProp) { 
-                reaseguradoresContratoProp.forEach((x) => { 
-                    reaseguradores.push({ 
-                        _id: new Mongo.ObjectID()._str,
-                        compania: x.compania
-                    } as never); 
-                })
-            }
-        }
-
-        let infoCumulos = {
-
-            _id: new Mongo.ObjectID()._str,
-
-            source : {
-                entityID : contrato._id,
-                subEntityID : null,
-                origen : tipoContrato,
-                // numero : `${contrato.numero}-${movimiento.numero}`
-                numero : `${contrato.numero}`
-            },
-            
-            desde: contrato.desde, 
-            hasta: contrato.hasta, 
-            tipoCumulo: null, 
-            zona: null, 
-            moneda: moneda,  
-            cedente: contrato.compania, 
-            indole: null, 
-            ramo: contrato.ramo,  
-            tipoObjetoAsegurado: null,  
-
-            valoresARiesgo: valoresARiesgo, 
-            sumaAsegurada: sumaAsegurada,  
-            prima: prima,  
-            nuestraOrdenPorc: nuestraOrdenPorc,  
-            sumaReasegurada: sumaReasegurada, 
-            primaBruta: primaBruta,  
-
-            reaseguradores: reaseguradores, 
-
-            cia: contrato.cia, 
-        }; 
-
-        // TODO: aquí debemos ir al state: 'cumulos.registro'; desde este state se monta el angular component
         // RegistroCumulos, que es un angular component, que monta, a su vez, un react component del mismo nombre 
-        $state.go('cumulos.registro', { origen: 'contratos',
+        $state.go('cumulos.registro', { modo: $scope.origen, 
+                                        origen: tipoContrato,
                                         entityId: contrato._id,
                                         subEntityId: '',
                                         url: $location.url()
-        });
-        return; 
-
-        $modal.open({
-            templateUrl: 'client/html/generales/cumulos/registro/registroCumulos.html',
-            controller: 'RegistroCumulos_Controller',
-            size: 'lg',
-            resolve: {
-                infoCumulos: function () {
-                    return infoCumulos;
-                },
-                origen: function() { 
-                    return $scope.origen;           // edición / consulta 
-                }, 
-                companiaSeleccionada: function() { 
-                    return $scope.companiaSeleccionada; 
-                }
-            }
-        }).result.then(
-            function (resolve) {
-                return true;
-            },
-            function (cancel) {
-                return true;
-            });
+        })
     }
 }])

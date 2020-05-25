@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Riesgos } from '/imports/collections/principales/riesgos'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { Siniestros } from '/imports/collections/principales/siniestros'; 
+import { Cumulos_Registro } from '/imports/collections/principales/cumulos_registro'; 
 
 Riesgos.before.remove(function (userId, doc) {
 
@@ -38,5 +39,13 @@ Riesgos.before.remove(function (userId, doc) {
                     <b>Nota:</b> Ud. debe <b>antes</b> editar el riesgo y eliminar sus cuotas. <br />
                     Solo luego podrá regresar y eliminar el riesgo. 
                     `);
+    }
+
+    const cumulosRegistroCount = Cumulos_Registro.find({ entityId: doc._id }).count(); 
+    if (cumulosRegistroCount) { 
+        throw new Meteor.Error("dataBaseError",
+                        "Existen registros asociados.",
+                        `Existen <em>cúmulos</em> asociados al riesgo. El riesgo no puede ser eliminado.<br />
+                        `);
     }
 })
