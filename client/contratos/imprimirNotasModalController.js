@@ -1,4 +1,5 @@
 
+import angular from 'angular';
 import moment from 'moment';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -10,8 +11,8 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 import { CollectionFS_templates } from '/client/imports/collectionFS/Files_CollectionFS_templates'; 
 
 angular.module("scrwebm").controller('ImprimirNotasContratosModalController',
-['$scope', '$modalInstance', '$modal', 'contrato', 'cuotas',
-function ($scope, $modalInstance, $modal, contrato, cuotas) {
+['$scope', '$modalInstance', '$modal', 'contrato',
+function ($scope, $modalInstance, $modal, contrato) {
 
     // este modal intenta construir un pdf para cada tipo de nota de cobertura: cedente, reasegurador, interna
     // ui-bootstrap alerts ...

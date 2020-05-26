@@ -1,5 +1,5 @@
 
-
+import angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebm").controller('ContratosCapasExportarExcel_Controller',

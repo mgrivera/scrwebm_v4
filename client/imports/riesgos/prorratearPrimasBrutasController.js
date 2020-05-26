@@ -1,10 +1,9 @@
 
-
+import angular from 'angular';
 import lodash from 'lodash';
 
 export default angular.module("scrwebm.riesgos.movimientos.prorratearPrimasBrutas", []).
-        controller('Riesgos_ProrratearPrimasController',
-['$scope', '$modalInstance', 'riesgo', 'movimiento',
+                       controller('Riesgos_ProrratearPrimasController', ['$scope', '$modalInstance', 'riesgo', 'movimiento',
 function ($scope, $modalInstance, riesgo, movimiento) {
 
     // ui-bootstrap alerts ...

@@ -11,7 +11,7 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
 
     const contrato = $scope.contrato;
 
-    // debe haber una capa seleccionada
+    // pueden existir registros construidos antes por esta función
     if (contrato.capasPrimasCompanias && contrato.capasPrimasCompanias.length) {
         DialogModal($modal, "<em>Contratos - Capas</em>",
                             "Ya existen registros de primas para las compañías en el contrato.<br /><br />" +
@@ -29,8 +29,7 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
             return;
     }
 
-    // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
-    // justamente, tendrá 'nuestra orden'
+    // la compañía 'nosotros' es nuestra empresa ... es la que, inicialmente, recibe la orden de reaseguraro 
     let companiaNosotros = {};
     const result = LeerCompaniaNosotros(Meteor.userId()); 
 
@@ -42,6 +41,7 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
     companiaNosotros = result.companiaNosotros; 
 
     // cada capa debe tener un array de reaseguradores
+    // nota: dejamos de hacer esta validación; ahora puede haber *solo* nuestra orden; sin reaseguradores 
     let error = false;
 
     if (!contrato.capas || !Array.isArray(contrato.capas) || !contrato.capas.length) {
@@ -50,14 +50,14 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
 
     contrato.capas.forEach((c) => {
         if (!c.reaseguradores || !Array.isArray(c.reaseguradores) || !c.reaseguradores.length) {
-            error = true;
+            c.reaseguradores = []; 
         }
     })
 
     if (error) {
         DialogModal($modal, "<em>Contratos - Capas</em>",
-                            `El contrato debe tener capas registradas;
-                            A su vez, cada capa debe tener reaseguradores registrados.`, false).then();
+                            `El contrato debe tener capas registradas; <br />
+                            Cada capa puede o no tener reaseguradores registrados.`, false).then();
         return;
     }
 

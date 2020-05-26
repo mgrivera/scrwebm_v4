@@ -1,5 +1,5 @@
 ﻿
-
+import angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -10,9 +10,8 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-angular.module("scrwebm").controller("ContratosFiltroController",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+angular.module("scrwebm")
+       .controller("ContratosFiltroController", ['$scope', '$state', '$stateParams', function ($scope, $state, $stateParams) {
 
       $scope.showProgress = false;
 

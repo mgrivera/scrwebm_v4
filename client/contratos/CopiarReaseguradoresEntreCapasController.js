@@ -1,5 +1,5 @@
 
-
+import angular from 'angular';
 import lodash from 'lodash';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 

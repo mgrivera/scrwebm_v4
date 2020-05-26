@@ -1,36 +1,39 @@
 
-import * as moment from 'moment';
-import * as lodash from 'lodash';
-import * as angular from 'angular';
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo'; 
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { TiposContrato } from 'imports/collections/catalogos/tiposContrato'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
-import { Cuotas } from 'imports/collections/principales/cuotas'; 
-import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
+import moment from 'moment';
+import lodash from 'lodash';
+import angular from 'angular';
 
-import { DialogModal } from '../imports/generales/angularGenericModal'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
+import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from './methods/_methods/_methods'; 
-import { MostrarPagosEnCuotas } from '../imports/generales/mostrarPagosAplicadosACuotaController'; 
+import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
-import { Contratos } from 'imports/collections/principales/contratos'; 
-import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
+import { Contratos } from '/imports/collections/principales/contratos'; 
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
 // siguen todos las tablas (collections) para el registro de contratos proporcionales 
-import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_comAdic_resumen, ContratosProp_comAdic_distribucion, ContratosProp_comAdic_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_partBeneficios_resumen, ContratosProp_partBeneficios_distribucion, ContratosProp_partBeneficios_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_entCartPr_resumen, ContratosProp_entCartPr_distribucion, ContratosProp_entCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, ContratosProp_entCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_comAdic_resumen, ContratosProp_comAdic_distribucion, ContratosProp_comAdic_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_partBeneficios_resumen, ContratosProp_partBeneficios_distribucion, ContratosProp_partBeneficios_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_entCartPr_resumen, ContratosProp_entCartPr_distribucion, ContratosProp_entCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, ContratosProp_entCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
 
 angular.module("scrwebm").controller("ContratoController",
-                          ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q', '$location', 
-                  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q, $location) {
+                          ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$location', 
+                  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $location) {
 
     $scope.showProgress = false;
     $scope.dataHasBeenEdited = false; 
@@ -61,7 +64,7 @@ angular.module("scrwebm").controller("ContratoController",
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = {};
     if (companiaSeleccionada) { 
         companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
@@ -97,10 +100,10 @@ angular.module("scrwebm").controller("ContratoController",
                         para agregar un nuevo registro, los cambios se perderán.<br /><br />
                         Desea continuar y perder los cambios efectuados al registro actual?`,
                         true).then(
-                function (resolve) {
+                function () {
                     $scope.nuevo();
                 },
-                function (err) {
+                function () {
                     return true;
                 });
 
@@ -170,7 +173,7 @@ angular.module("scrwebm").controller("ContratoController",
     })
 
     $scope.exportarExcel_Capas = () => {
-        let modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/contratos/contratosCapasExportarExcel_Modal.html',
             controller: 'ContratosCapasExportarExcel_Controller',
             size: 'md',
@@ -183,10 +186,10 @@ angular.module("scrwebm").controller("ContratoController",
                 },
             },
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             });
     }
@@ -195,7 +198,6 @@ angular.module("scrwebm").controller("ContratoController",
     // ---------------------------------------------------------------
     // Grabar()
     // ---------------------------------------------------------------
-
     $scope.grabar = function () {
         // para medir y mostrar el progreso de la tarea ...
         $scope.processProgress.current = 0;
@@ -209,16 +211,16 @@ angular.module("scrwebm").controller("ContratoController",
     $scope.regresarALista = function () {
 
         if ($scope.dataHasBeenEdited && $scope.origen && $scope.origen == 'edicion') {
-            var promise = DialogModal($modal,
+            const promise = DialogModal($modal,
                                     "<em>Contratos</em>",
                                     "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
                                     true);
 
             promise.then(
-                function (resolve) {
+                function () {
                     $state.go('contratosLista', { origen: $scope.origen, limit: $scope.limit });
                 },
-                function (err) {
+                function () {
                     return true;
                 });
 
@@ -233,16 +235,16 @@ angular.module("scrwebm").controller("ContratoController",
     $scope.eliminar = function () {
         if ($scope.contrato.docState && $scope.contrato.docState == 1) {
             if ($scope.contrato.docState) {
-                var promise = DialogModal($modal,
+                const promise = DialogModal($modal,
                                         "<em>Contratos</em>",
                                         "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
                                         false);
 
                 promise.then(
-                    function (resolve) {
+                    function () {
                         return;
                     },
-                    function (err) {
+                    function () {
                         return;
                     });
 
@@ -272,10 +274,10 @@ angular.module("scrwebm").controller("ContratoController",
                         refresca el registro, los cambios se perderán.<br /><br />Desea continuar y
                         perder los cambios?`,
                         true).then(
-                function (resolve) {
+                function () {
                     inicializarItem();
                 },
-                function (err) {
+                function () {
                     return true;
                 });
 
@@ -292,7 +294,7 @@ angular.module("scrwebm").controller("ContratoController",
         switch (field) {
             case 'desde':
                 if ($scope.contrato.desde && !$scope.contrato.hasta) {
-                    let desde = $scope.contrato.desde;
+                    const desde = $scope.contrato.desde;
                     let  newDate = new Date(desde.getFullYear() + 1, desde.getMonth(), desde.getDate());
                     newDate = moment(newDate).subtract(1, 'days').toDate();
 
@@ -316,9 +318,9 @@ angular.module("scrwebm").controller("ContratoController",
                         "Aparentemente, el contrato para el cual Ud. desea construir las notas, no tiene capas registradas.",
                         false).then();
             return;
-        };
+        }
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/contratos/imprimirNotasContratos_Modal.html',
             controller: 'ImprimirNotasContratosModalController',
             size: 'lg',
@@ -326,23 +328,19 @@ angular.module("scrwebm").controller("ContratoController",
                 contrato: function () {
                     return $scope.contrato;
                 },
-            //   movimientoSeleccionado: function() {
-            //       return movimientoSeleccionado;
-            //   },
                 cuotas: function() {
                     return $scope.cuotas;
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             });
 
     }
-
 
     $scope.registrarPersonasCompanias = () => {
         if (!$scope.contrato || !$scope.contrato.compania) {
@@ -352,61 +350,61 @@ angular.module("scrwebm").controller("ContratoController",
             false).then();
 
             return;
-        };
+        }
 
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/generales/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {
                 companias: function () {
                 //   debugger;
-                    let contrato = $scope.contrato;
-                    let companias = [];
+                    const contrato = $scope.contrato;
+                    const companias = [];
 
                     if (Array.isArray(contrato.personas)) {
                         contrato.personas.forEach(persona => {
-                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre } as never);
+                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
                         });
-                    };
+                    }
 
                     // ahora revisamos las compañías en el contrato (cedente, cuentas, caaps) y agregamos las que
                     // *no* existan en el array de compañías
 
-                    if (!lodash.some(companias, (c: any) => { return c.compania == contrato.compania; } ))
-                        companias.push({ compania: contrato.compania } as never);
+                    if (!lodash.some(companias, (c) => { return c.compania == contrato.compania; } ))
+                        companias.push({ compania: contrato.compania });
 
                     if (Array.isArray(contrato.capas)) {
                         contrato.capas.forEach(capa => {
-                        if (Array.isArray(capa.reaseguradores)) {
-                            capa.reaseguradores.forEach(r => {
-                                if (!lodash.some(companias, (c: any) => { return c.compania == r.compania; } ))
-                                    companias.push({ compania: r.compania } as never);
-                            });
-                        };
+                            if (Array.isArray(capa.reaseguradores)) {
+                                capa.reaseguradores.forEach(r => {
+                                    if (!lodash.some(companias, (c) => { return c.compania == r.compania; } ))
+                                        companias.push({ compania: r.compania });
+                                });
+                            }
                         });
-                    };
+                    }
 
                     if (contrato.cuentas && Array.isArray(contrato.cuentas.reaseguradores)) {
                         contrato.cuentas.reaseguradores.forEach(r => {
-                        if (!lodash.some(companias, (c: any) => { return c.compania == r.compania; } ))
-                            companias.push({ compania: r.compania } as never);
+                        if (!lodash.some(companias, (c) => { return c.compania == r.compania; } ))
+                            companias.push({ compania: r.compania });
                         });
-                    };
+                    }
 
                     return companias;
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
             function (cancel) {
                 // recuperamos las personas de compañías, según las indicó el usuario en el modal
             //   debugger;
                 if (cancel.entityUpdated) {
-                    let companias = cancel.companias;
+                    const companias = cancel.companias;
                     $scope.contrato.personas = [];
 
                     if (Array.isArray(companias)) {
@@ -417,12 +415,12 @@ angular.module("scrwebm").controller("ContratoController",
                                 nombre: c.nombre? c.nombre : null
                             });
                         });
-                    };
+                    }
 
                 if (!$scope.contrato.docState)
                     $scope.contrato.docState = 2;
                     $scope.dataHasBeenEdited = true; 
-                };
+                }
 
                 return true;
             });
@@ -622,12 +620,11 @@ angular.module("scrwebm").controller("ContratoController",
             $scope.contrato.capas = [];
         }
             
-        var capa = {} as any;
+        const capa = {};
 
         capa._id = new Mongo.ObjectID()._str;
 
-        let monedaDefecto = Monedas.findOne({ defecto: true, });
-        let contratosParametros = $scope.contratosParametros;
+        const monedaDefecto = Monedas.findOne({ defecto: true, });
 
         if ($scope.contrato.capas.length === 0) {
             capa.numero = 1;
@@ -641,7 +638,7 @@ angular.module("scrwebm").controller("ContratoController",
 
 
         if ($scope.contrato.capas.length > 0) {
-            var maxCapa = lodash.maxBy($scope.contrato.capas, "numero") as any;
+            const maxCapa = lodash.maxBy($scope.contrato.capas, "numero");
             if (maxCapa) {
                 capa.numero = maxCapa.numero + 1;
                 capa.moneda = maxCapa.moneda ? maxCapa.moneda : null;
@@ -687,7 +684,7 @@ angular.module("scrwebm").controller("ContratoController",
 
     $scope.eliminarCapa = function (entity) {
 
-        lodash.remove($scope.contrato.capas, function (capa: any) { return capa._id === entity._id; });
+        lodash.remove($scope.contrato.capas, function (capa) { return capa._id === entity._id; });
 
         if (!$scope.contrato.docState) { 
             $scope.contrato.docState = 2;
@@ -702,7 +699,7 @@ angular.module("scrwebm").controller("ContratoController",
     // --------------------------------------------------------------------------------------
     // ui-grid de Capas - Reaseguradores
     // --------------------------------------------------------------------------------------
-    var companiasParaListaUIGrid =
+    let companiasParaListaUIGrid =
                 lodash.chain($scope.companias).
                 filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
                 sortBy(function(item) { return item.nombre; }).
@@ -875,9 +872,9 @@ angular.module("scrwebm").controller("ContratoController",
             $scope.capaSeleccionada.reaseguradores = [];
         }
             
-        var reasegurador = {} as any;
+        const reasegurador = {};
 
-        let ultimoReasegurador = {} as any;
+        let ultimoReasegurador = {};
         if ($scope.capaSeleccionada.reaseguradores.length) { 
             ultimoReasegurador = lodash.last($scope.capaSeleccionada.reaseguradores);
         }
@@ -910,7 +907,7 @@ angular.module("scrwebm").controller("ContratoController",
     }
 
     $scope.eliminarCapaReasegurador = function (entity) {
-        lodash.remove($scope.capaSeleccionada.reaseguradores, function (r: any) { return r._id === entity._id; });
+        lodash.remove($scope.capaSeleccionada.reaseguradores, function (r) { return r._id === entity._id; });
 
         if (!$scope.contrato.docState) { 
             $scope.contrato.docState = 2;
@@ -932,7 +929,7 @@ angular.module("scrwebm").controller("ContratoController",
     // para copiar reaseguradores entre capas ...
     $scope.copiarReaseguradoresEntreCapas = function () {
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/contratos/copiarReaseguradoresEntreCapas.html',
             controller: 'CopiarReaseguradoresEntreCapasController',
             size: 'lg',
@@ -945,10 +942,10 @@ angular.module("scrwebm").controller("ContratoController",
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 // si el usuario actualizó el contrato, nos aseguramos de actualizar el flag que permite saber que ha habido ediciones 
                 if ($scope.contrato.docState) { 
                     $scope.dataHasBeenEdited = true; 
@@ -960,8 +957,7 @@ angular.module("scrwebm").controller("ContratoController",
     // --------------------------------------------------------------------------------------
     // ui-grid de Capas - primas de compañías
     // --------------------------------------------------------------------------------------
-    let capasPrimasCompaniasSeleccionada = {};
-    let capasPrimasCompaniasGridApi = {} as any;
+    let capasPrimasCompaniasGridApi = {};
 
     $scope.capasPrimasCompanias_ui_grid = {
         enableSorting: true,
@@ -977,16 +973,6 @@ angular.module("scrwebm").controller("ContratoController",
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
             capasPrimasCompaniasGridApi = gridApi;
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                capasPrimasCompaniasSeleccionada = {};
-
-                if (row.isSelected)
-                    capasPrimasCompaniasSeleccionada = row.entity;
-                else
-                    return;
-            });
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -1294,7 +1280,7 @@ angular.module("scrwebm").controller("ContratoController",
     $scope.eliminarCapaPrimaCompania = (entity) => { 
 
         // para eliminar el registro, hacemos un filter que excluya al item seleccionado en el array 
-        lodash.remove($scope.contrato.capasPrimasCompanias, (x: any) => x._id === entity._id); 
+        lodash.remove($scope.contrato.capasPrimasCompanias, (x) => x._id === entity._id); 
 
         if (!$scope.contrato.docState) {
             $scope.contrato.docState = 2;
@@ -1304,7 +1290,7 @@ angular.module("scrwebm").controller("ContratoController",
 
     $scope.capasPrimasCompaniasCalcular = () => {
         // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero. Si solo usamos
-        // if (!var) y la variable es 0, la condición será cierta ...
+        // if (!let) y la variable es 0, la condición será cierta ...
         if (!$scope.contrato.capasPrimasCompanias || !Array.isArray($scope.contrato.capasPrimasCompanias) ||
             !$scope.contrato.capasPrimasCompanias.length) { 
                 return;
@@ -1414,7 +1400,7 @@ angular.module("scrwebm").controller("ContratoController",
     // ---------------------------------------------------------------------
     // ui-grid: cuotas para la capa seleccionada
     // ----------------------------------------------------------------------
-    var capasCuotaSeleccionada = {} as any;
+    let capasCuotaSeleccionada = {};
 
     $scope.capasCuotas_ui_grid = {
         enableSorting: true,
@@ -1729,7 +1715,7 @@ angular.module("scrwebm").controller("ContratoController",
             $scope.cuotas = [];
         }
             
-        var cuota = {} as any;
+        const cuota = {};
 
         cuota._id = new Mongo.ObjectID()._str;
 
@@ -1771,7 +1757,7 @@ angular.module("scrwebm").controller("ContratoController",
 
     $scope.eliminarCapaCuota = function (cuota) {
 
-        let index = lodash.findIndex($scope.cuotas, (x: any) => { return x._id === cuota._id; });
+        const index = lodash.findIndex($scope.cuotas, (x) => { return x._id === cuota._id; });
         if (index != -1) {
             $scope.cuotas[index].docState = 3;
         }
@@ -1790,7 +1776,7 @@ angular.module("scrwebm").controller("ContratoController",
 
             if (!cuota.fechaEmision) {
                 cuota.fechaEmision = new Date();
-                if (!cuota.docState) { cuota.docState = 2; }; 
+                if (!cuota.docState) { cuota.docState = 2; } 
 
                 cuotaActualizada = true; 
             }
@@ -1798,7 +1784,7 @@ angular.module("scrwebm").controller("ContratoController",
             // calculamos la fecha de vencimiento
             if (cuota.fecha && cuota.diasVencimiento && !cuota.fechaVencimiento) {
                 cuota.fechaVencimiento = moment(cuota.fecha).add(cuota.diasVencimiento, 'days').toDate();
-                if (!cuota.docState) { cuota.docState = 2; }; 
+                if (!cuota.docState) { cuota.docState = 2; }
                 
                 cuotaActualizada = true; 
             }
@@ -1806,7 +1792,7 @@ angular.module("scrwebm").controller("ContratoController",
             // calculamos la fecha
             if (!cuota.fecha && cuota.diasVencimiento && cuota.fechaVencimiento) {
                 cuota.fecha = moment(cuota.fechaVencimiento).subtract(cuota.diasVencimiento, 'days').toDate();
-                if (!cuota.docState) { cuota.docState = 2; }; 
+                if (!cuota.docState) { cuota.docState = 2; }
                 
                 cuotaActualizada = true; 
             }
@@ -1814,9 +1800,9 @@ angular.module("scrwebm").controller("ContratoController",
             // calculamos la cantidad de días
             if (cuota.fecha && !cuota.diasVencimiento && cuota.fechaVencimiento) {
                 // calculamos la cantidad de días entre dos fechas con moment
-                let duration = moment.duration(moment(cuota.fechaVencimiento).diff(cuota.fecha));
+                const duration = moment.duration(moment(cuota.fechaVencimiento).diff(cuota.fecha));
                 cuota.diasVencimiento = duration.asDays();
-                if (!cuota.docState) { cuota.docState = 2; }; 
+                if (!cuota.docState) { cuota.docState = 2; }
                 
                 cuotaActualizada = true; 
             }
@@ -1824,7 +1810,7 @@ angular.module("scrwebm").controller("ContratoController",
             // calculamos el monto
             if (cuota.montoOriginal && cuota.factor && !cuota.monto) {
                 cuota.monto = cuota.montoOriginal * cuota.factor;
-                if (!cuota.docState) { cuota.docState = 2; }; 
+                if (!cuota.docState) { cuota.docState = 2; }
                 
                 cuotaActualizada = true; 
             }
@@ -1832,7 +1818,7 @@ angular.module("scrwebm").controller("ContratoController",
             // calculamos el monto original
             if (!cuota.montoOriginal && cuota.factor && cuota.monto && cuota.factor != 0) {
                 cuota.montoOriginal = cuota.monto / cuota.factor;
-                if (!cuota.docState) { cuota.docState = 2; }; 
+                if (!cuota.docState) { cuota.docState = 2; } 
                 
                 cuotaActualizada = true; 
             }
@@ -1840,7 +1826,7 @@ angular.module("scrwebm").controller("ContratoController",
             // calculamos el factor
             if (cuota.montoOriginal && !cuota.factor && cuota.monto && cuota.montoOriginal != 0) {
                 cuota.factor = cuota.monto / cuota.montoOriginal;
-                if (!cuota.docState) { cuota.docState = 2; }; 
+                if (!cuota.docState) { cuota.docState = 2; } 
                 
                 cuotaActualizada = true; 
             }
@@ -1929,7 +1915,6 @@ angular.module("scrwebm").controller("ContratoController",
         }
     }
 
-
     $scope.exportarExcel_Cuentas = () => { 
 
         // debe haber una definicion seleccionada
@@ -1953,7 +1938,7 @@ angular.module("scrwebm").controller("ContratoController",
             return;
         }
 
-        let modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/contratos/exportarExcel/exportarExcel_Cuentas_Modal.html',
             controller: 'ContratosCuentasExportarExcel_Controller',
             size: 'md',
@@ -1969,10 +1954,10 @@ angular.module("scrwebm").controller("ContratoController",
                 },
             },
         }).result.then(
-              function (resolve) {
+              function () {
                   return true;
               },
-              function (cancel) {
+              function () {
                   return true;
               });
     }
@@ -1981,7 +1966,7 @@ angular.module("scrwebm").controller("ContratoController",
     // para inicializar el item (en el $scope) cuando el usuario abre la página
     // -------------------------------------------------------------------------
 
-    let Contratos_SubscriptionHandle = {} as any;
+    let Contratos_SubscriptionHandle = {};
 
     function inicializarItem() {
         if ($scope.id == "0") {
@@ -2028,7 +2013,7 @@ angular.module("scrwebm").controller("ContratoController",
             $scope.contrato = {};
             $scope.cuotas = [];
 
-            let contratoID = $scope.id; 
+            const contratoID = $scope.id; 
 
             // si se efectuó un subscription al collection antes, la detenemos ...
             if (Contratos_SubscriptionHandle && Contratos_SubscriptionHandle.stop) {
@@ -2144,39 +2129,39 @@ angular.module("scrwebm").controller("ContratoController",
 
     inicializarItem();
 
-    function ui_grid_sortBy_compania(a, b, rowA, rowB, direction) {
+    function ui_grid_sortBy_compania(a, b) {
 
         // para poder ordenar el ui-grid por compañía una vez aplicado el filtro para el ddl
         // Nota importante: aparentemetne, la opción 'sortCellFiltered' no funciona correctamente cuando la columna usa un ddl (???!!!) 
 
-        let compania_a = $scope.companias.find(x => x._id === a); 
-        let compania_b = $scope.companias.find(x => x._id === b); 
+        const compania_a = $scope.companias.find(x => x._id === a); 
+        const compania_b = $scope.companias.find(x => x._id === b); 
 
-        let nombre_a = compania_a && compania_a.abreviatura ? compania_a.abreviatura : a; 
-        let nombre_b = compania_b && compania_b.abreviatura ? compania_b.abreviatura : b; ; 
+        const nombre_a = compania_a && compania_a.abreviatura ? compania_a.abreviatura : a; 
+        const nombre_b = compania_b && compania_b.abreviatura ? compania_b.abreviatura : b; 
 
-        let x = nombre_a;
-        let y = nombre_b;
+        const x = nombre_a;
+        const y = nombre_b;
 
         if (x < y) {return -1;}
         if (x > y) {return 1;}
         return 0;
     }
 
-    function ui_grid_filterBy_compania(searchTerm, cellValue, row, column) {
+    function ui_grid_filterBy_compania(searchTerm, cellValue) {
 
         // para poder filtrar el ui-grid por compañía una vez aplicado el filtro para el ddl
         // Nota importante: aparentemetne, la opción 'filterCellFiltered' no funciona correctamente cuando la columna usa un ddl (???!!!) 
 
-        let compania = $scope.companias.find(x => x._id === cellValue); 
+        const compania = $scope.companias.find(x => x._id === cellValue); 
 
         // ésto no debe ocurrir nunca ... 
         if (!compania || !compania.abreviatura) { 
             return true; 
         }
 
-        let regexp = RegExp(searchTerm, 'gi');
-        let matches = compania.abreviatura.match(regexp);
+        const regexp = RegExp(searchTerm, 'gi');
+        const matches = compania.abreviatura.match(regexp);
         
         if (matches) { 
             return true;
@@ -2184,7 +2169,7 @@ angular.module("scrwebm").controller("ContratoController",
         return false;
     }
 
-    function ui_grid_filterBy_nosotros(searchTerm, cellValue, row, column) {
+    function ui_grid_filterBy_nosotros(searchTerm, cellValue) {
 
         // para poder filtrar el ui-grid por nosotros una vez aplicado el filtro para el ddl
         if (searchTerm.toLowerCase() === "si" && cellValue) { 
@@ -2202,7 +2187,7 @@ angular.module("scrwebm").controller("ContratoController",
 
         // movimientoSeleccionado es inicializado en $scope.$parent cuando se selecciona un movimiento; luego está disponible en los 
         // (children) controllers una vez que se ha inializado ... 
-        let contrato = $scope.contrato; 
+        const contrato = $scope.contrato; 
         // let movimiento = $scope.movimientoSeleccionado; 
 
         // TODO: aquí debemos determinar el tipo de contrato: capa / cuenta

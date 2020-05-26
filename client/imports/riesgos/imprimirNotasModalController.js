@@ -1,5 +1,5 @@
 
-
+import angular from 'angular';
 import moment from 'moment';
 import lodash from 'lodash'; 
 

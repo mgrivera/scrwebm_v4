@@ -1,4 +1,5 @@
 ﻿
+import angular from 'angular';
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -15,7 +16,7 @@ import { Filtros } from '/imports/collections/otros/filtros';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosFiltro_Controller",
-['$scope', '$state', '$stateParams', '$meteor', function ($scope, $state, $stateParams, $meteor) {
+['$scope', '$state', '$stateParams', function ($scope, $state, $stateParams) {
 
     $scope.showProgress = false;
 
