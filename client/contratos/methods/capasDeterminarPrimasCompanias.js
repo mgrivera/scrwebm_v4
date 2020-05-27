@@ -20,15 +20,18 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
                             true).
             then(
                 function () {
-                    capasDeterminarRegistrosPrimaCompanias2($scope);
+                    capasDeterminarRegistrosPrimaCompanias1($scope, $modal);
                     return;
                 },
                 function () {
                     return;
                 });
-            return;
     }
 
+    capasDeterminarRegistrosPrimaCompanias1($scope, $modal);
+}
+
+function capasDeterminarRegistrosPrimaCompanias1($scope, $modal) {
     // la compañía 'nosotros' es nuestra empresa ... es la que, inicialmente, recibe la orden de reaseguraro 
     let companiaNosotros = {};
     const result = LeerCompaniaNosotros(Meteor.userId()); 
@@ -42,10 +45,13 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
 
     // cada capa debe tener un array de reaseguradores
     // nota: dejamos de hacer esta validación; ahora puede haber *solo* nuestra orden; sin reaseguradores 
-    let error = false;
+    const contrato = $scope.contrato;
 
     if (!contrato.capas || !Array.isArray(contrato.capas) || !contrato.capas.length) {
-        error = true;
+        DialogModal($modal, "<em>Contratos - Capas</em>",
+                            `El contrato debe tener capas registradas; <br />
+                            Cada capa puede o no tener reaseguradores registrados.`, false).then();
+        return;
     }
 
     contrato.capas.forEach((c) => {
@@ -53,13 +59,6 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
             c.reaseguradores = []; 
         }
     })
-
-    if (error) {
-        DialogModal($modal, "<em>Contratos - Capas</em>",
-                            `El contrato debe tener capas registradas; <br />
-                            Cada capa puede o no tener reaseguradores registrados.`, false).then();
-        return;
-    }
 
     capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros);
 }
@@ -93,6 +92,7 @@ function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
 
         primaCompania.imp1Porc = capa.imp1Porc;
         primaCompania.imp2Porc = capa.imp2Porc;
+        primaCompania.corretajePorc = capa.corretajePorc;
         primaCompania.impSPNPorc = capa.impSPNPorc;
 
         contrato.capasPrimasCompanias.push(primaCompania);

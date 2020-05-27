@@ -1,5 +1,7 @@
 
+import { Mongo } from 'meteor/mongo'; 
 
+import angular from 'angular';
 import moment from 'moment';
 import lodash from 'lodash';
 
@@ -7,7 +9,7 @@ import { determinarSiExistenCuotasConCobrosAplicados } from '/client/imports/gen
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
-let generarCuotasCapaSeleccionada = ($scope, $modal) => {
+const generarCuotasCapaSeleccionada = ($scope, $modal) => {
 
     if (!$scope.contrato.capasPrimasCompanias || !lodash.isArray($scope.contrato.capasPrimasCompanias) || !$scope.contrato.capasPrimasCompanias.length) {
         DialogModal($modal,
@@ -24,11 +26,11 @@ let generarCuotasCapaSeleccionada = ($scope, $modal) => {
     // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
     // usuario está tratando en ese momento ...  
     // ------------------------------------------------------------------------------------------------------------------------
-    let cuotasCapas = lodash.filter($scope.cuotas, (c) => { 
+    const cuotasCapas = lodash.filter($scope.cuotas, (c) => { 
         return c.source.origen === "capa"; }
     )
 
-    let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasCapas); 
+    const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasCapas); 
     if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
         DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
         return;
@@ -59,7 +61,7 @@ let generarCuotasCapaSeleccionada = ($scope, $modal) => {
 
 function generarCuotas($scope, $modal) {
 
-    var modalInstance = $modal.open({
+    $modal.open({
         templateUrl: 'client/contratos/capasGenerarCuotas.html',
         controller: 'CapasGenerarCuotasController',
         size: 'md',
@@ -72,10 +74,10 @@ function generarCuotas($scope, $modal) {
             }
         }
     }).result.then(
-        function (resolve) {
+        function () {
             return true;
         },
-        function (cancel) {
+        function () {
             // cuando el usuario cierra el modal que permite construir las cuotas, las asociamos al grid
             $scope.capasCuotas_ui_grid.data = [];
 
@@ -179,7 +181,6 @@ function ($scope, $modalInstance, contrato, cuotas) {
     }
 }])
 
-
 function calcularCuotas(contrato, cuotas, parametros) {
 
     // siempre intentamos eliminar cuotas que ahora existan para el movimiento ...
@@ -207,15 +208,15 @@ function calcularCuotas(contrato, cuotas, parametros) {
 
         // si el usuario quiere resumir las primas de todas las capas, debemos agrupar por compañía y moneda
         // grabamos el resultado en un nuevo array (primasArray
-        let groupedArray = lodash.chain(contrato.capasPrimasCompanias)
+        const groupedArray = lodash.chain(contrato.capasPrimasCompanias)
                                 .groupBy((x) => { return x.compania.toString() + " " + x.moneda.toString(); })
                                 .value();
 
-        for(let key in groupedArray) {
+        for(const key in groupedArray) {
 
             // en el objeto que resulta del groupBy, cada key es una combinación: compania-moneda
-            let compania = key.split(" ")[0];
-            let moneda = key.split(" ")[1];
+            const compania = key.split(" ")[0];
+            const moneda = key.split(" ")[1];
 
             primasArray.push({
                 capaID: '0',

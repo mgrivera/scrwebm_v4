@@ -1323,7 +1323,7 @@ angular.module("scrwebm").controller("ContratoController",
                 p.corretajePorc = Math.abs(p.corretaje / p.primaBruta * 100);
 
             // corretaje
-            if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.corretajePorc) && !p.nosotros)
+            if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.corretajePorc))
                 p.corretaje = (p.primaBruta * p.corretajePorc / 100) * -1;
 
             // prima neta

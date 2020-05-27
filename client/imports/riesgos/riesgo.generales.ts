@@ -127,7 +127,7 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
   const agregarAsegurado_desdeInput = ($modal: any, nombre: any) => {
     return new Promise((resolve, reject) => {
       
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/html/generales/agregarNuevoAsegurado.html',
             controller: 'AgregarNuevoAsegurado_ModalController',
             size: 'md',
