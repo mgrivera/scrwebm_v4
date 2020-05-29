@@ -5,7 +5,7 @@ import SimpleSchema from 'simpl-schema';
 // -----------------------------------------------------------------------
 // Siniestros - Liquidaciones
 // -----------------------------------------------------------------------
-var liquidacion_SimpleSchema = new SimpleSchema({
+const liquidacion_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     numero: { type: Number, optional: false },
     moneda: { type: String, optional: false },
@@ -22,7 +22,7 @@ var liquidacion_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Siniestros - Reservas
 // -----------------------------------------------------------------------
-var reserva_SimpleSchema = new SimpleSchema({
+const reserva_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     numero: { type: Number, optional: false },
     tipo: { type: String, optional: false, min: 1, max: 6 },
@@ -36,7 +36,7 @@ var reserva_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Siniestros - Compañías
 // -----------------------------------------------------------------------
-var companias_SimpleSchema = new SimpleSchema({
+const companias_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     compania: { type: String, optional: false },
     nosotros: { type: Boolean, optional: false },
@@ -46,7 +46,7 @@ var companias_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Siniestros - Notas
 // -----------------------------------------------------------------------
-var notas_SimpleSchema = new SimpleSchema({
+const notas_SimpleSchema = new SimpleSchema({
     lugar: { type: String, optional: true },
     descripcion: { type: String, optional: true },
     detalles: { type: String, optional: true },
@@ -58,7 +58,7 @@ var notas_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Siniestros - Source (origen)
 // -----------------------------------------------------------------------
-var siniestroSource_SimpleSchema = new SimpleSchema({
+const siniestroSource_SimpleSchema = new SimpleSchema({
     entityID: { type: String, optional: false },                  // ej: _id del riesgo; _id del contrato
     subEntityID: { type: String, optional: false },               // ej: _id del movimiento; _id de la capa o cuenta
     origen: { type: String, optional: false },                    // 'capa', 'cuenta', 'fac', 'sntro', 'nc', 'nd', etc.
@@ -68,22 +68,20 @@ var siniestroSource_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Compañías (movimiento sub-document)
 // -----------------------------------------------------------------------
-var persona_SimpleSchema = new SimpleSchema({
+const persona_SimpleSchema = new SimpleSchema({
     compania: { type: String, optional: false },
     titulo: { type: String, optional: false, min: 1, max: 8 },
     nombre: { type: String, optional: false, min: 1, max: 100 }
 })
 
-
 // -----------------------------------------------------------------------
 // Documenos (riesgo y movimientos sub-document)
 // -----------------------------------------------------------------------
-var documentos_SimpleSchema = new SimpleSchema({
+const documentos_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     tipo: { type: String, optional: false },
     numero: { type: String, optional: false }
 })
-
 
 // -----------------------------------------------------------------------
 // Siniestros
@@ -104,7 +102,6 @@ export const Siniestro_SimpleSchema = new SimpleSchema({
     personas: { type: Array, optional: true, minCount: 0 },
     'personas.$': { type: persona_SimpleSchema },
 
-
     ramo: { type: String, optional: true },
     asegurado: { type: String, optional: false },
     ajustador: { type: String, optional: true },
@@ -119,20 +116,14 @@ export const Siniestro_SimpleSchema = new SimpleSchema({
     documentos: { type: Array, optional: true, minCount: 0 },
     'documentos.$': { type: documentos_SimpleSchema },
 
-
-
     companias: { type: Array, optional: true, minCount: 0 },
     'companias.$': { type: companias_SimpleSchema },
-
 
     reservas: { type: Array, optional: true, minCount: 0 },
     'reservas.$': { type: reserva_SimpleSchema },
 
-
     liquidaciones: { type: Array, optional: true, minCount: 0 },
     'liquidaciones.$': { type: liquidacion_SimpleSchema },
-
-
 
     ingreso: { type: Date, optional: false },
     ultAct: { type: Date, optional: true },
@@ -142,5 +133,5 @@ export const Siniestro_SimpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }
 })
 
-export const Siniestros: any = new Mongo.Collection("siniestros");
+export const Siniestros = new Mongo.Collection("siniestros");
 Siniestros.attachSchema(Siniestro_SimpleSchema);

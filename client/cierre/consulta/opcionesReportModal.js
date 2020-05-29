@@ -1,11 +1,14 @@
 
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
 
 import * as angular from 'angular'; 
 
-import { Filtros } from 'imports/collections/otros/filtros'; 
+import { Filtros } from '/imports/collections/otros/filtros'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller('Cierre_opcionesReportController',
+angular.module("scrwebm")
+       .controller('Cierre_opcionesReportController',
 ['$scope', '$modalInstance', 'companiaSeleccionada', 'fechaInicialPeriodo', 'fechaFinalPeriodo', 'cuentasCorrientes', 
 function ($scope, $modalInstance, companiaSeleccionada, fechaInicialPeriodo, fechaFinalPeriodo, cuentasCorrientes) {
     // ui-bootstrap alerts ...
@@ -27,7 +30,7 @@ function ($scope, $modalInstance, companiaSeleccionada, fechaInicialPeriodo, fec
     $scope.companiaSeleccionada = companiaSeleccionada; 
    
     // construimos el url que se debe usar para obtener el reporte (sql server reporting services - asp.net)
-    let scrwebm_net_app_address = Meteor.settings.public.scrwebm_net_app_address;
+    const scrwebm_net_app_address = Meteor.settings.public.scrwebm_net_app_address;
     
     $scope.reportLink = "#";
     if (scrwebm_net_app_address) {
@@ -52,7 +55,7 @@ function ($scope, $modalInstance, companiaSeleccionada, fechaInicialPeriodo, fec
             (err, result) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
@@ -124,5 +127,4 @@ function ($scope, $modalInstance, companiaSeleccionada, fechaInicialPeriodo, fec
     }
     // ------------------------------------------------------------------------------------------------------
 
-}
-]);
+}])

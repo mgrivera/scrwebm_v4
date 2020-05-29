@@ -1,14 +1,15 @@
 
+import { Meteor } from 'meteor/meteor'
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash'; 
-import * as moment from 'moment'; 
+import angular from 'angular'; 
+import lodash from 'lodash'; 
+import moment from 'moment'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import { Cierre } from 'imports/collections/cierre/cierre'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { Cierre } from '/imports/collections/cierre/cierre'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
@@ -48,17 +49,15 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-    let companiaSeleccionadaDoc = {} as any;
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = {};
 
     if (companiaSeleccionada) { 
         companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
     }
     // ------------------------------------------------------------------------------------------------
 
-
-    let cierre_ui_grid_api = null;
-    let itemSeleccionado = {} as any;
+    let itemSeleccionado = {};
 
     $scope.cierre_ui_grid = {
 
@@ -74,8 +73,6 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
         rowHeight: 25,
 
         onRegisterApi: function (gridApi) {
-
-            cierre_ui_grid_api = gridApi;
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                 itemSeleccionado = {};
                 if (row.isSelected) {
@@ -183,7 +180,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
             function () { return; });
     }
 
-    let subscriptionHandle = {} as any;
+    let subscriptionHandle = {};
 
     function cerrarPeriodo2(itemSeleccionado) { 
 
@@ -199,7 +196,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
         Meteor.call('cierre.cerrarPeriodo', itemSeleccionado, (err, result)  => {
         
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -255,11 +252,10 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
             subscriptionHandle = 
             Meteor.subscribe('cierres', companiaSeleccionadaID, () => { 
 
-                // inicialmente, la suscripción regresará solo los registros abiertos. Sin embargo, la idea es que al cerrar, 
-                // quede en la lista el registro que ahora está cerrado ... 
+                // inicialmente, la suscripción regresará solo los registros abiertos 
                 $scope.helpers({ 
                     cierres: () => { 
-                        return Cierre.find({ cia: companiaSeleccionadaID }, { sort: { desde: -1, }}); 
+                        return Cierre.find({ cia: companiaSeleccionadaID, cerradoFlag: false }, { sort: { desde: 1, }});
                     }
                 })
 
@@ -281,7 +277,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
 
     $scope.showProgress = true; 
 
-    let companiaSeleccionadaID = companiaSeleccionadaDoc && companiaSeleccionadaDoc._id ? companiaSeleccionadaDoc._id : "-999"; 
+    const companiaSeleccionadaID = companiaSeleccionadaDoc && companiaSeleccionadaDoc._id ? companiaSeleccionadaDoc._id : "-999"; 
 
     // 'cierres' regresará los registros de cierre que están abiertos ... pueden ser: ninguno, uno o varios ... 
     subscriptionHandle = 
@@ -289,16 +285,16 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
 
         $scope.helpers({ 
             cierres: () => { 
-                return Cierre.find({ cia: companiaSeleccionadaID }, { sort: { desde: -1, }});
+                return Cierre.find({ cia: companiaSeleccionadaID, cerradoFlag: false }, { sort: { desde: 1, }});
             }
         })
 
-        let message = `Seleccione un período a cerrar en la lista y haga un click en <b><em>Cerrar período seleccionado</em></b> 
-        - El período seleccionado debe estar abierto.<br />
-        O agregue un nuevo período y selecciónelo ...<br />
-        Nota: para agregar períodos de cierre, Ud. debe usar la opción <em>Cierre / Períodos de cierre</em>.  
-        `; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+        const message = `Seleccione el período a cerrar en la lista y haga un click en <b><em>Cerrar período seleccionado</em></b><br />
+                        Si el período a cerrar no está en la lista, debe agregarlo y regresar luego para cerrarlo.<br />
+                        También puede ser que el período fue ya cerrado. Un período cerrado puede ser abierto y cerrado nuevamente.<br /><br />
+                        Nota: para agregar períodos de cierre, o abrir períodos ya cerrados, 
+                        Ud. debe usar la opción <em>Cierre / Períodos de cierre</em>.  
+                        `; 
 
         $scope.alerts.length = 0;
         $scope.alerts.push({
@@ -310,6 +306,13 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
 
         $scope.showProgress = false;
         $scope.$apply(); 
+    })
+
+    // cuando el usuario sale de la página, nos aseguramos de detener (ie: stop) el subscription
+    $scope.$on('$destroy', function() {
+        if (subscriptionHandle && subscriptionHandle.stop) {
+            subscriptionHandle.stop();
+        }
     })
   }
 ])

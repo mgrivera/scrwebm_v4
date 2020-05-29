@@ -1,7 +1,7 @@
 
-
-
+import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
+
 import SimpleSchema from 'simpl-schema'; 
 import * as moment from 'moment'; 
 import { Cierre } from '../cierre/cierre'; 
@@ -9,14 +9,14 @@ import { Cierre } from '../cierre/cierre';
 // ------------------------------------------------------------------------
 // cuotas - pagos
 // ------------------------------------------------------------------------
-let emailsEnviados_SimpleSchema = new SimpleSchema({
+const emailsEnviados_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     tipoEmail: { type: String, optional: false },
     fecha: { type: Date, optional: false },
     user: { type: String, optional: false },
 })
 
-var cuotaPago_SimpleSchema = new SimpleSchema({
+const cuotaPago_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     remesaID: { type: String, optional: false },
     remesaNumero: { type: Number, optional: false },
@@ -27,14 +27,14 @@ var cuotaPago_SimpleSchema = new SimpleSchema({
     completo: { type: Boolean, optional: false }
 })
 
-var cuotaSource_SimpleSchema = new SimpleSchema({
+const cuotaSource_SimpleSchema = new SimpleSchema({
     entityID: { type: String, optional: false },                  // ej: _id del riesgo; _id del contrato
     subEntityID: { type: String, optional: false },               // ej: _id del movimiento; _id de la capa o cuenta
     origen: { type: String, optional: false },                    // 'capa', 'cuenta', 'fac', 'sntro', 'nc', 'nd', etc.
     numero: { type: String, optional: false }                     // 37-3     (contrato 37, capa 3)
 })
 
-var schema_protegida = new SimpleSchema({
+const schema_protegida = new SimpleSchema({
     protegida: { type: Boolean, label: "Protegida", optional: false, },
     razon: { type: String, optional: false, },
 })
@@ -43,7 +43,7 @@ var schema_protegida = new SimpleSchema({
 // -----------------------------------------------------------------------
 //  cuotas
 // -----------------------------------------------------------------------
-let simpleSchema: any = new SimpleSchema({
+const simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
 
     source: { type: cuotaSource_SimpleSchema, optional: true, minCount: 0 },
@@ -71,7 +71,7 @@ let simpleSchema: any = new SimpleSchema({
     docState: { type: Number, optional: true }
 })
 
-export const Cuotas: any = new Mongo.Collection("cuotas");
+export const Cuotas = new Mongo.Collection("cuotas");
 Cuotas.attachSchema(simpleSchema);
 
 if (Meteor.isServer) {
@@ -89,15 +89,15 @@ simpleSchema.addDocValidator(obj => {
     }
 
     // leemos el último cierre efectuado para la compañía 
-    let ultimoCierre = Cierre.findOne({ cia: obj.cia, cerradoFlag: true, }, { fields: { hasta: 1, }, sort: { hasta: -1, }}); 
+    const ultimoCierre = Cierre.findOne({ cia: obj.cia, cerradoFlag: true, }, { fields: { hasta: 1, }, sort: { hasta: -1, }}); 
 
     if (!ultimoCierre) { 
         return []; 
     }
 
     // eliminamos la parte 'time' a ambas fechas para poder comparar 
-    let entidadDate = new Date(obj.fecha.toDateString());
-    let cierreDate = new Date(ultimoCierre.hasta.toDateString());
+    const entidadDate = new Date(obj.fecha.toDateString());
+    const cierreDate = new Date(ultimoCierre.hasta.toDateString());
 
     // la fecha debe ser *posterior* al período de cierre 
     if (entidadDate > cierreDate) { 

@@ -1,10 +1,10 @@
 
-import * as lodash from 'lodash'; 
-import * as angular from 'angular'; 
+import lodash from 'lodash'; 
+import angular from 'angular'; 
 
-angular.module("scrwebm").controller('Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller',
-['$scope', '$modalInstance', '$modal', '$meteor', 'periodoCierre', 'companiaSeleccionada',
-function ($scope, $modalInstance, $modal, $meteor, periodoCierre, companiaSeleccionada) {
+angular.module("scrwebm")
+       .controller('Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller', ['$scope', '$modalInstance', 'periodoCierre', 'companiaSeleccionada',
+function ($scope, $modalInstance, periodoCierre, companiaSeleccionada) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -23,8 +23,6 @@ function ($scope, $modalInstance, $modal, $meteor, periodoCierre, companiaSelecc
         $modalInstance.dismiss("Cancel");
     }
 
-    let list_ui_grid_api = null;
-
     $scope.list_ui_grid = {
 
         enableSorting: true,
@@ -40,8 +38,7 @@ function ($scope, $modalInstance, $modal, $meteor, periodoCierre, companiaSelecc
         selectionRowHeaderWidth: 0,
         rowHeight: 25,
 
-        onRegisterApi: function (gridApi) {
-            list_ui_grid_api = gridApi;
+        onRegisterApi: function () {
         },
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
         rowIdentity: function (row) {
@@ -100,4 +97,4 @@ function ($scope, $modalInstance, $modal, $meteor, periodoCierre, companiaSelecc
         $scope.list_ui_grid.data = lodash.orderBy(periodoCierre.usuarios, [ 'fecha' ], [ 'desc' ]); 
     }
 }
-]);
+])

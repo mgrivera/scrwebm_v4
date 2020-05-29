@@ -1,14 +1,14 @@
 
 import { Mongo } from 'meteor/mongo';
-import SimpleSchema from 'simpl-schema'; 
-import { Cierre } from '../cierre/cierre'; 
-import * as moment from 'moment';
+import moment from 'moment';
 
+import SimpleSchema from 'simpl-schema'; 
+import { Cierre } from '/imports/collections/cierre/cierre'; 
 
 // -----------------------------------------------------------------------
 // remesa - cuadre - transacción - partida
 // -----------------------------------------------------------------------
-let RemesaCuadreTransaccionPartida_SimpleSchema = new SimpleSchema({
+const RemesaCuadreTransaccionPartida_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     numero: { type: Number, optional: false },
     tipo: { type: Number, optional: false },
@@ -20,7 +20,7 @@ let RemesaCuadreTransaccionPartida_SimpleSchema = new SimpleSchema({
     monto: { type: Number, optional: false, }
 })
 
-let RemesaCuadreTransaccion0_SimpleSchema = new SimpleSchema({
+const RemesaCuadreTransaccion0_SimpleSchema = new SimpleSchema({
     numero: { type: Number, optional: false },
     descripcion: { type: String, optional: false }
 })
@@ -28,7 +28,7 @@ let RemesaCuadreTransaccion0_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // remesa - cuadre - transacción
 // -----------------------------------------------------------------------
-let RemesaCuadreTransaccion_SimpleSchema = new SimpleSchema({
+const RemesaCuadreTransaccion_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     transaccion: { type: RemesaCuadreTransaccion0_SimpleSchema, optional: false },
 
@@ -39,7 +39,7 @@ let RemesaCuadreTransaccion_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // instrumento de pago
 // -----------------------------------------------------------------------
-let RemesaInstrumentoPago_SimpleSchema = new SimpleSchema({
+const RemesaInstrumentoPago_SimpleSchema = new SimpleSchema({
     numero: { type: String, optional: false },
     tipo: { type: String, optional: false },
     banco: { type: String, optional: false },
@@ -51,7 +51,7 @@ let RemesaInstrumentoPago_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // remesa - asiento contagble - partida
 // -----------------------------------------------------------------------
-let RemesaAsientoContable_Partida_SimpleSchema = new SimpleSchema({
+const RemesaAsientoContable_Partida_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     numero: { type: Number, optional: false, }, 
     moneda: { type: String, optional: true, },
@@ -64,7 +64,7 @@ let RemesaAsientoContable_Partida_SimpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true, }, 
 })
 
-let schema_protegida = new SimpleSchema({
+const schema_protegida = new SimpleSchema({
     protegida: { type: Boolean, label: "Protegida", optional: false, },
     razon: { type: String, optional: false, },
 })
@@ -73,7 +73,7 @@ let schema_protegida = new SimpleSchema({
 // -----------------------------------------------------------------------
 // remesas
 // -----------------------------------------------------------------------
-let Remesa_SimpleSchema: any = new SimpleSchema({
+const Remesa_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     numero: { type: Number, optional: false },
     fecha: { type: Date, optional: false },
@@ -102,7 +102,7 @@ let Remesa_SimpleSchema: any = new SimpleSchema({
     docState: { type: Number, optional: true }
 })
 
-export const Remesas: any = new Mongo.Collection("remesas");
+export const Remesas = new Mongo.Collection("remesas");
 Remesas.attachSchema(Remesa_SimpleSchema);
 
 
@@ -111,22 +111,22 @@ Remesas.attachSchema(Remesa_SimpleSchema);
 Remesa_SimpleSchema.addDocValidator(obj => {
     // Must return an array, potentially empty, of objects with `name` and `type` string properties and optional `value` property.
 
-    // validacimos solo cuando las ediciones son efectuadas por el usuario 
+    // validamos solo cuando las ediciones son efectuadas por el usuario 
     // (ie: no las efectuadas por procesos como, por ejemplo, el proceso de cobranza, que agrega pagos a las cuotas)
     if (!obj.docState) { 
         return []; 
     }
 
-    // leemos el último cierre efectuado para la compañía 
-    let ultimoCierre = Cierre.findOne({ cia: obj.cia }); 
+    // leemos el último cierre efectuado para la compañía; leemos solo períodos cerrados y obtenemos el más reciente 
+    const ultimoCierre = Cierre.findOne({ cia: obj.cia, cerradoFlag: true }, { sort: { hasta: -1 }}); 
 
     if (!ultimoCierre) { 
         return []; 
     }
 
     // eliminamos la parte 'time' a ambas fechas para poder comparar 
-    let entidadDate = new Date(obj.fecha.toDateString());
-    let cierreDate = new Date(ultimoCierre.hasta.toDateString());
+    const entidadDate = new Date(obj.fecha.toDateString());
+    const cierreDate = new Date(ultimoCierre.hasta.toDateString());
 
     // la fecha debe ser *posterior* al período de cierre 
     if (entidadDate > cierreDate) { 
@@ -146,7 +146,7 @@ Remesa_SimpleSchema.addDocValidator(obj => {
         return []; 
     }
 
-    let value = obj.protegida.razon ? obj.protegida.razon : "La entidad está protegida; ej: corresponde a un período cerrado."
+    const value = obj.protegida.razon ? obj.protegida.razon : "La entidad está protegida; ej: corresponde a un período cerrado."
 
     return [
       { name: 'protegida.protegida', type: 'ENTIDAD-PROTEGIDA', value: value }

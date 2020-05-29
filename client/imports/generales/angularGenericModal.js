@@ -1,14 +1,12 @@
 ﻿
-
-
-import * as angular from 'angular';
+import angular from 'angular';
 
 // -----------------------------------------------------------------------------
 // modal (popup) para pedir confirmación al usuario
 // -----------------------------------------------------------------------------
 export const DialogModal = function ($modal, titulo, message, showCancelButton) {
 
-    var modalInstance = $modal.open({
+    const modalInstance = $modal.open({
         templateUrl: 'client/generales/genericUIBootstrapModal.html',
         controller: 'DialogModalController',
         size: 'md',
@@ -26,8 +24,7 @@ export const DialogModal = function ($modal, titulo, message, showCancelButton) 
     });
 
     return modalInstance.result;
-};
-
+}
 
 angular.module("scrwebm.generales").controller('DialogModalController',
 ['$scope', '$modalInstance', 'titulo', 'mensaje', 'showCancelButton',
@@ -46,4 +43,4 @@ function ($scope, $modalInstance, titulo, mensaje, showCancelButton) {
         $modalInstance.dismiss("Cancel");
     };
 }
-]);
+])

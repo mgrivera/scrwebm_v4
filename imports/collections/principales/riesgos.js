@@ -5,7 +5,7 @@ import SimpleSchema from 'simpl-schema';
 // -----------------------------------------------------------------------
 // Objeto asegurado (riesgo sub-document)
 // -----------------------------------------------------------------------
-var objetoAsegurado_SimpleSchema = new SimpleSchema({
+const objetoAsegurado_SimpleSchema = new SimpleSchema({
     tipo: { type: String, label: "Tipo del objeto asegurado (ej: Galpones).", optional: true, }, 
     descripcion: { type: String, optional: true },
     ubicacion: { type: String, optional: true }
@@ -15,7 +15,7 @@ var objetoAsegurado_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Renovación (riesgo sub-document)
 // -----------------------------------------------------------------------
-var renovacion_SimpleSchema = new SimpleSchema({
+const renovacion_SimpleSchema = new SimpleSchema({
     renovadoPor: { type: Number, optional: true },
     renuevaAl: { type: Number, optional: true }
 })
@@ -24,7 +24,7 @@ var renovacion_SimpleSchema = new SimpleSchema({
 // Compañías (movimiento sub-document)
 // -----------------------------------------------------------------------
 
-var companias_SimpleSchema = new SimpleSchema({
+const companias_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     compania: { type: String, optional: false },
     nosotros: { type: Boolean, optional: false },
@@ -39,7 +39,7 @@ var companias_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Coberturas (movimiento sub-document)
 // -----------------------------------------------------------------------
-var coberturas_SimpleSchema = new SimpleSchema({
+const coberturas_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     cobertura: { type: String, optional: false },
     moneda: { type: String, optional: false },
@@ -53,7 +53,7 @@ var coberturas_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // CoberturasCompanias (movimiento sub-document)
 // -----------------------------------------------------------------------
-var coberturasCompanias_SimpleSchema = new SimpleSchema({
+const coberturasCompanias_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     compania: { type: String, optional: false },
     nosotros: { type: Boolean, optional: false },
@@ -75,7 +75,7 @@ var coberturasCompanias_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Primas (movimiento sub-document)
 // -----------------------------------------------------------------------
-var primas_SimpleSchema = new SimpleSchema({
+const primas_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     compania: { type: String, optional: false },
     moneda: { type: String, optional: false },
@@ -96,7 +96,7 @@ var primas_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Productores (movimiento sub-document)
 // -----------------------------------------------------------------------
-var productores_SimpleSchema = new SimpleSchema({
+const productores_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     compania: { type: String, optional: false },
     moneda: { type: String, optional: false },
@@ -109,7 +109,7 @@ var productores_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Documentos (riesgo y movimientos sub-document)
 // -----------------------------------------------------------------------
-var documentos_SimpleSchema = new SimpleSchema({
+const documentos_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     tipo: { type: String, optional: false },
     numero: { type: String, optional: false }
@@ -119,7 +119,7 @@ var documentos_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Movimientos
 // -----------------------------------------------------------------------
-var movimientos_SimpleSchema = new SimpleSchema({
+const movimientos_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     numero: { type: Number, optional: false },
     tipo: { type: String, optional: false },
@@ -160,7 +160,7 @@ var movimientos_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Compañías (movimiento sub-document)
 // -----------------------------------------------------------------------
-var persona_SimpleSchema = new SimpleSchema({
+const persona_SimpleSchema = new SimpleSchema({
     compania: { type: String, optional: false },
     titulo: { type: String, optional: false, min: 1, max: 8 },
     nombre: { type: String, optional: false, min: 1, max: 100 }
@@ -170,7 +170,7 @@ var persona_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Riesgos
 // -----------------------------------------------------------------------
-let Riesgo_SimpleSchema = new SimpleSchema({
+const Riesgo_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     numero: { type: Number, optional: false },
     codigo: { type: String, optional: true },
@@ -214,7 +214,7 @@ let Riesgo_SimpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }
 })
 
-export const Riesgos: any = new Mongo.Collection("riesgos");
+export const Riesgos = new Mongo.Collection("riesgos");
 Riesgos.attachSchema(Riesgo_SimpleSchema);
 
 // Nota importante: aunque definimos este esquema, solo lo usamos para validar los registros que el usuario agregue para el 
@@ -234,4 +234,4 @@ export const Riesgo_InfoRamos_Autos_SimpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }
 })
 
-export const Riesgos_InfoRamo: any = new Mongo.Collection("riesgos_infoRamo");
+export const Riesgos_InfoRamo = new Mongo.Collection("riesgos_infoRamo");

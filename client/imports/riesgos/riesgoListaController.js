@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'
+
 import angular from 'angular';
 import numeral from 'numeral';
 
@@ -12,8 +14,9 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 // import '/client/imports/riesgos/reportes/opcionesReportModal.html'; 
 import Riesgos_opcionesReportController from '/client/imports/riesgos/reportes/opcionesReportModal'; 
 
-export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportController.name ]).controller("RiesgosLista_Controller",
-['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
+export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportController.name ])
+                      .controller("RiesgosLista_Controller", ['$scope', '$state', '$stateParams', '$modal', 
+    function ($scope, $state, $stateParams, $modal) {
 
     $scope.showProgress = false;
 
@@ -34,7 +37,7 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    var companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = {};
     if (companiaSeleccionada) { 
         companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
@@ -55,7 +58,7 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
     }
 
     $scope.exportarExcel = () => {
-        let modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/riesgos/listaExportarExcelModal.html',
             controller: 'RiesgosListaExportarExcelModal_Controller',
             size: 'md',
@@ -65,10 +68,10 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
                 },
             },
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             })
     }
@@ -82,8 +85,6 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
         });
     }
 
-
-    let list_ui_grid_api = null;
     let itemSeleccionadoEnLaLista = {};
 
     $scope.list_ui_grid = {
@@ -100,8 +101,6 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
         rowHeight: 25,
 
         onRegisterApi: function (gridApi) {
-
-            list_ui_grid_api = gridApi;
 
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                 itemSeleccionadoEnLaLista = {};
@@ -131,7 +130,6 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
             return row._id;
         }
     }
-
 
     $scope.list_ui_grid.columnDefs = [
         {
@@ -286,7 +284,6 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
         },
     ]
 
-
     $scope.riesgos = []
     $scope.list_ui_grid.data = [];
     $scope.showProgress = true;
@@ -333,7 +330,7 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
     Meteor.call('getCollectionCount', 'Temp_Consulta_Riesgos', (err, result) => {
 
         if (err) {
-            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -344,7 +341,7 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
             $scope.showProgress = false;
             $scope.$apply();
             return;
-        };
+        }
 
         // el método regresa la cantidad de items en el collection (siempre para el usuario)
         recordCount = result;
@@ -362,7 +359,6 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
         $scope.leerRegistrosDesdeMongo(limit);     // cada vez se leen 50 más ...
     }
 
-
     $scope.reporteOpcionesModal = function() { 
         $modal.open({
             templateUrl: 'client/html/riesgos/reportes/opcionesReportModal.html',
@@ -374,10 +370,10 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
                 },
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
         });
     }
@@ -388,6 +384,6 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
     $scope.$on('$destroy', function() {
         if (subscriptionHandle && subscriptionHandle.stop) {
             subscriptionHandle.stop();
-        };
+        }
     })
-}]);
+}])

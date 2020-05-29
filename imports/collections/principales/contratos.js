@@ -5,7 +5,7 @@ import SimpleSchema from 'simpl-schema';
 // ----------------------------------------------------------------------
 // complementarios - comisión adicional 
 // ---------------------------------------------------------------------- 
-let ContratoProp_comAdic_resumen_simpleSchema = new SimpleSchema({
+const ContratoProp_comAdic_resumen_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false,},
     definicionID: { type: String, optional: false, },
@@ -17,10 +17,10 @@ let ContratoProp_comAdic_resumen_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_comAdic_resumen: any = new Mongo.Collection("contratosProp_comAdic_resumen");
+export const ContratosProp_comAdic_resumen = new Mongo.Collection("contratosProp_comAdic_resumen");
 ContratosProp_comAdic_resumen.attachSchema(ContratoProp_comAdic_resumen_simpleSchema);
 
-let ContratoProp_comAdic_distribucion_simpleSchema = new SimpleSchema({
+const ContratoProp_comAdic_distribucion_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -36,10 +36,10 @@ let ContratoProp_comAdic_distribucion_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_comAdic_distribucion: any = new Mongo.Collection("contratosProp_comAdic_distribucion");
+export const ContratosProp_comAdic_distribucion = new Mongo.Collection("contratosProp_comAdic_distribucion");
 ContratosProp_comAdic_distribucion.attachSchema(ContratoProp_comAdic_distribucion_simpleSchema);
 
-let ContratoProp_comAdic_montosFinales_simpleSchema = new SimpleSchema({
+const ContratoProp_comAdic_montosFinales_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -51,13 +51,13 @@ let ContratoProp_comAdic_montosFinales_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_comAdic_montosFinales: any = new Mongo.Collection("contratosProp_comAdic_montosFinales");
+export const ContratosProp_comAdic_montosFinales = new Mongo.Collection("contratosProp_comAdic_montosFinales");
 ContratosProp_comAdic_montosFinales.attachSchema(ContratoProp_comAdic_montosFinales_simpleSchema);
 
 // ----------------------------------------------------------------------
 // complementarios - entrada cartera primas 
 // ---------------------------------------------------------------------- 
-let ContratoProp_entCartPr_resumen_simpleSchema = new SimpleSchema({
+const ContratoProp_entCartPr_resumen_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -69,7 +69,7 @@ let ContratoProp_entCartPr_resumen_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_entCartPr_distribucion_simpleSchema = new SimpleSchema({
+const ContratoProp_entCartPr_distribucion_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -85,7 +85,7 @@ let ContratoProp_entCartPr_distribucion_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_entCartPr_montosFinales_simpleSchema = new SimpleSchema({
+const ContratoProp_entCartPr_montosFinales_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -97,19 +97,19 @@ let ContratoProp_entCartPr_montosFinales_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_entCartPr_resumen: any = new Mongo.Collection("contratosProp_entCartPr_resumen");
+export const ContratosProp_entCartPr_resumen = new Mongo.Collection("contratosProp_entCartPr_resumen");
 ContratosProp_entCartPr_resumen.attachSchema(ContratoProp_entCartPr_resumen_simpleSchema);
 
-export const ContratosProp_entCartPr_distribucion: any = new Mongo.Collection("contratosProp_entCartPr_distribucion");
+export const ContratosProp_entCartPr_distribucion = new Mongo.Collection("contratosProp_entCartPr_distribucion");
 ContratosProp_entCartPr_distribucion.attachSchema(ContratoProp_entCartPr_distribucion_simpleSchema);
 
-export const ContratosProp_entCartPr_montosFinales: any = new Mongo.Collection("contratosProp_entCartPr_montosFinales");
+export const ContratosProp_entCartPr_montosFinales = new Mongo.Collection("contratosProp_entCartPr_montosFinales");
 ContratosProp_entCartPr_montosFinales.attachSchema(ContratoProp_entCartPr_montosFinales_simpleSchema);
 
 // ----------------------------------------------------------------------
 // complementarios - entrada cartera siniestros
 // ---------------------------------------------------------------------- 
-let ContratoProp_entCartSn_resumen_simpleSchema = new SimpleSchema({
+const ContratoProp_entCartSn_resumen_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -121,7 +121,7 @@ let ContratoProp_entCartSn_resumen_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_entCartSn_distribucion_simpleSchema = new SimpleSchema({
+const ContratoProp_entCartSn_distribucion_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -137,7 +137,7 @@ let ContratoProp_entCartSn_distribucion_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_entCartSn_montosFinales_simpleSchema = new SimpleSchema({
+const ContratoProp_entCartSn_montosFinales_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -149,19 +149,19 @@ let ContratoProp_entCartSn_montosFinales_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_entCartSn_resumen: any = new Mongo.Collection("contratosProp_entCartSn_resumen");
+export const ContratosProp_entCartSn_resumen = new Mongo.Collection("contratosProp_entCartSn_resumen");
 ContratosProp_entCartSn_resumen.attachSchema(ContratoProp_entCartSn_resumen_simpleSchema);
 
-export const ContratosProp_entCartSn_distribucion: any = new Mongo.Collection("contratosProp_entCartSn_distribucion");
+export const ContratosProp_entCartSn_distribucion = new Mongo.Collection("contratosProp_entCartSn_distribucion");
 ContratosProp_entCartSn_distribucion.attachSchema(ContratoProp_entCartSn_distribucion_simpleSchema);
 
-export const ContratosProp_entCartSn_montosFinales: any = new Mongo.Collection("contratosProp_entCartSn_montosFinales");
+export const ContratosProp_entCartSn_montosFinales = new Mongo.Collection("contratosProp_entCartSn_montosFinales");
 ContratosProp_entCartSn_montosFinales.attachSchema(ContratoProp_entCartSn_montosFinales_simpleSchema);
 
 // ----------------------------------------------------------------------
 // complementarios - retirada cartera primas 
 // ---------------------------------------------------------------------- 
-let ContratoProp_retCartPr_resumen_simpleSchema = new SimpleSchema({
+const ContratoProp_retCartPr_resumen_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -173,7 +173,7 @@ let ContratoProp_retCartPr_resumen_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_retCartPr_distribucion_simpleSchema = new SimpleSchema({
+const ContratoProp_retCartPr_distribucion_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -189,7 +189,7 @@ let ContratoProp_retCartPr_distribucion_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_retCartPr_montosFinales_simpleSchema = new SimpleSchema({
+const ContratoProp_retCartPr_montosFinales_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -201,19 +201,19 @@ let ContratoProp_retCartPr_montosFinales_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_retCartPr_resumen: any = new Mongo.Collection("contratosProp_retCartPr_resumen");
+export const ContratosProp_retCartPr_resumen = new Mongo.Collection("contratosProp_retCartPr_resumen");
 ContratosProp_retCartPr_resumen.attachSchema(ContratoProp_retCartPr_resumen_simpleSchema);
 
-export const ContratosProp_retCartPr_distribucion: any = new Mongo.Collection("contratosProp_retCartPr_distribucion");
+export const ContratosProp_retCartPr_distribucion = new Mongo.Collection("contratosProp_retCartPr_distribucion");
 ContratosProp_retCartPr_distribucion.attachSchema(ContratoProp_retCartPr_distribucion_simpleSchema);
 
-export const ContratosProp_retCartPr_montosFinales: any = new Mongo.Collection("contratosProp_retCartPr_montosFinales");
+export const ContratosProp_retCartPr_montosFinales = new Mongo.Collection("contratosProp_retCartPr_montosFinales");
 ContratosProp_retCartPr_montosFinales.attachSchema(ContratoProp_retCartPr_montosFinales_simpleSchema);
 
 // ----------------------------------------------------------------------
 // complementarios - retirada cartera siniestros
 // ---------------------------------------------------------------------- 
-let ContratoProp_retCartSn_resumen_simpleSchema = new SimpleSchema({
+const ContratoProp_retCartSn_resumen_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -225,7 +225,7 @@ let ContratoProp_retCartSn_resumen_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_retCartSn_distribucion_simpleSchema = new SimpleSchema({
+const ContratoProp_retCartSn_distribucion_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -241,7 +241,7 @@ let ContratoProp_retCartSn_distribucion_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_retCartSn_montosFinales_simpleSchema = new SimpleSchema({
+const ContratoProp_retCartSn_montosFinales_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -253,19 +253,19 @@ let ContratoProp_retCartSn_montosFinales_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_retCartSn_resumen: any = new Mongo.Collection("contratosProp_retCartSn_resumen");
+export const ContratosProp_retCartSn_resumen = new Mongo.Collection("contratosProp_retCartSn_resumen");
 ContratosProp_retCartSn_resumen.attachSchema(ContratoProp_retCartSn_resumen_simpleSchema);
 
-export const ContratosProp_retCartSn_distribucion: any = new Mongo.Collection("contratosProp_retCartSn_distribucion");
+export const ContratosProp_retCartSn_distribucion = new Mongo.Collection("contratosProp_retCartSn_distribucion");
 ContratosProp_retCartSn_distribucion.attachSchema(ContratoProp_retCartSn_distribucion_simpleSchema);
 
-export const ContratosProp_retCartSn_montosFinales: any = new Mongo.Collection("contratosProp_retCartSn_montosFinales");
+export const ContratosProp_retCartSn_montosFinales = new Mongo.Collection("contratosProp_retCartSn_montosFinales");
 ContratosProp_retCartSn_montosFinales.attachSchema(ContratoProp_retCartSn_montosFinales_simpleSchema);
 
 // ----------------------------------------------------------------------
 // complementarios - participación beneficios 
 // ---------------------------------------------------------------------- 
-let ContratoProp_partBeneficios_resumen_simpleSchema = new SimpleSchema({
+const ContratoProp_partBeneficios_resumen_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -277,7 +277,7 @@ let ContratoProp_partBeneficios_resumen_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_partBeneficios_distribucion_simpleSchema = new SimpleSchema({
+const ContratoProp_partBeneficios_distribucion_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -293,7 +293,7 @@ let ContratoProp_partBeneficios_distribucion_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-let ContratoProp_partBeneficios_montosFinales_simpleSchema = new SimpleSchema({
+const ContratoProp_partBeneficios_montosFinales_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -305,23 +305,20 @@ let ContratoProp_partBeneficios_montosFinales_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_partBeneficios_resumen: any = new Mongo.Collection("contratosProp_partBeneficios_resumen");
+export const ContratosProp_partBeneficios_resumen = new Mongo.Collection("contratosProp_partBeneficios_resumen");
 ContratosProp_partBeneficios_resumen.attachSchema(ContratoProp_partBeneficios_resumen_simpleSchema);
 
-export const ContratosProp_partBeneficios_distribucion: any = new Mongo.Collection("contratosProp_partBeneficios_distribucion");
+export const ContratosProp_partBeneficios_distribucion = new Mongo.Collection("contratosProp_partBeneficios_distribucion");
 ContratosProp_partBeneficios_distribucion.attachSchema(ContratoProp_partBeneficios_distribucion_simpleSchema);
 
-export const ContratosProp_partBeneficios_montosFinales: any = new Mongo.Collection("contratosProp_partBeneficios_montosFinales");
+export const ContratosProp_partBeneficios_montosFinales = new Mongo.Collection("contratosProp_partBeneficios_montosFinales");
 ContratosProp_partBeneficios_montosFinales.attachSchema(ContratoProp_partBeneficios_montosFinales_simpleSchema);
-
-
-
 
 // -----------------------------------------------------------------------
 // contratos - cuentas técnicas - resumen de primas y siniestros (montos)
 // para una definición de cuenta técnica
 // -----------------------------------------------------------------------
-let ContratoProp_cuentas_resumen_simpleSchema: any = new SimpleSchema({
+const ContratoProp_cuentas_resumen_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -345,8 +342,8 @@ ContratoProp_cuentas_resumen_simpleSchema.addDocValidator(obj => {
         return []; 
     }
 
-    let primas = obj.primas;
-    let siniestros = obj.siniestros;
+    const primas = obj.primas;
+    const siniestros = obj.siniestros;
 
     // la fecha debe ser *posterior* al período de cierre 
     if (primas || siniestros) { 
@@ -362,7 +359,7 @@ ContratoProp_cuentas_resumen_simpleSchema.addDocValidator(obj => {
 // contratos - cuentas técnicas - distribución de priimas y siniestros en
 // las compañías del contrato
 // -----------------------------------------------------------------------
-let ContratoProp_cuentas_distribucion_simpleSchema = new SimpleSchema({
+const ContratoProp_cuentas_distribucion_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -401,7 +398,7 @@ let ContratoProp_cuentas_distribucion_simpleSchema = new SimpleSchema({
 // contratos - cuentas técnicas - saldos finales para cada compañía; para
 // cada compañía en una cuenta técnica (período) particular
 // -----------------------------------------------------------------------
-let ContratoProp_cuentas_saldos_simpleSchema = new SimpleSchema({
+const ContratoProp_cuentas_saldos_simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     contratoID: { type: String, optional: false, },
     definicionID: { type: String, optional: false, },
@@ -426,20 +423,20 @@ let ContratoProp_cuentas_saldos_simpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }, 
 })
 
-export const ContratosProp_cuentas_resumen: any = new Mongo.Collection("contratosProp_cuentas_resumen");
+export const ContratosProp_cuentas_resumen = new Mongo.Collection("contratosProp_cuentas_resumen");
 ContratosProp_cuentas_resumen.attachSchema(ContratoProp_cuentas_resumen_simpleSchema);
 
-export const ContratosProp_cuentas_distribucion: any = new Mongo.Collection("contratosProp_cuentas_distribucion");
+export const ContratosProp_cuentas_distribucion = new Mongo.Collection("contratosProp_cuentas_distribucion");
 ContratosProp_cuentas_distribucion.attachSchema(ContratoProp_cuentas_distribucion_simpleSchema);
 
-export const ContratosProp_cuentas_saldos: any = new Mongo.Collection("contratosProp_cuentas_saldos");
+export const ContratosProp_cuentas_saldos = new Mongo.Collection("contratosProp_cuentas_saldos");
 ContratosProp_cuentas_saldos.attachSchema(ContratoProp_cuentas_saldos_simpleSchema);
 
 
 // -----------------------------------------------------------------------
 // contratos - cuentas técnicas (definición de cuentas técnicas)
 // -----------------------------------------------------------------------
-let ContratoCuentasDefiniciones_SimpleSchema = new SimpleSchema({
+const ContratoCuentasDefiniciones_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     numero: { type: Number, optional: false, },
     moneda: { type: String, optional: false, },
@@ -452,7 +449,7 @@ let ContratoCuentasDefiniciones_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // contrato - capas - reaseguradores
 // -----------------------------------------------------------------------
-let ContratoCapasReaseguradores_SimpleSchema = new SimpleSchema({
+const ContratoCapasReaseguradores_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     compania: { type: String, optional: false, },
     // persona: { type: persona_SimpleSchema, optional: true },
@@ -467,7 +464,7 @@ let ContratoCapasReaseguradores_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // contratos - capas
 // -----------------------------------------------------------------------
-let ContratoCapa_SimpleSchema = new SimpleSchema({
+const ContratoCapa_SimpleSchema = new SimpleSchema({
     _id: { type:String, optional: false, },
     numero: { type:Number, optional: false, },
     moneda: { type:String, optional: false, },
@@ -486,7 +483,7 @@ let ContratoCapa_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // contratos - capas - primas de compañías
 // -----------------------------------------------------------------------
-let ContratoCapa_PrimasCompanias_SimpleSchema = new SimpleSchema({
+const ContratoCapa_PrimasCompanias_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     capaID: { type: String, optional: false, },
     numeroCapa: { type: Number, optional: false, },
@@ -517,7 +514,7 @@ let ContratoCapa_PrimasCompanias_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Compañías (movimiento sub-document)
 // -----------------------------------------------------------------------
-let  persona_SimpleSchema = new SimpleSchema({
+const  persona_SimpleSchema = new SimpleSchema({
     compania: { type: String, optional: false, },
     titulo: { type: String, optional: false, min: 1, max: 8 },
     nombre: { type: String, optional: false, min: 1, max: 100 }
@@ -526,7 +523,7 @@ let  persona_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // Renovación (riesgo sub-document)
 // -----------------------------------------------------------------------
-let  renovacion_SimpleSchema = new SimpleSchema({
+const  renovacion_SimpleSchema = new SimpleSchema({
     renovadoPor: { type: Number, optional: true },
     renuevaAl: { type: Number, optional: true }
 })
@@ -534,7 +531,7 @@ let  renovacion_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 // contratos
 // -----------------------------------------------------------------------
-let Contrato_SimpleSchema = new SimpleSchema({
+const Contrato_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     numero: { type: Number, optional: false, },
     codigo: { type: String, optional: true },
@@ -572,5 +569,5 @@ let Contrato_SimpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true }
 })
 
-export const Contratos: any = new Mongo.Collection("contratos");
+export const Contratos = new Mongo.Collection("contratos");
 Contratos.attachSchema(Contrato_SimpleSchema);

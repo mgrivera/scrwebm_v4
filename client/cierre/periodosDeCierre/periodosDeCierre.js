@@ -1,21 +1,21 @@
 
-
-import * as numeral from 'numeral';
-import * as lodash from 'lodash';
-import * as moment from 'moment'; 
-import * as angular from 'angular';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
-import { Cierre, Cierre_schema } from 'imports/collections/cierre/cierre'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import numeral from 'numeral';
+import lodash from 'lodash';
+import moment from 'moment'; 
+import angular from 'angular';
+
+import { Cierre, Cierre_schema } from '/imports/collections/cierre/cierre'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
-['$stateParams', '$scope', '$meteor', '$modal', function ($stateParams, $scope, $meteor, $modal) {
+angular.module("scrwebm")
+       .controller("Cierre.periodosDeCierre.Controller", ['$scope', '$modal', function ($scope, $modal) {
 
     $scope.showProgress = false;
 
@@ -28,8 +28,8 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-    let companiaSeleccionadaDoc = {} as any; 
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = {}; 
 
     if (companiaSeleccionada) { 
         companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
@@ -38,7 +38,6 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
 
     $scope.$parent.tituloState = "Cierre - Períodos cerrados"; 
 
-    let list_ui_grid_api = null;
     let itemSeleccionado = {};
 
     $scope.list_ui_grid = {
@@ -57,8 +56,6 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
         rowHeight: 25,
 
         onRegisterApi: function (gridApi) {
-
-        list_ui_grid_api = gridApi;
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                 itemSeleccionado = {};
                 if (row.isSelected) {
@@ -154,13 +151,12 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
         },
     ]
 
-
     $scope.nuevo = function() { 
 
-        let today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0); 
+        const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0); 
 
         // leemos el cierre más reciente para construir el nuevo registro; nótese que los registros son siempre agregados en orden  ... 
-        let ultimoCierre = $scope.cierre.find(x => x.cia = companiaSeleccionadaDoc._id); 
+        const ultimoCierre = $scope.cierre.find(x => x.cia = companiaSeleccionadaDoc._id); 
         let item = {}; 
 
         if (!ultimoCierre) { 
@@ -181,8 +177,8 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
             // siempre construimos el registro en base al último cierre ejecutado ... 
 
             // obtenemos la cantidad de días del período anterior, para determinar la fecha final de este período 
-            let primerDiaMesProximo = moment(ultimoCierre.hasta).add(1, "days").toDate();
-            let ultimoDiaMesProximo = moment(moment(primerDiaMesProximo).add(1, "month").toDate()).subtract(1, "days").toDate();
+            const primerDiaMesProximo = moment(ultimoCierre.hasta).add(1, "days").toDate();
+            const ultimoDiaMesProximo = moment(moment(primerDiaMesProximo).add(1, "month").toDate()).subtract(1, "days").toDate();
 
             item = { 
                 _id: new Mongo.ObjectID()._str,
@@ -198,7 +194,6 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
             }; 
         }
         
-
         // agregamos arriba en el array (unshift es igual que push pero agrega arriba en el array)
         // al hacer ésto, los items siempre estarán ordenados, por fecha y en forma descendente, en el array
         $scope.cierre.unshift(item);       
@@ -228,12 +223,12 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
     function leerPrimerosRegistrosDesdeServidor(cantidadRecs) {
         // cuando el usuario indica y aplica un filtro, leemos los primeros 50 registros desde mongo ...
         limit = cantidadRecs;
-        let filtro = { cia: companiaSeleccionadaDoc._id }; 
+        const filtro = { cia: companiaSeleccionadaDoc._id }; 
 
         Meteor.call('getCollectionCount', 'Cierre', filtro, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -244,7 +239,7 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
                 $scope.showProgress = false;
                 $scope.$apply();
                 return;
-            };
+            }
 
             // el método regresa la cantidad de items en el collection (siempre para el usuario)
             recordCount = result;
@@ -255,8 +250,7 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
     $scope.showProgress = true;
     leerPrimerosRegistrosDesdeServidor(50);
 
-
-    let subscriptionHandle: any = null;
+    let subscriptionHandle = null;
     $scope.leerRegistrosDesdeServer = function (limit) {
         // la idea es 'paginar' los registros que se suscriben, de 50 en 50
         // el usuario puede indicar 'mas', para leer 50 más; o todos, para leer todos los registros ...
@@ -274,7 +268,7 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
         $scope.list_ui_grid.data = [];
         $scope.cierre = [];
 
-        let filtro = { cia: companiaSeleccionadaDoc._id }; 
+        const filtro = { cia: companiaSeleccionadaDoc._id }; 
 
         subscriptionHandle =
         Meteor.subscribe( 'cierre.leerPeriodosDeCierre', filtro, limit, {
@@ -328,7 +322,7 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
     // -------------------------------------------------------------------------
     $scope.grabar = function () {
 
-        let hayEdiciones = $scope.cierre.find(x => x.docState); 
+        const hayEdiciones = $scope.cierre.find(x => x.docState); 
 
         if (!hayEdiciones) {
             DialogModal($modal, "<em>Cierre - Períodos cerrados</em>",
@@ -340,16 +334,15 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
         grabar2();
     }
 
-
     function grabar2() {
         $scope.showProgress = true;
 
         // obtenemos un clone de los datos a guardar ...
-        let editedItems = $scope.cierre.filter(x => x.docState);
+        const editedItems = $scope.cierre.filter(x => x.docState);
 
         // nótese como validamos cada item antes de intentar guardar en el servidor
         let isValid = false;
-        let errores = [];
+        const errores = [];
 
         editedItems.forEach((item) => { 
             isValid = Cierre_schema.namedContext().validate(item);
@@ -359,9 +352,9 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
                     if (error.type === "custom") { 
                         // cuando pasamos errores del tipo custom es porque el error no corresponde a un field en particular, sino a 
                         // todo el registro. En un caso tal, mostramos solo el nombre (name), pues allí ponemos la descripción del error 
-                        errores.push(`${error.name}` as never);
+                        errores.push(`${error.name}`);
                     } else { 
-                        errores.push(`El valor '${error.value}' no es adecuado para el campo '${Cierre_schema.label(error.name)}'; error de tipo '${error.type}'.` as never);
+                        errores.push(`El valor '${error.value}' no es adecuado para el campo '${Cierre_schema.label(error.name)}'; error de tipo '${error.type}'.`);
                     }
                 });
             }
@@ -393,7 +386,7 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
         Meteor.call('cierre.periodosCierre.save', editedItems, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -449,7 +442,7 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
             return;
         }
 
-        let modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/cierre/periodosDeCierre/mostrarEjecucionesCierre_Modal.html',
             controller: 'Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller',
             size: 'lg',
@@ -462,10 +455,10 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
                 },
             },
         }).result.then(
-              function (resolve) {
+              function () {
                   return true;
               },
-              function (cancel) {
+              function () {
                   return true;
               });
     }
@@ -476,7 +469,7 @@ angular.module("scrwebm").controller("Cierre.periodosDeCierre.Controller",
      $scope.$on('$destroy', function() {
          if (subscriptionHandle && subscriptionHandle.stop) {
              subscriptionHandle.stop();
-         };
+         }
      })
 }
 ])

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
 import lodash from 'lodash'; 
 
-import { ProtegerEntidades } from '/client/imports/generales/protegerEntidades'; 
+import ProtegerEntidades from '/client/imports/generales/protegerEntidades'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -847,8 +847,7 @@ export default angular.module("scrwebm.remesas.remesa",
                         mostrarCuadreRemesa(); 
     
                         // protegemos la entidad si corresponde a un período cerrado ... 
-                        const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
-                        protegeEntidad.proteger_periodoCerrado(); 
+                        await ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
     
                         $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
     
@@ -952,8 +951,7 @@ export default angular.module("scrwebm.remesas.remesa",
                     mostrarCuadreRemesa(); 
 
                     // protegemos la entidad si corresponde a un período cerrado ... 
-                    const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
-                    protegeEntidad.proteger_periodoCerrado(); 
+                    await ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
 
                     $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
 
