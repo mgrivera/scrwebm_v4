@@ -1,13 +1,10 @@
 
-
-import * as lodash from 'lodash'; 
-import * as moment from 'moment'; 
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias';  
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada';  
-import { Remesas } from 'imports/collections/principales/remesas';  
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';  
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada';  
+import { Remesas } from '/imports/collections/principales/remesas';  
 
 Meteor.publish("remesas.vieneDeAfuera", function (remesaID) {
 
@@ -22,5 +19,5 @@ Meteor.publish("remesas.vieneDeAfuera", function (remesaID) {
         EmpresasUsuarias.find({}),
         CompaniaSeleccionada.find({ userID: this.userId }),
         Remesas.find({ _id: remesaID }), 
-];
+    ]
 })

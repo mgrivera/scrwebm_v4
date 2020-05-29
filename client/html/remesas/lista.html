@@ -17,7 +17,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
             <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
                 <span ng-bind-html="alert.msg | unsafe"></span>
             </alert>
@@ -25,7 +25,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
+        <div class="col-sm-12 col-sm-offset-0">
             <div class="col-sm-5" style="padding-left: 0; ">
                 <dir-pagination-controls class="navigation-bar pull-left" boundary-links="true"></dir-pagination-controls>
             </div>
@@ -49,7 +49,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
+        <div class="col-sm-12 col-sm-offset-0">
 
             <table style="font-size: x-small; " class="table table-condensed table-striped table-bordered table-hover table-responsive">
                 <thead>
@@ -59,6 +59,7 @@
                         <th style="text-align: left; ">Compañía</th>
                         <th style="text-align: center; ">Mi/Su</th>
                         <th style="text-align: center; ">Moneda</th>
+                        <th style="text-align: right; ">F cambio</th>
                         <th style="text-align: right; ">Monto</th>
                         <th style="text-align: center; ">F cerrada</th>
                         <th style="text-align: left; ">Observaciones</th>
@@ -82,6 +83,7 @@
 
                         <td style="text-align: center; ">{{ remesa.miSu }}</td>
                         <td style="text-align: center; white-space: nowrap; ">{{ remesa.moneda }}</td>
+                        <td style="text-align: right; ">{{ remesa.factorCambio | currency:"":2}}</td>
                         <td style="text-align: right; ">{{ remesa.monto | currency:"":2}}</td>
                         <td style="text-align: center; white-space: nowrap; ">{{ remesa.fechaCerrada | date:'dd-MM-yyyy' }}</td>
                         
@@ -99,7 +101,7 @@
     </div>
 
     <div class="row" ng-if="origen == 'edicion'">
-        <div class="col-sm-10 col-sm-offset-1" style="text-align: right; ">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: right; ">
             <button class="btn btn-default btn-sm" style="min-width: 80px; " ng-click="nuevo()">
                 Nuevo
             </button>

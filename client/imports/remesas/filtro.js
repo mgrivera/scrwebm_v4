@@ -1,4 +1,6 @@
 ﻿
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
 
 import angular from 'angular';
 import lodash from 'lodash'; 
@@ -14,8 +16,7 @@ import { Filtros } from '/imports/collections/otros/filtros';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 export default angular.module("scrwebm.remesas.filtro", [])
-       .controller("RemesasFiltroController", ['$scope', '$state', '$stateParams', 
-  function ($scope, $state, $stateParams) {
+                      .controller("RemesasFiltroController", ['$scope', '$state', '$stateParams', function ($scope, $state, $stateParams) {
 
       $scope.showProgress = false;
 
@@ -76,20 +77,21 @@ export default angular.module("scrwebm.remesas.filtro", [])
         $scope.filtro = {};
     }
 
+    let Remesas_Consulta_SubscriptionHandle = null; 
 
     // aplicamos el filtro indicado por el usuario y abrimos la lista
     $scope.aplicarFiltroYAbrirLista = function () {
 
         $scope.showProgress = true;
-        let filtro = $scope.filtro;
+        const filtro = $scope.filtro;
 
         // agregamos la compañía seleccionada al filtro
         filtro.cia = $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : -999;
 
-        Meteor.call('remesas.leerDesdeMongo', JSON.stringify(filtro), (err, result)  => {
+        Meteor.call('remesas.leerDesdeMongo', JSON.stringify(filtro), (err)  => {
         
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

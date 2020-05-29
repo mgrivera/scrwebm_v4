@@ -43,17 +43,17 @@ Meteor.publish("remesas", function (filtro) {
     }
 
     if (filtro.compania && filtro.compania.length) {
-        var array = lodash.clone(filtro.compania);
+        const array = lodash.clone(filtro.compania);
         selector.compania = { $in: array };
     }
 
     if (filtro.moneda && filtro.moneda.length) {
-        var array = lodash.clone(filtro.moneda);
+        const array = lodash.clone(filtro.moneda);
         selector.moneda = { $in: array };
     }
 
     if (filtro.observaciones) {
-        var search = new RegExp(filtro.observaciones, 'i');
+        const search = new RegExp(filtro.observaciones, 'i');
         selector.observaciones = search;
     }
 
@@ -67,7 +67,8 @@ Meteor.publish("remesas", function (filtro) {
 
     if (filtro.instrumentoPago.numero) {
         if (!selector.instrumentoPago) { selector.instrumentoPago = {}; } 
-        var search = new RegExp(filtro.instrumentoPago.numero, 'i');
+        const search = new RegExp(filtro.instrumentoPago.numero, 'i');
+        selector.instrumentoPago.numero = search;
     }
 
     if (filtro.instrumentoPago.fecha1 && moment(filtro.instrumentoPago.fecha1).isValid()) { 
@@ -88,7 +89,7 @@ Meteor.publish("remesas", function (filtro) {
 
     if (filtro.instrumentoPago.tipo && filtro.instrumentoPago.tipo.length) {
         if (!selector.instrumentoPago) { selector.instrumentoPago = {}; } 
-        var array = lodash.clone(filtro.instrumentoPago.tipo);
+        const array = lodash.clone(filtro.instrumentoPago.tipo);
         selector.instrumentoPago.tipo = { $in: array };
     }
 

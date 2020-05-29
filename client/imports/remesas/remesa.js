@@ -1,5 +1,4 @@
-
-
+/* eslint-disable require-atomic-updates */
 import angular from 'angular';
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
@@ -39,17 +38,19 @@ export default angular.module("scrwebm.remesas.remesa",
                         RemesasRemesaObtenerCuadreRemesa.name, 
                         RemesaCuadreAsientoContable.name, 
                       ])
-                      .controller("RemesaController",
-['$scope', '$state', '$stateParams', '$modal', 'uiGridGroupingConstants',
+                      .controller("RemesaController", ['$scope', '$state', '$stateParams', '$modal', 'uiGridGroupingConstants',
   function ($scope, $state, $stateParams, $modal, uiGridGroupingConstants) {
 
     $scope.showProgress = false;
+    $scope.uiSelectLoading = false;         // para mostrar spinner cuando se ejecuta el search en el (bootstrap) ui-select 
 
     $scope.origen = $stateParams.origen;
     $scope.id = $stateParams.id;
     $scope.pageNumber = $stateParams.pageNumber;
+
+    // ej: cuando se abre desde la lista de cuotas ...
     // nótese que el boolean value viene, en realidad, como un string ...
-    $scope.vieneDeAfuera = ($stateParams.vieneDeAfuera && $stateParams.vieneDeAfuera == "true");    // ej: cuando se abre desde la lista de cuotas ...
+    $scope.vieneDeAfuera = ($stateParams.vieneDeAfuera && $stateParams.vieneDeAfuera == "true");    
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -66,7 +67,6 @@ export default angular.module("scrwebm.remesas.remesa",
         { tipo: 'TR', descripcion: 'Transferencia' }, 
     ];
 
-        
     $scope.tiposCuentaContable = [ 
         { tipo: 10, descripcion: "remesa", abreviatura: "remesa", }, 
         { tipo: 100, descripcion: "cobro prima - fac", abreviatura: "cob pr fac", }, 
@@ -127,14 +127,13 @@ export default angular.module("scrwebm.remesas.remesa",
     }
 
     $scope.nuevo = function () {
-        // si existe una moneda 'por defecto', la asignamos
-        const monedaDefault = Monedas.findOne({ defecto: true });
-
         $scope.remesa = {};
+        const today = new Date(); 
+
         $scope.remesa = {
             _id: new Mongo.ObjectID()._str,
             numero: 0,
-            moneda: monedaDefault ? monedaDefault._id : null, 
+            fecha: new Date(today.getFullYear(), today.getMonth(), today.getDate()), 
             instrumentoPago: {}, 
             ingreso: new Date(),
             usuario: Meteor.user().emails[0].address,
@@ -144,44 +143,24 @@ export default angular.module("scrwebm.remesas.remesa",
 
         $scope.alerts.length = 0;
 
-        // inicialmente, mostramos el state 'generales'
-        $state.go("remesa.generales");
+        $scope.setIsEdited('fechaRemesa');      // para buscar y asignar el factor de cambio que corresponde a hoy 
+    }
+
+    $scope.nuevo0 = function () {
+        // desde inicializarItem() se ejecuta nuevo(); la idea es hacer lo mismo para un Nuevo desde la lista o el filtro, o 
+        // un Nuevo desde la remesa ... 
+        $scope.id = "0"; 
+        inicializarItem(); 
     }
 
     // -------------------------------------------------------------------------------------------
     // leemos los catálogos que necesitamos en el $scope
     $scope.helpers({
-        companias: () => { return Companias.find({}, { sort: { simbolo: 1 }}); },
-        monedas: () => { return Monedas.find({}, { sort: { simbolo: 1 }}); },
-        bancos: () => { return Bancos.find({}, { sort: { abreviatura: 1 }}); },
-        cuentasBancarias: () => {
-            // las cuenas bancarias se registran para la cia seleccionada
-            return CuentasBancarias.find({ cia: $scope.companiaSeleccionada._id });
-        },
-    })
-
-    // creamos un array para mostrar la lista de cuentas bancarias al usuario ...
-    $scope.listaCuentasBancarias = [];
-
-    $scope.cuentasBancarias.map((x) => {
-
-        let simboloMoneda = null;
-        let abreviaturaBanco = null;
-
-        if (Monedas.findOne(x.moneda)) {
-            simboloMoneda = Monedas.findOne(x.moneda).simbolo;
-        }
-
-        if (Bancos.findOne(x.banco)) {
-            abreviaturaBanco = Bancos.findOne(x.banco).abreviatura;
-        }
-
-        const cuentaBancaria = {
-            _id: x._id,
-            descripcion: `${abreviaturaBanco} ${simboloMoneda} ${x.tipo} ${x.numero}`,
-        }
-
-        $scope.listaCuentasBancarias.push(cuentaBancaria)
+        companias: () => [],
+        monedas: () => [],
+        bancos: () => [],
+        cuentasBancarias: () => [],
+        listaCuentasBancarias: () => []
     })
 
     // ---------------------------------------------------------------
@@ -387,7 +366,7 @@ export default angular.module("scrwebm.remesas.remesa",
         }
     }
 
-    $scope.setIsEdited = function (fieldName) {
+    $scope.setIsEdited = async function (fieldName) {
 
         if (fieldName === 'compania') {
             // asignamos el mi/su dependiendo del tipo de la compañía 
@@ -419,12 +398,31 @@ export default angular.module("scrwebm.remesas.remesa",
         if (fieldName === 'banco') {
             // cuando el usuario indica el banco, asignamos la 1ra. de sus cuentas bancarias 
             if ($scope.remesa.instrumentoPago.banco) { 
-                const cuentaBancaria = CuentasBancarias.findOne({ banco: $scope.remesa.instrumentoPago.banco }); 
 
-                $scope.remesa.instrumentoPago.cuentaBancaria = null; 
-                if (cuentaBancaria) { 
-                    $scope.remesa.instrumentoPago.cuentaBancaria = cuentaBancaria._id; 
-                }
+                const banco = $scope.remesa.instrumentoPago.banco; 
+
+                // leemos las cuentas bancarias que corresponden al banco 
+                Meteor.subscribe("leer.cuentasBancarias.banco", banco, () => { 
+
+                    $scope.helpers({
+                        cuentasBancarias: () => CuentasBancarias.find({ banco: banco }, { sort: { numero: 1 }})
+                    })
+
+                    // preparamos una lista especial para mostrar las cuentas bancarias en el ddl 
+                    const listaCuentasBancarias = prepararListaCuentasBancarias($scope.cuentasBancarias); 
+
+                    $scope.helpers({
+                        listaCuentasBancarias: () => listaCuentasBancarias
+                    })
+
+                    if (listaCuentasBancarias.length) { 
+                        // intentamos asignar la 1ra de las cuentas del banco al input de cuentas bancarias 
+                        $scope.remesa.instrumentoPago.cuentaBancaria = listaCuentasBancarias[0]._id; 
+                    }
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                })
             }
         }
 
@@ -435,22 +433,10 @@ export default angular.module("scrwebm.remesas.remesa",
                 // ejecutamos un method en el server para leer el factor de cambio asignado a la remesa más reciente ... 
                 $scope.showProgress = true;
 
-                Meteor.call('remesas.leerFactorCambioRemesaReciente', $scope.remesa.fecha, (err, result) => {
+                let result = null; 
 
-                    if (err) {
-                        const errorMessage = mensajeErrorDesdeMethod_preparar(err);
-
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({
-                            type: 'danger',
-                            msg: errorMessage
-                        });
-
-                        $scope.showProgress = false;
-                        $scope.$apply();
-
-                        return;
-                    }
+                try { 
+                    result = await method_remesa_leerFactorCambioRemesaReciente($scope.remesa.fecha); 
 
                     if (result.error) { 
                         const errorMessage = result.message;
@@ -472,7 +458,20 @@ export default angular.module("scrwebm.remesas.remesa",
 
                     $scope.showProgress = false;
                     $scope.$apply();
-                })
+
+                } catch(err) { 
+
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: errorMessage
+                    });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                }
             }
         }
 
@@ -721,37 +720,47 @@ export default angular.module("scrwebm.remesas.remesa",
     // -------------------------------------------------------------------------
     $scope.remesaCuadreSimpleArray = [];
 
-    function inicializarItem() {
+    async function inicializarItem() {
         
         $scope.showProgress = true;
 
         if ($scope.id == "0") {
             // el id viene en '0' cuando el usuario hace un click en Nuevo ...
-            $scope.nuevo(); 
+            await $scope.nuevo(); 
 
             // suscibimos a las cuentas contables para mostrar el catálogo (ddl) en el cuadre ... 
-            Meteor.subscribe('cuentasContablesSoloDetalles', () => { 
+            await subscribe_cuentasContablesSoloDetalles(); 
 
-                $scope.helpers({
-                    cuentasContables: () => {
-                        return CuentasContables.find({ cia: companiaSeleccionadaDoc._id }, { sort: { cuenta: 1 } });
-                    },
-                })
+            $scope.helpers({
+                cuentasContables: () => {
+                    return CuentasContables.find({ cia: companiaSeleccionadaDoc._id }, { sort: { cuenta: 1 } });
+                },
+            })
 
-                // preparamos una lista de cuentas, que permita mostrar en el ddl en el ui-grid, 'cuenta-desc' en vez de 
-                // solo descripción 
-                $scope.cuentasContablesLista = $scope.cuentasContables.map((c) => { 
-                    return { 
-                        cuenta: c.cuenta, 
-                        descripcion: `${c.cuenta} - ${c.descripcion}`
-                    }
-                })
+            // preparamos una lista de cuentas, que permita mostrar en el ddl en el ui-grid, 'cuenta-desc' en vez de 
+            // solo descripción 
+            $scope.cuentasContablesLista = $scope.cuentasContables.map((c) => { 
+                return { 
+                    cuenta: c.cuenta, 
+                    descripcion: `${c.cuenta} - ${c.descripcion}`
+                }
+            })
 
-                $scope.cuadreRemesas_ui_grid.columnDefs[3].editDropdownOptionsArray = $scope.cuentasContablesLista; 
+            $scope.cuadreRemesas_ui_grid.columnDefs[3].editDropdownOptionsArray = $scope.cuentasContablesLista; 
+
+            // inicialmente, mostramos el state 'generales'
+            $state.go('remesa.generales').then(() => { 
+
+                const inputFecha = document.getElementById("fecha"); 
+                if (inputFecha) { 
+                    inputFecha.focus(); 
+                }
+
+                $scope.currentStateName = "Generales";
 
                 $scope.showProgress = false;
-                $scope.$apply();
-            })
+                // $scope.$apply();
+            });
         }
         else {
             if ($scope.vieneDeAfuera) { 
@@ -786,7 +795,7 @@ export default angular.module("scrwebm.remesas.remesa",
                     }
                     // ------------------------------------------------------------------------------------------------
         
-                    Meteor.subscribe('cuotas', JSON.stringify({ 'pagos.remesaID': { $in: [$scope.id] }}), () => {
+                    Meteor.subscribe('cuotas', JSON.stringify({ 'pagos.remesaID': { $in: [$scope.id] }}), async () => {
                         // recorremos las cuotas y extraemos los pagos que corresponden justo a la remesa; recuérdese que una cuota puede tener,
                         // en su array de pagos, pagos que corresopan a varias remesas diferentes ...
                         var cuotas = Cuotas.find().fetch();
@@ -816,36 +825,71 @@ export default angular.module("scrwebm.remesas.remesa",
                         })
         
                         // suscibimos a las cuentas contables para mostrar el catálogo (ddl) en el cuadre ... 
-                        Meteor.subscribe('cuentasContablesSoloDetalles', () => { 
+                        await subscribe_cuentasContablesSoloDetalles(); 
         
-                            $scope.helpers({
-                                cuentasContables: () => {
-                                    return CuentasContables.find({ cia: companiaSeleccionadaDoc._id }, { sort: { cuenta: 1 } });
-                                },
-                            })
-        
-                            // preparamos una lista de cuentas, que permita mostrar en el ddl en el ui-grid, 'cuenta-desc' en vez de 
-                            // solo descripción 
-                            $scope.cuentasContablesLista = $scope.cuentasContables.map((c) => { 
-                                return { 
-                                    cuenta: c.cuenta, 
-                                    descripcion: `${c.cuenta} - ${c.descripcion}`
-                                }
-                            })
-        
-                            $scope.cuadreRemesas_ui_grid.columnDefs[3].editDropdownOptionsArray = $scope.cuentasContablesLista; 
-        
-                            mostrarCuadreRemesa(); 
-        
-                            // protegemos la entidad si corresponde a un período cerrado ... 
-                            const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
-                            protegeEntidad.proteger_periodoCerrado(); 
-        
-                            $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
-        
-                            $scope.showProgress = false;
-                            $scope.$apply();
+                        $scope.helpers({
+                            cuentasContables: () => {
+                                return CuentasContables.find({ cia: companiaSeleccionadaDoc._id }, { sort: { cuenta: 1 } });
+                            },
                         })
+    
+                        // preparamos una lista de cuentas, que permita mostrar en el ddl en el ui-grid, 'cuenta-desc' en vez de 
+                        // solo descripción 
+                        $scope.cuentasContablesLista = $scope.cuentasContables.map((c) => { 
+                            return { 
+                                cuenta: c.cuenta, 
+                                descripcion: `${c.cuenta} - ${c.descripcion}`
+                            }
+                        })
+    
+                        $scope.cuadreRemesas_ui_grid.columnDefs[3].editDropdownOptionsArray = $scope.cuentasContablesLista; 
+    
+                        mostrarCuadreRemesa(); 
+    
+                        // protegemos la entidad si corresponde a un período cerrado ... 
+                        const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
+                        protegeEntidad.proteger_periodoCerrado(); 
+    
+                        $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
+    
+                        // ------------------------------------------------------------------------------------------------------------
+                        // finalmente, suscribimos a los datos 'iniciales' necesarios para mostrar la remesa; comúnmente, son los 
+                        // catálogos, como: compañía, moneda, banco, cuenta bancaria ... 
+                        Meteor.subscribe('remesa.loadInitialData', $scope.remesa.compania, 
+                                                                    $scope.remesa.moneda, 
+                                                                    $scope.remesa.instrumentoPago.banco, 
+                                                                    $scope.remesa.instrumentoPago.cuentaBancaria, 
+                            () => { 
+
+                                $scope.helpers({
+                                    companias: () => Companias.find(),
+                                    monedas: () => Monedas.find(),
+                                    bancos: () => Bancos.find(),
+                                    cuentasBancarias: () => CuentasBancarias.find()
+                                })
+
+                                // preparamos una lista especial para mostrar las cuentas bancarias en el ddl 
+                                const listaCuentasBancarias = prepararListaCuentasBancarias($scope.cuentasBancarias); 
+
+                                $scope.helpers({
+                                    listaCuentasBancarias: () => listaCuentasBancarias
+                                })
+
+                                // inicialmente, mostramos el state 'generales'
+                                $state.go('remesa.generales').then(() => { 
+
+                                    const inputFecha = document.getElementById("fecha"); 
+                                    if (inputFecha) { 
+                                        inputFecha.focus(); 
+                                    }
+
+                                    $scope.currentStateName = "Generales";
+
+                                    $scope.showProgress = false;
+                                    // $scope.$apply();
+                                });
+                            }
+                        )
                     })
                 })
             } else { 
@@ -856,7 +900,7 @@ export default angular.module("scrwebm.remesas.remesa",
                     },
                 })
     
-                Meteor.subscribe('cuotas', JSON.stringify({ 'pagos.remesaID': { $in: [$scope.id] }}), () => {
+                Meteor.subscribe('cuotas', JSON.stringify({ 'pagos.remesaID': { $in: [$scope.id] }}), async () => {
                     // recorremos las cuotas y extraemos los pagos que corresponden justo a la remesa; recuérdese que una cuota puede tener,
                     // en su array de pagos, pagos que corresopan a varias remesas diferentes ...
                     var cuotas = Cuotas.find().fetch();
@@ -886,43 +930,74 @@ export default angular.module("scrwebm.remesas.remesa",
                     })
     
                     // suscibimos a las cuentas contables para mostrar el catálogo (ddl) en el cuadre ... 
-                    Meteor.subscribe('cuentasContablesSoloDetalles', () => { 
+                    await subscribe_cuentasContablesSoloDetalles(); 
     
-                        $scope.helpers({
-                            cuentasContables: () => {
-                                return CuentasContables.find({ cia: companiaSeleccionadaDoc._id }, { sort: { cuenta: 1 } });
-                            },
-                        })
-    
-                        // preparamos una lista de cuentas, que permita mostrar en el ddl en el ui-grid, 'cuenta-desc' en vez de 
-                        // solo descripción 
-                        $scope.cuentasContablesLista = $scope.cuentasContables.map((c) => { 
-                            return { 
-                                cuenta: c.cuenta, 
-                                descripcion: `${c.cuenta} - ${c.descripcion}`
-                            }
-                        })
-    
-                        $scope.cuadreRemesas_ui_grid.columnDefs[3].editDropdownOptionsArray = $scope.cuentasContablesLista; 
-    
-                        mostrarCuadreRemesa(); 
-    
-                        // protegemos la entidad si corresponde a un período cerrado ... 
-                        const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
-                        protegeEntidad.proteger_periodoCerrado(); 
-    
-                        $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
-    
-                        $scope.showProgress = false;
-                        $scope.$apply();
+                    $scope.helpers({
+                        cuentasContables: () => {
+                            return CuentasContables.find({ cia: companiaSeleccionadaDoc._id }, { sort: { cuenta: 1 } });
+                        },
                     })
+
+                    // preparamos una lista de cuentas, que permita mostrar en el ddl en el ui-grid, 'cuenta-desc' en vez de 
+                    // solo descripción 
+                    $scope.cuentasContablesLista = $scope.cuentasContables.map((c) => { 
+                        return { 
+                            cuenta: c.cuenta, 
+                            descripcion: `${c.cuenta} - ${c.descripcion}`
+                        }
+                    })
+
+                    $scope.cuadreRemesas_ui_grid.columnDefs[3].editDropdownOptionsArray = $scope.cuentasContablesLista; 
+
+                    mostrarCuadreRemesa(); 
+
+                    // protegemos la entidad si corresponde a un período cerrado ... 
+                    const protegeEntidad = new ProtegerEntidades([ $scope.remesa ], $scope.companiaSeleccionada._id); 
+                    protegeEntidad.proteger_periodoCerrado(); 
+
+                    $scope.cuadreRemesas_ui_grid.data = $scope.remesaCuadreSimpleArray;
+
+                    // ------------------------------------------------------------------------------------------------------------
+                    // finalmente, suscribimos a los datos 'iniciales' necesarios para mostrar la remesa; comúnmente, son los 
+                    // catálogos, como: compañía, moneda, banco, cuenta bancaria ... 
+                    Meteor.subscribe('remesa.loadInitialData', $scope.remesa.compania, 
+                                                                $scope.remesa.moneda, 
+                                                                $scope.remesa.instrumentoPago.banco, 
+                                                                $scope.remesa.instrumentoPago.cuentaBancaria, 
+                        () => { 
+
+                            $scope.helpers({
+                                companias: () => Companias.find(),
+                                monedas: () => Monedas.find(),
+                                bancos: () => Bancos.find(),
+                                cuentasBancarias: () => CuentasBancarias.find()
+                            })
+
+                            // preparamos una lista especial para mostrar las cuentas bancarias en el ddl 
+                            const listaCuentasBancarias = prepararListaCuentasBancarias($scope.cuentasBancarias); 
+
+                            $scope.helpers({
+                                listaCuentasBancarias: () => listaCuentasBancarias
+                            })
+
+                            // inicialmente, mostramos el state 'generales'
+                            $state.go('remesa.generales').then(() => { 
+
+                                const inputFecha = document.getElementById("fecha"); 
+                                if (inputFecha) { 
+                                    inputFecha.focus(); 
+                                }
+
+                                $scope.currentStateName = "Generales";
+
+                                $scope.showProgress = false;
+                                // $scope.$apply();
+                            });
+                        }
+                    )
                 })
             }
         }
-
-        // inicialmente, mostramos el state 'generales'
-        $scope.currentStateName = "Generales";
-        $state.go('remesa.generales');
     }
 
     inicializarItem();
@@ -1319,6 +1394,53 @@ export default angular.module("scrwebm.remesas.remesa",
         reader.readAsText(userSelectedFile);
     }
 
+    // para hacer el search de las compañías desde el server 
+    $scope.searchCompanias = (search) => {
+
+        $scope.uiSelectLoading = true; 
+
+        Meteor.subscribe("search.companias", search, () => { 
+
+            $scope.helpers({
+                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 }})
+            })
+
+            $scope.uiSelectLoading = false;
+            $scope.$apply();
+        })
+    }
+
+    // para hacer el search de las monedas desde el server 
+    $scope.searchMonedas = (search) => {
+
+        $scope.uiSelectLoading = true; 
+
+        Meteor.subscribe("search.monedas", search, () => { 
+
+            $scope.helpers({
+                monedas: () => Monedas.find({ descripcion: new RegExp(search, 'i') }, { sort: { descripcion: 1 }})
+            })
+
+            $scope.uiSelectLoading = false;
+            $scope.$apply();
+        })
+    }
+
+    // para hacer el search de las monedas desde el server 
+    $scope.searchBancos = (search) => {
+
+        $scope.uiSelectLoading = true; 
+
+        Meteor.subscribe("search.bancos", search, () => { 
+
+            $scope.helpers({
+                bancos: () => Bancos.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 }})
+            })
+
+            $scope.uiSelectLoading = false;
+            $scope.$apply();
+        })
+    }
 
       // -------------------------------------------------------
       // pager - en 'detalles' (pagos) de la remesa
@@ -1326,3 +1448,48 @@ export default angular.module("scrwebm.remesas.remesa",
       $scope.pageSize = 10;
   }
 ])
+
+function prepararListaCuentasBancarias (cuentasBancarias) { 
+
+    // para agregar moneda y banco a la lista de cuentas bancarias; para que el usuario las identifique más fácilmente 
+    const listaCuentasBancarias = []; 
+
+    if (!cuentasBancarias || !Array.isArray(cuentasBancarias)) { 
+        return []
+    }
+
+    cuentasBancarias.map((x) => {
+
+        const moneda = Monedas.findOne(x.moneda);
+        const banco = Bancos.findOne(x.banco);
+
+        const cuentaBancaria = {
+            _id: x._id,
+            descripcion: `${banco && banco.abreviatura ? banco.abreviatura : 'Indefinido'} ${moneda && moneda.simbolo ? moneda.simbolo : 'Indefindo'} ${x.tipo} ${x.numero}`,
+        }
+
+        listaCuentasBancarias.push(cuentaBancaria)
+    })
+
+    return listaCuentasBancarias; 
+}
+
+const subscribe_cuentasContablesSoloDetalles = () => { 
+    return new Promise((resolve) => { 
+        Meteor.subscribe('cuentasContablesSoloDetalles', () => { resolve() })
+    })
+}
+
+const method_remesa_leerFactorCambioRemesaReciente = (fecha) => { 
+    return new Promise((resolve, reject) => { 
+
+        Meteor.call('remesas.leerFactorCambioRemesaReciente', fecha, (err, result) => {
+
+            if (err) { 
+                reject(err); 
+            }
+
+            resolve(result); 
+        }) 
+    })
+}

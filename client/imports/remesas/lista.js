@@ -1,5 +1,5 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor'
 import angular from 'angular';
 
 import { Temp_Consulta_Remesas } from '/imports/collections/consultas/tempConsultaRemesas'; 
@@ -44,6 +44,8 @@ export default angular.module("scrwebm.remesas.lista", [ ReportDesdeList.name ])
     $scope.nuevo = function () {
         $state.go("remesa", { origen: 'edicion', id: '0', pageNumber: 0 });
     }
+
+    let Remesas_SubscriptionHandle = null; 
 
     $scope.abrirRemesaPage = function (remesaID) {
     

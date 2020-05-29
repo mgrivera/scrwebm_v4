@@ -1,23 +1,22 @@
 
-
-import * as numeral from 'numeral';
-import * as moment from 'moment';
-import * as lodash from 'lodash';
+import numeral from 'numeral';
+import moment from 'moment';
+import lodash from 'lodash';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import { Remesas } from 'imports/collections/principales/remesas';  
-import { Temp_Consulta_Remesas } from 'imports/collections/consultas/tempConsultaRemesas'; 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Remesas } from '/imports/collections/principales/remesas';  
+import { Temp_Consulta_Remesas } from '/imports/collections/consultas/tempConsultaRemesas'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
 
 Meteor.methods(
 {
     'remesas.leerDesdeMongo': function (filtro) {
 
-        var filtro = JSON.parse(filtro);
-        var selector = {} as any;
+        filtro = JSON.parse(filtro);
+        const selector = {};
 
         new SimpleSchema({
             filtro: { type: Object, blackbox: true, optional: false, },
@@ -54,17 +53,17 @@ Meteor.methods(
         }
     
         if (filtro.compania && filtro.compania.length) {
-            var array = lodash.clone(filtro.compania);
+            const array = lodash.clone(filtro.compania);
             selector.compania = { $in: array };
         }
     
         if (filtro.moneda && filtro.moneda.length) {
-            var array = lodash.clone(filtro.moneda);
+            const array = lodash.clone(filtro.moneda);
             selector.moneda = { $in: array };
         }
     
         if (filtro.observaciones) {
-            var search = new RegExp(filtro.observaciones, 'i');
+            const search = new RegExp(filtro.observaciones, 'i');
             selector.observaciones = search;
         }
     
@@ -78,7 +77,8 @@ Meteor.methods(
     
         if (filtro.instrumentoPago.numero) {
             if (!selector.instrumentoPago) { selector.instrumentoPago = {}; } 
-            var search = new RegExp(filtro.instrumentoPago.numero, 'i');
+            const search = new RegExp(filtro.instrumentoPago.numero, 'i');
+            selector.instrumentoPago.numero = search; 
         }
     
         if (filtro.instrumentoPago.fecha1 && moment(filtro.instrumentoPago.fecha1).isValid()) { 
@@ -93,13 +93,13 @@ Meteor.methods(
     
         if (filtro.instrumentoPago.banco && filtro.instrumentoPago.banco.length) {
             if (!selector.instrumentoPago) { selector.instrumentoPago = {}; } 
-            var array = lodash.clone(filtro.instrumentoPago.banco);
+            const array = lodash.clone(filtro.instrumentoPago.banco);
             selector.instrumentoPago.banco = { $in: array };
         }
     
         if (filtro.instrumentoPago.tipo && filtro.instrumentoPago.tipo.length) {
             if (!selector.instrumentoPago) { selector.instrumentoPago = {}; } 
-            var array = lodash.clone(filtro.instrumentoPago.tipo);
+            const array = lodash.clone(filtro.instrumentoPago.tipo);
             selector.instrumentoPago.tipo = { $in: array };
         }
     
@@ -151,47 +151,47 @@ Meteor.methods(
         // eliminamos los asientos que el usuario pueda haber registrado antes ...
         Temp_Consulta_Remesas.remove({ user: this.userId });
 
-        let remesas = Remesas.find(selector).fetch();
+        const remesas = Remesas.find(selector).fetch();
 
         if (remesas.length == 0) {
             return "Cero registros han sido leídos desde la base de datos";
         }
 
-        let monedas = Monedas.find({}, { fields: { _id: 1, simbolo: 1, }}).fetch();
-        let companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: 1, simbolo: 1, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
       
         // -------------------------------------------------------------------------------------------------------------
         // valores para reportar el progreso
-        let numberOfItems = remesas.length;
-        let reportarCada = Math.floor(numberOfItems / 25);
+        const numberOfItems = remesas.length;
+        const reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 1;
-        let currentProcess = 1;
-        let message = `leyendo las remesas seleccionadas ... `; 
+        const numberOfProcess = 1;
+        const currentProcess = 1;
+        const message = `leyendo las remesas seleccionadas ... `; 
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "remesas.consulta.remesasEmitidas.reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'remesas.consulta.remesasEmitidas' };
+        const eventName = "remesas.consulta.remesasEmitidas.reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'remesas.consulta.remesasEmitidas' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: message
                         };
 
-        let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+        Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
         remesas.forEach((item) => {
 
-            let moneda = lodash.some(monedas, (x) => { return x._id === item.moneda; }) ?
+            const moneda = lodash.some(monedas, (x) => { return x._id === item.moneda; }) ?
                          lodash.find(monedas, (x) => { return x._id === item.moneda; }).simbolo :
                          'Indefinido';
 
-            let compania = lodash.some(companias, (x) => { return x._id === item.compania; }) ?
+            const compania = lodash.some(companias, (x) => { return x._id === item.compania; }) ?
                            lodash.find(companias, (x) => { return x._id === item.compania; }).abreviatura :
                            'Indefinido';
 
-            let remesa = {} as any;
+            const remesa = {};
 
             remesa._id = new Mongo.ObjectID()._str;
             remesa.user = Meteor.userId();
@@ -201,6 +201,7 @@ Meteor.methods(
             remesa.compania = compania;
             remesa.miSu = item.miSu;
             remesa.moneda = moneda;
+            remesa.factorCambio = item.factorCambio; 
             remesa.monto = item.instrumentoPago && item.instrumentoPago.monto ? item.instrumentoPago.monto : 0;
             remesa.fecha = item.fecha;
             remesa.fechaCerrada = item.fechaCerrada;
@@ -219,7 +220,7 @@ Meteor.methods(
                               progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                               message: message
                             };
-                let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
             }
             else {
                 reportar++;
@@ -229,7 +230,7 @@ Meteor.methods(
                                   progress: numeral(cantidadRecs / numberOfItems).format("0 %"),
                                   message: message
                                 };
-                    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
+                    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
                     reportar = 0;
                 }
             }

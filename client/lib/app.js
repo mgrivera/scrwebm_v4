@@ -19,6 +19,10 @@ import "/node_modules/angular-ui-grid/ui-grid.css";
 // import '../../node_modules/angular-ui-grid/fonts/ui-grid.ttf';
 
 import 'angular-utils-pagination';              // angularUtils.directives.dirPagination
+import ngSanitize from "angular-sanitize";
+
+import uiSelect from "ui-select"; 
+import 'ui-select/dist/select.css';
 
 // hacemos un import de los módulos (angular modules) que están en /client/imports, y los pasamos en DI (angular dependency injection) 
 import Generales from '/client/imports/generales/generalesAngularModule'; 
@@ -85,6 +89,7 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid', 'ui.grid.edit', 'ui.grid.cellNav',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
                             'ui.grid.pinning', 'ui.grid.grouping', 
+                            ngSanitize, uiSelect, 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
                             Generales.name, Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
                             Administracion.name, Consultas.name
