@@ -1,6 +1,4 @@
 
-
-
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
         <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
@@ -25,7 +23,7 @@
 
 <div class="row" style="font-size: small; ">
     <div class="col-sm-12 col-sm-offset-0">
-        <tabset style="text-align: left;">
+        <tabset>
                 
             <tab heading="Filtro" active="activeTab.tab1">
 
@@ -37,14 +35,14 @@
                                 <!-- fecha -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
-                                        <div class="col-sm-5">
+                                        <div class="col-sm-5" style="text-align: left; ">
                                             <label class="control-label input-label">Fecha: </label>
                                             <input type="date"
                                                     class="form-control input-sm myinput-sm"
                                                     ng-model="filtro.fecha1" />
                                         </div>
                                         <div class="col-sm-5">
-                                                <label class="control-label input-label">&nbsp;&nbsp;&nbsp; </label>
+                                            <label class="control-label input-label">&nbsp;&nbsp;&nbsp; </label>
                                             <input type="date"
                                                     class="form-control input-sm myinput-sm"
                                                     ng-model="filtro.fecha2" />
@@ -54,7 +52,7 @@
                                 <!-- tipo -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-10" style="text-align: left; ">
                                                 <label class="control-label input-label">Tipo: </label>
                                                 <select class="form-control input-sm myinput-sm"
                                                         ng-model="filtro.tipo"
@@ -70,7 +68,7 @@
                                 <!-- moneda -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-10" style="text-align: left; ">
                                             <label class="control-label input-label">Moneda: </label>
                                             <select class=" form-control input-sm myinput-sm"
                                                     ng-model="filtro.moneda"
@@ -85,7 +83,7 @@
                                 <!-- compañía -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-10" style="text-align: left; ">
                                             <label class="control-label input-label">Compañía: </label>
                                             <select class=" form-control input-sm myinput-sm"
                                                     ng-model="filtro.compania"
@@ -103,7 +101,7 @@
                                 <!-- tipo de negocio  -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-10" style="text-align: left; ">
                                             <label class="control-label input-label">Tipos de negocio: </label>
                                             <select class=" form-control input-sm myinput-sm"
                                                     ng-model="filtro.tipoNegocio"
@@ -119,7 +117,7 @@
                                 <!-- cedente -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-10" style="text-align: left; ">
                                             <label class="control-label input-label">Cedente: </label>
                                             <select class=" form-control input-sm myinput-sm"
                                                     ng-model="filtro.cedente"
@@ -140,7 +138,7 @@
                                 <!-- cobroPagoFlag -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-10" style="text-align: left; ">
                                                 <label class="control-label input-label">Cobro o pago: </label>
                                                 <select class="form-control input-sm myinput-sm"
                                                         ng-model="filtro.cobroPagoFlag"
@@ -170,8 +168,8 @@
             </tab>
                 
             <tab heading="Lista" active="activeTab.tab2">
-                <div class="row" style="text-align: center; ">
-                    <div class="col-sm-12 col-sm-offset-0" style="text-align: center; ">
+                <div class="row">
+                    <div class="col-sm-12 col-sm-offset-0">
 
                         <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
                             <div class="container-fluid">
@@ -191,14 +189,15 @@
                             </div>
                         </nav>
 
-                        <div ui-grid="registro_ui_grid"
-                            ui-grid-edit
-                            ui-grid-resize-columns
-                            ui-grid-selection
-                            ui-grid-cellnav
-                            ui-grid-pinning
-                            class="angularGrid"
-                            style="height: 350px; width: 100%; text-align: center; ">
+                        <div>
+                            <div ui-grid="registro_ui_grid" ui-grid-edit
+                                                            ui-grid-resize-columns
+                                                            ui-grid-selection
+                                                            ui-grid-cellnav
+                                                            ui-grid-pinning
+                                                            class="angularGrid"
+                                                            style="height: 350px; width: 100%; ">
+                        </div>
                         </div>
                     </div>
                 </div>

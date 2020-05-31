@@ -1,14 +1,16 @@
 
-
+import { Meteor } from 'meteor/meteor'
+import angular from 'angular'; 
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-angular.module("scrwebm").controller("Cierre_Controller", ['$scope', '$state', function ($scope, $state) {
+angular.module("scrwebm")
+       .controller("Cierre_Controller", ['$scope', function ($scope) {
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = { }; 
 
     if (companiaSeleccionada) { 

@@ -77,6 +77,22 @@ angular.module("scrwebm")
         { value: "montos", descripcion: "Montos emitidos" },
     ];
 
+    $scope.categorias_list = [
+        { value: null, descripcion: "" },
+        { value: "Prima", descripcion: "Prima" },
+        { value: "SinFac", descripcion: "Sin fac" },
+        { value: "Saldo", descripcion: "Saldo" },
+        { value: "Cobro", descripcion: "Cobro" },
+        { value: "Pago", descripcion: "Pago" },
+        { value: "ComAdic", descripcion: "Comisión adicional" },
+        { value: "PartBeneficios", descripcion: "Part beneficios" },
+        { value: "RetCartPr", descripcion: "Ret cart primas" },
+        { value: "EntCartPr", descripcion: "Ent cart primas" },
+        { value: "RetCartSn", descripcion: "Ret cart Sin" },
+        { value: "EntCartSn", descripcion: "Ent cart sin" },
+
+    ];
+
     $scope.helpers({
         companias: () => {
             return Companias.find({}, { sort: { nombre: 1 } });
@@ -158,10 +174,11 @@ angular.module("scrwebm")
             name: 'docState',
             field: 'docState',
             displayName: '',
+            cellClass: 'ui-grid-centerCell',
             cellTemplate:
             '<span ng-show="row.entity[col.field] == 1" class="fa fa-asterisk" style="color: blue; font: xx-small; padding-top: 8px; "></span>' +
             '<span ng-show="row.entity[col.field] == 2" class="fa fa-pencil" style="color: brown; font: xx-small; padding-top: 8px; "></span>' +
-            '<span ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
+            '<span  ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
             enableColumnMenu: false,
             enableSorting: false,
             pinnedLeft: true,
@@ -328,7 +345,7 @@ angular.module("scrwebm")
             type: 'string'
         },
         {
-            name: 'categoria',
+            name: 'categoria',              
             field: 'categoria',
             displayName: 'Cat',
             width: 60,
@@ -336,6 +353,13 @@ angular.module("scrwebm")
             enableCellEdit: true, 
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
+
+            editableCellTemplate: 'ui-grid/dropdownEditor',
+            editDropdownIdLabel: 'value',
+            editDropdownValueLabel: 'descripcion',
+            editDropdownOptionsArray: $scope.categorias_list,
+            cellFilter: 'mapDropdown:row.grid.appScope.categorias_list:"value":"descripcion"',
+
             enableColumnMenu: false,
             enableSorting: true,
             type: 'string'
@@ -563,9 +587,19 @@ angular.module("scrwebm")
         if (!hayEdiciones) {
             const message = `Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.`; 
             
-            DialogModal($modal, "<em>Cierre - Registro</em>",
-                                message,
-                                false).then();
+            DialogModal($modal, "<em>Cierre - Registro</em>", message, false).then();
+            return;
+        }
+
+        const hayEdicionesRegTipoAuto = lodash.some($scope.registro, (x) => x.docState && x.tipo === "A"); 
+
+        if (hayEdicionesRegTipoAuto) {
+            const message = `Aparentemente, Ud. ha editado o eliminado registros de tipo <em>Auto</em>.<br /> 
+                             Los registros de tipo <em>Auto</em> debe ser <b>solo</b> afectados por el proceso de cierre; 
+                             nunca deben ser editados en forma directa por el usuario. 
+                            `; 
+            
+            DialogModal($modal, "<em>Cierre - Registro</em>", message, false).then();
             return;
         }
 
@@ -688,20 +722,22 @@ angular.module("scrwebm")
      });
      // ------------------------------------------------------------------------------------------------------
 
-     // ------------------------------------------------------------------------------------------------
+     // para leer el último cierre efectuado 
+     $scope.showProgress = true;
+     const ultimoCierre_subscriptionHandle = Meteor.subscribe('utimoPeriodoCerrado', $scope.companiaSeleccionada._id , () => { 
+        $scope.showProgress = false;
+    })
+
+    // ------------------------------------------------------------------------------------------------
      // cuando el usuario sale de la página, nos aseguramos de detener (ie: stop) el subscription,
      // para limpiar los items en minimongo ...
      $scope.$on('$destroy', function() {
          if (subscriptionHandle && subscriptionHandle.stop) {
              subscriptionHandle.stop();
          }
-     })
 
-     // para leer el último cierre efectuado 
-     $scope.showProgress = true;
-     Meteor.subscribe('cierre', () => { 
-        $scope.showProgress = false;
-    })
+         ultimoCierre_subscriptionHandle.stop(); 
+     })
 }
 ])
 

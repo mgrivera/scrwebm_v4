@@ -5,13 +5,13 @@ import angular from 'angular';
 import lodash from 'lodash'; 
 import moment from 'moment'; 
 
-import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Cierre } from '/imports/collections/cierre/cierre'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$modal', function ($scope, $modal) {
 
@@ -137,7 +137,9 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
     // aplicamos el filtro indicado por el usuario y abrimos la lista
     $scope.cerrarPeriodo = function () {
 
-        if (!itemSeleccionado || lodash.isEmpty(itemSeleccionado)) {
+        const periodoACerrar = itemSeleccionado; 
+
+        if (!periodoACerrar || lodash.isEmpty(periodoACerrar)) {
             DialogModal($modal,
                 `<em>scrwebm - cierre de un período</em>`,
                 `Aparentemente, Ud. no ha seleccionado un período a cerrar.`, 
@@ -145,44 +147,39 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
             return;
         }
 
-        if (itemSeleccionado.cerradoFlag) {
+        const periodo = Cierre.findOne({ $or: [ {desde: { $lt: periodoACerrar.dede }}, { hasta: { $lt: periodoACerrar.hasta }} ], 
+                                         cia: companiaSeleccionadaID, cerradoFlag: false }); 
 
-            let message = `El período a cerrar que Ud. ha seleccionado debe estar abierto.<br />
-            Si Ud. desea cerrar un período que <b>ya fue cerrado antes</b>, debe ir a la opción <em>cierre/registros de cierre</em> y 
-            abrir el período. Una vez (re) abierto, Ud. puede regresar y cerrar <em>nuevamente</em> el período. 
-           `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+        if (periodo) {
 
-            DialogModal($modal,
-                `<em>scrwebm - cierre de un período</em>`,
-                message, 
-                false).then();
+            const message = `Aparentemente, Ud. no ha seleccionado el período <em>más reciente</em> en la lista.<br />
+                             Probablemente, el período a cerrar que Ud. ha seleccionado no es el más reciente. <br />
+                             Por favor seleccione el período más reciente en la lista. 
+                            `;  
+
+            DialogModal($modal, `<em>scrwebm - cierre de un período</em>`, message, false).then();
             return;
         }
 
-        if (!itemSeleccionado.desde || !itemSeleccionado.hasta) {
-            DialogModal($modal,
-                `<em>scrwebm - cierre de un período</em>`,
+        if (!periodoACerrar.desde || !periodoACerrar.hasta) {
+            DialogModal($modal, `<em>scrwebm - cierre de un período</em>`,
                 "Aparentemente, el período que Ud. ha seleccionado no está completo Por favor revise.",
                 false).then();
             return;
         }
 
-        let message = `Período a cerrar: desde <b>${moment(itemSeleccionado.desde).format("DD-MMM-YYYY")}</b> hasta <b>${moment(itemSeleccionado.hasta).format("DD-MMM-YYYY")}</b>.<br /><br />
-        Desea continuar con este proceso y cerrar el período?`; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+        const message = `Período a cerrar: desde <b>${moment(periodoACerrar.desde).format("DD-MMM-YYYY")}</b> hasta 
+                         <b>${moment(periodoACerrar.hasta).format("DD-MMM-YYYY")}</b>.<br /><br />
+                         Desea continuar con este proceso y cerrar el período?`; 
 
-        DialogModal($modal,
-            `<em>scrwebm - cierre de un período</em>`,
-             message,
-            true).then(
-            function () { cerrarPeriodo2(itemSeleccionado); },
+        DialogModal($modal, `<em>scrwebm - cierre de un período</em>`, message, true).then(
+            function () { cerrarPeriodo2(periodoACerrar); },
             function () { return; });
     }
 
     let subscriptionHandle = {};
 
-    function cerrarPeriodo2(itemSeleccionado) { 
+    function cerrarPeriodo2(periodoACerrar) { 
 
         $scope.alerts.length = 0;
         $scope.showProgress = true;
@@ -193,7 +190,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
         $scope.processProgress.progress = 0;
         $scope.processProgress.message = "";
 
-        Meteor.call('cierre.cerrarPeriodo', itemSeleccionado, (err, result)  => {
+        Meteor.call('cierre.cerrarPeriodo', periodoACerrar, (err, result)  => {
         
             if (err) {
                 const errorMessage = mensajeErrorDesdeMethod_preparar(err);

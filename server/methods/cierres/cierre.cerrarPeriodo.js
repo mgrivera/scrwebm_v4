@@ -501,6 +501,8 @@ Meteor.methods({
                     serie: null,            // solo aplica a registros de proporcionales 
                     tipoNegocio: tipoNegocio, 
 
+                    categoria: p.monto < 0 ? "Cobro" : "Pago",  
+
                     descripcion: `Remesa ${remesa.numero.toString()} - ${compania.abreviatura} - ${remesa.miSu} - ${moment(remesa.fecha).format("DD-MMM-YY")} - ${banco ? banco.abreviatura : ''} - ${cuentaBancaria ? cuentaBancaria.tipo : ''} - ${cuentaBancaria ? cuentaBancaria.numero : ''} - ${pagoCompletoParcial}.`,
                     monto: p.monto, 
                     

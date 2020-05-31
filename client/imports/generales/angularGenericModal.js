@@ -26,8 +26,8 @@ export const DialogModal = function ($modal, titulo, message, showCancelButton) 
     return modalInstance.result;
 }
 
-angular.module("scrwebm.generales").controller('DialogModalController',
-['$scope', '$modalInstance', 'titulo', 'mensaje', 'showCancelButton',
+angular.module("scrwebm.generales")
+       .controller('DialogModalController', ['$scope', '$modalInstance', 'titulo', 'mensaje', 'showCancelButton',
 function ($scope, $modalInstance, titulo, mensaje, showCancelButton) {
 
     $scope.dialogData = {};
