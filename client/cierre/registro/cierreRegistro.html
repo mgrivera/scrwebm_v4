@@ -132,7 +132,16 @@
                             </div>
 
                             <div class="row" style="margin-top: 20px; ">
+                                <!-- referencia -->
                                 <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10" style="text-align: left; ">
+                                            <label class="control-label input-label">Referencia</label>
+                                            <input type="text" 
+                                                   class="form-control input-sm myinput-sm" 
+                                                   ng-model="filtro.referencia" />
+                                        </div> 
+                                    </div>
                                 </div>
 
                                 <!-- cobroPagoFlag -->
@@ -199,6 +208,41 @@
                                                             style="height: 350px; width: 100%; ">
                         </div>
                         </div>
+                    </div>
+                </div>
+            </tab>
+
+            <tab heading="Notas" active="activeTab.tab3">
+                <div class="row" style="text-align: center; ">
+                    <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+
+                        <br />
+            
+                        <p>
+                            Los movimientos que Ud. ve en este <em>registro</em> son construidos por el proceso de cierre. 
+                        </p>
+            
+                        <p>
+                            El proceso de cierre lee los registros efectuados por el usuario para el período indicado y 
+                            los resume en esta tabla. Cada prima, siniestro, cobro, pago, etc., que el usuario registra 
+                            en el programa para un período determinado, son resumidos en esta tabla, registro, cuando 
+                            el usuario corre el proceso de cierre. 
+                        </p>
+            
+                        <p>
+                            Nótese que el proceso de cierre no agrega movimientos de tipo 'saldo inicial' a esta tabla. Los 
+                            registros de tipo 'saldo inicial' son calculados y mostrados por el proceso de consulta. Este 
+                            registro es solo un resumen de las operaciones registradas en el programa en un período. 
+                        </p>
+            
+                        <p>
+                            El proceso de cierre puede ser ejecutado, para un mismo período, las veces que sea necesario. 
+                            Cuando el proceso de cierre es ejecutado por el usuario sucesivas veces para un mismo período, 
+                            el contenido en esta tabla para el período es, simplemente, eliminado y vuelto a registrar. 
+                        </p>
+
+                        <br />
+            
                     </div>
                 </div>
             </tab>

@@ -2115,7 +2115,7 @@ angular.module("scrwebm").controller("ContratoController",
                 }
 
                 // para leer el último cierre efectuado 
-                Meteor.subscribe('cierre', () => { 
+                Meteor.subscribe('utimoPeriodoCerrado', $scope.companiaSeleccionada._id, () => { 
                     $scope.dataHasBeenEdited = false; 
                     $scope.showProgress = false;
                     $scope.$apply();

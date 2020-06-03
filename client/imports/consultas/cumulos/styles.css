@@ -1,0 +1,45 @@
+
+.cellNumber {
+    text-align: right; 
+    font-size: x-small; 
+}
+
+.alignLeft {
+    text-align: left; 
+}
+
+.alignCenter {
+    text-align: center; 
+}
+
+.fontXSmall { 
+    font-size: x-small; 
+}  
+
+.fontSmall { 
+    font-size: small; 
+}  
+
+/* los buttons son muy altos en el navBar */
+@media (min-width: 768px) { 
+    .navbar-nav > .navBar_button > a {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
+
+/* el navBar sigue siendo muy alto pues aplica un margin de 20x */
+nav.toolBar_navBar.navbar.navbar-default {
+     margin-bottom: 0px;
+     min-height: 0px;
+}
+
+/* para poner en rojo un icon de font awesome cuando el usaurio hace hover 
+   (por ejemplo el X en los grids ...)   style="color: #A5999C" */
+.fa-close:hover {
+    color: red;
+}
+
+.fa-pencil:hover {
+    color: #337AB7;
+}

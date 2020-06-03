@@ -44,6 +44,12 @@ Meteor.methods({
             throw new Meteor.Error("Error: aparentemente, el período indicado no está bien construido.");
         }
 
+        // la fecha final del período debe ser el último momento del día, para que incluya cualquier fecha de ese día 
+        periodoCierre.hasta = periodoCierre.hasta ? 
+                              new Date(periodoCierre.hasta.getFullYear(), periodoCierre.hasta.getMonth(), periodoCierre.hasta.getDate(), 23, 59, 59) : 
+                              null; 
+
+
         // eliminamos los registros *automáticos* (los manuales se quedan) que puedan existir para el período de cierre 
         CierreRegistro.remove({ fecha: { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, tipo: "A", cia: periodoCierre.cia }); 
 
@@ -138,7 +144,7 @@ Meteor.methods({
                         }
                     }
                     tipoNegocio = "Fac"; 
-                    categoria = "SinFac"; 
+                    categoria = "Sin"; 
                     // ver comentario arriba 
                     origen_keys = [ cuota._id, ];  
 

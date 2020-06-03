@@ -520,23 +520,23 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
 
         // cúmulos - consulta 
-        .state('cumulos_consulta', {
-            url: '/consultas/cumulo',
-            templateUrl: 'client/consultas/cumulos/main.html',
-            controller: 'ConsultasCumulos_Controller'
+        .state('consultas.cumulos', {
+            url: '/cumulos',
+            abstract: true,
+            template: '<div class="row" ui-view></div>', 
+            parent: 'consultas'
         })
-        .state('cumulos_consulta_filter', {
-            url: '/filter',
-            templateUrl: 'client/consultas/cumulos/filtro.html',
-            controller: 'ConsultasCumulos_Filtro_Controller',
-            parent:'cumulos_consulta',
-        })
-        .state('cumulos_consulta_list', {
-            url: '/list?companiaSeleccionada&parametrosReporte',
-            templateUrl: 'client/consultas/cumulos/list.html',
-            controller: 'ConsultasCumulos_Lista_Controller',
-            parent:'cumulos_consulta',
-        })
+
+        .state('consultas.cumulos.filtro', {
+            url: '/filtro',
+            template: '<consulta-cumulos-filtro />',
+            parent: 'consultas.cumulos', 
+        }) 
+        .state('consultas.cumulos.lista', {
+            url: '/filtro',
+            template: '<consulta-cumulos-lista />',
+            parent: 'consultas.cumulos', 
+        }) 
 
         // ----------------------------------------------------------------
         // cumulos            

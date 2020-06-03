@@ -3,8 +3,11 @@ import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
 
 import SimpleSchema from 'simpl-schema'; 
-import * as moment from 'moment'; 
-import { Cierre } from '../cierre/cierre'; 
+import moment from 'moment'; 
+
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Cierre } from '/imports/collections/cierre/cierre'; 
 
 // ------------------------------------------------------------------------
 // cuotas - pagos
@@ -88,8 +91,16 @@ simpleSchema.addDocValidator(obj => {
         return []; 
     }
 
-    // leemos el último cierre efectuado para la compañía 
-    const ultimoCierre = Cierre.findOne({ cia: obj.cia, cerradoFlag: true, }, { fields: { hasta: 1, }, sort: { hasta: -1, }}); 
+    // leemos la compañía seleccionada por el usuario 
+    const empresaUsuariaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionada = null; 
+
+    if (empresaUsuariaSeleccionada) { 
+        companiaSeleccionada = EmpresasUsuarias.findOne(empresaUsuariaSeleccionada.companiaID, { fields: { _id: 1 } });
+    }
+
+    // el último período cerrado está siempre en minimongo; hacemos un pub/sub con null 
+    const ultimoCierre = Cierre.findOne({ cia: companiaSeleccionada._id, cerradoFlag: true, }, { sort: { hasta: -1, } });
 
     if (!ultimoCierre) { 
         return []; 
@@ -105,6 +116,6 @@ simpleSchema.addDocValidator(obj => {
     }
 
     return [
-      { name: 'fecha', type: 'REGISTROS-CERRADOS', value: moment(obj.fecha).format("DD-MMM-YYYY") }
+        { name: 'fecha', type: 'REGISTROS-CERRADOS', value: moment(obj.fecha).format("DD-MMM-YYYY") }
     ];
   })

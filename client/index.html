@@ -102,16 +102,16 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                                 <li class="divider"></li>
                                 <li><a ui-sref="corretaje_consulta_filter">Corretaje</a></li>
                                 <li class="divider"></li>
-                                <li><a ui-sref="cumulos_consulta_filter">Cúmulos</a></li>
+                                <li><a ui-sref="consultas.cumulos.filtro">Cúmulos</a></li>
                             </ul>
                         </li>
 
-                        <li class="dropdown" ng-show="userHasRole_cierre">
+                        <li class="dropdown" ng-show="userHasRole_cierre_cierre || userHasRole_cierre_registro || userHasRole_cierre_consulta">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Cierre <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a ui-sref="cierre.cierre">Cierre</a></li>
-                                <li><a ui-sref="cierre.registro">Registro</a></li>
-                                <li><a ui-sref="cierre.consulta">Consulta</a></li>
+                                <li><a ui-sref="cierre.cierre" ng-if="userHasRole_cierre_cierre">Cierre</a></li>
+                                <li><a ui-sref="cierre.registro" ng-if="userHasRole_cierre_registro || userHasRole_cierre_cierre">Registro</a></li>
+                                <li><a ui-sref="cierre.consulta" ng-if="userHasRole_cierre_consulta || userHasRole_cierre_cierre">Consulta</a></li>
                                 <li class="divider"></li>
                                 <li><a ui-sref="cierre.periodosDeCierre">Períodos de cierre</a></li>
                             </ul>
@@ -171,20 +171,14 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
 
             <div class="navbar navbar-default">
                 <div class="container">
-                    <div class="row">
+                    <div class="row" style="padding-top: 12px; ">
                         <div class="col-sm-4">
-                            <p class="navbar-text">
-                                &copy; 2015 -
-                                <em>scrwebM ...</em>
-                            </p>
+                            <p class="navbar-text">&copy; 2020 - <em>scrwebm ...</em></p>
                         </div>
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-3 col-sm-offset-1">
-                            <p class="navbar-text">
-                                <!-- <blaze-template name="loginButtons"></blaze-template> -->
-                                <login-buttons></login-buttons>
-                            </p>
+                            <p class="navbar-text"><login-buttons></login-buttons></p>
                         </div>
                     </div>
                 </div>

@@ -15,12 +15,12 @@ import { Contratos, ContratosProp_cuentas_saldos } from '/imports/collections/pr
 
 Meteor.methods({
 
-    'cierre.consulta.leerRegistro': function (filtro, 
-                                              fechaInicialPeriodo, 
-                                              fechaFinalPeriodo, 
-                                              ciaSeleccionada, 
-                                              cuentasCorrientes, 
-                                              cuentasCorrientes_separarCorretaje) {
+    'cierre.consulta.leerRegistro': async function (filtro, 
+                                                    fechaInicialPeriodo, 
+                                                    fechaFinalPeriodo, 
+                                                    ciaSeleccionada, 
+                                                    cuentasCorrientes, 
+                                                    cuentasCorrientes_separarCorretaje) {
 
         new SimpleSchema({
             filtro: { type: Object, blackbox: true, optional: false, }, 
@@ -72,7 +72,10 @@ Meteor.methods({
 
         // leemos todos los registros producidos por el cierre que cumplen el filtro; los agregamos a la tabla 'temp'; 
         // luego, en un paso posterior, agregaremos registros con los saldos iniciales para el período seleccionado ... 
-        CierreRegistro.find(filtro).forEach((item) => { 
+
+        const filtro2 = agregarPeriodoAlFiltro(filtro); 
+
+        CierreRegistro.find(filtro2).forEach((item) => { 
 
             const moneda = monedas.find((x) => { return x._id === item.moneda; }); 
             const compania = companias.find((x) => { return x._id === item.compania; }); 
@@ -292,7 +295,6 @@ Meteor.methods({
                 tempItemsAgregados++; 
             }
 
-            
             // -------------------------------------------------------------------------------------------------------
             // vamos a reportar progreso al cliente; solo 20 veces ...
             cantidadRecs++;
@@ -362,11 +364,12 @@ Meteor.methods({
             // usamos mongo aggregation para obtener el sum para el saldo inicial ... 
             // al igual que la agrupación, los saldos iniciales incluyen la referencia (contrato) para 
             // consultas de cuentas corrientes (Prop)
-            let sumOfMontoArray = 0; 
+            let sumOfMontoArray = []; 
 
             if (cuentasCorrientes) { 
-                sumOfMontoArray =
-                CierreRegistro.aggregate(
+                // nótese el rowCollection() para tener acceso al aggregate sin usar algún third package ... 
+                const aggregate = await 
+                CierreRegistro.rawCollection().aggregate(
                     [
                         { $match : { fecha: { $lt: fechaInicialPeriodo }, 
                                 moneda: primerItemGrupo.moneda.moneda, 
@@ -375,13 +378,15 @@ Meteor.methods({
                                 cia: primerItemGrupo.cia.cia, }
                         }, 
                         { $project: { compania: 1, monto: 1, } }, 
-                        { $group: { _id: "$compania", sumOfMonto: { $sum: "$monto" }, }
-                        }
+                        { $group: { _id: "$compania", sumOfMonto: { $sum: "$monto" }, } }
                     ]
-                 ); 
+                 ).toArray(); 
+
+                 sumOfMontoArray = aggregate; 
             } else { 
-                sumOfMontoArray =
-                CierreRegistro.aggregate(
+                // nótese el rowCollection() para tener acceso al aggregate sin usar algún third package ... 
+                const aggregate = await 
+                CierreRegistro.rawCollection().aggregate(
                     [
                         { $match : { fecha: { $lt: fechaInicialPeriodo }, 
                                 moneda: primerItemGrupo.moneda.moneda, 
@@ -389,10 +394,11 @@ Meteor.methods({
                                 cia: primerItemGrupo.cia.cia, }
                         }, 
                         { $project: { compania: 1, monto: 1, } }, 
-                        { $group: { _id: "$compania", sumOfMonto: { $sum: "$monto" }, }
-                        }
+                        { $group: { _id: "$compania", sumOfMonto: { $sum: "$monto" }, }}
                     ]
-                 ); 
+                 ).toArray(); 
+
+                 sumOfMontoArray = aggregate; 
             }
             
              const saldoInicialPeriodo = (sumOfMontoArray && Array.isArray(sumOfMontoArray) && sumOfMontoArray.length) ? sumOfMontoArray[0].sumOfMonto : 0; 
@@ -416,6 +422,12 @@ Meteor.methods({
                     nombre: primerItemGrupo.compania.nombre,
                     abreviatura: primerItemGrupo.compania.abreviatura,
                 }, 
+
+                cedente: { 
+                        cedente: primerItemGrupo.cedente.cedente,
+                        nombre: primerItemGrupo.cedente.nombre,
+                        abreviatura: primerItemGrupo.cedente.abreviatura,
+                    }, 
 
                 tipo: "SI",
                 origen: " ",
@@ -474,8 +486,38 @@ Meteor.methods({
             error: false, 
             message: `Ok, el proceso se ha ejecutado en forma satisfactoria. <br /><br /> 
                     <b>${tempItemsAgregados.toString()}</b> registros han sido seleccionados para el filtro indicado.<br /> 
-                    <b>${registrosSaldoInicialAgregados.toString()}</b> registros de tipo saldo inicial han sido calculados y agregados.<br /> 
+                    <b>${registrosSaldoInicialAgregados.toString()}</b> registros de tipo <em>saldo inicial</em> han sido determinados y agregados.<br /> 
             `, 
         }
     }
 })
+
+function agregarPeriodoAlFiltro(filtro) { 
+    let { fecha1, fecha2 } = filtro; 
+
+    fecha1 = moment(fecha1).isValid() ? moment(fecha1).toDate() : null; 
+    fecha2 = moment(fecha2).isValid() ? moment(fecha2).toDate() : null; 
+
+    // la fecha final del período debe ser el último momento del día, para que incluya cualquier fecha de ese día 
+    fecha2 = fecha2 ? new Date(fecha2.getFullYear(), fecha2.getMonth(), fecha2.getDate(), 23, 59, 59) : null; 
+
+    const fecha = {}; 
+
+    if (fecha1) { 
+        if (fecha2) {
+            // las fechas vienen como strings ... 
+            fecha.$gte = fecha1;
+            fecha.$lte = fecha2;
+        }
+        else { 
+            fecha.$eq = fecha1;
+        }
+    }
+
+    const filtro2 = { ...filtro, fecha }; 
+
+    delete filtro2.fecha1; 
+    delete filtro2.fecha2; 
+
+    return filtro2; 
+}

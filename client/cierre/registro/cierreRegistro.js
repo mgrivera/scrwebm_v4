@@ -80,7 +80,7 @@ angular.module("scrwebm")
     $scope.categorias_list = [
         { value: null, descripcion: "" },
         { value: "Prima", descripcion: "Prima" },
-        { value: "SinFac", descripcion: "Sin fac" },
+        { value: "Sin", descripcion: "Sin" },
         { value: "Saldo", descripcion: "Saldo" },
         { value: "Cobro", descripcion: "Cobro" },
         { value: "Pago", descripcion: "Pago" },
@@ -188,7 +188,7 @@ angular.module("scrwebm")
             name: 'fecha',
             field: 'fecha',
             displayName: 'Fecha',
-            width: '80',
+            width: '120',
             enableFiltering: false,
             enableCellEdit: true,
             cellFilter: 'dateFilter',
@@ -315,7 +315,7 @@ angular.module("scrwebm")
             name: 'referencia',
             field: 'referencia',
             displayName: 'Referencia',
-            width: 100,
+            width: 160,
             enableFiltering: true,
             enableCellEdit: true,
             headerCellClass: 'ui-grid-leftCell',
@@ -445,6 +445,7 @@ angular.module("scrwebm")
     }
 
     let filtroConstruido = { }; 
+    let filtroConstruidoMasPeriodo = { };       // con el período incluido, ya para usar en minimongo (client) 
 
     $scope.aplicarFiltro = function () {
         $scope.showProgress = true;
@@ -470,13 +471,14 @@ angular.module("scrwebm")
         }
 
         filtroConstruido = construirFiltro($scope.filtro); 
+        filtroConstruidoMasPeriodo = agregarPeriodoAlFiltro(filtroConstruido); 
 
         // ------------------------------------------------------------------------------------------------------
         // limit es la cantidad de items en la lista; inicialmente es 50; luego avanza de 50 en 50 ...
         leerPrimerosRegistrosDesdeServidor(50, filtroConstruido);
 
         // nótese como establecemos el tab 'activo' en ui-bootstrap; ver nota arriba acerca de ésto ...
-        $scope.activeTab = { tab1: false, tab2: true };
+        $scope.activeTab = { tab1: false, tab2: true, tab3: true };
     }
 
     // ------------------------------------------------------------------------------------------------------
@@ -543,7 +545,7 @@ angular.module("scrwebm")
 
             $scope.helpers({
                 registro: () => {
-                    return CierreRegistro.find(filtroConstruido, { sort: { fecha: 1, moneda: 1, compania: 1, }});
+                    return CierreRegistro.find(filtroConstruidoMasPeriodo, { sort: { fecha: 1, moneda: 1, compania: 1, }});
                 }
             });
 
@@ -748,19 +750,11 @@ angular.module("scrwebm")
 // ningún collection 'temporal' ... 
 function construirFiltro(criterioSeleccion) { 
 
-    const filtro = {}; 
-
-    if (criterioSeleccion.fecha1) { 
-        if (criterioSeleccion.fecha2) {
-            filtro.fecha = { }; 
-            // las fechas vienen como strings ... 
-            filtro.fecha.$gte = moment(criterioSeleccion.fecha1).toDate();
-            filtro.fecha.$lte = moment(criterioSeleccion.fecha2).toDate();
-        }
-        else { 
-            filtro.fecha = { }; 
-            filtro.fecha.$eq = moment(criterioSeleccion.fecha1).toDate();
-        }
+    // construimos el filtro en base a todos los criterios indicados; menos el período, pues lo pasamos al method en el server 
+    // para construirlo allí ... 
+    const filtro = {
+        fecha1: criterioSeleccion.fecha1, 
+        fecha2: criterioSeleccion.fecha2
     }
 
     if (criterioSeleccion.tipo) { 
@@ -800,7 +794,42 @@ function construirFiltro(criterioSeleccion) {
         filtro.moneda = { $in: array };
     }
 
+    if (criterioSeleccion.referencia) { 
+        const search = new RegExp(criterioSeleccion.referencia, 'i');
+        filtro.referencia = search;
+    }
+
     filtro.cia = criterioSeleccion.cia; 
 
     return filtro; 
+}
+
+function agregarPeriodoAlFiltro(filtro) { 
+    let { fecha1, fecha2 } = filtro; 
+
+    fecha1 = moment(fecha1).isValid() ? moment(fecha1).toDate() : null; 
+    fecha2 = moment(fecha2).isValid() ? moment(fecha2).toDate() : null; 
+
+    // la fecha final del período debe ser el último momento del día, para que incluya cualquier fecha de ese día 
+    fecha2 = fecha2 ? new Date(fecha2.getFullYear(), fecha2.getMonth(), fecha2.getDate(), 23, 59, 59) : null; 
+
+    const fecha = {}; 
+
+    if (fecha1) { 
+        if (fecha2) {
+            // las fechas vienen como strings ... 
+            fecha.$gte = fecha1;
+            fecha.$lte = fecha2;
+        }
+        else { 
+            fecha.$eq = fecha1;
+        }
+    }
+
+    const filtro2 = { ...filtro, fecha }; 
+
+    delete filtro2.fecha1; 
+    delete filtro2.fecha2; 
+
+    return filtro2; 
 }

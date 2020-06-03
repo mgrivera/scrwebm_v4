@@ -1,6 +1,4 @@
 
-
-
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
         <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
@@ -90,7 +88,7 @@
                                                         ng-model="filtro.cuentasCorrientes_separarCorretaje"
                                                         ng-change="setIsEdited('cuentasCorrientes')" 
                                                         style="margin-top: 0; " />
-                                                <span style="font-weight: bold; ">Separar corretaje de saldo técnico</span>
+                                                <span style="font-weight: bold; ">Separar el monto de corretaje del saldo técnico</span>
                                             </label>
                                         </div>
                                     </div>
@@ -165,6 +163,31 @@
                                 </div>
                             </div>
 
+                            <div class="row" style="margin-top: 20px; ">
+                                <!-- referencia -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10" style="text-align: left; ">
+                                            <label class="control-label input-label">Referencia</label>
+                                            <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.referencia" />
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <!-- cobroPagoFlag -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10" style="text-align: left; ">
+                                            <label class="control-label input-label">Cobro o pago: </label>
+                                            <select class="form-control input-sm myinput-sm" ng-model="filtro.cobroPagoFlag"
+                                                ng-options="item.value as item.descripcion for item in cobroPago_list"
+                                                ng-model-options="{ updateOn: 'blur' }">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </form>
                 </div>
@@ -210,6 +233,48 @@
                             class="angularGrid"
                             style="height: 350px; width: 100%; ">
                         </div>
+                    </div>
+                </div>
+            </tab>
+
+            <tab heading="Notas" active="activeTab.tab3">
+                <div class="row" style="text-align: center; ">
+                    <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+
+                        <br /> 
+
+                        <p>
+                            <b>Cuentas corrientes - contratos proporcionales:</b> si Ud. marca esta opción, esta consulta leerá solo 
+                            movimientos generados por el registro de contratos proporcionales. Además, los movimientos serán separados 
+                            por el valor en el campo: Referencia. 
+                        </p>
+
+                        <p>
+                            Por otra parte, los saldos iniciales del período consultado serán calculados y presentados para cada 
+                            contrato proporcional. Como se indicó arriba, el proceso separa los contratos entre sí por el valor en 
+                            el campo Referencia. 
+                        </p>
+
+                        <p>
+                            Si, cambio, el valor <em>Cuentas corrientes - contratos proporcionales</em> no es marcado, los saldos iniciales 
+                            del período se calculan y muestran por compañía, para todos sus movimientos. 
+                        </p>
+
+                        <p>
+                            Si el valor <b>Separar el monto de corretaje del saldo técnico</b> es marcado, el monto de corretaje,
+                            cuando existe, es separado del saldo de la cuenta técnica y mostrado en un movimiento separado. Nota: este
+                            valor solo tiene sentido cuando el valor <em>Cuentas corrientes - contratos proporcionales</em> es
+                            marcado.
+                        </p>
+
+                        <p>
+                            Nótese que los movimientos de tipo 'SI' (saldo incial) mostrados por este proceso de consulta, son calculados 
+                            por este proceso y no existen en forma permanente. Estos saldos iniciales son determinados y construidos cada vez
+                            que el usuario ejecuta esta consulta. 
+                        </p>
+
+                        <br />
+
                     </div>
                 </div>
             </tab>

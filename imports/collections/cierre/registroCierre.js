@@ -1,22 +1,21 @@
 
-
 import { Mongo } from 'meteor/mongo';
+import moment from 'moment'; 
+
 import SimpleSchema from 'simpl-schema';
-import { Cierre } from 'imports/collections/cierre/cierre'; 
-import * as moment from 'moment'; 
+
+import { Cierre } from '/imports/collections/cierre/cierre'; 
 
 var schema_protegida = new SimpleSchema({
     protegida: { type: Boolean, label: "Protegida", optional: false, },
     razon: { type: String, optional: false, },
 })
 
-
 // origen_keys: la idea de esta estructura es guardar, para cada registro del cierre, los IDs de su 'origen'; por ejemplo, 
 // en el caso de registros que provienen de proporcionales, el ID del contrato y de la definición de cuenta técnica. 
 // Con estos dos IDs, podríamos buscar fácilemente el registro de origen (ej: saldo de cuenta técnica) y obtener 
 // su monto de corretaje ...
-
-let cierreRegistro_schema = new SimpleSchema({
+const cierreRegistro_schema = new SimpleSchema({
     _id: { type: String, optional: false },
 
     fecha: { type: Date, label: "Fecha", optional: false, },
@@ -42,9 +41,9 @@ let cierreRegistro_schema = new SimpleSchema({
     cia: { type: String, label: "Cia", optional: false, },
     protegida: { type: schema_protegida, optional: true, minCount: 0 },     // para saber si la entidad está 'protegida' (ej: por un proceso de cierre)
     docState: { type: Number, optional: true, },
-}) as any; 
+}); 
 
-export const CierreRegistro: any = new Mongo.Collection("cierreRegistro");
+export const CierreRegistro = new Mongo.Collection("cierreRegistro");
 CierreRegistro.attachSchema(cierreRegistro_schema);
 
 
@@ -55,12 +54,12 @@ cierreRegistro_schema.addDocValidator(obj => {
     // hacemos, para que esta validación aplique al usuario y no al cierre, es agregar docState. Este field nunca es usado por el 
     // cierre, pero siempre por el usuario ... 
 
-    let errores = []; 
+    const errores = []; 
 
     if (obj.tipo === "A" && obj.docState) { 
         // para errores del tipo custom (validation), pasamos estos valores para solo mostrar el nombre (descripción del error) en el 
         // client. La razón es que no son, necesariamente, errores para un campo en particular, sino para todo el record 
-        errores.push({ name: 'Registros del tipo <b>A (automático)</b> no pueden ser editados.', type: 'custom', value: 'A' } as never); 
+        errores.push({ name: 'Registros del tipo <b>A (automático)</b> no pueden ser editados.', type: 'custom', value: 'A' }); 
     }
 
     return errores; 
@@ -77,15 +76,15 @@ cierreRegistro_schema.addDocValidator(obj => {
     }
 
     // leemos el último cierre efectuado para la compañía 
-    let ultimoCierre = Cierre.findOne({ cia: obj.cia, cerradoFlag: true, }, { fields: { hasta: 1, }, sort: { hasta: -1, }}); 
+    const ultimoCierre = Cierre.findOne({ cia: obj.cia, cerradoFlag: true, }, { fields: { hasta: 1, }, sort: { hasta: -1, }}); 
 
     if (!ultimoCierre) { 
         return []; 
     }
 
     // eliminamos la parte 'time' a ambas fechas para poder comparar 
-    let entidadDate = new Date(obj.fecha.toDateString());
-    let cierreDate = new Date(ultimoCierre.hasta.toDateString());
+    const entidadDate = new Date(obj.fecha.toDateString());
+    const cierreDate = new Date(ultimoCierre.hasta.toDateString());
 
     // la fecha debe ser *posterior* al período de cierre 
     if (entidadDate > cierreDate) { 

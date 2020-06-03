@@ -5,7 +5,6 @@ import { Mongo } from 'meteor/mongo';
 import angular from 'angular'; 
 
 import numeral from 'numeral';
-import moment from 'moment';
 import lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -75,6 +74,12 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
         { tipo: "Otro", descripcion: "Otro" },
     ];
 
+    $scope.cobroPago_list = [
+        { value: null, descripcion: "Todos" },
+        { value: "cobros/pagos", descripcion: "Cobros o pagos" },
+        { value: "montos", descripcion: "Montos emitidos" },
+    ];
+
     $scope.helpers({
         companias: () => {
             return Companias.find({}, { sort: { nombre: 1 } });
@@ -93,7 +98,7 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
     // cuando podamos actualizar angular-ui-bootstrap a una nueve vesión, la propiedad 'active' va en el tabSet
     // y se actualiza con el index de la página (0, 1, 2, ...). Así resulta mucho más intuitivo y fácil
     // establecer el tab 'activo' en ui-bootstrap ...
-    $scope.activeTab = { tab1: true, tab2: false, };
+    $scope.activeTab = { tab1: true, tab2: false, tab3: false, };
 
     let consulta_ui_grid_api = {};
 
@@ -251,7 +256,7 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
             name: 'referencia',
             field: 'referencia',
             displayName: 'Referencia',
-            width: 100,
+            width: 160,
             enableFiltering: true,
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
@@ -331,6 +336,7 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
     $scope.myForm = {}; 
 
     let filtroConstruido = { }; 
+
     $scope.submitted = false;
 
     $scope.submit_cierreConsulta_Form = function () {
@@ -423,10 +429,10 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
 
             // ------------------------------------------------------------------------------------------------------
             // limit es la cantidad de items en la lista; inicialmente es 50; luego avanza de 50 en 50 ...
-            leerPrimerosRegistrosDesdeServidor(50, filtroConstruido);
+            leerPrimerosRegistrosDesdeServidor(50);
         
             // nótese como establecemos el tab 'activo' en ui-bootstrap; ver nota arriba acerca de ésto ...
-            $scope.activeTab = { tab1: false, tab2: true };
+            $scope.activeTab = { tab1: false, tab2: true, tab3: true };
         })
     }
 
@@ -599,18 +605,23 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
 // ningún collection 'temporal' ... 
 function construirFiltro(criterioSeleccion) { 
 
-    const filtro = {}; 
+    // construimos el filtro en base a todos los criterios indicados; menos el período, pues lo pasamos al method en el server 
+    // para construirlo allí ... 
+    const filtro = {
+        fecha1: criterioSeleccion.fecha1, 
+        fecha2: criterioSeleccion.fecha2
+    }
 
-    if (criterioSeleccion.fecha1) { 
-        if (criterioSeleccion.fecha2) {
-            filtro.fecha = { }; 
-            // las fechas vienen como strings ... 
-            filtro.fecha.$gte = moment(criterioSeleccion.fecha1).toDate();
-            filtro.fecha.$lte = moment(criterioSeleccion.fecha2).toDate();
-        }
-        else { 
-            filtro.fecha = { }; 
-            filtro.fecha.$eq = moment(criterioSeleccion.fecha1).toDate();
+    if (criterioSeleccion.cobroPagoFlag) { 
+        switch (criterioSeleccion.cobroPagoFlag) { 
+            case "cobros/pagos": { 
+                filtro.cobroPagoFlag = { $eq: true };
+                break; 
+            }
+            case "montos": { 
+                filtro.cobroPagoFlag = { $eq: false };
+                break; 
+            }
         }
     }
 
@@ -632,6 +643,11 @@ function construirFiltro(criterioSeleccion) {
     if (criterioSeleccion.tipoNegocio && Array.isArray(criterioSeleccion.tipoNegocio) && criterioSeleccion.tipoNegocio.length) {
         const array = lodash.clone(criterioSeleccion.tipoNegocio);
         filtro.tipoNegocio = { $in: array };
+    }
+
+    if (criterioSeleccion.referencia) { 
+        const search = new RegExp(criterioSeleccion.referencia, 'i');
+        filtro.referencia = search;
     }
 
     filtro.cia = criterioSeleccion.cia; 
