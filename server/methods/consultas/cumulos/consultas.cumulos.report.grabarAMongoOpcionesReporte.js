@@ -1,9 +1,8 @@
 
-
-import { Consulta_Cumulos_config } from 'imports/collections/consultas/consulta_cumulos'; 
-
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
+
+import { Temp_consulta_cumulos_config } from '/imports/collections/consultas/temp_consulta_cumulos'; 
 
 Meteor.methods(
 {
@@ -14,11 +13,11 @@ Meteor.methods(
             empresaSeleccionada: { type: Object, blackbox: true, optional: false, }, 
         }).validate({ opcionesReporte, empresaSeleccionada, });
 
-        Consulta_Cumulos_config.remove({ user: Meteor.userId() }); 
+        Temp_consulta_cumulos_config.remove({ user: Meteor.userId() }); 
 
         // grabamos un registro 'config' para que el proceso asp.net pueda saber el valor de algunos parámetros, 
         // como período, compañía, etc. 
-        Consulta_Cumulos_config.insert({ 
+        Temp_consulta_cumulos_config.insert({ 
             opcionesReporte: opcionesReporte, 
             compania: empresaSeleccionada, 
             user: Meteor.userId() 

@@ -532,9 +532,31 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             template: '<consulta-cumulos-filtro />',
             parent: 'consultas.cumulos', 
         }) 
+        // IMPORTANTE: nótese lo que hacemos para pasar props al react component. En realidad, aquí se pasan al angular 
+        // component; luego, con react2angular, al react component. En resolve, obtenemos los datos que necesitamos; en este 
+        // caso, usamos un meteor method. Luego, en el (inline) controller, usamos this para mantener estos datos. Para 
+        // poder pasarlos al template, usamos controllerAs, para crear un controller (ctrl) que es el que se pasa 
+        // en el template (upppssss!) 
         .state('consultas.cumulos.lista', {
-            url: '/filtro',
-            template: '<consulta-cumulos-lista />',
+            url: '/lista',
+
+            resolve: {
+                recCount: () => {
+                    return new Promise((resolve) => {
+                        Meteor.call('consultas.cumulos.getRecCount', Meteor.userId(), (err, result) => {
+                            this.recCount = result.recordCount; 
+                            resolve(result.recordCount); 
+                        })
+                    })
+                }
+            },
+
+            controller: ['recCount', function (recCount) {
+                this.recCount = recCount;
+            }],
+            controllerAs: 'ctrl',
+
+            template: `<consulta-cumulos-lista record-count="ctrl.recCount" />`,
             parent: 'consultas.cumulos', 
         }) 
 

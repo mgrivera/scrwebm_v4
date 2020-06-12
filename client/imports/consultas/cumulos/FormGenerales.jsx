@@ -97,6 +97,29 @@ function FormGenerales({ formValues, onInputChange }) {
                         </Col>
                     </Row>
 
+                    <Row>
+                        <Col sm={3} smOffset={0} >
+                            <FieldGroup
+                                id="periodoVigencia1"
+                                name="periodoVigencia1"
+                                value={formValues.periodoVigencia1}
+                                type="date"
+                                label="Período de vigencia"
+                                onChange={(e) => onInputChange(e)} />
+                        </Col>
+                        <Col sm={3} smOffset={0} >
+                            <FieldGroup
+                                id="periodoVigencia2"
+                                name="periodoVigencia2"
+                                value={formValues.periodoVigencia2}
+                                type="date"
+                                label="&nbsp;&nbsp;"
+                                onChange={(e) => onInputChange(e)} />
+                        </Col>
+                        <Col sm={3} smOffset={0} />
+                        <Col sm={3} smOffset={0} />
+                    </Row>
+
                 </Grid>
             </form>
         </>

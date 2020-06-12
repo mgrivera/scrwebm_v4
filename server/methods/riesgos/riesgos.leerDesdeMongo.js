@@ -238,7 +238,7 @@ Meteor.methods(
 
             array.forEach((itemConsulta) => { 
 
-                const existe = Cumulos_Registro.findOne({ 'source.entityID': itemConsulta.id }); 
+                const existe = Cumulos_Registro.findOne({ entityId: itemConsulta.id }); 
 
                 switch (filtro2.registroCumulos) { 
                     case "con": { 
