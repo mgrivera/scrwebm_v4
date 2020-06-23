@@ -20,8 +20,6 @@ ecmascript@0.9.0              # Enable ECMAScript2015+ syntax in app code
 shell-server@0.3.0            # Server-side component of the `meteor shell` command
 
 alanning:roles@=1.2.16
-cfs:filesystem@=0.1.2
-cfs:standard-packages@=0.5.9
 dburles:collection-helpers@=1.0.4
 ejson@1.1.0
 email@1.2.3
@@ -45,7 +43,6 @@ jamiecollinson:selectize-bootstrap
 dotansimha:accounts-ui-angular
 enforcer:angular-ui-bootstrap
 meanware:gridfs
-steedos:cfs-dropbox
 promise
 angular-templates@=1.0.3
 react-meteor-data

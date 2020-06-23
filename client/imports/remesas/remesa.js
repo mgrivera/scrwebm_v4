@@ -42,7 +42,9 @@ export default angular.module("scrwebm.remesas.remesa",
   function ($scope, $state, $stateParams, $modal, uiGridGroupingConstants) {
 
     $scope.showProgress = false;
-    $scope.uiSelectLoading = false;         // para mostrar spinner cuando se ejecuta el search en el (bootstrap) ui-select 
+
+    // para mostrar spinner cuando se ejecuta el search en el (bootstrap) ui-select 
+    $scope.uiSelectLoading = false;         
 
     $scope.origen = $stateParams.origen;
     $scope.id = $stateParams.id;
@@ -759,8 +761,7 @@ export default angular.module("scrwebm.remesas.remesa",
                 $scope.currentStateName = "Generales";
 
                 $scope.showProgress = false;
-                // $scope.$apply();
-            });
+            })
         }
         else {
             if ($scope.vieneDeAfuera) { 
@@ -885,7 +886,6 @@ export default angular.module("scrwebm.remesas.remesa",
                                     $scope.currentStateName = "Generales";
 
                                     $scope.showProgress = false;
-                                    // $scope.$apply();
                                 });
                             }
                         )
@@ -989,8 +989,7 @@ export default angular.module("scrwebm.remesas.remesa",
                                 $scope.currentStateName = "Generales";
 
                                 $scope.showProgress = false;
-                                // $scope.$apply();
-                            });
+                            })
                         }
                     )
                 })

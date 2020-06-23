@@ -17,9 +17,6 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
-import { CollectionFS_templates } from '/server/imports/collectionFS/Files_CollectionFS_templates'; 
-import { CollectionFS_tempFiles } from '/server/imports/collectionFS/Files_CollectionFS_tempFiles'; 
-
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
 
 Meteor.methods(

@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'
+
 import angular from 'angular';
 import moment from 'moment';
 import lodash from 'lodash'; 
@@ -31,7 +33,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = null; 
 
     if (companiaSeleccionada) { 
@@ -66,7 +68,6 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
 
             // guardamos el row que el usuario seleccione
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                //debugger;
                 movimientoSeleccionado = {};
 
                 if (row.isSelected) {
@@ -144,19 +145,6 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
     $scope.submitted = false;
     $scope.parametros = {};
 
-    // para mostrar los links que permiten al usuario hacer el download de las notas
-    $scope.downLoadWordDocument_cedente = false;
-    $scope.selectedFile_cedente = {};
-    $scope.downLoadLink_cedente = "";
-
-    $scope.downLoadWordDocument_reaseguradores = false;
-    $scope.selectedFile_reaseguradores = {};
-    $scope.downLoadLink_reaseguradores = "";
-
-    $scope.downLoadWordDocument_interna = false;
-    $scope.selectedFile_interna = {};
-    $scope.downLoadLink_interna = "";
-
     $scope.tipoPlantillaWord = null; 
 
     $scope.obtenerDocumentoWord = function (file) {
@@ -201,7 +189,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                          $scope.parametros.fecha, (err, result) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -222,13 +210,18 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                     return;
                 }
 
-                $scope.alerts.length = 0;
-                $scope.alerts.push({
-                    type: 'info',
-                    msg: result.message,
-                });
+                // agregamos un link para que el usuario pueda hacer un download del documento (desde Dropbox)
+                const downloadLink = document.createElement('a');
+                downloadLink.setAttribute('href', result.sharedLink);
+                downloadLink.setAttribute('download', "nota de cedentes");
+                downloadLink.innerText = 'Download: ' + "nota de cedentes";
+                downloadLink.target = '_blank'
 
-                $scope.tipoPlantillaWord = null;
+                const listItem = document.createElement('li');
+                listItem.appendChild(downloadLink);
+                document.getElementById('results').appendChild(listItem);
+
+                $scope.tipoPlantillaWord = null; 
 
                 $scope.showProgress = false;
                 $scope.$apply();
@@ -244,7 +237,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                          $scope.parametros.fecha, (err, result) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -265,13 +258,18 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                     return; 
                 }
         
-                $scope.alerts.length = 0;
-                $scope.alerts.push({
-                    type: 'info',
-                    msg: result.message,
-                });
+                // agregamos un link para que el usuario pueda hacer un download del documento (desde Dropbox)
+                const downloadLink = document.createElement('a');
+                downloadLink.setAttribute('href', result.sharedLink);
+                downloadLink.setAttribute('download', "nota interna");
+                downloadLink.innerText = 'Download: ' + "nota interna";
+                downloadLink.target = '_blank'
 
-                $scope.tipoPlantillaWord = null;
+                const listItem = document.createElement('li');
+                listItem.appendChild(downloadLink);
+                document.getElementById('results').appendChild(listItem);
+
+                $scope.tipoPlantillaWord = null; 
 
                 $scope.showProgress = false;
                 $scope.$apply();
@@ -287,7 +285,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                          $scope.parametros.fecha, (err, result) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -308,13 +306,18 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
                     return;
                 }
 
-                $scope.alerts.length = 0;
-                $scope.alerts.push({
-                    type: 'info',
-                    msg: result.message,
-                });
+                // agregamos un link para que el usuario pueda hacer un download del documento (desde Dropbox)
+                const downloadLink = document.createElement('a');
+                downloadLink.setAttribute('href', result.sharedLink);
+                downloadLink.setAttribute('download', "nota de reaseguradores");
+                downloadLink.innerText = 'Download: ' + "nota de reaseguradores";
+                downloadLink.target = '_blank'
 
-                $scope.tipoPlantillaWord = null;
+                const listItem = document.createElement('li');
+                listItem.appendChild(downloadLink);
+                document.getElementById('results').appendChild(listItem);
+
+                $scope.tipoPlantillaWord = null; 
 
                 $scope.showProgress = false;
                 $scope.$apply();
@@ -331,7 +334,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
     Meteor.call('plantillas.obtenerListaArchivosDesdeDirectorio', "/facultativo/notasCobertura", (err, result) => {
 
         if (err) {
-            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({ type: 'danger', msg: errorMessage });

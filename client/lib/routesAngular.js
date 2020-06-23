@@ -158,12 +158,6 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             templateUrl: 'client/generales/seleccionarCompania/seleccionarCompania.html',
             controller: 'SeleccionarCompaniaController'
         })
-        // registrar archivos (logos, plantillas, ...)
-        .state('registrarArchivos', {
-            url: '/generales/registrarArchivos',
-            templateUrl: 'client/generales/registroArchivos/registroArchivos.html',
-            controller: 'RegistroArchivosController'
-        })
         // ----------------------------------------------------------------
         // contratos
         // ----------------------------------------------------------------

@@ -1,5 +1,4 @@
 
-
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
 import moment from 'moment';
@@ -16,6 +15,8 @@ import { readFile, writeFile } from '@cloudcmd/dropbox';
 // para leer un node stream y convertirlo en un string; nota: returns a promise 
 import getStream from 'get-stream'; 
 
+import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink'; 
+
 import SimpleSchema from 'simpl-schema';
 
 import { leerInfoAutos } from '/server/imports/general/riesgos_leerInfoAutos'; 
@@ -31,7 +32,7 @@ import { Indoles } from '/imports/collections/catalogos/indoles';
 
 Meteor.methods(
 {
-    'riesgos.obtenerNotasImpresas.reaseguradores': function (folderPath, fileName, riesgoID, movimientoID, fecha) {
+    'riesgos.obtenerNotasImpresas.reaseguradores': async function (folderPath, fileName, riesgoID, movimientoID, fecha) {
 
         new SimpleSchema({
             fileName: { type: String, optional: false, },
@@ -411,15 +412,20 @@ Meteor.methods(
             }
         } 
 
-        message = `Ok, la plantilla ha sido aplicada a los datos seleccionados y el documento Word ha sido construido 
-                   en forma satisfactoria. <br /> 
-                   El resultado ha sido escrito al archivo <b><em>${filePath2}</em></b>, en el Dropbox del programa.  
-                  `; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+        // con esta función creamos un download link para que el usuario pueda tener el archivo en su pc 
+        const result = await dropBoxCreateSharedLink(filePath2); 
 
-        return { 
-            error: false, 
-            message: message, 
+        if (result.error) { 
+            return { 
+                error: true, 
+                message: result.message
+            } 
+        } else { 
+            // regresamos el link 
+            return { 
+                error: false, 
+                sharedLink: result.sharedLink, 
+            } 
         }
     }
 })

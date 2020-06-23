@@ -1,30 +1,33 @@
 
-import * as lodash from 'lodash';
-import * as angular from 'angular';
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
+
+import lodash from 'lodash';
+import angular from 'angular';
 import saveAs from 'save-as'; 
 
-import * as riesgos_funcionesGenerales from './riesgos_funcionesGenerales'; 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import riesgos_funcionesGenerales from './riesgos_funcionesGenerales'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import { Riesgos, Riesgos_InfoRamo, Riesgo_InfoRamos_Autos_SimpleSchema } from 'imports/collections/principales/riesgos'; 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
-import { Cuotas } from 'imports/collections/principales/cuotas'; 
-import { TiposFacultativo } from 'imports/collections/catalogos/tiposFacultativo'; 
-import { TiposObjetoAsegurado } from 'imports/collections/catalogos/tiposObjetoAsegurado'; 
-import { AutosMarcas } from 'imports/collections/catalogos/autosMarcas'; 
+import { Riesgos, Riesgos_InfoRamo, Riesgo_InfoRamos_Autos_SimpleSchema } from '/imports/collections/principales/riesgos'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
+import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
+import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
+import { TiposObjetoAsegurado } from '/imports/collections/catalogos/tiposObjetoAsegurado'; 
+import { AutosMarcas } from '/imports/collections/catalogos/autosMarcas'; 
 
-import { Coberturas } from 'imports/collections/catalogos/coberturas'; 
-import { Indoles } from 'imports/collections/catalogos/indoles'; 
-import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
-import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
-import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros'; 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { NotasDebitoCredito } from '/imports/collections/principales/notasDebitoCredito'; 
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 // esto es un angular module 
 // import '../generales/agregarNuevoAsegurado.html';           // html: el path *debe* ser relativo y *no* absoluto (???!!!)        
@@ -32,16 +35,16 @@ import AgregarNuevoAsegurado from "../generales/agregarNuevoAseguradoController"
 
 // importamos el resto del código, otros states, html files etc., que se necesitan para manejar el riesgo 
 // import './riesgo.generales.html';
-import RiesgosGenerales from 'client/imports/riesgos/riesgo.generales';
+import RiesgosGenerales from '/client/imports/riesgos/riesgo.generales';
 
 // import './riesgo.movimientos.html';
-import RiesgoMovimientos from 'client/imports/riesgos/riesgo.movimientos'; 
+import RiesgoMovimientos from '/client/imports/riesgos/riesgo.movimientos'; 
 
 // import './riesgo.infoRamo_autos.html';
-import RiesgosInfoRamo from 'client/imports/riesgos/riesgo.infoRamo_autos'; 
+import RiesgosInfoRamo from '/client/imports/riesgos/riesgo.infoRamo_autos'; 
 
 // import './riesgo.productores.html';
-import RiesgoProductores from 'client/imports/riesgos/riesgo.productores'; 
+import RiesgoProductores from '/client/imports/riesgos/riesgo.productores'; 
 
 // import './riesgo.cuotas.html';
 import RiesgoCuotas from './riesgo.cuotas'; 
@@ -76,6 +79,12 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
     $scope.showProgress = true;
 
+    // para mostrar spinner cuando se ejecuta el search en el (bootstrap) ui-select 
+    $scope.uiSelectLoading_companias = false; 
+    $scope.uiSelectLoading_corredores = false; 
+    $scope.uiSelectLoading_ramos = false; 
+    $scope.uiSelectLoading_indoles = false;     
+
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -85,7 +94,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let empresaUsuariaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const empresaUsuariaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     if (empresaUsuariaSeleccionada) { 
         var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(empresaUsuariaSeleccionada.companiaID, { fields: { nombre: 1 } });
     }
@@ -105,7 +114,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         if (state === "infoRamo") { 
             // abrimos un state que permite al usuario registrar información propia para el ramo; ej: para automovil el usuario 
             // puede registrar: marca, modelo, placa, etc. 
-            let ramo = $scope.ramos.find(x => x._id === $scope.riesgo.ramo); 
+            const ramo = $scope.ramos.find(x => x._id === $scope.riesgo.ramo); 
 
             if (ramo) { 
                 const tipoRamo = ramo.tipoRamo ? ramo.tipoRamo : ""; 
@@ -165,9 +174,9 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     $scope.helpers({
         suscriptores: () => { return Suscriptores.find({}); },
         monedas: () => { return Monedas.find({}); },
-        indoles: () => { return Indoles.find({}); },
-        companias: () => { return Companias.find({}); },
-        ramos: () => { return Ramos.find({}); },
+        // indoles: () => { return Indoles.find({}); },
+        // companias: () => { return Companias.find({}); },
+        // ramos: () => { return Ramos.find({}); },
         coberturas: () => { return Coberturas.find({}); },
         asegurados: () => { return Asegurados.find({}); },
         tiposFacultativo: () => { return TiposFacultativo.find({}); },
@@ -184,10 +193,10 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                                     true);
 
             promise.then(
-                function (resolve) {
+                function () {
                     $scope.nuevo();
                 },
-                function (err) {
+                function () {
                     return true;
                 });
 
@@ -198,7 +207,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         }
     }
 
-    let cuotasSubscriptionHandle: any = null;
+    let cuotasSubscriptionHandle = null;
 
     $scope.nuevo = function () {
         $scope.id = "0"; 
@@ -219,13 +228,12 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
         $scope.showProgress = true;
 
-        let message = `Este proceso copiará el riesgo que ahora está en la página, a un nuevo riesgo. <br />
+        const message = `Este proceso copiará el riesgo que ahora está en la página, a un nuevo riesgo. <br />
                        Desea continuar y crear un nuevo riesgo en base al que ahora está en la página?`; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
         DialogModal($modal, "<em>Riesgos</em>", message, true).then(
-            function (resolve) {
-                let result = riesgos_funcionesGenerales.copiarRiesgoEnUnoNuevo($scope.riesgo); 
+            function () {
+                const result = riesgos_funcionesGenerales.copiarRiesgoEnUnoNuevo($scope.riesgo); 
 
                 if (result.error) { 
 
@@ -238,8 +246,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                     return; 
                 }
 
-                let message = result.message; 
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+                const message = result.message; 
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -258,7 +265,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         
                 $scope.goToState('generales');
             },
-            function (err) {
+            function () {
                 $scope.showProgress = false;
                 return true;
             }
@@ -289,10 +296,10 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                 },
             }
         }).result.then(
-          function (resolve) {
+          function () {
               return true;
           },
-          function (cancel) {
+          function () {
               return true;
           })
     }
@@ -332,7 +339,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
             if (!isValid) {
                 Riesgos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgos.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
+                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgos.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'.");
                 })
             }
         }
@@ -345,7 +352,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             if (item.docState != 3) {
 
                 // el schema que usemos depende del tipo de ramo ... 
-                let ramo = Ramos.findOne($scope.riesgo.ramo); 
+                const ramo = Ramos.findOne($scope.riesgo.ramo); 
 
                 if (ramo.tipoRamo) { 
                     switch(ramo.tipoRamo) { 
@@ -354,7 +361,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
                             if (!isValid) {
                                 Riesgo_InfoRamos_Autos_SimpleSchema.namedContext().validationErrors().forEach(function (error) {
-                                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgo_InfoRamos_Autos_SimpleSchema.label(error.name) + "'; error de tipo '" + error.type + "'." as never);
+                                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Riesgo_InfoRamos_Autos_SimpleSchema.label(error.name) + "'; error de tipo '" + error.type + "'.");
                                 });
                             }
 
@@ -368,7 +375,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
         // ------------------------------------------------------------------------------------------
         // ahora validamos las cuotas, las cuales son registradas en un collection diferente ...
-        editedItems = $scope.cuotas.filter((c: any) => c.docState); 
+        editedItems = $scope.cuotas.filter((c) => c.docState); 
 
         editedItems.forEach(function (item) {
             if (item.docState != 3) {
@@ -376,7 +383,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
                 if (!isValid) {
                     Cuotas.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Cuotas.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
+                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + Cuotas.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'.");
                     });
                 }
             }
@@ -400,15 +407,15 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             return;
         }
 
-        let item = lodash.cloneDeep($scope.riesgo); 
+        const item = lodash.cloneDeep($scope.riesgo); 
         $scope.showProgress = true; 
 
         // nótese como pasamos la información del ramo, cuando existe ... 
-        let editedInfoRamo = $scope.riesgos_infoRamo.filter((c: any) => c.docState); 
-        Meteor.call('riesgos.save', item, editedInfoRamo, (err: any, resultRiesgo: any) => {
+        const editedInfoRamo = $scope.riesgos_infoRamo.filter((c) => c.docState); 
+        Meteor.call('riesgos.save', item, editedInfoRamo, (err, resultRiesgo) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -425,10 +432,10 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             // nota: eliminamos $$hashKey a cada row (agregado por ui-grid),  antes de grabar en mongo
             var cuotasArray = $scope.cuotas.filter(c => c.docState);  
 
-            Meteor.call('cuotasSave', cuotasArray, (err, resultCuotas) => {
+            Meteor.call('cuotasSave', cuotasArray, (err) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
     
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
@@ -489,14 +496,14 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     $scope.regresarALista = function () {
 
         if ($scope.riesgo && $scope.riesgo.docState && $scope.origen == 'edicion') {
-            var promise = DialogModal($modal,
+            DialogModal($modal,
                                     "<em>Riesgos</em>",
                                     "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
                                     true).then(
-                function (resolve) {
+                function () {
                     $state.go('riesgosLista', { origen: $scope.origen, limit: $scope.limit });
                 },
-                function (err) {
+                function () {
                     return true;
                 })
             return;
@@ -509,16 +516,16 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     $scope.eliminar = function () {
         if ($scope.riesgo.docState && $scope.riesgo.docState == 1) {
             if ($scope.riesgo.docState) {
-                var promise = DialogModal($modal,
+                const promise = DialogModal($modal,
                                         "<em>Riesgos</em>",
                                         "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
                                         false);
 
                 promise.then(
-                    function (resolve) {
+                    function () {
                         return;
                     },
-                    function (err) {
+                    function () {
                         return;
                     });
 
@@ -532,14 +539,14 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
     $scope.refresh = function () {
         if ($scope.riesgo.docState) {
-            var promise = DialogModal($modal,
+            const promise = DialogModal($modal,
                                     "<em>Riesgos</em>",
                                     "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa y refresca el registro, " +
                                     "los cambios se perderán.<br /><br />Desea continuar y perder los cambios?",
                                     true);
 
             promise.then(
-                function (resolve) {
+                function () {
                     inicializarItem();
                 },
                 function () {
@@ -560,7 +567,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                         "Aparentemente, el riesgo para el cual Ud. desea construir las notas de cobertura, no tiene movimientos registrados.",
                         false).then();
             return;
-        };
+        }
 
         $modal.open({
             templateUrl: 'client/html/riesgos/imprimirNotasModal.html',
@@ -591,7 +598,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                         "Aparentemente, el riesgo para el cual Ud. desea construir las notas de débito, no tiene movimientos registrados.",
                         false).then();
             return;
-        };
+        }
 
         $modal.open({
             templateUrl: 'client/riesgos/notasDebito/imprimirNotasDebitoModal.html',
@@ -634,18 +641,18 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             size: 'lg',
             resolve: {
                 companias: function () {
-                    let riesgo = $scope.riesgo;
-                    let companias = [];
+                    const riesgo = $scope.riesgo;
+                    const companias = [];
 
                     if (lodash.isArray(riesgo.personas)) {
                         riesgo.personas.forEach(persona => {
-                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre } as never);
+                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
                         });
                     }
 
                     // ahora revisamos las compañías en el riesgo y agregamos las que *no* existan en el array de compañías
-                    if (!lodash.some(companias, (c: any) => { return c.compania == riesgo.compania; } )) { 
-                        companias.push({ compania: riesgo.compania } as never);
+                    if (!lodash.some(companias, (c) => { return c.compania == riesgo.compania; } )) { 
+                        companias.push({ compania: riesgo.compania });
                     }
                         
                     if (lodash.isArray(riesgo.movimientos)) {
@@ -653,8 +660,8 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                         if (lodash.isArray(movimiento.companias)) {
                             movimiento.companias.forEach(r => {
                                 if (!r.nosotros) { 
-                                    if (!lodash.some(companias, (c: any) => { return c.compania == r.compania; } )) { 
-                                        companias.push({ compania: r.compania } as never);
+                                    if (!lodash.some(companias, (c) => { return c.compania == r.compania; } )) { 
+                                        companias.push({ compania: r.compania });
                                     } 
                                 }
                             })
@@ -666,17 +673,17 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
             function (cancel) {
                 // recuperamos las personas de compañías, según las indicó el usuario en el modal
                 if (cancel.entityUpdated) {
-                    let companias = cancel.companias;
+                    const companias = cancel.companias;
                     $scope.riesgo.personas = [];
 
                     if (lodash.isArray(companias)) {
-                        for (let compania of companias) { 
+                        for (const compania of companias) { 
                             if (compania.titulo && compania.nombre) { 
                                 $scope.riesgo.personas.push({
                                     compania: compania.compania,
@@ -722,10 +729,10 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             });
     }
@@ -788,19 +795,23 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
             $scope.cuotas = [];
 
-            // para leer el último cierre efectuado 
-            Meteor.subscribe('cierre', () => { 
-                Meteor.subscribe('autosMarcas', () => {
+            Meteor.subscribe('autosMarcas', () => {
 
-                    $scope.helpers({
-                        autosMarcas: () => { 
-                            return AutosMarcas.find(); 
-                        }, 
-                    })
-                    
+                $scope.helpers({
+                    autosMarcas: () => { 
+                        return AutosMarcas.find(); 
+                    }, 
+                })
+                
+                $state.go('riesgo.generales').then(() => { 
+
+                    const inputFecha = document.getElementById("suscriptor"); 
+                    if (inputFecha) { 
+                        inputFecha.focus(); 
+                    }
+
                     $scope.showProgress = false;
                     $scope.alerts.length = 0;
-                    $scope.goToState('generales');
                 })
             })
         }
@@ -850,18 +861,39 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
                                 // leemos las notas de débito registradas para el riesgo; pasamos null como 2do parametro pues 
                                 // queremos todas las notas para el riegso y no las de algún movimiento en particular ... 
-                                Meteor.subscribe('notasDebitoCredito', $scope.riesgo._id, null);
-                                
-                                $scope.helpers({
-                                    notasDebitoCredito: () => { 
-                                        return NotasDebitoCredito.find();  
-                                    }, 
-                                })
+                                Meteor.subscribe('notasDebitoCredito', $scope.riesgo._id, null, () => { 
 
-                                $scope.alerts.length = 0;
-                                $scope.goToState('generales');
-        
-                                $scope.showProgress = false;
+                                    // ------------------------------------------------------------------------------------------------------------
+                                    // finalmente, suscribimos a los datos 'iniciales' necesarios para mostrar el riesgo; comúnmente, son los 
+                                    // catálogos, como: compañía, moneda, banco, cuenta bancaria ... 
+                                    Meteor.subscribe('riesgo.loadInitialData', $scope.riesgo.compania, 
+                                                                               $scope.riesgo.ramo, 
+                                                                               $scope.riesgo.corredor, 
+                                                                               $scope.riesgo.indole, 
+                                                                               () => {
+                                            $scope.helpers({
+                                                companias: () => { return Companias.find({}); },
+                                            })
+
+
+                                            $scope.helpers({
+                                                notasDebitoCredito: () => {
+                                                    return NotasDebitoCredito.find();
+                                                },
+                                            })
+
+                                            $state.go('riesgo.generales').then(() => { 
+
+                                                const inputFecha = document.getElementById("suscriptor"); 
+                                                if (inputFecha) { 
+                                                    inputFecha.focus(); 
+                                                }
+
+                                                $scope.showProgress = false;
+                                                $scope.alerts.length = 0;
+                                            })
+                                        })
+                                })
                             })
                         })
                     })
@@ -872,7 +904,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                 // riesgos seleccionados estaban en minimongo. Ahora, los riesgos seleccionados se
                 // graban a un collection 'temp'; por eso, aquí también hay que suscribir al riesgo
                 // que el usuario seleccione en la lista ...
-                var filtro = { _id: $scope.id };
+                const filtro = { _id: $scope.id };
                 Meteor.subscribe('riesgos', JSON.stringify(filtro), () => {
                     
                     $scope.helpers({
@@ -912,18 +944,37 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
                                 // leemos las notas de débito registradas para el riesgo; pasamos null como 2do parametro pues 
                                 // queremos todas las notas para el riegso y no las de algún movimiento en particular ... 
-                                Meteor.subscribe('notasDebitoCredito', $scope.riesgo._id, null);
-                                
-                                $scope.helpers({
-                                    notasDebitoCredito: () => { 
-                                        return NotasDebitoCredito.find();  
-                                    }, 
+                                Meteor.subscribe('notasDebitoCredito', $scope.riesgo._id, null, () => { 
+
+                                    Meteor.subscribe('riesgo.loadInitialData', $scope.riesgo.compania, 
+                                                                               $scope.riesgo.ramo, 
+                                                                               $scope.riesgo.corredor, 
+                                                                               $scope.riesgo.indole, 
+                                                                               () => {
+
+                                        $scope.helpers({
+                                            companias: () => { return Companias.find({}); },
+                                        })
+
+
+                                        $scope.helpers({
+                                            notasDebitoCredito: () => {
+                                                return NotasDebitoCredito.find();
+                                            },
+                                        })
+
+                                        $state.go('riesgo.generales').then(() => { 
+
+                                            const inputFecha = document.getElementById("suscriptor"); 
+                                            if (inputFecha) { 
+                                                inputFecha.focus(); 
+                                            }
+
+                                            $scope.showProgress = false;
+                                            $scope.alerts.length = 0;
+                                        })
+                                    })
                                 })
-                                
-                                $scope.alerts.length = 0;
-                                $scope.goToState('generales');
-        
-                                $scope.showProgress = false;
                             })
                         })
                     })
@@ -937,7 +988,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         // un riesgo nuevo ... 
         let message = ""; 
         try {
-            let riesgo_json = lodash.cloneDeep($scope.riesgo); 
+            const riesgo_json = lodash.cloneDeep($scope.riesgo); 
 
             // la información adicional para el riesgo Autos (u otros ramos) puede o no existir 
             riesgo_json.riesgos_infoRamo = []; 
@@ -963,13 +1014,13 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
     $scope.importFromJson = function() { 
         // leemos algún riesgo que se haya exportado antes (con un Download) y lo agregamos como un riesgo nuevo ... 
-        let inputFile = angular.element("#fileInput");
+        const inputFile = angular.element("#fileInput");
         if (inputFile) { 
             inputFile.click();        // simulamos un click al input (file)
         }
     }
 
-    $scope.uploadFile = function(files: any) {
+    $scope.uploadFile = function(files) {
 
         if (!$scope.riesgo || !$scope.riesgo.docState || $scope.riesgo.docState != 1) {
             DialogModal($modal, "<em> Riesgos</em>",
@@ -978,7 +1029,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                                 `,
                                 false).then();
 
-            let inputFile: any = angular.element("#fileInput");
+            const inputFile = angular.element("#fileInput");
             if (inputFile && inputFile[0] && inputFile[0].value) { 
                 // para que el input type file "limpie" el file indicado por el usuario
                 inputFile[0].value = null;
@@ -987,7 +1038,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             return;
         }
 
-        let userSelectedFile = files[0];
+        const userSelectedFile = files[0];
 
         if (!userSelectedFile) {
             DialogModal($modal, "<em> Riesgos</em>",
@@ -995,7 +1046,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                                 "Por favor seleccione un archivo que corresponda a un riesgo <em>exportado</em> antes, con la opción <em>download</em>.",
                                 false).then();
 
-            let inputFile: any = angular.element("#fileInput");
+            const inputFile = angular.element("#fileInput");
             if (inputFile && inputFile[0] && inputFile[0].value) { 
                 // para que el input type file "limpie" el file indicado por el usuario
                 inputFile[0].value = null;
@@ -1007,19 +1058,19 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         var reader = new FileReader();
         
 
-        reader.onload = function(e: any) {
+        reader.onload = function(e) {
             
             // esta función importa (merge) el contenido del archivo, que es un json, al riesgo en el $scope ... 
-            let result: any = importarRiesgoFromTextFile(e, $scope.companiaSeleccionada); 
+            const result = importarRiesgoFromTextFile(e, $scope.companiaSeleccionada); 
 
-            let inputFile: any = angular.element("#fileInput");
+            const inputFile = angular.element("#fileInput");
             if (inputFile && inputFile[0] && inputFile[0].value) { 
                 // para que el input type file "limpie" el file indicado por el usuario
                 inputFile[0].value = null;
             }
 
             $scope.alerts.length = 0;
-            let alertType = result.error ? 'danger' : 'info'; 
+            const alertType = result.error ? 'danger' : 'info'; 
 
             $scope.alerts.push({
                 type: alertType,
@@ -1039,18 +1090,78 @@ export default angular.module("scrwebm.riesgos.riesgo", [
   
     // definimos en el $parent para que esté disponible en todos los states 
     $scope.movimientoSeleccionado = {}; 
-}
-])
 
-function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string }) { 
+    // para hacer el search de las compañías desde el server 
+    $scope.searchCompanias = (search) => {
+
+        $scope.uiSelectLoading_companias = true;
+
+        Meteor.subscribe("search.companias", search, () => {
+
+            $scope.helpers({
+                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+            })
+
+            $scope.uiSelectLoading_companias = false;
+            $scope.$apply();
+        })
+    }
+
+    $scope.searchCorredores = (search) => {
+
+        $scope.uiSelectLoading_corredores = true;
+
+        Meteor.subscribe("search.companias", search, () => {
+
+            $scope.helpers({
+                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+            })
+
+            $scope.uiSelectLoading_corredores = false;
+            $scope.$apply();
+        })
+    }
+
+    $scope.searchRamos = (search) => {
+
+        $scope.uiSelectLoading_ramos = true;
+
+        Meteor.subscribe("search.ramos", search, () => {
+
+            $scope.helpers({
+                ramos: () => Ramos.find({ descripcion: new RegExp(search, 'i') }, { sort: { descripcion: 1 } })
+            })
+
+            $scope.uiSelectLoading_ramos = false;
+            $scope.$apply();
+        })
+    }
+
+    $scope.searchIndoles = (search) => {
+
+        $scope.uiSelectLoading_indoles = true;
+
+        Meteor.subscribe("search.indoles", search, () => {
+
+            $scope.helpers({
+                indoles: () => Indoles.find({ descripcion: new RegExp(search, 'i') }, { sort: { descripcion: 1 } })
+            })
+
+            $scope.uiSelectLoading_indoles = false;
+            $scope.$apply();
+        })
+    }
+}])
+
+function importarRiesgoFromTextFile(e, companiaSeleccionada) { 
 
     let riesgos_infoRamo = []; 
-    let riesgo = {} as any; 
+    const riesgo = {}; 
     let empresaUsuariaDiferente = false; 
 
     try {
         var content = e.target.result;
-        let riesgoJson = JSON.parse(content);
+        const riesgoJson = JSON.parse(content);
 
         // con el riesgo en json viene la información del ramo, si existe (no siempre existe) 
         if (riesgoJson.riesgos_infoRamo) { 
@@ -1083,12 +1194,12 @@ function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string 
         riesgo.hasta = new Date(riesgo.hasta); 
 
         if (riesgo.documentos) { 
-            riesgo.documentos.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+            riesgo.documentos.forEach((x) => x._id = new Mongo.ObjectID()._str); 
         }
 
-        for (let movimiento of riesgo.movimientos) { 
+        for (const movimiento of riesgo.movimientos) { 
             // guardamos el _id original del movimiento, para asignarlo en el array de info del ramo (si existe) ... 
-            let movimiento_id_original = movimiento._id; 
+            const movimiento_id_original = movimiento._id; 
 
             movimiento._id = new Mongo.ObjectID()._str;
             movimiento.fechaEmision = new Date(movimiento.fechaEmision); 
@@ -1097,31 +1208,31 @@ function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string 
 
             // cambiamos el _id en cada array; la idea es que no sean los mismos que en riesgo original 
             if (movimiento.companias) { 
-                movimiento.companias.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+                movimiento.companias.forEach((x) => x._id = new Mongo.ObjectID()._str); 
             }
 
             if (movimiento.coberturas) { 
-                movimiento.coberturas.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+                movimiento.coberturas.forEach((x) => x._id = new Mongo.ObjectID()._str); 
             }
 
             if (movimiento.coberturasCompanias) { 
-                movimiento.coberturasCompanias.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+                movimiento.coberturasCompanias.forEach((x) => x._id = new Mongo.ObjectID()._str); 
             }
 
             if (movimiento.primas) { 
-                movimiento.primas.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+                movimiento.primas.forEach((x) => x._id = new Mongo.ObjectID()._str); 
             }
 
             if (movimiento.productores) { 
-                movimiento.productores.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+                movimiento.productores.forEach((x) => x._id = new Mongo.ObjectID()._str); 
             }
 
             if (movimiento.documentos) { 
-                movimiento.documentos.forEach((x: any) => x._id = new Mongo.ObjectID()._str); 
+                movimiento.documentos.forEach((x) => x._id = new Mongo.ObjectID()._str); 
             }
 
             // cambiamos los _ids en la info del ramo, si existe 
-            riesgos_infoRamo.filter((x: any) => x.movimientoID === movimiento_id_original).forEach((x: any) => { 
+            riesgos_infoRamo.filter((x) => x.movimientoID === movimiento_id_original).forEach((x) => { 
                 // aquí tenemos los items para el movimiento que estamos tratando; cambiamos los _ids que lo identifican 
                 // como parte del riesgo y movimiento ... 
                 x._id = new Mongo.ObjectID()._str; 
@@ -1133,13 +1244,11 @@ function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string 
         if (empresaUsuariaDiferente) { 
             // el riesgo viene de otra empresa usuaria; cambiamos la compañía 'nosotros' ... 
             // leemos la compañía 'nosotros' definida para el usuario, para usarla en el nuevo riesgo que se ha importado 
-            let companiaNosotros = {} as any;
-            let result: any = LeerCompaniaNosotros(Meteor.userId()); 
+            let companiaNosotros = {};
+            const result = LeerCompaniaNosotros(Meteor.userId()); 
 
             if (result.error) {
-                let message = `<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em><br /> ${result.message}`; 
-
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
+                const message = `<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em><br /> ${result.message}`; 
 
                 return { 
                     error: true, 
@@ -1152,11 +1261,11 @@ function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string 
             // ok, ya tenemos la compañía 'nosotros'; ahora la cambiamos en los arrays en los cuales interviene ... 
             if (riesgo.movimientos) {
 
-                for (let movimiento of riesgo.movimientos) {
+                for (const movimiento of riesgo.movimientos) {
 
                     if (movimiento.companias) {
                         // arreglo de compañías 
-                        for (let compania of movimiento.companias) {
+                        for (const compania of movimiento.companias) {
                             if (compania.nosotros) {
                                 compania.compania = companiaNosotros._id;
                             }
@@ -1165,7 +1274,7 @@ function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string 
 
                     if (movimiento.coberturasCompanias) {
                         // arreglo de coberturas para cada compañía  
-                        for (let compania of movimiento.coberturasCompanias) {
+                        for (const compania of movimiento.coberturasCompanias) {
                             if (compania.nosotros) {
                                 compania.compania = companiaNosotros._id;
                             }
@@ -1174,7 +1283,7 @@ function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string 
 
                     if (movimiento.primas) {
                         // arreglo de primas para cada compañía 
-                        for (let compania of movimiento.primas) {
+                        for (const compania of movimiento.primas) {
                             if (compania.nosotros) {
                                 compania.compania = companiaNosotros._id;
                             }
@@ -1202,8 +1311,6 @@ function importarRiesgoFromTextFile(e: any, companiaSeleccionada: { _id: string 
         message += `<br /><br /><b>Nota:</b> el riesgo original fue registrado para una <em>empresa usuaria</em> diferente. 
                     La compañía usuaria ha sido cambiada para reflejar la que ahora está seleccionada para el usuario.`
     }
-
-    message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
     return { 
         riesgo: riesgo, 

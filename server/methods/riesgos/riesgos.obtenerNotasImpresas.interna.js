@@ -15,6 +15,8 @@ import { readFile, writeFile } from '@cloudcmd/dropbox';
 // para leer un node stream y convertirlo en un string; nota: returns a promise 
 import getStream from 'get-stream'; 
 
+import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink'; 
+
 import SimpleSchema from 'simpl-schema';
 import { Riesgos } from '/imports/collections/principales/riesgos';  
 
@@ -31,7 +33,7 @@ import { Indoles } from '/imports/collections/catalogos/indoles';
 
 Meteor.methods(
 {
-    'riesgos.obtenerNotasImpresas.interna': function (folderPath, fileName, riesgoID, movimientoID, fecha) {
+    'riesgos.obtenerNotasImpresas.interna': async function (folderPath, fileName, riesgoID, movimientoID, fecha) {
 
         new SimpleSchema({
             fileName: { type: String, optional: false, },
@@ -211,7 +213,6 @@ Meteor.methods(
         let reaseg_total_impSPN = 0; 
         let reaseg_total_primaNeta1 = 0; 
         
-
         // preparamos un array de reaseguradores, para mostrarlas en la nota de cobertura
         const reaseguradores = [];
         lodash(movimiento.companias).filter((x) => { return !x.nosotros; }).forEach((x) => {
@@ -278,11 +279,11 @@ Meteor.methods(
         filePath = filePath.replace(/\\/g,"/");
 
         // SEGUNDO leemos el file 
-        const token = Meteor.settings.public.dropBox_appToken;      // this is the Dropbox app token 
+        const dropBoxAccessToken = Meteor.settings.public.dropBox_appToken;      // this is the Dropbox app token 
         let readStream = null; 
 
         try {
-            readStream = Promise.await(readFile(token, filePath));
+            readStream = Promise.await(readFile(dropBoxAccessToken, filePath));
         } catch(err) { 
             let message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
@@ -399,7 +400,7 @@ Meteor.methods(
         const nombreUsuario = usuario.personales.nombre;
 
         let nombreUsuario2 = nombreUsuario.replace(/\./g, "_");           // nombre del usuario: reemplazamos un posible '.' por un '_' 
-        nombreUsuario2 = nombreUsuario2.replace(/\@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
+        nombreUsuario2 = nombreUsuario2.replace(/@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
         
         // construimos un id único para el archivo, para que el usuario pueda tener más de un resultado para la misma 
         // plantilla. La fecha está en Dropbox ... 
@@ -414,7 +415,7 @@ Meteor.methods(
         filePath2 = filePath2.replace(/\\/g,"/");
 
         try {
-            Promise.await(writeFile(token, filePath2, buf));
+            Promise.await(writeFile(dropBoxAccessToken, filePath2, buf));
         } catch(err) { 
             let message = `Error: se ha producido un error al intentar escribir el archivo ${filePath2} a Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
@@ -427,15 +428,20 @@ Meteor.methods(
             }
         } 
 
-        let message = `Ok, la plantilla ha sido aplicada a los datos seleccionados y el documento Word ha sido construido 
-                   en forma satisfactoria. <br /> 
-                   El resultado ha sido escrito al archivo <b><em>${filePath2}</em></b>, en el Dropbox del programa.  
-                  `; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+        // con esta función creamos un download link para que el usuario pueda tener el archivo en su pc 
+        const result = await dropBoxCreateSharedLink(filePath2); 
 
-        return { 
-            error: false, 
-            message: message, 
+        if (result.error) { 
+            return { 
+                error: true, 
+                message: result.message
+            } 
+        } else { 
+            // regresamos el link 
+            return { 
+                error: false, 
+                sharedLink: result.sharedLink, 
+            } 
         }
     }
 })

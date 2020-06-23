@@ -22,8 +22,8 @@ import { Contratos } from '/imports/collections/principales/contratos';
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
-import { CollectionFS_templates } from '/server/imports/collectionFS/Files_CollectionFS_templates'; 
-import { CollectionFS_tempFiles } from '/server/imports/collectionFS/Files_CollectionFS_tempFiles'; 
+// import { CollectionFS_templates } from '/server/imports/collectionFS/Files_CollectionFS_templates'; 
+// import { CollectionFS_tempFiles } from '/server/imports/collectionFS/Files_CollectionFS_tempFiles'; 
 
 Meteor.methods(
 {

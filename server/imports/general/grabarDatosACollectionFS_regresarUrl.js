@@ -1,6 +1,6 @@
 
 
-import { CollectionFS_tempFiles } from '/server/imports/collectionFS/Files_CollectionFS_tempFiles'; 
+// import { CollectionFS_tempFiles } from '/server/imports/collectionFS/Files_CollectionFS_tempFiles'; 
 
 // recibimos un contenido a grabar a un file (con collectionFS); intentamos grabar y, al final, regresar el url del file,
 // para poder hacer un download en el client con el mismo (url) ...

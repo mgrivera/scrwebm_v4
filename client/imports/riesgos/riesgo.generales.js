@@ -2,7 +2,7 @@
 
 import * as angular from 'angular';
 
-import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
+import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 
 export default angular.module("scrwebm.riesgos.generales", []).controller("RiesgoGenerales_Controller",
 ['$scope', '$modal', function ($scope, $modal) {
@@ -19,13 +19,11 @@ export default angular.module("scrwebm.riesgos.generales", []).controller("Riesg
         { estado: 'DE', descripcion: 'Declinado' },
     ];
 
-    $scope.companiasCedentes = $scope.companias.filter((x: any) => { return ((x.tipo === 'SEG' || x.puedeCederRiesgos) && !x.nosotros) })
-
     // ---------------------------------------------------------------------------
     // para inicializar la fecha final cuando se indica la inicial ...
     $scope.$watch(
-        function(scope: any) { return scope.riesgo.desde; },
-        function(newValue: any, oldValue: any) {
+        function(scope) { return scope.riesgo.desde; },
+        function(newValue, oldValue) {
             if (newValue && (newValue != oldValue)) {
                 if (!$scope.riesgo.hasta) {
                     // determinamos la fecha pero para el prox año
@@ -50,21 +48,21 @@ export default angular.module("scrwebm.riesgos.generales", []).controller("Riesg
 
 // para establecer las opciones del select asegurado; nótese como usamos selectize, debemos usar un $apply ... 
 // el setTimeout es para que angular reconozca el control 
-function aseguradoSetSelectize($modal: any, $scope: any) {
+function aseguradoSetSelectize($modal, $scope) {
     setTimeout(function () {
         $scope.$apply(function () {
 
-            let items = []; 
+            const items = []; 
 
             if ($scope.riesgo && !$scope.riesgo.asegurado) { 
                 $scope.riesgo.asegurado = null; 
             }
 
             if ($scope.riesgo && $scope.riesgo.asegurado) { 
-                items.push($scope.riesgo.asegurado as never); 
+                items.push($scope.riesgo.asegurado); 
             }
             
-            let asegurado = $("#asegurado"); 
+            const asegurado = $("#asegurado"); 
             asegurado.selectize({
                 options: $scope.asegurados, 
                 valueField: '_id',
@@ -76,7 +74,7 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
                 selectOnTab: false, 
                 openOnFocus: false, 
 
-                onItemAdd: function(value: any) { 
+                onItemAdd: function(value) { 
 
                     // this way you can have the whole item 
                     // var data = this.options[value];
@@ -89,7 +87,7 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
                     }
                 }, 
 
-                create: function (input: any, callback: any) {
+                create: function (input, callback) {
 
                     agregarAsegurado_desdeInput($modal, input).then((result) => {
 
@@ -98,7 +96,7 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
 
                         // solo si el usuario cancela, intentamos regresar el asegurado que ya existía 
                         if (!result && $scope.riesgo.asegurado) { 
-                            let asegurado = Asegurados.findOne($scope.riesgo.asegurado); 
+                            const asegurado = Asegurados.findOne($scope.riesgo.asegurado); 
 
                             // nota: si no se encuentra un asegurado, pasamos undefined y el Select debe quedar en blanco 
                             // (sin selección) 
@@ -113,7 +111,7 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
                             callback(result); 
                         }
                         
-                    }).catch((error) => {
+                    }).catch(() => {
                         // error ocurred!
                         // no esperamos nunca un error, pues siempre resolvemos los erroes en el modal ... 
                     })
@@ -124,8 +122,8 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
   }
 
 
-  const agregarAsegurado_desdeInput = ($modal: any, nombre: any) => {
-    return new Promise((resolve, reject) => {
+  const agregarAsegurado_desdeInput = ($modal, nombre) => {
+    return new Promise((resolve) => {
       
         $modal.open({
             templateUrl: 'client/html/generales/agregarNuevoAsegurado.html',
@@ -137,11 +135,11 @@ function aseguradoSetSelectize($modal: any, $scope: any) {
                 },
             }
         }).result.then(
-              function (result: any) {
+              function (result) {
                   // en resolve viene el nuevo asegurado 
                   resolve(result);
               },
-              function (cancel: any) {
+              function () {
                   // el usuario canceló y *no* agregó el nuevo asseguado a la base de datos ... 
                   resolve(undefined);
               }
