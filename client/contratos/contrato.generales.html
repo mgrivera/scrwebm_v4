@@ -6,7 +6,6 @@
         <div class="container-fluid">
 
             <div class="row">
-
                 <!-- número -->
                 <div class="col-sm-4 col-sm-offset-2">
                     <div class="form-group form-group-sm">
@@ -40,7 +39,6 @@
             </div>
 
             <div class="row">
-
                 <!-- Código -->
                 <div class="col-sm-4 col-sm-offset-2">
                     <div class="form-group form-group-sm">
@@ -71,7 +69,6 @@
             </div>
 
             <div class="row">
-
                 <!-- desde -->
                 <div class="col-sm-4 col-sm-offset-2">
                     <div class="form-group form-group-sm">
@@ -93,7 +90,6 @@
                     </div>
                 </div>
 
-
                 <!-- hasta -->
                 <div class="col-sm-4 col-sm-offset-0">
                     <div class="form-group form-group-sm">
@@ -114,27 +110,32 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="row">
-
                 <!-- compañía -->
                 <div class="col-sm-4 col-sm-offset-2">
                     <div class="form-group form-group-sm">
                         <label class="col-sm-3 control-label input-label">Compañía: </label>
                         <div class="col-sm-9">
-                            <select class="form-control input-sm myinput-sm"
-                                    name="compania"
-                                    ng-model="contrato.compania"
-                                    ng-change="setIsEdited()"
-                                    ng-options="item._id as item.nombre for item in companias | orderBy:'nombre'"
-                                    ng-model-options="{ updateOn: 'blur' }"
-                                    required></select>
-
-                            <span class="validation-message"
-                                  ng-show="submitted && contratoForm.compania.$error.required">
-                                Indique un valor.
+                            <ui-select ng-model="contrato.compania" 
+                                       theme="bootstrap" 
+                                       skip-focusser="false" 
+                                       spinner-enabled="true"
+                                spinner-class="fa fa-spinner fa-pulse" on-select="setIsEdited()">
+                                <ui-select-match placeholder="Seleccione una compañía">
+                                    <span ng-bind="$select.selected.nombre"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="value._id as value in (companias | orderBy: 'nombre') track by value._id"
+                                    refresh="searchCompanias($select.search)" 
+                                    minimum-input-length="3" 
+                                    refresh-delay="500">
+                                    <span ng-bind="value.nombre"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                            <!-- Show only when loading... -->
+                            <span class="input-group-addon" style="background: none; border:none">
+                                <i class="fa fa-spinner fa-pulse" ng-show="uiSelectLoading_companias"></i>
                             </span>
                         </div>
                     </div>
@@ -163,18 +164,31 @@
             </div>
 
             <div class="row">
-
                 <!-- ramo -->
                 <div class="col-sm-4 col-sm-offset-2">
                     <div class="form-group form-group-sm">
                         <label class="col-sm-3 control-label input-label">Ramo: </label>
                         <div class="col-sm-9">
-                            <select class="form-control input-sm myinput-sm"
-                                    name="ramo"
-                                    ng-model="contrato.ramo"
-                                    ng-change="setIsEdited()"
-                                    ng-options="item._id as item.descripcion for item in ramos | orderBy:'descripcion'"
-                                    ng-model-options="{ updateOn: 'blur' }"></select>
+                            <ui-select ng-model="contrato.ramo" 
+                                       theme="bootstrap" 
+                                       skip-focusser="false" 
+                                       spinner-enabled="true"
+                                       spinner-class="fa fa-spinner fa-pulse" 
+                                       on-select="setIsEdited()">
+                                <ui-select-match placeholder="Seleccione un ramo">
+                                    <span ng-bind="$select.selected.descripcion"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="value._id as value in (ramos | orderBy: 'descripcion') track by value._id"
+                                                   refresh="searchRamos($select.search)" 
+                                                   minimum-input-length="3" 
+                                                   refresh-delay="500">
+                                    <span ng-bind="value.descripcion"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                            <!-- Show only when loading... -->
+                            <span class="input-group-addon" style="background: none; border:none">
+                                <i class="fa fa-spinner fa-pulse" ng-show="uiSelectLoading_ramos"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -196,10 +210,7 @@
                 </div>
             </div>
 
-
-
             <div class="row">
-
                 <!-- descripcion -->
                 <div class="col-sm-8 col-sm-offset-2">
                     <div class="form-group form-group-sm">
@@ -218,7 +229,6 @@
             </div>
 
             <div class="row">
-
                 <div class="col-sm-4 col-sm-offset-2">
                 </div>
 
@@ -235,7 +245,6 @@
 
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" style="background-color: #F2F2F2; border: 1px solid darkgray; font-size: x-small; ">
-
                     <!-- ingreso, ult actualización y usuario  -->
                     <div class="col-sm-3" style="text-align: center; ">
                         <label style="font-size: x-small; ">Ingreso: </label>
@@ -261,7 +270,5 @@
             </div>
 
         </div>
-
     </form>
-
 </div>

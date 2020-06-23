@@ -3,24 +3,20 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 
 import { Companias } from '/imports/collections/catalogos/companias';  
-import { Indoles } from '/imports/collections/catalogos/indoles';  
 import { Ramos } from '/imports/collections/catalogos/ramos';  
 
-Meteor.publish("riesgo.loadInitialData", function (companiaId, ramoId, corredorId, indolesId) {
+Meteor.publish("contrato.loadInitialData", function (companiaId, ramoId) {
 
     // para cargar los datos que se necesitan al abrir una remesa; normalmente son catálogos necesarios para mostrar en los 
     // ddl: monedas, compañías, bancos, ... 
 
     new SimpleSchema({
         companiaId: { type: String, optional: false, }, 
-        ramoId: { type: String, optional: false, }, 
-        corredorId: { type: String, optional: true, }, 
-        indolesId: { type: String, optional: false, }
-    }).validate({ companiaId, ramoId, corredorId, indolesId });
+        ramoId: { type: String, optional: false, }
+    }).validate({ companiaId, ramoId });
 
     return [
-        Companias.find({ $or: [ { _id: companiaId }, { _id: corredorId } ]}),
-        Indoles.find(indolesId), 
+        Companias.find(companiaId),
         Ramos.find(ramoId)
     ]
 })

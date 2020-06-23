@@ -1,6 +1,7 @@
 ﻿
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment'; 
+import lodash from 'lodash'; 
 
 import { Riesgos } from '/imports/collections/principales/riesgos'; 
 

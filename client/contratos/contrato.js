@@ -38,13 +38,16 @@ angular.module("scrwebm").controller("ContratoController",
     $scope.showProgress = false;
     $scope.dataHasBeenEdited = false; 
 
+    // para mostrar spinner cuando se ejecuta el search en el (bootstrap) ui-select 
+    $scope.uiSelectLoading_companias = false; 
+    $scope.uiSelectLoading_ramos = false;  
+
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     }
-
 
     // para reportar el progreso de la aplicación al usuario 
     $scope.processProgress = {
@@ -154,14 +157,8 @@ angular.module("scrwebm").controller("ContratoController",
         tiposContrato: () => {
             return TiposContrato.find();
         },
-        companias: () => {
-            return Companias.find();
-        },
         monedas: () => {
             return Monedas.find();
-        },
-        ramos: () => {
-            return Ramos.find();
         },
         suscriptores: () => {
             return Suscriptores.find();
@@ -2116,18 +2113,61 @@ angular.module("scrwebm").controller("ContratoController",
 
                 // para leer el último cierre efectuado 
                 Meteor.subscribe('utimoPeriodoCerrado', $scope.companiaSeleccionada._id, () => { 
-                    $scope.dataHasBeenEdited = false; 
-                    $scope.showProgress = false;
-                    $scope.$apply();
 
-                    // inicialmente, mostramos el state 'generales'
-                    $scope.goToState('generales');
+                    // ------------------------------------------------------------------------------------------------------------
+                    // finalmente, suscribimos a los datos 'iniciales' necesarios para mostrar el riesgo; comúnmente, son los 
+                    // catálogos, como: compañía, moneda, banco, cuenta bancaria ... 
+                    Meteor.subscribe('contrato.loadInitialData', $scope.contrato.compania, $scope.contrato.ramo, () => {
+
+                        $scope.helpers({
+                            companias: () => Companias.find(),
+                            ramos: () => Ramos.find()
+                        })
+
+                        $scope.dataHasBeenEdited = false; 
+                        $scope.showProgress = false;
+                        $scope.$apply();
+
+                        // inicialmente, mostramos el state 'generales'
+                        $scope.goToState('generales');
+                    })
                 })
             })
         }
     }
 
     inicializarItem();
+
+    // para hacer el search de las compañías desde el server 
+    $scope.searchCompanias = (search) => {
+
+        $scope.uiSelectLoading_companias = true;
+
+        Meteor.subscribe("search.companias", search, () => {
+
+            $scope.helpers({
+                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+            })
+
+            $scope.uiSelectLoading_companias = false;
+            $scope.$apply();
+        })
+    }
+
+    $scope.searchRamos = (search) => {
+
+        $scope.uiSelectLoading_ramos = true;
+
+        Meteor.subscribe("search.ramos", search, () => {
+
+            $scope.helpers({
+                ramos: () => Ramos.find({ descripcion: new RegExp(search, 'i') }, { sort: { descripcion: 1 } })
+            })
+
+            $scope.uiSelectLoading_ramos = false;
+            $scope.$apply();
+        })
+    }
 
     function ui_grid_sortBy_compania(a, b) {
 

@@ -871,10 +871,12 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                                                                                $scope.riesgo.corredor, 
                                                                                $scope.riesgo.indole, 
                                                                                () => {
-                                            $scope.helpers({
-                                                companias: () => { return Companias.find({}); },
-                                            })
 
+                                            $scope.helpers({
+                                                indoles: () => { return Indoles.find({}); },
+                                                companias: () => { return Companias.find({}); },
+                                                ramos: () => { return Ramos.find({}); },
+                                            })
 
                                             $scope.helpers({
                                                 notasDebitoCredito: () => {
@@ -953,9 +955,10 @@ export default angular.module("scrwebm.riesgos.riesgo", [
                                                                                () => {
 
                                         $scope.helpers({
+                                            indoles: () => { return Indoles.find({}); },
                                             companias: () => { return Companias.find({}); },
+                                            ramos: () => { return Ramos.find({}); },
                                         })
-
 
                                         $scope.helpers({
                                             notasDebitoCredito: () => {
