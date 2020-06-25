@@ -1,5 +1,9 @@
 ﻿
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
+
 import angular from 'angular';
+import lodash from 'lodash'; 
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -48,7 +52,7 @@ export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosF
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
 
     let companiaSeleccionadaDoc = {}; 
     if (companiaSeleccionada) { 
@@ -86,10 +90,10 @@ export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosF
     $scope.aplicarFiltroYAbrirLista = function () {
 
         $scope.showProgress = true;
-        Meteor.call('riesgos.leerDesdeMongo', JSON.stringify($scope.filtro), $scope.companiaSeleccionada._id, (err, result) => {
+        Meteor.call('riesgos.leerDesdeMongo', JSON.stringify($scope.filtro), $scope.companiaSeleccionada._id, (err) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -127,7 +131,6 @@ export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosF
     }
 
     $scope.nuevo = function () {
-        //debugger;
         $state.go("riesgo", { origen: 'edicion', id: '0', pageNumber: -1, vieneDeAfuera: false });
     }
 
@@ -139,7 +142,7 @@ export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosF
 
     // solo hacemos el subscribe si no se ha hecho antes; el collection se mantiene a lo largo de la session del usuario
     if (filtroAnterior) { 
-        $scope.filtro = _.clone(filtroAnterior.filtro);
+        $scope.filtro = lodash.clone(filtroAnterior.filtro);
     }
         
     // --------------------------------------------------------------------------------
@@ -174,5 +177,4 @@ export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosF
         // until, of course, the above process ends ...
         $scope.$apply();
     })
-
 }])

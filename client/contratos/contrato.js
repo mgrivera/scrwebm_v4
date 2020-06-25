@@ -41,6 +41,7 @@ angular.module("scrwebm").controller("ContratoController",
     // para mostrar spinner cuando se ejecuta el search en el (bootstrap) ui-select 
     $scope.uiSelectLoading_companias = false; 
     $scope.uiSelectLoading_ramos = false;  
+    $scope.uiSelectLoading_cedenteOriginal = false;  
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -289,7 +290,7 @@ angular.module("scrwebm").controller("ContratoController",
     $scope.setIsEdited = function (field) {
 
         switch (field) {
-            case 'desde':
+            case 'desde': { 
                 if ($scope.contrato.desde && !$scope.contrato.hasta) {
                     const desde = $scope.contrato.desde;
                     let  newDate = new Date(desde.getFullYear() + 1, desde.getMonth(), desde.getDate());
@@ -299,6 +300,14 @@ angular.module("scrwebm").controller("ContratoController",
                 }
 
                 break;
+            } 
+            case 'compania': { 
+                if ($scope.contrato.compania) { 
+                    $scope.contrato.cedenteOriginal = $scope.contrato.compania; 
+                }
+                
+                break; 
+            } 
         }
 
         if ($scope.contrato.docState) { 
@@ -2150,6 +2159,22 @@ angular.module("scrwebm").controller("ContratoController",
             })
 
             $scope.uiSelectLoading_companias = false;
+            $scope.$apply();
+        })
+    }
+
+    // para hacer el search de las compañías desde el server 
+    $scope.searchCedenteOriginal = (search) => {
+
+        $scope.uiSelectLoading_cedenteOriginal = true;
+
+        Meteor.subscribe("search.companias", search, () => {
+
+            $scope.helpers({
+                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+            })
+
+            $scope.uiSelectLoading_cedenteOriginal = false;
             $scope.$apply();
         })
     }

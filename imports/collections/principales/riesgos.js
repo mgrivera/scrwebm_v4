@@ -184,6 +184,7 @@ const Riesgo_SimpleSchema = new SimpleSchema({
     moneda: { type: String, optional: false },
     indole: { type: String, optional: false },
     compania: { type: String, optional: false },
+    cedenteOriginal: { type: String, optional: false },
 
     personas: { type: Array, optional: true, minCount: 0 },
     'personas.$': { type: persona_SimpleSchema },

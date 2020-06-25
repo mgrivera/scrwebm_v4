@@ -6,22 +6,21 @@
         <div class="container-fluid">
 
             <div class="row">
-
                 <!-- número -->
-                <div class="col-sm-5 col-sm-offset-1">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-2 control-label input-label">Número: </label>
-                        <div class="col-sm-9" style="color: #337AB7; padding-left: 30px; ">
+                        <label class="col-sm-4 control-label input-label">Número: </label>
+                        <div class="col-sm-8" style="color: #337AB7; padding-left: 30px; ">
                             <p class="form-control-static pull-left">{{ riesgo.numero }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- suscriptor -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Suscriptor: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Suscriptor: </label>
+                        <div class="col-sm-8">
                             <select class="form-control input-sm myinput-sm"
                                     id="suscriptor"
                                     name="suscriptor"
@@ -37,10 +36,10 @@
 
             <div class="row">
                 <!-- Código -->
-                <div class="col-sm-5 col-sm-offset-1">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Código: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Código: </label>
+                        <div class="col-sm-8">
                             <input type="text"
                                    name="codigo"
                                    class="form-control input-sm myinput-sm"
@@ -52,10 +51,10 @@
                 </div>
 
                 <!-- Estado -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Estado: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Estado: </label>
+                        <div class="col-sm-8">
                             <select class="form-control input-sm myinput-sm"
                                     name="estado"
                                     ng-model="riesgo.estado"
@@ -70,10 +69,10 @@
 
             <div class="row">
                 <!-- tipo -->
-                <div class="col-sm-5 col-sm-offset-1">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Tipo: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Tipo: </label>
+                        <div class="col-sm-8">
                             <select class="form-control input-sm myinput-sm"
                                     ng-model="riesgo.tipo"
                                     ng-change="setIsEdited()"
@@ -85,10 +84,10 @@
                 </div>
 
                 <!-- referencia -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Referencia: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Referencia: </label>
+                        <div class="col-sm-8">
                             <input type="text"
                                    class="form-control input-sm myinput-sm"
                                    ng-model="riesgo.referencia"
@@ -102,10 +101,10 @@
             <div class="row">
 
                 <!-- desde -->
-                <div class="col-sm-5 col-sm-offset-1">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Desde: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Desde: </label>
+                        <div class="col-sm-8">
                             <input type="date"
                                    name="desde"
                                    class="form-control input-sm myinput-sm"
@@ -119,10 +118,10 @@
                 </div>
 
                 <!-- hasta -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Hasta: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Hasta: </label>
+                        <div class="col-sm-8">
                             <input type="date"
                                    name="hasta"
                                    class="form-control input-sm myinput-sm"
@@ -140,10 +139,10 @@
             <div class="row">
 
                 <!-- moneda -->
-                <div class="col-sm-5 col-sm-offset-1">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Moneda: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Moneda: </label>
+                        <div class="col-sm-8">
                             <select class="form-control input-sm myinput-sm"
                                     name="moneda"
                                     ng-model="riesgo.moneda"
@@ -156,10 +155,10 @@
                 </div>
 
                 <!-- indole -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Indole: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Indole: </label>
+                        <div class="col-sm-8">
                             <ui-select ng-model="riesgo.indole" 
                                        theme="bootstrap" 
                                        skip-focusser="false" 
@@ -187,17 +186,17 @@
 
             <div class="row">
 
-                <!-- cedente -->
-                <div class="col-sm-5 col-sm-offset-1">
+                <!-- compañía -->
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Compañía: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Compañía: </label>
+                        <div class="col-sm-8">
                             <ui-select ng-model="riesgo.compania" 
                                        theme="bootstrap" 
                                        skip-focusser="false" 
                                        spinner-enabled="true"
                                        spinner-class="fa fa-spinner fa-pulse" 
-                                       on-select="setIsEdited()">
+                                       on-select="setIsEdited('compania')">
                                 <ui-select-match placeholder="Seleccione una compañía">
                                     <span ng-bind="$select.selected.nombre"></span>
                                 </ui-select-match>
@@ -217,10 +216,10 @@
                 </div>
 
                 <!-- ramo -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Ramo: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Ramo: </label>
+                        <div class="col-sm-8">
                             <ui-select ng-model="riesgo.ramo" 
                                        theme="bootstrap" 
                                        skip-focusser="false" 
@@ -246,13 +245,47 @@
                 </div>
             </div>
 
-            <div class="row">
 
+            <div class="row">
+                <!-- cedenteOriginal -->
+                <div class="col-sm-6 col-sm-offset-0">
+                    <div class="form-group form-group-sm">
+                        <label class="col-sm-4 control-label input-label">Cedente original: </label>
+                        <div class="col-sm-8">
+                            <ui-select ng-model="riesgo.cedenteOriginal" 
+                                       theme="bootstrap" 
+                                       skip-focusser="false" 
+                                       spinner-enabled="true"
+                                       spinner-class="fa fa-spinner fa-pulse" 
+                                       on-select="setIsEdited()">
+                                <ui-select-match placeholder="Seleccione una compañía">
+                                    <span ng-bind="$select.selected.nombre"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="value._id as value in (companias | orderBy: 'nombre') track by value._id"
+                                                   refresh="searchCompaniasCedentes($select.search)" 
+                                                   minimum-input-length="3" refresh-delay="500">
+                                    <span ng-bind="value.nombre"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                            <!-- Show only when loading... -->
+                            <span class="input-group-addon" style="background: none; border:none">
+                                <i class="fa fa-spinner fa-pulse" ng-show="uiSelectLoading_cedenteOriginal"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ramo -->
+                <div class="col-sm-6 col-sm-offset-0">
+                </div>
+            </div>
+
+            <div class="row">
                 <!-- asegurado -->
-                <div class="col-sm-5 col-sm-offset-1">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm" style="text-align: left; ">
-                        <label class="col-sm-3 control-label input-label">Asegurado: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Asegurado: </label>
+                        <div class="col-sm-8">
                             <select name="asegurado" 
                                     id="asegurado" 
                                     class="form-control input-sm myinput-sm">
@@ -261,12 +294,11 @@
                     </div>
                 </div> 
                 
-
                 <!-- corredor -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Corredor: </label>
-                        <div class="col-sm-9">
+                        <label class="col-sm-4 control-label input-label">Corredor: </label>
+                        <div class="col-sm-8">
                             <ui-select ng-model="riesgo.corredor" 
                                        theme="bootstrap" 
                                        skip-focusser="false" 
@@ -354,7 +386,7 @@
                 </div>
 
                 <!-- Renovación -->
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-5 col-sm-offset-1">
                     <fieldset class="scheduler-border" style="margin-left: 35px !important; ">
                         <legend class="scheduler-border">Renovación: </legend>
 
@@ -409,13 +441,13 @@
 
             <div class="row">
 
-                <div class="col-sm-5 col-sm-offset-1">
+                <div class="col-sm-6 col-sm-offset-0">
                 </div>
 
-                <div class="col-sm-5 col-sm-offset-0">
+                <div class="col-sm-6 col-sm-offset-0">
                     <div class="form-group form-group-sm">
-                        <label class="col-sm-3 control-label input-label">Cia: </label>
-                        <div class="col-sm-9" style="padding-left: 30px; ">
+                        <label class="col-sm-4 control-label input-label">Cia: </label>
+                        <div class="col-sm-8" style="padding-left: 30px; ">
                             <p class="form-control-static pull-left">{{ riesgo.cia | empresaUsuariaSeleccionadaFilter }}</p>
                         </div>
                     </div>

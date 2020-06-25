@@ -185,6 +185,36 @@
                             </div>
                         </div>
 
+                        <div class="row" style="margin-top: 20px; ">
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                        <!-- cedente original -->
+                                        <label class="control-label input-label pull-left">Cedente original: </label>
+                                        <select class=" form-control input-sm myinput-sm" 
+                                                name="compania" 
+                                                ng-model="filtro.cedenteOriginal"
+                                                ng-options="item._id as item.nombre for item in companias | orderBy:'nombre'"
+                                                ng-model-options="{ updateOn: 'blur' }" 
+                                                size="8" 
+                                                multiple="multiple">
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="col-sm-6">
+                                <div class="form-group form-group-sm">
+                                    <div class="col-sm-5 col-sm-offset-2">
+                                    </div>
+                                    <div class="col-sm-5 col-sm-offset-0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </tab>
 
                     <tab heading="Opciones">

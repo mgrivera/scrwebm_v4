@@ -1,4 +1,8 @@
 ﻿
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo'; 
+
+import lodash from 'lodash'; 
 import angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -54,10 +58,10 @@ angular.module("scrwebm")
 
           $scope.showProgress = true;
 
-          Meteor.call('contratos.leerDesdeMongo', JSON.stringify($scope.filtro), $scope.companiaSeleccionada._id, (err, result) => {
+          Meteor.call('contratos.leerDesdeMongo', JSON.stringify($scope.filtro), $scope.companiaSeleccionada._id, (err) => {
 
               if (err) {
-                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                  const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({
@@ -111,7 +115,7 @@ angular.module("scrwebm")
 
       // solo hacemos el subscribe si no se ha hecho antes; el collection se mantiene a lo largo de la session del usuario
       if (filtroAnterior)
-          $scope.filtro = _.clone(filtroAnterior.filtro);
+          $scope.filtro = lodash.clone(filtroAnterior.filtro);
       // ------------------------------------------------------------------------------------------------------
 
       // esta tabla es necesaria para inicializar algunas partes del contrato cuando el usuario lo agrega 
@@ -121,4 +125,4 @@ angular.module("scrwebm")
           $scope.$apply();
       });
   }
-]);
+])

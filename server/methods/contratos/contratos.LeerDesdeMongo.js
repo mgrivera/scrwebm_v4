@@ -65,6 +65,11 @@ Meteor.methods(
             where.compania = { $in: array };
         }
 
+        if (filtro2.cedenteOriginal && filtro2.cedenteOriginal.length) {
+            const array = lodash.clone(filtro2.cedenteOriginal);
+            where.cedenteOriginal = { $in: array };
+        }
+
         if (filtro2.tipo && filtro2.tipo.length) {
             const array = lodash.clone(filtro2.tipo);
             where.tipo = { $in: array };

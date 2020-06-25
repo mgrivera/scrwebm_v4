@@ -34,7 +34,14 @@ export default angular.module("scrwebm.riesgos.generales", []).controller("Riesg
         }
     )
 
-    $scope.setIsEdited = function () {
+    $scope.setIsEdited = function (field = "") {
+
+        if (field === "compania") { 
+            if ($scope.riesgo.compania) { 
+                $scope.riesgo.cedenteOriginal = $scope.riesgo.compania; 
+            }
+        }
+
         if ($scope.riesgo.docState)  { 
             return;
         }

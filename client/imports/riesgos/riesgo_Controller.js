@@ -81,6 +81,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
     // para mostrar spinner cuando se ejecuta el search en el (bootstrap) ui-select 
     $scope.uiSelectLoading_companias = false; 
+    $scope.uiSelectLoading_cedenteOriginal = false; 
     $scope.uiSelectLoading_corredores = false; 
     $scope.uiSelectLoading_ramos = false; 
     $scope.uiSelectLoading_indoles = false;     
@@ -1121,6 +1122,21 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             })
 
             $scope.uiSelectLoading_corredores = false;
+            $scope.$apply();
+        })
+    }
+
+    $scope.searchCompaniasCedentes = (search) => {
+
+        $scope.uiSelectLoading_cedenteOriginal = true;
+
+        Meteor.subscribe("search.companias", search, () => {
+
+            $scope.helpers({
+                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+            })
+
+            $scope.uiSelectLoading_cedenteOriginal = false;
             $scope.$apply();
         })
     }

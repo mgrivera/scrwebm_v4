@@ -156,7 +156,7 @@
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
                                         <!-- compañías (cedentes) -->
-                                        <label class="control-label input-label pull-left">Compañías (cedentes): </label>
+                                        <label class="control-label input-label pull-left">Compañías (ced directo): </label>
                                         <select class=" form-control input-sm myinput-sm"
                                                 name="compania"
                                                 ng-model="filtro.compania"
@@ -249,14 +249,11 @@
                                                 multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
-                                        <!-- suscriptores -->
-                                        <label class="control-label input-label pull-left">Suscriptores: </label>
-                                        <select class=" form-control input-sm myinput-sm"
-                                                ng-model="filtro.suscriptor"
-                                                ng-options="item._id as item.nombre for item in suscriptores | orderBy:'nombre'"
-                                                ng-model-options="{ updateOn: 'blur' }"
-                                                size="8"
-                                                multiple="multiple"></select>
+                                        <!-- cedentes -->
+                                        <label class="control-label input-label pull-left">Compañías (ced orig): </label>
+                                        <select class=" form-control input-sm myinput-sm" name="cedenteOriginal" ng-model="filtro.cedenteOriginal"
+                                            ng-options="item._id as item.nombre for item in companias | filter: soloSegYCorr_Filter | orderBy:'nombre'"
+                                            ng-model-options="{ updateOn: 'blur' }" size="8" multiple="multiple"></select>
                                     </div>
                                 </div>
                             </div>
@@ -266,24 +263,18 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
-                                        <!-- tipos de facultativo -->
-                                        <label class="control-label input-label pull-left">Tipos de facultativo: </label>
-                                        <select class=" form-control input-sm myinput-sm"
-                                                ng-model="filtro.tipo"
-                                                ng-options="item._id as item.descripcion for item in tiposFacultativo | orderBy:'descripcion'"
-                                                ng-model-options="{ updateOn: 'blur' }"
-                                                size="8"
-                                                multiple="multiple"></select>
+                                        <!-- suscriptores -->
+                                        <label class="control-label input-label pull-left">Suscriptores: </label>
+                                        <select class=" form-control input-sm myinput-sm" ng-model="filtro.suscriptor"
+                                            ng-options="item._id as item.nombre for item in suscriptores | orderBy:'nombre'"
+                                            ng-model-options="{ updateOn: 'blur' }" size="8" multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
-                                        <!-- reaseguradores -->
-                                        <label class="control-label input-label pull-left">Compañías (reaseguradores): </label>
-                                        <select class=" form-control input-sm myinput-sm"
-                                                ng-model="filtro.reasegurador"
-                                                ng-options="item._id as item.nombre for item in companias | filter: soloReaseguradores_Filter | orderBy:'nombre'"
-                                                ng-model-options="{ updateOn: 'blur' }"
-                                                size="8"
-                                                multiple="multiple"></select>
+                                        <!-- tipos de facultativo -->
+                                        <label class="control-label input-label pull-left">Tipos de facultativo: </label>
+                                        <select class=" form-control input-sm myinput-sm" ng-model="filtro.tipo"
+                                            ng-options="item._id as item.descripcion for item in tiposFacultativo | orderBy:'descripcion'"
+                                            ng-model-options="{ updateOn: 'blur' }" size="8" multiple="multiple"></select>
                                     </div>
                                 </div>
                             </div>
@@ -291,16 +282,18 @@
                             <div class="col-sm-6">
                                 <div class="form-group form-group-sm">
                                     <div class="col-sm-5 col-sm-offset-2">
-                                        <!-- tipos de objeto asegurado -->
-                                        <label class="control-label input-label pull-left">Tipos de objeto asegurado: </label>
-                                        <select class=" form-control input-sm myinput-sm"
-                                                ng-model="filtro.tipoObjetoAsegurado"
-                                                ng-options="item._id as item.descripcion for item in tiposObjetoAsegurado | orderBy:'descripcion'"
-                                                ng-model-options="{ updateOn: 'blur' }"
-                                                size="8"
-                                                multiple="multiple"></select>
+                                        <!-- reaseguradores -->
+                                        <label class="control-label input-label pull-left">Compañías (reaseguradores): </label>
+                                        <select class=" form-control input-sm myinput-sm" ng-model="filtro.reasegurador"
+                                            ng-options="item._id as item.nombre for item in companias | filter: soloReaseguradores_Filter | orderBy:'nombre'"
+                                            ng-model-options="{ updateOn: 'blur' }" size="8" multiple="multiple"></select>
                                     </div>
                                     <div class="col-sm-5 col-sm-offset-0">
+                                        <!-- tipos de objeto asegurado -->
+                                        <label class="control-label input-label pull-left">Tipos de objeto asegurado: </label>
+                                        <select class=" form-control input-sm myinput-sm" ng-model="filtro.tipoObjetoAsegurado"
+                                            ng-options="item._id as item.descripcion for item in tiposObjetoAsegurado | orderBy:'descripcion'"
+                                            ng-model-options="{ updateOn: 'blur' }" size="8" multiple="multiple"></select>
                                     </div>
                                 </div>
                             </div>

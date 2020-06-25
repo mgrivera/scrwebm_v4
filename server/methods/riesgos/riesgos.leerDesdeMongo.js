@@ -77,6 +77,11 @@ Meteor.methods(
             where.compania = { $in: array };
         }
 
+        if (filtro2.cedenteOriginal && filtro2.cedenteOriginal.length) {
+            const array = lodash.clone(filtro2.cedenteOriginal);
+            where.cedenteOriginal = { $in: array };
+        }
+
         if (filtro2.reasegurador && filtro2.reasegurador.length) {
             const array = lodash.clone(filtro2.reasegurador);
             where['movimientos.companias.compania'] = { $in: array };       // buscamos en el inner array ... 

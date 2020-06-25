@@ -541,6 +541,7 @@ const Contrato_SimpleSchema = new SimpleSchema({
     hasta: { type: Date, optional: false, },
     suscriptor: { type: String, optional: false, },
     compania: { type: String, optional: false, },
+    cedenteOriginal: { type: String, optional: false, },
 
     personas: { type: Array, optional: true, minCount: 0 },
     'personas.$': { type: persona_SimpleSchema },
