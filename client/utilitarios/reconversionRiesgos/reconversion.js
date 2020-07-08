@@ -1,14 +1,14 @@
 
-
+import { Meteor } from 'meteor/meteor'
 import * as angular from 'angular'; 
 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
-import { ReconversionMonetaria_log } from 'imports/collections/otros/reconversionMonetaria_log'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { ReconversionMonetaria_log } from '/imports/collections/otros/reconversionMonetaria_log'; 
 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller("Utilitarios_Reconversion_Riesgos_Controller", ['$scope', '$modal', function ($scope, $modal) {
 
@@ -38,7 +38,7 @@ angular.module("scrwebm").controller("Utilitarios_Reconversion_Riesgos_Controlle
     }
     // ------------------------------------------------------------------------------------------------
 
-    let monedaDefault = Monedas.findOne({ defecto: true }); 
+    const monedaDefault = Monedas.findOne({ defecto: true }); 
 
     if (!monedaDefault) { 
 
@@ -61,8 +61,7 @@ angular.module("scrwebm").controller("Utilitarios_Reconversion_Riesgos_Controlle
 
     $scope.moneda = monedaDefault; 
 
-    let reconversion_grid_api = null; 
-    let reconversionItem_seleccionado: any = null; 
+    let reconversionItem_seleccionado = null; 
 
     $scope.reconversionMonetaria_ui_grid = {
         enableSorting: true,
@@ -77,8 +76,6 @@ angular.module("scrwebm").controller("Utilitarios_Reconversion_Riesgos_Controlle
         rowHeight: 25,
 
         onRegisterApi: function (gridApi) {
-
-            reconversion_grid_api = gridApi; 
 
             // guardamos el row que el usuario seleccione
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
@@ -204,7 +201,7 @@ angular.module("scrwebm").controller("Utilitarios_Reconversion_Riesgos_Controlle
             Meteor.call('reconversionMonetaria_riesgos', monedaDefault, $scope.parametros, $scope.companiaSeleccionada, (err, result) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
     
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
