@@ -1,7 +1,8 @@
 
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular';
-import * as lodash from 'lodash'; 
+import angular from 'angular';
+import lodash from 'lodash'; 
 
 import { DialogModal } from '../generales/angularGenericModal'; 
 import { determinarSiExistenCuotasConCobrosAplicados } from '../generales/determinarSiExistenCuotasCobradas'; 
@@ -12,7 +13,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
 
     $scope.showProgress = true; 
 
-    let movimientoSeleccionado = {} as any; 
+    let movimientoSeleccionado = {}; 
     
     if ($scope.movimientoSeleccionado) { 
         // NOTA: $scope.movimientoSeleccionado fue definido en $parentScope ... 
@@ -26,7 +27,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
     // -------------------------------------------------------------------------
     // grid de productores
     // -------------------------------------------------------------------------
-    let productorSeleccionado = {} as any;
+    let productorSeleccionado = {};
 
     $scope.productores_ui_grid = {
         enableSorting: false,
@@ -192,7 +193,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
     $scope.eliminarProductor = function () {
         // cada vez que el usuario selecciona un row, lo guardamos ...
         if (movimientoSeleccionado && movimientoSeleccionado.productores && productorSeleccionado) {
-            lodash.remove(movimientoSeleccionado.productores, function (productor: any) { return productor._id === productorSeleccionado._id; });
+            lodash.remove(movimientoSeleccionado.productores, function (productor) { return productor._id === productorSeleccionado._id; });
 
             if (!$scope.riesgo.docState) {
                 $scope.riesgo.docState = 2;
@@ -310,11 +311,11 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
         // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
         // usuario está tratando en ese momento ...  
         // ------------------------------------------------------------------------------------------------------------------------
-        let cuotasProductor = lodash.filter($scope.cuotas, (c) => { 
+        const cuotasProductor = lodash.filter($scope.cuotas, (c) => { 
             return c.compania === productorSeleccionado.compania && c.source.subEntityID === movimientoSeleccionado._id; }
         )
 
-        let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasProductor); 
+        const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasProductor); 
         if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
             DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
             return;
@@ -345,7 +346,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
     }
 
     function construirCuotasProductor() {
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/generales/construirCuotas.html',
             controller: 'Riesgos_ConstruirCuotasProductorController',
             size: 'md',
@@ -364,10 +365,10 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
                 }
             }
         }).result.then(
-            function (resolve: any) {
+            function () {
                 return true;
             },
-            function (cancel: any) {
+            function () {
                 return true;
             });
     }

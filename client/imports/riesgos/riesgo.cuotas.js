@@ -1,7 +1,9 @@
 
-import * as angular from 'angular';
-import * as lodash from 'lodash'; 
-import * as moment from 'moment';
+import { Mongo } from 'meteor/mongo';
+
+import angular from 'angular';
+import lodash from 'lodash'; 
+import moment from 'moment';
 
 import { DialogModal } from '../generales/angularGenericModal'; 
 
@@ -14,7 +16,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
 
     $scope.showProgress = true; 
 
-    let movimientoSeleccionado = {} as any; 
+    let movimientoSeleccionado = {}; 
     
     if ($scope.movimientoSeleccionado) { 
         // NOTA: $scope.movimientoSeleccionado fue definido en $parentScope ... 
@@ -330,7 +332,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
             $scope.cuotas = [];
         }
             
-        let cuota = {} as any;
+        const cuota = {};
 
         cuota._id = new Mongo.ObjectID()._str;
 
@@ -358,7 +360,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
     $scope.eliminarCuota = function (cuota) {
 
         if (cuota.docState === 1) { 
-            lodash.remove($scope.cuotas, (c: any) => { return c._id === cuota._id; }); 
+            lodash.remove($scope.cuotas, (c) => { return c._id === cuota._id; }); 
         } else { 
             cuota.docState = 3;
         }
@@ -388,7 +390,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
             return;
         }
             
-        let cuota: any = lodash.cloneDeep(cuotaSeleccionada);
+        const cuota = lodash.cloneDeep(cuotaSeleccionada);
 
         cuota._id = new Mongo.ObjectID()._str;
         cuota.docState = 1; 
@@ -413,7 +415,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
             return;
         }
 
-        let c: any = cuotaSeleccionada; 
+        const c = cuotaSeleccionada; 
 
         if (!c.fechaEmision) { 
             c.fechaEmision = new Date(); 

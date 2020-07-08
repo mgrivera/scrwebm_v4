@@ -1,13 +1,12 @@
 
-import * as lodash from 'lodash'; 
-
-import { Meteor } from 'meteor/meteor'; 
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
+import lodash from 'lodash'; 
 
-export let copiarRiesgoEnUnoNuevo = function (riesgoACopiar) {
+export const copiarRiesgoEnUnoNuevo = function (riesgoACopiar) {
 
-    let nuevoRiesgo = lodash.cloneDeep(riesgoACopiar);
-    let numeroRiesgoAnterior = riesgoACopiar.numero;
+    const nuevoRiesgo = lodash.cloneDeep(riesgoACopiar);
+    const numeroRiesgoAnterior = riesgoACopiar.numero;
 
     nuevoRiesgo._id =  new Mongo.ObjectID()._str;
     nuevoRiesgo.numero = 0;
@@ -26,7 +25,6 @@ export let copiarRiesgoEnUnoNuevo = function (riesgoACopiar) {
     if (nuevoRiesgo.documentos) {
         nuevoRiesgo.documentos.forEach(function (x) { x._id = new Mongo.ObjectID()._str; });
     }
-
 
     if (nuevoRiesgo.movimientos) {
         nuevoRiesgo.movimientos.forEach(function (movimiento) {
@@ -70,8 +68,7 @@ export let copiarRiesgoEnUnoNuevo = function (riesgoACopiar) {
         })
     }
 
-
-    let message = `Ok, el riesgo <b>${numeroRiesgoAnterior.toString()}</b> ha sido copiado en un riesgo nuevo.<br />
+    const message = `Ok, el riesgo <b>${numeroRiesgoAnterior.toString()}</b> ha sido copiado en un riesgo nuevo.<br />
                     Ahora Ud. puede revisarlo y editarlo según sea conveniente. Luego, haga un <em>click</em> en <em>Grabar</em>
                     para grabar el nuevo riesgo a la base de datos.<br /><br />
                     Las cuotas del riesgo original, por supuesto, no han sido copiadas. Ud. debe completar el registro del nuevo riesgo y 
@@ -79,7 +76,6 @@ export let copiarRiesgoEnUnoNuevo = function (riesgoACopiar) {
                     Note que el nuevo riesgo <b>no tiene</b> un número ni una referencia asignados. Los tendrá cuando Ud. haga las modificaciones
                     que le parezca adecuadas y haga un <em>click</em> en <em>Grabar</em>.
                     `
-
 
     return { 
         nuevoRiesgo: nuevoRiesgo, 

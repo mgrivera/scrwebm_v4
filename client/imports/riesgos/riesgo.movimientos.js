@@ -1,11 +1,13 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular';
-import * as lodash from 'lodash'; 
-import * as moment from 'moment'; 
+import angular from 'angular';
+import lodash from 'lodash'; 
+import moment from 'moment'; 
 
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
-import { determinarSiExistenCuotasConCobrosAplicados } from 'client/imports/generales/determinarSiExistenCuotasCobradas'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { determinarSiExistenCuotasConCobrosAplicados } from '/client/imports/generales/determinarSiExistenCuotasCobradas'; 
 
 // controller (modal) para prorratear las primas brutas 
 // import './prorratearPrimasModal.html'; 
@@ -13,14 +15,14 @@ import ProrratearPrimasBrutas from './prorratearPrimasBrutasController';
 
 import ConstruirCuotas from './construirCuotasController'; 
 import ConstruirCuotasProductor from './construirCuotasProductoresController'; 
-import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros'; 
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 export default angular.module("scrwebm.riesgos.movimientos", [ 
     ProrratearPrimasBrutas.name, 
     ConstruirCuotas.name, 
     ConstruirCuotasProductor.name, 
-]).
-                       controller("RiesgoMovimientos_Controller",
+])
+                        .controller("RiesgoMovimientos_Controller",
 ['$scope', '$modal', 'uiGridConstants', '$interval', 
   function ($scope, $modal, uiGridConstants, $interval) {
 
@@ -29,14 +31,14 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     // --------------------------------------------------------------------------------------
     // ui-grid de Movimientos
     // --------------------------------------------------------------------------------------
-    let movimientoSeleccionado = {} as any; 
+    let movimientoSeleccionado = {}; 
     
     if ($scope.movimientoSeleccionado) { 
         // NOTA: $scope.movimientoSeleccionado fue definido en $parentScope ... 
         movimientoSeleccionado = $scope.movimientoSeleccionado; 
     }
 
-    let movimientos_ui_grid_gridApi = {} as any; 
+    let movimientos_ui_grid_gridApi = {}; 
 
     $scope.movimientos_ui_grid = {
         enableSorting: false,
@@ -211,8 +213,8 @@ export default angular.module("scrwebm.riesgos.movimientos", [
             
         // solo para el 1er. movimiento, agregamos la compañía 'nosotros', la cual representa nuestra compañía, y es la que,
         // justamente, tendrá 'nuestra orden'
-        let companiaNosotros = {} as any;
-        let result: any = LeerCompaniaNosotros(Meteor.userId()); 
+        let companiaNosotros = {};
+        const result = LeerCompaniaNosotros(Meteor.userId()); 
 
         if (result.error) {
             DialogModal($modal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
@@ -278,10 +280,10 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                 $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
 
                 return;
-            };
+            }
         }
         else {
-            var movimiento = {} as any;
+            var movimiento = {};
 
             movimiento._id = new Mongo.ObjectID()._str;
             movimiento.numero = 1;
@@ -324,7 +326,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     $scope.eliminarMovimiento = function () {
 
         if (movimientoSeleccionado && !lodash.isEmpty(movimientoSeleccionado)) {
-            lodash.remove($scope.riesgo.movimientos, function (movimiento: any) { return movimiento._id === movimientoSeleccionado._id; });
+            lodash.remove($scope.riesgo.movimientos, function (movimiento) { return movimiento._id === movimientoSeleccionado._id; });
 
             // para que los grids que siguen dejen de mostrar registros para el movimiento
             $scope.companias_ui_grid.data = [];
@@ -389,7 +391,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
             return;
         }
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/generales/registroDocumentos.html',
             controller: 'RegistroDocumentosController',
             size: 'md',
@@ -410,10 +412,10 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             });
     }
@@ -422,7 +424,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     // --------------------------------------------------------------------------------------
     // ui-grid de Compañías
     // --------------------------------------------------------------------------------------
-    let companiaSeleccionada = {} as any;
+    let companiaSeleccionada = {};
 
     $scope.companias_ui_grid = {
         enableSorting: false,
@@ -587,14 +589,14 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                                 null;
         
         var reaseguradoresOrden = lodash(movimientoSeleccionado.companias).
-                                        filter(function(c: any) { return !c.nosotros; }).
-                                        sumBy(function(c: any) { return c.ordenPorc; });
+                                        filter(function(c) { return !c.nosotros; }).
+                                        sumBy(function(c) { return c.ordenPorc; });
 
         if (!reaseguradoresOrden) { 
             reaseguradoresOrden = 0;
         }
             
-        let ordenPorc: any = null;
+        let ordenPorc = null;
 
         if (companiaNosotros) { 
             ordenPorc = companiaNosotros.ordenPorc;
@@ -630,7 +632,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
         //debugger;
         // cada vez que el usuario selecciona un row, lo guardamos ...
         if (movimientoSeleccionado && movimientoSeleccionado.companias && companiaSeleccionada) {
-            lodash.remove(movimientoSeleccionado.companias, function (compania: any) { return compania._id === companiaSeleccionada._id; });
+            lodash.remove(movimientoSeleccionado.companias, function (compania) { return compania._id === companiaSeleccionada._id; });
 
             if (!$scope.riesgo.docState) { 
                 $scope.riesgo.docState = 2;
@@ -661,25 +663,25 @@ export default angular.module("scrwebm.riesgos.movimientos", [
         }
 
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/generales/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {
                 companias: function () {
-                    let riesgo = $scope.riesgo;
-                    let companias = [];
+                    const riesgo = $scope.riesgo;
+                    const companias = [];
 
                     if (lodash.isArray(riesgo.personas)) {
                         riesgo.personas.forEach(persona => {
-                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre } as never);
+                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
                         });
-                    };
+                    }
 
                     // ahora revisamos las compañías en el riesgo y agregamos las que
                     // *no* existan en el array de compañías
-                    if (!lodash.some(companias, (c: any) => { return c.compania == riesgo.compania; } )) { 
-                        companias.push({ compania: riesgo.compania } as never);
+                    if (!lodash.some(companias, (c) => { return c.compania == riesgo.compania; } )) { 
+                        companias.push({ compania: riesgo.compania });
                     }
                         
                     if (lodash.isArray(riesgo.movimientos)) {
@@ -687,8 +689,8 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                         if (lodash.isArray(movimiento.companias)) {
                             movimiento.companias.forEach(r => {
                                 if (!r.nosotros) { 
-                                    if (!lodash.some(companias, (c: any) => { return c.compania == r.compania; } )) { 
-                                        companias.push({ compania: r.compania } as never);
+                                    if (!lodash.some(companias, (c) => { return c.compania == r.compania; } )) { 
+                                        companias.push({ compania: r.compania });
                                     } 
                                 }
                             })
@@ -700,13 +702,13 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
             function (cancel) {
                 // recuperamos las personas de compañías, según las indicó el usuario en el modal
                 if (cancel.entityUpdated) {
-                    let companias = cancel.companias;
+                    const companias = cancel.companias;
                     $scope.riesgo.personas = [];
 
                     if (lodash.isArray(companias)) {
@@ -721,7 +723,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
 
                 if (!$scope.riesgo.docState)
                     $scope.riesgo.docState = 2;
-                };
+                }
 
                 return true;
             })
@@ -730,7 +732,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     // --------------------------------------------------------------------------------------
     // ui-grid de Coberturas
     // --------------------------------------------------------------------------------------
-    var coberturaSeleccionada = {} as any;
+    var coberturaSeleccionada = {};
 
     $scope.coberturas_ui_grid = {
         enableSorting: false,
@@ -772,27 +774,27 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                                 rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
 
                             break;
-                        };
+                        }
                         case "tasa": {
 
                             if (rowEntity.valorARiesgo && rowEntity.tasa && !rowEntity.prima)
                                 rowEntity.prima = rowEntity.valorARiesgo * rowEntity.tasa / 1000
 
                             break;
-                        };
+                        }
                         case "prima": {
 
                             if (rowEntity.valorARiesgo && !rowEntity.tasa && rowEntity.prima)
                                 rowEntity.tasa = rowEntity.prima * 1000 / rowEntity.valorARiesgo;
 
                             break;
-                        };
+                        }
 
-                    };
+                    }
 
                     if (!$scope.riesgo.docState)
                         $scope.riesgo.docState = 2;
-                };
+                }
             });
         }, 
 
@@ -939,7 +941,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
         //debugger;
         // cada vez que el usuario selecciona un row, lo guardamos ...
         if (movimientoSeleccionado && movimientoSeleccionado.coberturas && coberturaSeleccionada) {
-            lodash.remove(movimientoSeleccionado.coberturas, function (cobertura: any) { return cobertura._id === coberturaSeleccionada._id; });
+            lodash.remove(movimientoSeleccionado.coberturas, function (cobertura) { return cobertura._id === coberturaSeleccionada._id; });
 
             if (!$scope.riesgo.docState) { 
                 $scope.riesgo.docState = 2;
@@ -1015,11 +1017,11 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     }
 
 
-    let construirCifrasCoberturasParaCompanias2 = function () {
+    const construirCifrasCoberturasParaCompanias2 = function () {
 
         movimientoSeleccionado.coberturasCompanias = [];
 
-        let coberturaCompania = {} as any;
+        let coberturaCompania = {};
 
         movimientoSeleccionado.companias.forEach(function (compania) {
             movimientoSeleccionado.coberturas.forEach(function (cobertura) {
@@ -1056,7 +1058,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     // --------------------------------------------------------------------------------------
     // ui-grid de Coberturas por compañía
     // --------------------------------------------------------------------------------------
-    var coberturaCompaniaSeleccionada = {} as any;
+    var coberturaCompaniaSeleccionada = {};
 
     $scope.coberturasCompanias_ui_grid = {
         enableSorting: false,
@@ -1255,7 +1257,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     $scope.eliminarCoberturaCompania = function () {
         // cada vez que el usuario selecciona un row, lo guardamos ...
         if (movimientoSeleccionado && movimientoSeleccionado.coberturasCompanias && coberturaCompaniaSeleccionada) {
-            lodash.remove(movimientoSeleccionado.coberturasCompanias, function (coberturaCompania: any) { return coberturaCompania._id === coberturaCompaniaSeleccionada._id; });
+            lodash.remove(movimientoSeleccionado.coberturasCompanias, function (coberturaCompania) { return coberturaCompania._id === coberturaCompaniaSeleccionada._id; });
 
             if (!$scope.riesgo.docState) { 
                 $scope.riesgo.docState = 2;
@@ -1361,12 +1363,12 @@ export default angular.module("scrwebm.riesgos.movimientos", [
         // usamos lodash para agrupar las primas brutas para cada compañía
         var primasBrutasCompanias = lodash.groupBy(movimientoSeleccionado.coberturasCompanias, function (c) { return c.compania; });
 
-        let primaItem = {} as any;
+        let primaItem = {};
 
         for (var compania in primasBrutasCompanias) {
 
             // arriba agrupamos por compañía; ahora agrupamos por moneda
-            var primasBrutasMonedas = lodash.groupBy(primasBrutasCompanias[compania], function (c: any) { return c.moneda; });
+            var primasBrutasMonedas = lodash.groupBy(primasBrutasCompanias[compania], function (c) { return c.moneda; });
 
             for(var moneda in primasBrutasMonedas) {
 
@@ -1423,7 +1425,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [
             return;
         }
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/html/riesgos/prorratearPrimasModal.html',
             controller: 'Riesgos_ProrratearPrimasController',
             size: 'lg',
@@ -1436,10 +1438,10 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             });
     }
@@ -1447,7 +1449,6 @@ export default angular.module("scrwebm.riesgos.movimientos", [
     // --------------------------------------------------------------------------------------
     // ui-grid de primas por compañía
     // --------------------------------------------------------------------------------------
-    var primaSeleccionada = {};
 
     $scope.primas_ui_grid = {
         enableSorting: false,
@@ -1464,22 +1465,12 @@ export default angular.module("scrwebm.riesgos.movimientos", [
 
             $scope.primas_ui_gridApi = gridApi;
 
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                primaSeleccionada = {};
-
-                if (row.isSelected)
-                    primaSeleccionada = row.entity;
-                else
-                    return;
-            });
-
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
                 if (newValue != oldValue) {
                     if (!$scope.riesgo.docState)
                         $scope.riesgo.docState = 2;
-                };
+                }
             });
         }, 
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
@@ -1833,11 +1824,11 @@ export default angular.module("scrwebm.riesgos.movimientos", [
         // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
         // usuario está tratando en ese momento ...  
         // ------------------------------------------------------------------------------------------------------------------------
-        let cuotasMovimientoSeleccionado = lodash.filter($scope.cuotas, (c) => { 
+        const cuotasMovimientoSeleccionado = lodash.filter($scope.cuotas, (c) => { 
             return c.source.subEntityID === movimientoSeleccionado._id; }
         )
 
-        let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSeleccionado); 
+        const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSeleccionado); 
         if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
             DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
             return;
@@ -1898,10 +1889,10 @@ export default angular.module("scrwebm.riesgos.movimientos", [
                 }
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             })
     }
