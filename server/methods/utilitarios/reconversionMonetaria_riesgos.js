@@ -2,17 +2,17 @@
 import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import * as lodash from 'lodash'; 
+import lodash from 'lodash'; 
 
-import { Riesgos } from 'imports/collections/principales/riesgos'; 
-import { ReconversionMonetaria_log } from 'imports/collections/otros/reconversionMonetaria_log'; 
+import { Riesgos } from '/imports/collections/principales/riesgos'; 
+import { ReconversionMonetaria_log } from '/imports/collections/otros/reconversionMonetaria_log'; 
 
 Meteor.methods(
 {
     'reconversionMonetaria_riesgos': function (monedaDefault, parametros, companiaSeleccionada) {
 
-        let inicio = new Date(2018, 0, 1); 
-        let final = new Date(2018, 7, 20); 
+        const inicio = new Date(2018, 0, 1); 
+        const final = new Date(2018, 7, 20); 
 
         // calcumos el divisor en base a la cantidad de dígitos indicada 
         let divisor = 1;
@@ -21,7 +21,7 @@ Meteor.methods(
             divisor = divisor * 10;
         }
 
-        let riesgos = Riesgos.find({ 
+        const riesgos = Riesgos.find({ 
             cia: companiaSeleccionada._id, 
             moneda: monedaDefault._id, 
             $and: [ { desde: { $gte: inicio }}, { desde: { $lt: final }} ], 
@@ -29,7 +29,7 @@ Meteor.methods(
 
         let cantidadRiesgosActualizadas = 0; 
 
-        for (let riesgo of riesgos) { 
+        for (const riesgo of riesgos) { 
 
             riesgo.movimientos.forEach((mov) => { 
         

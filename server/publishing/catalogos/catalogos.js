@@ -1,24 +1,25 @@
 
 import { Meteor } from 'meteor/meteor';
-import { CuentasContables } from 'imports/collections/catalogos/cuentasContables'; 
-import { CuentasContablesAsociadas } from 'imports/collections/catalogos/cuentasContablesAsociadas';
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { CuentasBancarias } from 'imports/collections/catalogos/cuentasBancarias'; 
-import { Bancos } from 'imports/collections/catalogos/bancos'; 
-import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias';
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
-import { TiposContrato } from 'imports/collections/catalogos/tiposContrato'; 
-import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
-import { TiposFacultativo } from 'imports/collections/catalogos/tiposFacultativo'; 
-import { TiposSiniestro } from 'imports/collections/catalogos/tiposSiniestro'; 
-import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
-import { Indoles } from 'imports/collections/catalogos/indoles'; 
-import { Coberturas } from 'imports/collections/catalogos/coberturas'; 
-import { TiposObjetoAsegurado } from 'imports/collections/catalogos/tiposObjetoAsegurado'; 
-import { CausasSiniestro } from 'imports/collections/catalogos/causasSiniestro'; 
+
+import { CuentasContables } from '/imports/collections/catalogos/cuentasContables'; 
+import { CuentasContablesAsociadas } from '/imports/collections/catalogos/cuentasContablesAsociadas';
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
+import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
+import { Bancos } from '/imports/collections/catalogos/bancos'; 
+import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
+import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
+import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
+import { TiposSiniestro } from '/imports/collections/catalogos/tiposSiniestro'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
+import { TiposObjetoAsegurado } from '/imports/collections/catalogos/tiposObjetoAsegurado'; 
+import { CausasSiniestro } from '/imports/collections/catalogos/causasSiniestro'; 
 
 Meteor.publish("empresasUsuarias", function () {
     return EmpresasUsuarias.find({});
@@ -109,7 +110,7 @@ Meteor.publish("contratosParametros", function () {
 
 Meteor.publish("cuentasContables", function () {
     // regresamos solo las cuentas que corresponden a la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
     if (!companiaSeleccionada) {
         return [];
@@ -120,7 +121,7 @@ Meteor.publish("cuentasContables", function () {
 
 Meteor.publish("cuentasContablesSoloDetalles", function () {
     // regresamos solo las cuentas que corresponden a la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
     if (!companiaSeleccionada) {
         return [];
@@ -132,7 +133,7 @@ Meteor.publish("cuentasContablesSoloDetalles", function () {
 
 Meteor.publish("cuentasContablesAsociadas", function () {
     // regresamos solo las cuentas que corresponden a la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
     if (!companiaSeleccionada) {
         return [];
