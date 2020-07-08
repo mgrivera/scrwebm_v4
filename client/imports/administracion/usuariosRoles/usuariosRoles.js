@@ -1,8 +1,10 @@
 
+import { Meteor } from 'meteor/meteor'
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash';
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import angular from 'angular'; 
+import lodash from 'lodash';
+
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 // import "client/imports/administracion/usuariosRoles/usuariosRoles.html"; 
 
@@ -18,7 +20,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
           $scope.alerts.splice(index, 1);
       };
 
-      let usuarioSeleccionado = {} as any;
+      let usuarioSeleccionado = {};
 
       $scope.usuarios_ui_grid = {
 
@@ -49,7 +51,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
                             usuarioSeleccionado.roles.forEach(rol => {
                                 $scope.rolesUsuarioSeleccionado.push({ name: rol });
                             });
-                        };
+                        }
 
                         $scope.usuariosRoles_ui_grid.data = $scope.rolesUsuarioSeleccionado
                     }
@@ -110,15 +112,8 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
           selectionRowHeaderWidth: 35,
           rowHeight: 25,
 
-          onRegisterApi: function (gridApi) {
+          onRegisterApi: function () {
           },
-          // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
-        //   rowIdentity: function (row) {
-        //       return row._id;
-        //   },
-        //   getRowIdentity: function (row) {
-        //       return row._id;
-        //   }
       };
 
 
@@ -156,7 +151,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
       }
 
 
-      let selectedRol = {} as any;
+      let selectedRol = {};
       let roles_ui_grid_gridApi;
 
       $scope.roles_ui_grid = {
@@ -237,7 +232,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
                 DialogModal($modal, "<em>Roles de usuarios</em>", "Aparentemente, <em>no se han efectuado cambios</em> en los datos. " +
                                     "No hay nada que grabar.", false).then();
                 return;
-            };
+            }
 
           $scope.showProgress = true;
 
@@ -249,7 +244,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
           $scope.usuarios_ui_grid.data = [];
 
           $meteor.call('usuariosRolesSave', editedItems).then(
-            function (data: any) {
+            function (data) {
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -258,7 +253,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
                 });
 
                 $meteor.subscribe("allUsers").then(
-                    function(subscriptionHandle) {
+                    function() {
                         // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
                         $scope.helpers({
                             users: () => {
@@ -299,7 +294,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
                 });
 
                 editedItems.forEach(function (item) {
-                    let itemFoundInScope = lodash.find($scope.users, function (itemInScope) { return itemInScope._id == item._id; });
+                    const itemFoundInScope = lodash.find($scope.users, function (itemInScope) { return itemInScope._id == item._id; });
 
                     // si el item no está en el $scope, es que, probablemente, no pasó la validación y lo agregamos nuevamente al $scope
                     if (!itemFoundInScope) {
@@ -314,7 +309,7 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
       $scope.showProgress = true;
 
       $meteor.subscribe("allUsers").then(
-          function(subscriptionHandle) {
+          function() {
 
               $scope.helpers({
                   users: () => {
@@ -344,4 +339,4 @@ export default angular.module("scrwebm.administracion.usuariosRoles", [])
           return lodash.some($scope.users, u => { return u.docState; });
       };
   }
-]);
+])

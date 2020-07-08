@@ -1,5 +1,4 @@
 
-
 export function mostrarHelp (currentStateName) {
 
     // abrimos un página, en un tab separado, que muestra un help para el state actual.
@@ -39,5 +38,5 @@ export function mostrarHelp (currentStateName) {
             window.open('https://scrwebm.wordpress.com/2016/06/21/cuentas-bancarias/', '_blank');
             break;
         default:
-    };
+    }
 }

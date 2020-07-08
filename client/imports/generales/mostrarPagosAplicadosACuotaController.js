@@ -1,11 +1,11 @@
 ﻿
-
-import * as lodash from 'lodash';
-import * as angular from 'angular';
+import { Meteor } from 'meteor/meteor'
+import lodash from 'lodash';
+import angular from 'angular';
 
 import { userHasRole } from './userHasRole';  
 
-import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
 // nótese como importamos la plantilla (html) para que browser la encuentre cuando se indique más abajo
 // import './mostrarPagosCuotaModal.html';         
@@ -13,7 +13,7 @@ import { Cuotas } from 'imports/collections/principales/cuotas';
 // -----------------------------------------------------------------------------
 // para mostrar los pagos aplicados a una cuota en particular
 // -----------------------------------------------------------------------------
-export function MostrarPagosEnCuotas($modal: any, cuota: any, origen: any, cuotaID = null) {
+export function MostrarPagosEnCuotas($modal, cuota, origen, cuotaID = null) {
 
     // si esta función no recibe una cuota, pero si una cuotaID, la idea es leer la cuota y
     // continuar con el proceso ...
@@ -33,9 +33,9 @@ export function MostrarPagosEnCuotas($modal: any, cuota: any, origen: any, cuota
 }
 
 
-function mostrarPagosEnCuotas2($modal: any, cuota: any, origen: any) {
+function mostrarPagosEnCuotas2($modal, cuota, origen) {
 
-    var modalInstance = $modal.open({
+    $modal.open({
         templateUrl: 'client/html/generales/mostrarPagosCuotaModal.html',
         controller: 'MostrarPagosAplicadosACuotaController',
         size: 'md',
@@ -44,14 +44,13 @@ function mostrarPagosEnCuotas2($modal: any, cuota: any, origen: any) {
             origen: () => { return origen; }, 
         }
     }).result.then(
-       function (resolve) {
+       function () {
            return true;
        },
-       function (cancel) {
+       function () {
            return true;
        });
 }
-
 
 export const MostrarPagosAplicados = angular.module("scrwebm.cuotas.mostrarPagosAplicados", []).
                                         controller('MostrarPagosAplicadosACuotaController',

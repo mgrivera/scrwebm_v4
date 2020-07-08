@@ -1,8 +1,10 @@
 
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
+import angular from 'angular'; 
 
-import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
+import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 
 import { mensajeErrorDesdeMethod_preparar } from './mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -45,14 +47,14 @@ export default angular.module("scrwebm.agregarNuevoAsegurado", []).controller('A
             $scope.forms.agregarNuevoAsegurado_form.$setPristine();    // para que la clase 'ng-submitted deje de aplicarse a la forma ... button
             
             let isValid = false;
-            let errores = [];
+            const errores = [];
             
             // intentamos validar el asegurado que se desea grabar 
             isValid = Asegurados.simpleSchema().namedContext().validate($scope.asegurado);
 
             if (!isValid) {
                 Asegurados.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
+                    errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
                 });
             }
                 
@@ -78,7 +80,7 @@ export default angular.module("scrwebm.agregarNuevoAsegurado", []).controller('A
             $scope.showProgress = true
 
             // nótese como, para grabar el nuevo asegurado, usamos el mismo method que usa el catálogo de aseguarados ... 
-            let editedItems = [ 
+            const editedItems = [ 
                 { 
                     _id: $scope.asegurado._id, 
                     nombre: $scope.asegurado.nombre, 
@@ -86,10 +88,10 @@ export default angular.module("scrwebm.agregarNuevoAsegurado", []).controller('A
                     docState: 1, 
                 }]; 
  
-            Meteor.call('aseguradosSave', editedItems, (err, result) => {
+            Meteor.call('aseguradosSave', editedItems, (err) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
   
                     $scope.alerts.length = 0;
                     $scope.alerts.push({

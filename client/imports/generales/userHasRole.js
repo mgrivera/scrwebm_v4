@@ -1,9 +1,10 @@
 
-import * as lodash from 'lodash'; 
+import { Meteor } from 'meteor/meteor'
+import lodash from 'lodash'; 
 
 // esta funcion es llamada desde la página principal (home - index.html) para saber si el usuario tiene roles en particular
 // y mostrar las opciones del menú en relación a estos roles; nótese que para 'admin', se muestran todas las opciones del menú
-let userHasRole = function(rol) {
+const userHasRole = function(rol) {
 
     // mostramos todas las opciones al usuario (cuyo mail es) 'admin@admin.com'
     // debugger;
@@ -16,7 +17,7 @@ let userHasRole = function(rol) {
 
 
     // mostramos todas las opciones a usuarios en el rol 'admin'
-    let roles = Meteor.user() && Meteor.user().roles ? Meteor.user().roles : [];
+    const roles = Meteor.user() && Meteor.user().roles ? Meteor.user().roles : [];
 
     if (lodash.find(roles, function (r) { return r === "admin"; })) { 
         return true;
