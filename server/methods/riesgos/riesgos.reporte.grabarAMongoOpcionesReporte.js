@@ -10,8 +10,8 @@ import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import * as lodash from 'lodash'; 
-import * as numeral from 'numeral'; 
+import lodash from 'lodash'; 
+import numeral from 'numeral'; 
 
 Meteor.methods(
 {

@@ -1,21 +1,19 @@
 
-
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 
-import * as numeral from 'numeral'; 
+import numeral from 'numeral'; 
 
-import { Remesas } from 'imports/collections/principales/remesas'; 
-import { Temp_Consulta_Remesas } from 'imports/collections/consultas/tempConsultaRemesas';  
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
+import { Remesas } from '/imports/collections/principales/remesas'; 
+import { Temp_Consulta_Remesas } from '/imports/collections/consultas/tempConsultaRemesas';  
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 
-import { Temp_consulta_list_remesas, Temp_consulta_list_remesas_config } from 'imports/collections/consultas/temp_consulta_list_remesas'; 
-import { Cuotas } from 'imports/collections/principales/cuotas';
-import { strict } from 'assert';
+import { Temp_consulta_list_remesas, Temp_consulta_list_remesas_config } from '/imports/collections/consultas/temp_consulta_list_remesas'; 
+import { Cuotas } from '/imports/collections/principales/cuotas';
 
 Meteor.methods(
 {
-    'remesas.reporte.list.grabarAMongoOpcionesReporte': function (opcionesReporte: any, companiaSeleccionadaId: any) {
+    'remesas.reporte.list.grabarAMongoOpcionesReporte': function (opcionesReporte, companiaSeleccionadaId) {
 
         new SimpleSchema({
             opcionesReporte: { type: Object, blackbox: true, optional: false, }, 
@@ -41,17 +39,17 @@ Meteor.methods(
         // valores para reportar el progreso
         const remesasSeleccionadas = Temp_Consulta_Remesas.find({ user: Meteor.userId() }).fetch(); 
 
-        let numberOfItems = remesasSeleccionadas.length;
-        let reportarCada = Math.floor(numberOfItems / 25);
+        const numberOfItems = remesasSeleccionadas.length;
+        const reportarCada = Math.floor(numberOfItems / 25);
         let reportar = 0;
         let cantidadRecs = 0;
-        let numberOfProcess = 1;
-        let currentProcess = 1;
-        let message = `leyendo las remesas seleccionadas ... `; 
+        const numberOfProcess = 1;
+        const currentProcess = 1;
+        const message = `leyendo las remesas seleccionadas ... `; 
 
         // nótese que eventName y eventSelector no cambiarán a lo largo de la ejecución de este procedimiento
-        let eventName = "remesas.consulta.list.remesas.reportProgress";
-        let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'remesas.consulta.list.remesas' };
+        const eventName = "remesas.consulta.list.remesas.reportProgress";
+        const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'remesas.consulta.list.remesas' };
         let eventData = {
                           current: currentProcess, max: numberOfProcess, progress: '0 %',
                           message: message
@@ -60,7 +58,7 @@ Meteor.methods(
         Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-        remesasSeleccionadas.forEach((item: any) => {
+        remesasSeleccionadas.forEach((item) => {
 
             // leemos el riesgo para obtener otros datos: suma asegurada, prima, etc.
             const remesa = Remesas.findOne(item.id);
@@ -86,7 +84,7 @@ Meteor.methods(
 
             // es posible que una cuota seleccionada tenga pagos de otras remesas 
             for (const cuota of cuotasPagadasConLaRemesa) { 
-                for (const pago of cuota.pagos.filter((x: any) => x.remesaID === item.id)) { 
+                for (const pago of cuota.pagos.filter((x) => x.remesaID === item.id)) { 
 
                     if (remesa.moneda != pago.moneda) { 
                         pagosMismaMonedaDeLaRemesa = false; 

@@ -1,13 +1,13 @@
 
 import { Meteor } from 'meteor/meteor'; 
 
-import * as moment from 'moment';
-import * as lodash from 'lodash'; 
+import moment from 'moment';
+import lodash from 'lodash'; 
 
-import { Riesgos, Riesgos_InfoRamo } from 'imports/collections/principales/riesgos';  
-import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { Riesgos, Riesgos_InfoRamo } from '/imports/collections/principales/riesgos';  
+import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
-import { calcularNumeroReferencia } from '../../imports/general/calcularNumeroReferencia'; 
+import { calcularNumeroReferencia } from '/server/imports/general/calcularNumeroReferencia'; 
 
 Meteor.methods(
 {
@@ -29,8 +29,8 @@ Meteor.methods(
 
             // si la referencia viene en '0', asignamos una ...
             if (!item.referencia || item.referencia === '0') {
-                let ano = parseInt(moment(item.desde).format('YYYY'));
-                let result = calcularNumeroReferencia('fac', item.tipo, ano, item.cia);
+                const ano = parseInt(moment(item.desde).format('YYYY'));
+                const result = calcularNumeroReferencia('fac', item.tipo, ano, item.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",
@@ -55,7 +55,7 @@ Meteor.methods(
 
             // si el número viene en '0', asignamos un número consecutivo al riesgo
             if (!item2.numero) {
-                var numeroAnterior = Riesgos.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+                const numeroAnterior = Riesgos.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
                 if (!numeroAnterior.numero)
                     item2.numero = 1;
                 else
@@ -64,8 +64,8 @@ Meteor.methods(
 
             // si la referencia viene en '0', asignamos una ...
             if (!item2.referencia || item2.referencia === '0') {
-                let ano = parseInt(moment(item2.desde).format('YYYY'));
-                let result = calcularNumeroReferencia('fac', item2.tipo, ano, item2.cia);
+                const ano = parseInt(moment(item2.desde).format('YYYY'));
+                const result = calcularNumeroReferencia('fac', item2.tipo, ano, item2.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",
@@ -75,7 +75,7 @@ Meteor.methods(
             }
 
             Riesgos.update({ _id: item._id }, { $set: item2 });
-        };
+        }
 
 
         if (item.docState && item.docState == 3) {
@@ -94,15 +94,15 @@ Meteor.methods(
     }
 })
 
-function saveInfoRamo(editedInfoRamo: any) { 
+function saveInfoRamo(editedInfoRamo) { 
 
-    let inserts = lodash.chain(editedInfoRamo).
+    const inserts = lodash.chain(editedInfoRamo).
                   filter(function (item) { return item.docState && item.docState == 1; }).
                   map(function (item) { delete item.docState; return item; }).
                   value();
 
     inserts.forEach(function (item) {
-        Riesgos_InfoRamo.insert(item, function (error, result) {
+        Riesgos_InfoRamo.insert(item, function (error) {
             if (error)
                 if (error.invalidKeys) 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
@@ -111,7 +111,7 @@ function saveInfoRamo(editedInfoRamo: any) {
             });
     });
 
-    let updates = lodash.chain(editedInfoRamo).
+    const updates = lodash.chain(editedInfoRamo).
                     filter(function (item) { return item.docState && item.docState == 2; }).
                     map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto 
                     map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto 
@@ -119,7 +119,7 @@ function saveInfoRamo(editedInfoRamo: any) {
                     value();
 
     updates.forEach(function (item) {
-        Riesgos_InfoRamo.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+        Riesgos_InfoRamo.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
             //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
             if (error)
                 if (error.invalidKeys)
@@ -129,7 +129,7 @@ function saveInfoRamo(editedInfoRamo: any) {
         });
     });
 
-    let removes = lodash.filter(editedInfoRamo, function (item) { return item.docState && item.docState == 3; });
+    const removes = lodash.filter(editedInfoRamo, function (item) { return item.docState && item.docState == 3; });
 
     removes.forEach(function (item) {
         Riesgos_InfoRamo.remove({ _id: item._id });

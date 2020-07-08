@@ -3,10 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
 import SimpleSchema from 'simpl-schema';
-import * as moment from 'moment'; 
-import { Riesgos } from 'imports/collections/principales/riesgos';  
+import moment from 'moment'; 
+import { Riesgos } from '/imports/collections/principales/riesgos';  
 
-import { calcularNumeroReferencia } from '../../imports/general/calcularNumeroReferencia'; 
+import { calcularNumeroReferencia } from '/server/imports/general/calcularNumeroReferencia'; 
 
 Meteor.methods({
     'riesgos.renovar': function (riesgoOriginal, parametros) {
@@ -18,7 +18,7 @@ Meteor.methods({
 
         // nota: solo a veces usamos filtro ... 
 
-        let parametrosSchema = new SimpleSchema({ 
+        const parametrosSchema = new SimpleSchema({ 
             desde: { type: Date, optional: false, }, 
             hasta: { type: Date, optional: false, }, 
         })
@@ -29,7 +29,7 @@ Meteor.methods({
             }).validate({ riesgoOriginal, parametros });
 
 
-        let riesgoNuevo = { 
+        const riesgoNuevo = { 
             _id: new Mongo.ObjectID()._str,
             numero: 0,
             codigo: riesgoOriginal.codigo,
@@ -63,7 +63,7 @@ Meteor.methods({
         if (riesgoOriginal.documentos && riesgoOriginal.documentos.length) { 
             riesgoOriginal.documentos.forEach((x) => { 
                 x._id = new Mongo.ObjectID()._str;          // asignamos un nuevo id al item
-                riesgoNuevo.documentos.push(x as never); 
+                riesgoNuevo.documentos.push(x); 
             })
         }
 
@@ -71,12 +71,12 @@ Meteor.methods({
         if (riesgoOriginal.personas && riesgoOriginal.personas.length) { 
             riesgoOriginal.personas.forEach((x) => { 
                 // los items en el array de personas no tienen un _id; creo que ésto se nos pasó en su momento (????)
-                riesgoNuevo.personas.push(x as never); 
+                riesgoNuevo.personas.push(x); 
             })
         }
 
         // determinamos un nuevo número para el riesgo 
-        let numeroAnterior = Riesgos.findOne({ cia: riesgoNuevo.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+        const numeroAnterior = Riesgos.findOne({ cia: riesgoNuevo.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
         if (!numeroAnterior || !numeroAnterior.numero) { 
             riesgoNuevo.numero = 1;
         } 
@@ -85,21 +85,21 @@ Meteor.methods({
         }
 
         // determinamos una referencia para el riesgo 
-        let ano = parseInt(moment(riesgoNuevo.desde).format('YYYY'));
-        let result = calcularNumeroReferencia('fac', riesgoNuevo.tipo, ano, riesgoNuevo.cia);
+        const ano = parseInt(moment(riesgoNuevo.desde).format('YYYY'));
+        const result = calcularNumeroReferencia('fac', riesgoNuevo.tipo, ano, riesgoNuevo.cia);
 
         if (result.error) {
             throw new Meteor.Error("error-asignar-referencia",
                 `Hemos obtenido un error al intentar asignar un número de referencia:<br />${result.message}`);
         }
-        riesgoNuevo.referencia = result.referencia as string;
+        riesgoNuevo.referencia = result.referencia;
 
         // leemos, y agregamos al nuevo riesgo, el último movimiento del riesgo original 
         if (riesgoOriginal.movimientos && riesgoOriginal.movimientos.length) { 
-            riesgoNuevo.movimientos.push(riesgoOriginal.movimientos[riesgoOriginal.movimientos.length - 1] as never); 
+            riesgoNuevo.movimientos.push(riesgoOriginal.movimientos[riesgoOriginal.movimientos.length - 1]); 
 
             // asignamos la nueva vigencia y determinamos la cantidad de días y el factor prorrata
-            let movimiento: any = riesgoNuevo.movimientos[0]; 
+            const movimiento = riesgoNuevo.movimientos[0]; 
 
             movimiento._id = new Mongo.ObjectID()._str; 
             movimiento.numero = 1; 
@@ -153,7 +153,7 @@ Meteor.methods({
 
         Riesgos.insert(riesgoNuevo); 
 
-        let nuevoRiesgo = Riesgos.findOne(riesgoNuevo._id, { fields: { numero: true, }}); 
+        const nuevoRiesgo = Riesgos.findOne(riesgoNuevo._id, { fields: { numero: true, }}); 
 
         if (!nuevoRiesgo || !nuevoRiesgo.numero) { 
             return { 

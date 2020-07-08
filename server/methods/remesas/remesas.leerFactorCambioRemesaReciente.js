@@ -1,9 +1,8 @@
 
-
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 
-import { Remesas } from 'imports/collections/principales/remesas'; 
+import { Remesas } from '/imports/collections/principales/remesas'; 
 
 Meteor.methods({
     'remesas.leerFactorCambioRemesaReciente': function (fecha) {
@@ -12,7 +11,7 @@ Meteor.methods({
             fecha: { type: Date, optional: false, }, 
         }).validate({ fecha, });
         
-        let remesa = Remesas.findOne(
+        const remesa = Remesas.findOne(
             { $and: [ { fecha: { $lt: fecha } }, { factorCambio: { $ne: null }}, { factorCambio: { $ne: 0 }} ]}, 
             { sort: { fecha: -1, }, fields: { factorCambio: true, }});
     
