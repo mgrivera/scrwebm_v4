@@ -2,11 +2,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
-import * as lodash from 'lodash'; 
+import lodash from 'lodash'; 
 
-import { Cuotas } from 'imports/collections/principales/cuotas'; 
-import { Remesas } from 'imports/collections/principales/remesas'; 
-import { ReconversionMonetaria_log } from 'imports/collections/otros/reconversionMonetaria_log'; 
+import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Remesas } from '/imports/collections/principales/remesas'; 
+import { ReconversionMonetaria_log } from '/imports/collections/otros/reconversionMonetaria_log'; 
 
 Meteor.methods(
 {
@@ -59,15 +59,13 @@ Meteor.methods(
             cantidadCuotasActualizadas++; 
         }
 
-        let message = `Proceso de reconversión ejecutado en forma satisfactoria.
+        const message = `Proceso de reconversión ejecutado en forma satisfactoria.
                        La cantidad de dígitos indicada fue ${parametros.cantidadDigitos.toString()} y el divisor que resultó es ${divisor.toString()}.
                        En total, ${cantidadCuotasActualizadas.toString()} cuotas fueron actualizadas; 
                        de las cuales: ${cantidadCuotasPendientes.toString()} estaban aún pendientes;  
                        ${cantidadCuotasConPagosAsociados.toString()} tenían pagos asociados. 
                        ${cantidadPagosActualizados.toString()} pagos (para estas cuotas) fueron actualizados.
                     `; 
-
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
         // agregamos un registro al log  
         ReconversionMonetaria_log.insert({ 
@@ -112,12 +110,10 @@ Meteor.methods(
             cantidadRemesasLeidas++; 
         }
 
-        let message = `Proceso de reconversión Remesas ejecutado en forma satisfactoria. <br /><br /> 
+        const message = `Proceso de reconversión Remesas ejecutado en forma satisfactoria. <br /><br /> 
                        La cantidad de dígitos indicada fue ${parametros.cantidadDigitos.toString()} y el divisor que resultó es ${divisor.toString()}.
                        En total, ${cantidadRemesasLeidas.toString()} remesas fueron leídas y, de éstas, ${cantidadRemesasActualizadas.toString()} fueron actualizadas. 
                     `; 
-
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
         // agregamos un registro al log  
         ReconversionMonetaria_log.insert({ 
