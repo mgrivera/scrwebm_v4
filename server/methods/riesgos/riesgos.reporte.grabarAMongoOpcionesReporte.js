@@ -1,17 +1,17 @@
 
-import { Temp_consulta_riesgosEmitidos_config, Temp_consulta_riesgosEmitidos } from 'imports/collections/consultas/temp_consulta_riesgosEmitidos'; 
-import { Temp_Consulta_Riesgos } from 'imports/collections/consultas/tempConsultaRiesgos'; 
-import { Riesgos } from 'imports/collections/principales/riesgos'; 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
-import { Meteor } from 'meteor/meteor'; 
-import { Mongo } from 'meteor/mongo'; 
 
-import lodash from 'lodash'; 
+import lodash from 'lodash';
 import numeral from 'numeral'; 
+
+import { Temp_consulta_riesgosEmitidos_config, Temp_consulta_riesgosEmitidos } from '/imports/collections/consultas/temp_consulta_riesgosEmitidos'; 
+import { Temp_Consulta_Riesgos } from '/imports/collections/consultas/tempConsultaRiesgos'; 
+import { Riesgos } from '/imports/collections/principales/riesgos'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
+import { Ramos } from '/imports/collections/catalogos/ramos'; 
 
 Meteor.methods(
 {
