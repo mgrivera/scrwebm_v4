@@ -1,5 +1,6 @@
 
 import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
 
 Meteor.startup(function () {
     // environment variable que meteor usa para configurar la dirección usada para enviar e-mails
