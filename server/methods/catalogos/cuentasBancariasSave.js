@@ -1,14 +1,14 @@
-
+﻿
 import { Meteor } from 'meteor/meteor'; 
+import lodash from 'lodash'; 
 
-import * as lodash from 'lodash';
-import { AutosMarcas } from 'imports/collections/catalogos/autosMarcas'; 
+import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
 
 Meteor.methods(
 {
-    'autosMarcas.save': function (items) {
+    cuentasBancariasSave: function (items) {
 
-        if (!Array.isArray(items) || items.length === 0) {
+        if (!lodash.isArray(items) || items.length == 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
@@ -19,13 +19,11 @@ Meteor.methods(
 
 
         inserts.forEach(function (item) {
-            AutosMarcas.insert(item, function (error, result) {
-                if (error) { 
+            CuentasBancarias.insert(item, function (error) {
+                if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
-                }
             });
         })
-
 
         var updates = lodash.chain(items).
                         filter(function (item) { return item.docState && item.docState == 2; }).
@@ -35,18 +33,17 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            AutosMarcas.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            CuentasBancarias.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
-                if (error) { 
+                if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
-                }
-            })
+            });
         })
 
         var removes = lodash.filter(items, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
-            AutosMarcas.remove({ _id: item._id });
+            CuentasBancarias.remove({ _id: item._id });
         })
 
         return "Ok, los datos han sido actualizados en la base de datos.";

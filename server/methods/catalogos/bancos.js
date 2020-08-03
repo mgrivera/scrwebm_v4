@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor'; 
 import lodash from 'lodash'; 
 
-import { Bancos } from 'imports/collections/catalogos/bancos'; 
+import { Bancos } from '/imports/collections/catalogos/bancos'; 
 
 Meteor.methods(
 {
@@ -25,7 +25,6 @@ Meteor.methods(
             });
         });
 
-
         var updates = lodash.chain(bancos).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
@@ -34,7 +33,7 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            Bancos.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            Bancos.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());

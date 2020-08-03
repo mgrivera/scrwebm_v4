@@ -1,12 +1,12 @@
 
 import { Meteor } from 'meteor/meteor'; 
 
-import * as lodash from 'lodash';
-import { TiposObjetoAsegurado } from 'imports/collections/catalogos/tiposObjetoAsegurado'; 
+import lodash from 'lodash';
+import { AutosMarcas } from '/imports/collections/catalogos/autosMarcas'; 
 
 Meteor.methods(
 {
-    'tiposObjetoAsegurado.save': function (items) {
+    'autosMarcas.save': function (items) {
 
         if (!Array.isArray(items) || items.length === 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
@@ -19,13 +19,12 @@ Meteor.methods(
 
 
         inserts.forEach(function (item) {
-            TiposObjetoAsegurado.insert(item, function (error, result) {
+            AutosMarcas.insert(item, function (error, result) {
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
                 }
             });
         })
-
 
         var updates = lodash.chain(items).
                         filter(function (item) { return item.docState && item.docState == 2; }).
@@ -35,7 +34,7 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            TiposObjetoAsegurado.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            AutosMarcas.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
@@ -46,7 +45,7 @@ Meteor.methods(
         var removes = lodash.filter(items, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
-            TiposObjetoAsegurado.remove({ _id: item._id });
+            AutosMarcas.remove({ _id: item._id });
         })
 
         return "Ok, los datos han sido actualizados en la base de datos.";

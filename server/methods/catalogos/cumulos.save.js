@@ -1,14 +1,14 @@
-﻿
-import { Meteor } from 'meteor/meteor'; 
-import lodash from 'lodash'; 
 
-import { CuentasBancarias } from 'imports/collections/catalogos/cuentasBancarias'; 
+import { Meteor } from 'meteor/meteor'; 
+
+import lodash from 'lodash';
+import { Cumulos } from '/imports/collections/catalogos/cumulos'; 
 
 Meteor.methods(
 {
-    cuentasBancariasSave: function (items) {
+    'cumulos.save': function (items) {
 
-        if (!lodash.isArray(items) || items.length == 0) {
+        if (!Array.isArray(items) || items.length === 0) {
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
@@ -19,11 +19,13 @@ Meteor.methods(
 
 
         inserts.forEach(function (item) {
-            CuentasBancarias.insert(item, function (error) {
-                if (error)
+            Cumulos.insert(item, function (error) {
+                if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
+                }
             });
         })
+
 
         var updates = lodash.chain(items).
                         filter(function (item) { return item.docState && item.docState == 2; }).
@@ -33,17 +35,18 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            CuentasBancarias.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
+            Cumulos.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
-                if (error)
+                if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
-            });
+                }
+            })
         })
 
         var removes = lodash.filter(items, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
-            CuentasBancarias.remove({ _id: item._id });
+            Cumulos.remove({ _id: item._id });
         })
 
         return "Ok, los datos han sido actualizados en la base de datos.";
