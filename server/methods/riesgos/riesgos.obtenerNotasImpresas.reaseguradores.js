@@ -16,6 +16,7 @@ import { readFile, writeFile } from '@cloudcmd/dropbox';
 import getStream from 'get-stream'; 
 
 import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink'; 
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 import SimpleSchema from 'simpl-schema';
 
@@ -50,7 +51,6 @@ Meteor.methods(
             message = `Error: el usuario no tiene un nombre asociado en la tabla de usuarios. <br /> 
                         Para resolver este error, abra la opción: <em>Administración / Usuarios</em> y asocie un nombre al usuario.
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -61,7 +61,6 @@ Meteor.methods(
         // el template debe ser siempre un documento word ...
         if (!fileName || !fileName.endsWith('.docx')) {
             message = `El archivo debe ser un documento Word (.docx).`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -74,7 +73,6 @@ Meteor.methods(
         if (!companiaSeleccionada) {
             message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
                        Se ha seleccionado una compañía antes de ejecutar este proceso?`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -82,12 +80,29 @@ Meteor.methods(
             }
         }
 
+        // ----------------------------------------------------------------------------------------------------------------------------
+        // leemos la compañía 'nosotros'; esta es la compañía, registrada en la tabla Compañías, como todas las demás, que asociamos 
+        // a nosotros. Uno de los objetivos más fundamentales de leer esta compañía, es saber si 'nosotros' somos un reasegurador o 
+        // un corredor de reaseguros (REA/CORRR)
+        const resultLeerCompaniaNosotros = LeerCompaniaNosotros(Meteor.userId());
+
+        if (resultLeerCompaniaNosotros.error) {
+            const message = `<em>Riesgos - Error al intentar leer la compañía 'nosotros':</em><br /><br /> ${resultLeerCompaniaNosotros.message}`;
+
+            return {
+                error: true,
+                message: message,
+            }
+        }
+
+        const companiaNosotros = resultLeerCompaniaNosotros.companiaNosotros;
+        // ----------------------------------------------------------------------------------------------------------------------------
+
         // antes que nada, leemos el riesgo
         const riesgo = Riesgos.findOne(riesgoID);
 
         if (!riesgo) {
             message = `Error inesperado: no pudimos leer el riesgo en la base de datos.`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -99,7 +114,6 @@ Meteor.methods(
 
         if (!movimiento) {
             message = `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -152,6 +166,17 @@ Meteor.methods(
         const reaseguradores = movimiento && movimiento.companias && Array.isArray(movimiento.companias) ?
                              lodash.filter(movimiento.companias, (x) => { return !x.nosotros; }) :
                              [];
+
+        if (!reaseguradores.length) { 
+            message = `Error: no hemos encontrado, en el movimiento del riesgo, reaseguradores distintos a <em>nosotros</em>.<br /> 
+                       No hay reaseguradores en el movimiento para los cuales construir notas de reaseguradores.<br />
+                       Por favor revise.`;
+
+            return {
+                error: true,
+                message: message,
+            }
+        }
 
         const reaseguradoresArray = [];
 
@@ -325,7 +350,6 @@ Meteor.methods(
             message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -342,7 +366,6 @@ Meteor.methods(
             message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -404,7 +427,6 @@ Meteor.methods(
             message = `Error: se ha producido un error al intentar escribir el archivo ${filePath2} a Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 

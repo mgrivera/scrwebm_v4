@@ -1,11 +1,15 @@
 ﻿
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo'; 
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash'; 
+import angular from 'angular'; 
+import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("RolesController", ['$scope', function ($scope) {
+import { Indoles } from '/imports/collections/catalogos/indoles'; 
+
+angular.module("scrwebm").controller("IndolesController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 
@@ -14,9 +18,9 @@ angular.module("scrwebm").controller("RolesController", ['$scope', function ($sc
 
       $scope.closeAlert = function (index) {
           $scope.alerts.splice(index, 1);
-      }
+      };
 
-      $scope.roles_ui_grid = {
+      $scope.indoles_ui_grid = {
           enableSorting: true,
           showColumnFooter: false,
           enableCellEdit: false,
@@ -37,17 +41,19 @@ angular.module("scrwebm").controller("RolesController", ['$scope', function ($sc
                           rowEntity.docState = 2;
               });
           },
+
           // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
           rowIdentity: function (row) {
               return row._id;
           },
+
           getRowIdentity: function (row) {
               return row._id;
           }
-      }
 
+      };
 
-      $scope.roles_ui_grid.columnDefs = [
+      $scope.indoles_ui_grid.columnDefs = [
                {
                    name: 'docState',
                    field: 'docState',
@@ -62,10 +68,22 @@ angular.module("scrwebm").controller("RolesController", ['$scope', function ($sc
                    width: 25
                },
               {
-                  name: 'name',
-                  field: 'name',
-                  displayName: 'Rol',
+                  name: 'descripcion',
+                  field: 'descripcion',
+                  displayName: 'Descripción',
                   width: 250,
+                  headerCellClass: 'ui-grid-leftCell',
+                  cellClass: 'ui-grid-leftCell',
+                  enableColumnMenu: false,
+                  enableCellEdit: true,
+                  enableSorting: true,
+                  type: 'string'
+              },
+              {
+                  name: 'abreviatura',
+                  field: 'abreviatura',
+                  displayName: 'Abreviatura',
+                  width: 120,
                   headerCellClass: 'ui-grid-leftCell',
                   cellClass: 'ui-grid-leftCell',
                   enableColumnMenu: false,
@@ -83,35 +101,89 @@ angular.module("scrwebm").controller("RolesController", ['$scope', function ($sc
               }
       ];
 
+
+      // ---------------------------------------------------------
+      // subscriptions ...
+      $scope.showProgress = true;
+
+      Meteor.subscribe('indoles', () => { 
+      
+          $scope.helpers({
+              indoles: () => {
+                  return Indoles.find({}, { sort: { descripcion: 1 } });
+              },
+          });
+
+          $scope.indoles_ui_grid.data = $scope.indoles;
+
+          $scope.showProgress = false;
+      })
+
+
       $scope.deleteItem = function (item) {
           item.docState = 3;
-      }
+      };
 
       $scope.nuevo = function () {
-          $scope.roles.push({
+          $scope.indoles.push({
               _id: new Mongo.ObjectID()._str,
               docState: 1
           });
-      }
+      };
 
       $scope.save = function () {
 
           $scope.showProgress = true;
 
           // eliminamos los items eliminados; del $scope y del collection
-          var editedItems = lodash.filter($scope.roles, function (item) { return item.docState; });
+          var editedItems = lodash.filter($scope.indoles, function (item) { return item.docState; });
 
           // nótese como validamos cada item antes de intentar guardar en el servidor
+
           var isValid = false;
           var errores = [];
 
-          $scope.roles = [];
-          $scope.roles_ui_grid.data = [];
+          editedItems.forEach(function (item) {
+              if (item.docState != 3) {
+                  isValid = Indoles.simpleSchema().namedContext().validate(item);
 
-          Meteor.call('rolesSave', editedItems, (err, result) => {
+                  if (!isValid) {
+                      Indoles.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
+                      });
+                  }
+              }
+          })
+
+          if (errores && errores.length) {
+
+              $scope.alerts.length = 0;
+              $scope.alerts.push({
+                  type: 'danger',
+                  msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
+                      errores.reduce(function (previous, current) {
+
+                          if (previous == "")
+                              // first value
+                              return current;
+                          else
+                              return previous + "<br />" + current;
+                      }, "")
+              });
+
+              $scope.showProgress = false;
+              return;
+          }
+
+
+          // eliminamos la conexión entre angular y meteor
+          $scope.indoles_ui_grid.data = [];
+          $scope.indoles = [];
+
+          Meteor.call('indolesSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                  const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({
@@ -131,27 +203,17 @@ angular.module("scrwebm").controller("RolesController", ['$scope', function ($sc
                     msg: result
                 });
 
+                // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
                 $scope.helpers({
-                    roles: () => {
-                        // las cuenas bancarias se registran para la cia seleccionada
-                        return Meteor.roles.find({}, { sort: { name: 1 } }) ;
+                    indoles: () => {
+                        return Indoles.find({}, { sort: { descripcion: 1 } });
                     },
                 });
-
-                $scope.roles_ui_grid.data = $scope.roles;
+                $scope.indoles_ui_grid.data = $scope.indoles;
 
                 $scope.showProgress = false;
                 $scope.$apply();
             })
-      };
-
-      $scope.helpers({
-          roles: () => {
-              // las cuenas bancarias se registran para la cia seleccionada
-              return Meteor.roles.find({}, { sort: { name: 1 } });
-          },
-      });
-
-      $scope.roles_ui_grid.data = $scope.roles;
+      }
   }
 ]);

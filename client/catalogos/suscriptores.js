@@ -1,10 +1,12 @@
 ﻿
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash'; 
+import angular from 'angular';
+import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { Suscriptores } from 'imports/collections/catalogos/suscriptores'; 
+import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 angular.module("scrwebm").controller("SuscriptoresController", ['$scope',  function ($scope) {
 
@@ -145,7 +147,7 @@ angular.module("scrwebm").controller("SuscriptoresController", ['$scope',  funct
 
                   if (!isValid) {
                       Suscriptores.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
                       });
                   }
               }
@@ -177,7 +179,7 @@ angular.module("scrwebm").controller("SuscriptoresController", ['$scope',  funct
           Meteor.call('suscriptoresSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                  const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({

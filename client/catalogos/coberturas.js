@@ -1,13 +1,14 @@
 ﻿
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo'; 
 
 import * as angular from 'angular'; 
 import * as lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { Coberturas } from '/imports/collections/catalogos/coberturas'; 
 
-import { Indoles } from 'imports/collections/catalogos/indoles'; 
-
-angular.module("scrwebm").controller("IndolesController", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("CoberturasController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;
 
@@ -18,7 +19,7 @@ angular.module("scrwebm").controller("IndolesController", ['$scope', function ($
           $scope.alerts.splice(index, 1);
       };
 
-      $scope.indoles_ui_grid = {
+      $scope.coberturas_ui_grid = {
           enableSorting: true,
           showColumnFooter: false,
           enableCellEdit: false,
@@ -31,7 +32,6 @@ angular.module("scrwebm").controller("IndolesController", ['$scope', function ($
           rowHeight: 25,
 
           onRegisterApi: function (gridApi) {
-
               // marcamos el contrato como actualizado cuando el usuario edita un valor
               gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
                   if (newValue != oldValue)
@@ -44,14 +44,13 @@ angular.module("scrwebm").controller("IndolesController", ['$scope', function ($
           rowIdentity: function (row) {
               return row._id;
           },
-
           getRowIdentity: function (row) {
               return row._id;
           }
-
       };
 
-      $scope.indoles_ui_grid.columnDefs = [
+
+      $scope.coberturas_ui_grid.columnDefs = [
                {
                    name: 'docState',
                    field: 'docState',
@@ -104,57 +103,55 @@ angular.module("scrwebm").controller("IndolesController", ['$scope', function ($
       // subscriptions ...
       $scope.showProgress = true;
 
-      Meteor.subscribe('indoles', () => { 
+      Meteor.subscribe('coberturas', () => { 
       
           $scope.helpers({
-              indoles: () => {
-                  return Indoles.find({}, { sort: { descripcion: 1 } });
+              coberturas: () => {
+                  return Coberturas.find({}, { sort: { descripcion: 1 } });
               },
           });
 
-          $scope.indoles_ui_grid.data = $scope.indoles;
-
+          $scope.coberturas_ui_grid.data = $scope.coberturas;
           $scope.showProgress = false;
       })
+      // ---------------------------------------------------------
 
 
       $scope.deleteItem = function (item) {
           item.docState = 3;
-      };
+      }
 
       $scope.nuevo = function () {
-          $scope.indoles.push({
+          $scope.coberturas.push({
               _id: new Mongo.ObjectID()._str,
               docState: 1
           });
-      };
+      }
 
       $scope.save = function () {
 
           $scope.showProgress = true;
 
           // eliminamos los items eliminados; del $scope y del collection
-          var editedItems = lodash.filter($scope.indoles, function (item) { return item.docState; });
+          var editedItems = lodash.filter($scope.coberturas, function (item) { return item.docState; });
 
           // nótese como validamos cada item antes de intentar guardar en el servidor
-
           var isValid = false;
           var errores = [];
 
           editedItems.forEach(function (item) {
               if (item.docState != 3) {
-                  isValid = Indoles.simpleSchema().namedContext().validate(item);
+                  isValid = Coberturas.simpleSchema().namedContext().validate(item);
 
                   if (!isValid) {
-                      Indoles.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
+                      Coberturas.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
                       });
                   }
               }
           })
 
           if (errores && errores.length) {
-
               $scope.alerts.length = 0;
               $scope.alerts.push({
                   type: 'danger',
@@ -175,13 +172,13 @@ angular.module("scrwebm").controller("IndolesController", ['$scope', function ($
 
 
           // eliminamos la conexión entre angular y meteor
-          $scope.indoles_ui_grid.data = [];
-          $scope.indoles = [];
+          $scope.coberturas_ui_grid.data = [];
+          $scope.coberturas = [];
 
-          Meteor.call('indolesSave', editedItems, (err, result) => {
+          Meteor.call('coberturasSave', editedItems, (err, result) => {
 
               if (err) {
-                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                  const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({
@@ -201,13 +198,13 @@ angular.module("scrwebm").controller("IndolesController", ['$scope', function ($
                     msg: result
                 });
 
-                // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
                 $scope.helpers({
-                    indoles: () => {
-                        return Indoles.find({}, { sort: { descripcion: 1 } });
+                    coberturas: () => {
+                        return Coberturas.find({}, { sort: { descripcion: 1 } });
                     },
                 });
-                $scope.indoles_ui_grid.data = $scope.indoles;
+
+                $scope.coberturas_ui_grid.data = $scope.coberturas;
 
                 $scope.showProgress = false;
                 $scope.$apply();

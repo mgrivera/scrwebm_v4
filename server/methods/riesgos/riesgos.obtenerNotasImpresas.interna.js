@@ -16,6 +16,7 @@ import { readFile, writeFile } from '@cloudcmd/dropbox';
 import getStream from 'get-stream'; 
 
 import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink'; 
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 import SimpleSchema from 'simpl-schema';
 import { Riesgos } from '/imports/collections/principales/riesgos';  
@@ -47,10 +48,9 @@ Meteor.methods(
         const usuario = Meteor.user(); 
 
         if (!usuario || !usuario.personales || !usuario.personales.nombre) { 
-            let message = `Error: el usuario no tiene un nombre asociado en la tabla de usuarios. <br /> 
+            const message = `Error: el usuario no tiene un nombre asociado en la tabla de usuarios. <br /> 
                         Para resolver este error, abra la opción: <em>Administración / Usuarios</em> y asocie un nombre al usuario.
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -60,8 +60,7 @@ Meteor.methods(
 
         // el template debe ser siempre un documento word ...
         if (!fileName || !fileName.endsWith('.docx')) {
-            let message = `El archivo debe ser un documento Word (.docx).`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+            const message = `El archivo debe ser un documento Word (.docx).`; 
 
             return { 
                 error: true, 
@@ -72,9 +71,8 @@ Meteor.methods(
         const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
         if (!companiaSeleccionada) {
-            let message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
+            const message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
                        Se ha seleccionado una compañía antes de ejecutar este proceso?`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -82,12 +80,29 @@ Meteor.methods(
             }
         }
 
+        // ----------------------------------------------------------------------------------------------------------------------------
+        // leemos la compañía 'nosotros'; esta es la compañía, registrada en la tabla Compañías, como todas las demás, que asociamos 
+        // a nosotros. Uno de los objetivos más fundamentales de leer esta compañía, es saber si 'nosotros' somos un reasegurador o 
+        // un corredor de reaseguros (REA/CORRR)
+        const resultLeerCompaniaNosotros = LeerCompaniaNosotros(Meteor.userId());
+
+        if (resultLeerCompaniaNosotros.error) {
+            const message = `<em>Riesgos - Error al intentar leer la compañía 'nosotros':</em><br /><br /> ${resultLeerCompaniaNosotros.message}`;
+
+            return {
+                error: true,
+                message: message,
+            }
+        }
+
+        const companiaNosotros = resultLeerCompaniaNosotros.companiaNosotros;
+        // ----------------------------------------------------------------------------------------------------------------------------
+
         // antes que nada, leemos el riesgo
         const riesgo = Riesgos.findOne(riesgoID);
 
         if (!riesgo) {
-            let message = `Error inesperado: no pudimos leer el riesgo en la base de datos.`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+            const message = `Error inesperado: no pudimos leer el riesgo en la base de datos.`; 
 
             return { 
                 error: true, 
@@ -98,8 +113,7 @@ Meteor.methods(
         const movimiento = lodash.find(riesgo.movimientos, (x) => { return x._id === movimientoID; });
 
         if (!movimiento) {
-            let message = `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+            const message = `Error inesperado: aunque pudimos leer el riesgo en la base de datos, no pudimos obtener el movimiento seleccionado.`; 
 
             return { 
                 error: true, 
@@ -168,17 +182,15 @@ Meteor.methods(
             }
         }
 
-
         // seleccionamos el movimiento de primas que corresponde a 'nosotros' (nuestra orden)
         const primas = lodash.find(movimiento.primas, (x) => { return x.nosotros; });
 
-        const companiaNosotros = lodash.find(movimiento.companias, (x) => { return x.nosotros; });
+        const ordenCompaniaNosotros = lodash.find(movimiento.companias, (x) => { return x.nosotros; });
 
         let retencionCedente = 0;
-        if (companiaNosotros && companiaNosotros.ordenPorc) {
-            retencionCedente = 100 - companiaNosotros.ordenPorc;
+        if (ordenCompaniaNosotros && ordenCompaniaNosotros.ordenPorc) {
+            retencionCedente = 100 - ordenCompaniaNosotros.ordenPorc;
         }
-
 
         // la suma asegurada, reasegurada, etc., está en el array coberturasCompanias, pero debemos sumarizar ...
         const valoresARiesgo = lodash(movimiento.coberturasCompanias).
@@ -215,22 +227,30 @@ Meteor.methods(
         
         // preparamos un array de reaseguradores, para mostrarlas en la nota de cobertura
         const reaseguradores = [];
-        lodash(movimiento.companias).filter((x) => { return !x.nosotros; }).forEach((x) => {
+        
+        // en el siguiento ciclo leemos y grabamos los reaseguradores a un array, para imprimirlos en la nota 
+        // si el tipo de nosotros es corredor de reaseguros, excluimos nosotros del array; si somos reaseguradores, 
+        // nos agregamos como un reasegurador 
+        for (const reaseg of movimiento.companias) { 
 
-            const primaItem = lodash.find(movimiento.primas, (r) => { return r.compania === x.compania; });
+            if (companiaNosotros.tipo === "CORRR" && reaseg.nosotros) { 
+                continue; 
+            }
+
+            const primaItem = lodash.find(movimiento.primas, (r) => { return r.compania === reaseg.compania; });
 
             let comMasImp = 0;
             comMasImp += primaItem.comision ? primaItem.comision : 0;
             comMasImp += primaItem.impuesto ? primaItem.impuesto : 0;
 
             // calculamos el corretaje del reasegurador como una proporción de su prima y la prima total de reaseguradores 
-            const suPrimaNeta = primaItem && primaItem.primaNeta ? primaItem.primaNeta : 0; 
-            const proporcionReasegurador = suPrimaNeta / primaNetaReaseguradores; 
-            const suParteCorretaje = corretajeTotal * proporcionReasegurador; 
+            const suPrimaNeta = primaItem && primaItem.primaNeta ? primaItem.primaNeta : 0;
+            const proporcionReasegurador = suPrimaNeta / primaNetaReaseguradores;
+            const suParteCorretaje = corretajeTotal * proporcionReasegurador;
 
             const compania = {
-                nombre: Companias.findOne(x.compania).abreviatura,
-                participacion: numeral(abs(x.ordenPorc)).format('0,0.00'),
+                nombre: Companias.findOne(reaseg.compania).abreviatura,
+                participacion: numeral(abs(reaseg.ordenPorc)).format('0,0.00'),
                 primaBruta: primaItem && primaItem.primaBruta ? numeral(abs(primaItem.primaBruta)).format('0,0.00') : "",
                 comMasImp: comMasImp ? numeral(abs(comMasImp)).format('0,0.00') : "",
                 corretaje: suParteCorretaje ? numeral(abs(suParteCorretaje)).format('0,0.00') : "",
@@ -240,14 +260,14 @@ Meteor.methods(
             };
             reaseguradores.push(compania);
 
-            reaseg_total_orden += x.ordenPorc; 
-            reaseg_total_primaBruta += primaItem && primaItem.primaBruta ? primaItem.primaBruta : 0; 
-            reaseg_total_comMasImp += comMasImp; 
-            reaseg_total_corretaje += suParteCorretaje; 
-            reaseg_total_primaNeta0 += primaItem && primaItem.primaNeta0 ? primaItem.primaNeta0 : 0;  
-            reaseg_total_impSPN += primaItem && primaItem.impuestoSobrePN ? primaItem.impuestoSobrePN : 0;   
-            reaseg_total_primaNeta1 += primaItem && primaItem.primaNeta ? primaItem.primaNeta : 0;    
-        })
+            reaseg_total_orden += reaseg.ordenPorc;
+            reaseg_total_primaBruta += primaItem && primaItem.primaBruta ? primaItem.primaBruta : 0;
+            reaseg_total_comMasImp += comMasImp;
+            reaseg_total_corretaje += suParteCorretaje;
+            reaseg_total_primaNeta0 += primaItem && primaItem.primaNeta0 ? primaItem.primaNeta0 : 0;
+            reaseg_total_impSPN += primaItem && primaItem.impuestoSobrePN ? primaItem.impuestoSobrePN : 0;
+            reaseg_total_primaNeta1 += primaItem && primaItem.primaNeta ? primaItem.primaNeta : 0;   
+        }
 
         const cuotas = [];
         Cuotas.find({ 'source.entityID': riesgo._id, 'source.subEntityID': movimiento._id, compania: riesgo.compania, },
@@ -285,10 +305,9 @@ Meteor.methods(
         try {
             readStream = Promise.await(readFile(dropBoxAccessToken, filePath));
         } catch(err) { 
-            let message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
+            const message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -302,10 +321,9 @@ Meteor.methods(
             // from npm: convert a node stream to a string or buffer; note: returns a promise 
             content = Promise.await(getStream.buffer(readStream)); 
         } catch(err) { 
-            let message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
+            const message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -354,7 +372,7 @@ Meteor.methods(
             valoresARiesgo: numeral(abs(valoresARiesgo)).format('0,0.00'),
             sumaAsegurada: numeral(abs(sumaAsegurada)).format('0,0.00'),
             sumaReasegurada: numeral(abs(sumaReasegurada)).format('0,0.00'),
-            nuestraOrdenPorc: companiaNosotros && companiaNosotros.ordenPorc ? `${numeral(abs(companiaNosotros.ordenPorc)).format('0,0.00')}` : numeral(0).format('0,0.00'),
+            nuestraOrdenPorc: ordenCompaniaNosotros && ordenCompaniaNosotros.ordenPorc ? `${numeral(abs(ordenCompaniaNosotros.ordenPorc)).format('0,0.00')}` : numeral(0).format('0,0.00'),
             prima: numeral(abs(prima)).format('0,0.00'),
             primaBruta: primas && primas.primaBruta ? numeral(abs(primas.primaBruta)).format('0,0.00'): numeral(0).format('0,0.00'),
             comisionPorc: primas && primas.comisionPorc ? `${numeral(abs(primas.comisionPorc)).format('0,0.00')}`: numeral(0).format('0,0.00'),
@@ -417,10 +435,9 @@ Meteor.methods(
         try {
             Promise.await(writeFile(dropBoxAccessToken, filePath2, buf));
         } catch(err) { 
-            let message = `Error: se ha producido un error al intentar escribir el archivo ${filePath2} a Dropbox. <br />
+            const message = `Error: se ha producido un error al intentar escribir el archivo ${filePath2} a Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 

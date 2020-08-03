@@ -1,14 +1,16 @@
 
+import { Meteor } from 'meteor/meteor'
+import { Mongo } from 'meteor/mongo'; 
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash';
-import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import angular from 'angular'; 
+import lodash from 'lodash';
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("CompaniasController",
- ['$scope', '$modal', function ($scope, $modal) {
+angular.module("scrwebm")
+       .controller("CompaniasController", ['$scope', '$modal', function ($scope, $modal) {
 
       $scope.showProgress = false;
 
@@ -41,7 +43,6 @@ angular.module("scrwebm").controller("CompaniasController",
         // Grid de compañpias
         // -----------------------------------------------------------------
         $scope.companiaSeleccionada = {};
-        let gridApi = null;
 
         $scope.companias_ui_grid = {
             enableSorting: true,
@@ -58,7 +59,6 @@ angular.module("scrwebm").controller("CompaniasController",
 
                 // guardamos el row que el usuario seleccione
                 gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                    //debugger;
                     $scope.companiaSeleccionada = {};
 
                     if (row.isSelected) {
@@ -161,7 +161,7 @@ angular.module("scrwebm").controller("CompaniasController",
         };
 
         $scope.nuevo = () => {
-            var compania = {
+            const compania = {
                 _id: new Mongo.ObjectID()._str,
                 nosotros: false,
                 docState: 1 };
@@ -175,11 +175,9 @@ angular.module("scrwebm").controller("CompaniasController",
               compania.docState = 2;
         };
 
-
         // -----------------------------------------------------------------
         // Grid de personas
         // -----------------------------------------------------------------
-        let personaSeleccionada = {};
 
         $scope.personas_ui_grid = {
             enableSorting: false,
@@ -193,16 +191,6 @@ angular.module("scrwebm").controller("CompaniasController",
             selectionRowHeaderWidth: 35,
             rowHeight: 25,
             onRegisterApi: function (gridApi) {
-
-                // guardamos el row que el usuario seleccione
-                gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                    personaSeleccionada = {};
-
-                    if (row.isSelected)
-                        personaSeleccionada = row.entity;
-                    else
-                        return;
-                });
 
                 // marcamos el contrato como actualizado cuando el usuario edita un valor
                 gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -310,7 +298,7 @@ angular.module("scrwebm").controller("CompaniasController",
                enableSorting: false,
                width: 25
            }
-        ];
+        ]
 
         $scope.eliminarPersona = (item) => {
 
@@ -320,9 +308,9 @@ angular.module("scrwebm").controller("CompaniasController",
                     "Seleccione una compañía antes de intentar eliminar una de sus personas.",
                     false).then();
                 return;
-            };
+            }
 
-            lodash.remove($scope.companiaSeleccionada.personas, function(p: any) { return p._id === item._id; });
+            lodash.remove($scope.companiaSeleccionada.personas, function(p) { return p._id === item._id; });
 
             if (!$scope.companiaSeleccionada.docState) {
                 $scope.companiaSeleccionada.docState = 2;
@@ -339,7 +327,7 @@ angular.module("scrwebm").controller("CompaniasController",
                 return;
             }
 
-            var persona = {
+            const persona = {
                 _id: new Mongo.ObjectID()._str,
                 titulo: 'Sr.' };
 
@@ -348,7 +336,6 @@ angular.module("scrwebm").controller("CompaniasController",
             }
 
             $scope.companiaSeleccionada.personas.push(persona);
-            personaSeleccionada = persona;
 
             $scope.personas_ui_grid.data = $scope.companiaSeleccionada.personas;
 
@@ -379,11 +366,11 @@ angular.module("scrwebm").controller("CompaniasController",
           $scope.showProgress = true;
 
           // eliminamos los items eliminados; del $scope y del collection
-          var editedItems = lodash.filter($scope.companias, function (item) { return item.docState; });
+          const editedItems = lodash.filter($scope.companias, function (item) { return item.docState; });
 
           // nótese como validamos cada item antes de intentar guardar en el servidor
-          var isValid = false;
-          var errores = [];
+          let isValid = false;
+          const errores = [];
 
           editedItems.forEach(function (item) {
               if (item.docState != 3) {
@@ -391,7 +378,7 @@ angular.module("scrwebm").controller("CompaniasController",
 
                   if (!isValid) {
                       Companias.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
+                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
                       });
                   }
               }
@@ -423,7 +410,7 @@ angular.module("scrwebm").controller("CompaniasController",
           Meteor.call('companiasSave', editedItems, (err, result)  => {
 
               if (err) {
-                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                  const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                   $scope.alerts.length = 0;
                   $scope.alerts.push({
@@ -463,14 +450,14 @@ angular.module("scrwebm").controller("CompaniasController",
 // ---------------------------------------------------------------------------------------
 // para regresar el nombre del tipo
 // ---------------------------------------------------------------------------------------
-angular.module("scrwebm").filter('tipoCompania', function ($sce) {
+angular.module("scrwebm").filter('tipoCompania', function () {
     return function (value) {
 
         if (!value) {
             return 'Indefinido';
-        };
+        }
 
-        var nombreTipo = '';
+        let nombreTipo = '';
 
         switch (value) {
             case 'AJUST':
@@ -493,8 +480,8 @@ angular.module("scrwebm").filter('tipoCompania', function ($sce) {
                 break;
             default:
                 nombreTipo = "Indefinido";
-        };
+        }
 
         return nombreTipo;
     }
-});
+})

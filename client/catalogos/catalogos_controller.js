@@ -1,6 +1,5 @@
 
-
-import * as angular from 'angular'; 
+import angular from 'angular'; 
 
 // importamos controllers y plantillas que pueden ser usados en 'children' angular modules  
 // import '../imports/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado.html';

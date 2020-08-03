@@ -17,13 +17,10 @@ import ConstruirCuotas from './construirCuotasController';
 import ConstruirCuotasProductor from './construirCuotasProductoresController'; 
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
-export default angular.module("scrwebm.riesgos.movimientos", [ 
-    ProrratearPrimasBrutas.name, 
-    ConstruirCuotas.name, 
-    ConstruirCuotasProductor.name, 
-])
-                        .controller("RiesgoMovimientos_Controller",
-['$scope', '$modal', 'uiGridConstants', '$interval', 
+export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasBrutas.name, 
+                                                               ConstruirCuotas.name, 
+                                                               ConstruirCuotasProductor.name ])
+                      .controller("RiesgoMovimientos_Controller", ['$scope', '$modal', 'uiGridConstants', '$interval', 
   function ($scope, $modal, uiGridConstants, $interval) {
 
     $scope.showProgress = true;
