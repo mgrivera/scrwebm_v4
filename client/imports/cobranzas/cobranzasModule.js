@@ -1,5 +1,4 @@
 ﻿
-
 import { Meteor } from 'meteor/meteor'
 import angular from 'angular';
 

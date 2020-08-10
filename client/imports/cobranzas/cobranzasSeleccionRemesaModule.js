@@ -1,5 +1,4 @@
 
-
 import angular from 'angular'; 
 
 import lodash from 'lodash';
@@ -50,10 +49,10 @@ export default angular.module("scrwebm.cobranzas.seleccionRemesa", [])
     })
 
     // agregamos la compañía seleccionada al filtro
-    let filtro = {}; 
+    const filtro = {}; 
     filtro.cia = $scope.$parent.companiaSeleccionada && $scope.$parent.companiaSeleccionada._id ? $scope.$parent.companiaSeleccionada._id : -999;
     filtro.fechaCerrada = null;
-    let remesasAbiertasCount = Remesas.find(filtro).count(); 
+    const remesasAbiertasCount = Remesas.find(filtro).count(); 
 
     $scope.alerts.length = 0;
     $scope.alerts.push({
@@ -64,5 +63,4 @@ export default angular.module("scrwebm.cobranzas.seleccionRemesa", [])
     // pagination (nótese que el número de página viene como parámetro al state)
     $scope.currentPage = 1;
     $scope.pageSize = 6;
-  }
-])
+}])

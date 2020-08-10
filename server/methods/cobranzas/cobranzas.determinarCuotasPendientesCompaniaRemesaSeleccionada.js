@@ -12,6 +12,7 @@ import { Riesgos } from '/imports/collections/principales/riesgos';
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
+import { Temp_Cobranzas } from '/imports/collections/consultas/temp_cobranzas';
 
 Meteor.methods(
 {

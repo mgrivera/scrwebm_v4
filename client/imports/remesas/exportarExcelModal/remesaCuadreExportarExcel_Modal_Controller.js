@@ -1,4 +1,6 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import angular from 'angular'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -27,13 +29,25 @@ export default angular.module("scrwebm.remesas.remesa.cuadre.exportarExcel", [])
     $scope.selectedFile = "remesa - cuadre - consulta.xlsx";
     $scope.downLoadLink = "";
 
-    $scope.exportarAExcel = (file) => {
+    $scope.exportarAExcel = () => {
         $scope.showProgress = true;
 
         Meteor.call('remesas.cuadre.exportar.Excel', remesa._id, ciaSeleccionada, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({ type: 'danger', msg: errorMessage });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
+
+            if (result.error) {
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -51,14 +65,11 @@ export default angular.module("scrwebm.remesas.remesa.cuadre.exportarExcel", [])
                       Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
             });
 
-            // $scope.selectedFile = file;
-
-            $scope.downLoadLink = result;
+            $scope.downLoadLink = result.sharedLink;
             $scope.downloadDocument = true;
 
             $scope.showProgress = false;
             $scope.$apply();
         })
     }
-}
-])
+}])

@@ -1,5 +1,5 @@
 ﻿
-
+import { Meteor } from 'meteor/meteor'; 
 import angular from 'angular'; 
 
 import lodash from 'lodash'; 
@@ -10,12 +10,16 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
+import { Temp_Cobranzas } from '/imports/collections/consultas/temp_cobranzas';
 
 import CobranzaResumenCobranzaModal from './resumenCobranzaModal/angularComponent'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResumenCobranzaModal.name ])
+// importamos el controller CobranzaGuardarEstado_Controller
+import CobranzaGuardarEstado from './cobranzaGuardarEstado'; 
+
+export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaGuardarEstado.name, CobranzaResumenCobranzaModal.name ])
                       .controller("CobranzasAplicarPagosController",
 ['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
 
@@ -30,7 +34,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
 
     let remesaSeleccionada = null; 
 
-    var remesaSeleccionadaPK = $stateParams.remesaPK;
+    const remesaSeleccionadaPK = $stateParams.remesaPK;
 
     if (remesaSeleccionadaPK) {
 
@@ -44,7 +48,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
         Meteor.call('cobranzas.determinarCuotasPendientesCompaniaRemesaSeleccionada', remesaSeleccionada._id, (err, result)  => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -70,7 +74,6 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
             // nótese solo se publicarán documentos que correspondan al usuario
             Meteor.subscribe('temp_cobranzas', () => { 
 
-                // $scope.temp_cobranzas = $scope.$meteorCollection(Temp_Cobranzas, false)
                 $scope.temp_cobranzas = Temp_Cobranzas.find({ usuario: Meteor.userId() },
                                                             { sort: { 'cuota.fecha': 1, 'origen.numero': 1 }}).
                                                         fetch();
@@ -109,25 +112,23 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
     $scope.aplicarPagos = function () {
 
         if (!$scope.temp_cobranzas) {
-            var promise = DialogModal($modal,
-                                    "<em>Cobranzas</em>",
-                                    `Aparentemente, Ud. no ha seleccionado pagos a ser aplicados.<br />
-                                        Ud. debe seleccionar al menos un pago a ser aplicado por este proceso,
-                                        para la remesa seleccionada.`,
-                                    false).then();
+            DialogModal($modal, "<em>Cobranzas</em>",
+                                `Aparentemente, Ud. no ha seleccionado pagos a ser aplicados.<br />
+                                    Ud. debe seleccionar al menos un pago a ser aplicado por este proceso,
+                                    para la remesa seleccionada.`,
+                                false).then();
 
             return;
         }
 
-        var pagosAAplicar = lodash.filter($scope.temp_cobranzas, function (cuota) { return cuota.pagar; });
+        const pagosAAplicar = lodash.filter($scope.temp_cobranzas, function (cuota) { return cuota.pagar; });
 
         if (pagosAAplicar.length == 0) {
-            var promise = DialogModal($modal,
-                                    "<em>Cobranzas</em>",
-                                    `Aparentemente, Ud. no ha seleccionado pagos a ser aplicados.<br />
-                                        Ud. debe seleccionar al menos un pago a ser aplicado por este proceso, para
-                                        la remesa seleccionada.`,
-                                    false).then();
+            DialogModal($modal, "<em>Cobranzas</em>",
+                                `Aparentemente, Ud. no ha seleccionado pagos a ser aplicados.<br />
+                                    Ud. debe seleccionar al menos un pago a ser aplicado por este proceso, para
+                                    la remesa seleccionada.`,
+                                false).then();
 
             return;
         }
@@ -135,10 +136,10 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
         $scope.showProgress = true;
 
         // construimos un array que contendrá solo los datos que el método necesita para aplicar los pagos ...
-        var pagosAAplicar2 = [];
+        const pagosAAplicar2 = [];
 
         pagosAAplicar.forEach(function (item) {
-            var pagoAAplicar = {
+            const pagoAAplicar = {
                 cuotaID: item.cuota.cuotaID,
                 monto: item.monto,
                 completo: item.completo
@@ -150,7 +151,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
         Meteor.call('cobranzas.grabarPagosIndicadosParaCuotasSeleccionadas', remesaSeleccionada._id, pagosAAplicar2, (err, result)  => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -181,15 +182,15 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
     $scope.infoRemesa = ""; 
 
     if (remesaSeleccionada && remesaSeleccionada.instrumentoPago && remesaSeleccionada.instrumentoPago.monto) { 
-        let montoRemesa = remesaSeleccionada.instrumentoPago.monto; 
+        const montoRemesa = remesaSeleccionada.instrumentoPago.monto; 
         $scope.mensajeResumenRemesa = `
             Monto remesa: ${numeral(montoRemesa).format("0,0.00")} - 
             aplicado: 0,00 - 
             resta: ${numeral(montoRemesa).format("0,0.00")}. 
         `
 
-        let compania = Companias.findOne(remesaSeleccionada.compania); 
-        let moneda = Monedas.findOne(remesaSeleccionada.moneda); 
+        const compania = Companias.findOne(remesaSeleccionada.compania); 
+        const moneda = Monedas.findOne(remesaSeleccionada.moneda); 
 
         $scope.infoRemesa = `
             Remesa #: ${remesaSeleccionada.numero.toString()} - 
@@ -201,20 +202,20 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
         `
     }
 
-    let resumenArray = []; 
+    const resumenArray = []; 
     $scope.resumenCuotasAplicadasArray = []; 
 
     $scope.calcularTotalMontoAPagar = function() { 
         // para calcular y mostrar el total para el monto seleccionado en la tabla 
-        let montoTotalSeleccionado = lodash($scope.temp_cobranzas).filter((x) => { return x.pagar; }).sumBy("monto"); 
-        let cantidadCuotasSeleccionadas = lodash.filter($scope.temp_cobranzas, (x) => { return x.pagar; }).length; 
+        const montoTotalSeleccionado = lodash($scope.temp_cobranzas).filter((x) => { return x.pagar; }).sumBy("monto"); 
+        const cantidadCuotasSeleccionadas = lodash.filter($scope.temp_cobranzas, (x) => { return x.pagar; }).length; 
 
         $scope.montoTotalSeleccionado = montoTotalSeleccionado; 
         $scope.cantidadCuotasSeleccionadas = cantidadCuotasSeleccionadas; 
 
         // además del monto seleccionado, a pagar o cobrar, determinamos el resto con respecto al monto inicial de la remesa 
         if (remesaSeleccionada && remesaSeleccionada.instrumentoPago && remesaSeleccionada.instrumentoPago.monto) { 
-            let montoRemesa = remesaSeleccionada.instrumentoPago.monto; 
+            const montoRemesa = remesaSeleccionada.instrumentoPago.monto; 
             let montoPorAplicar = 0; 
 
             if (lodash.isFinite(montoTotalSeleccionado)) { 
@@ -267,7 +268,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
         // para permitir al usuario guardar el estado de la cobranza y recuperarlo luego. Esto permite que el usuario 'marque' muchos cobros; 
         // los guarda en un file y luego regrese, los cargue y continúe el proceso ... 
         $modal.open({
-            templateUrl: 'client/cobranzas/cobranzaGuardarEstado_Modal.html',
+            templateUrl: 'client/html/cobranzas/cobranzaGuardarEstado_Modal.html',
             controller: 'CobranzaGuardarEstado_Controller',
             size: 'md',
             resolve: {
@@ -279,10 +280,10 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
                 },
             },
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
             });
     }
@@ -312,4 +313,4 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaResume
         // until, of course, the above process ends ...
         $scope.$apply();
     });
-}]);
+}])

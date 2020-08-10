@@ -1717,10 +1717,9 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
             }
 
             // corretaje
-            if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.corretajePorc) && !p.nosotros) {
+            if (lodash.isFinite(p.primaBruta) && lodash.isFinite(p.corretajePorc)) {
                 p.corretaje = (p.primaBruta * p.corretajePorc / 100) * -1;
             }
-
 
             // prima neta
             // como los 'costos' vienen ya con signo contrario, al sumar quitamos el costo al monto

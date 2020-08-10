@@ -1,5 +1,4 @@
 
-
 import React from 'react'
 import PropTypes from 'prop-types';
 import Popup from 'reactjs-popup'
@@ -8,8 +7,6 @@ import lodash from 'lodash';
 import './styles.css'; 
 
 const Card = (props) => { 
-
-    const whiteSpaceStyle = { blankSpace: 'nowrap', }; 
 
     let montosAplicados = null; 
 

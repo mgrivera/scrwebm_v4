@@ -7,12 +7,14 @@ import numeral from 'numeral';
 import XlsxInjector from 'xlsx-injector';
 import fs from 'fs';
 import path from 'path';
+import { promisify } from 'util'; 
+
+import { readFile } from '@cloudcmd/dropbox';        // para leer y escribir al Dropbox 
+// para leer un node stream y convertirlo en un string; nota: returns a promise 
+import getStream from 'get-stream';
+import { Dropbox } from 'dropbox';
 
 import SimpleSchema from 'simpl-schema';
-
-// para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
-// para poder hacer un download (usando el url) desde el client ...
-import { grabarDatosACollectionFS_regresarUrl } from '/server/imports/general/grabarDatosACollectionFS_regresarUrl';
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
@@ -20,33 +22,92 @@ import { Bancos } from '/imports/collections/catalogos/bancos';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
 
+import { myMkdirSync } from '/server/generalFunctions/myMkdirSync'; 
+
 Meteor.methods(
 {
-    'remesas.cuadre.exportar.Excel': function (remesaID, ciaSeleccionada) {
+    'remesas.cuadre.exportar.Excel': async function (remesaID, ciaSeleccionada) {
 
         new SimpleSchema({
             remesaID: { type: String, optional: false },
             ciaSeleccionada: { type: Object, blackbox: true, optional: false },
         }).validate({ remesaID, ciaSeleccionada, });
 
+        const usuario = Meteor.user();
+        const nombrePlantillaExcel = 'remesasCuadre.xlsx';
+
+        // leemos la plantilla desde el DropBox del usuario 
+
+        // -----------------------------------------------------------------------------------------------
+        // LEEMOS el template (Excel in this case) from DropBox 
+        // en windows, path regresa back en vez de forward slashes ... 
+        let filePath = path.join('/remesas/excel', nombrePlantillaExcel);
+
+        // en windows, path regresa back en vez de forward slashes ... 
+        filePath = filePath.replace(/\\/g, "/");
+
+        // SEGUNDO leemos el file 
+        const dropBoxAccessToken = Meteor.settings.public.dropBox_appToken;      // this is the Dropbox app dropBoxAccessToken 
+        let readStream = null;
+
+        try {
+            readStream = Promise.await(readFile(dropBoxAccessToken, filePath));
+        } catch (err) {
+            const message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
+                        El mensaje del error obtenido es: ${err}
+                        `;
+            return {
+                error: true,
+                message: message,
+            }
+        }
+
+        let content = null;
+
+        try {
+            // from npm: convert a node stream to a string or buffer; note: returns a promise 
+            content = Promise.await(getStream.buffer(readStream));
+        } catch (err) {
+            const message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
+                        El mensaje del error obtenido es: ${err}
+                        `;
+            return {
+                error: true,
+                message: message,
+            }
+        }
+
         // ----------------------------------------------------------------------------------------------------
-        // obtenemos el directorio en el server donde están las plantillas (guardadas por el usuario mediante collectionFS)
-        // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
-        // nótese que la plantilla (doc excel) no es agregada por el usuario; debe existir siempre con el
-        // mismo nombre ...
-        let templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
-        let temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
+        // nombre del archivo que contendrá la plantilla excel 
+        let userID2 = usuario.emails[0].address.replace(/\./g, "_");
+        userID2 = userID2.replace(/@/g, "_");
+        const outputFileName = nombrePlantillaExcel.replace('.xlsx', `_${userID2}.xlsx`);
 
-        let templatePath = path.join(templates_DirPath, 'consultas', 'remesasCuadre.xlsx');
+        // para grabar temporalmente el archivo que resulta en el fs en node 
+        const finalPath = process.env.PWD + '/.temp/remesas/excel';
+        const fileName = finalPath + "/" + outputFileName;
 
-        // ----------------------------------------------------------------------------------------------------
-        // nombre del archivo que contendrá los resultados ...
-        let userID2 = Meteor.user().emails[0].address.replace(/\./g, "_");
-        userID2 = userID2.replace(/\@/g, "_");
-        let outputFileName = 'remesasCuadre.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
-        let outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
+        const readFileAsync = promisify(fs.readFile)
+        const writeFileAsync = promisify(fs.writeFile);
+        const unlinkFileAsync = promisify(fs.unlink);
+        const encoding = 'binary';
 
-        let remesa = Remesas.findOne(remesaID);
+        // ahora escribimos el archivo al disco para pasarlo luego, en realidad el path, a xlsx-injector
+        try {
+            myMkdirSync(path.dirname(fileName));        // para crear dirs y sub-dirs si no existen 
+            await writeFileAsync(fileName, content, encoding);
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar grabar el archivo: ${name}, en la ubicación: ${finalPath}. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // aquí comienza el proceso de obtención de datos para la consulta 
+        const remesa = Remesas.findOne(remesaID);
 
         if (!remesa) {
             throw new Meteor.Error('error-base-datos',
@@ -63,15 +124,15 @@ Meteor.methods(
                 `);
         }
 
-        let instrumentoPago = remesa.instrumentoPago;
+        const instrumentoPago = remesa.instrumentoPago;
 
-        let companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
-        let monedas = Monedas.find({}, { fields: { _id: true, simbolo: true, }}).fetch();
-        let bancos = Bancos.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: true, simbolo: true, }}).fetch();
+        const bancos = Bancos.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
 
-        let compania = companias.find((x) => { return x._id === remesa.compania; });
-        let moneda = monedas.find((x) => { return x._id === remesa.moneda; });
-        let banco = bancos.find((x) => { return x._id === instrumentoPago.banco });
+        const compania = companias.find((x) => { return x._id === remesa.compania; });
+        const moneda = monedas.find((x) => { return x._id === remesa.moneda; });
+        const banco = bancos.find((x) => { return x._id === instrumentoPago.banco });
         let cuentaBancaria = null;
 
         if (instrumentoPago && instrumentoPago.banco && instrumentoPago.cuentaBancaria) {
@@ -79,7 +140,7 @@ Meteor.methods(
         }
 
         let partida = {};
-        let partidasCuadre = [];
+        const partidasCuadre = [];
         let granTotal = 0;
 
         // el primer cuadre muestra todas las operaciones del cuadre y sus partidas. Si, por ejemplo, una remesa corresponde al 
@@ -87,8 +148,8 @@ Meteor.methods(
         // partidas asociadas, y, finalmente, una operación por la diferencia, si existe. 
         remesa.cuadre.forEach((t) => {
 
-            let transaccion = t.transaccion;
-            let partidas = t.partidas;
+            const transaccion = t.transaccion;
+            const partidas = t.partidas;
             partida = {};
             let sumOfMonto = 0;
 
@@ -167,9 +228,8 @@ Meteor.methods(
         // array de partidas
         // además de lo anterior, obviamos la primera las partidas que corresponden al cobro de primas y siniestros, 
         // pues no deben ser mostradas como parte del asiento contable. 
-        let partidasArray = [];
+        const partidasArray = [];
         partida = {};
-        let sumOfMonto = 0;
 
         remesa.cuadre.forEach((transaccion) => {
             transaccion.partidas.forEach((p) => {
@@ -177,8 +237,8 @@ Meteor.methods(
                     // solo leemos partidas diferentes a: primas cobradas, siniestros cobrados ... 
                     let partida = {};
 
-                    let compania = companias.find((x) => { return x._id === p.compania; }).abreviatura;
-                    let moneda = monedas.find((x) => { return x._id === p.moneda; }).simbolo;
+                    const compania = companias.find((x) => { return x._id === p.compania; }).abreviatura;
+                    const moneda = monedas.find((x) => { return x._id === p.moneda; }).simbolo;
 
                     partida = {
                         // para agrupar (y resumir) más abajo por: tipo-codigoContable-compania-moneda 
@@ -194,22 +254,22 @@ Meteor.methods(
             })
         })
 
-        let partidasResumenArray = [];
+        const partidasResumenArray = [];
         partida = {};
         granTotal = 0;
-        let partidasGroupByTipoCodigoCompaniaMoneda_array = lodash.groupBy(partidasArray, 'grupo');
+        const partidasGroupByTipoCodigoCompaniaMoneda_array = lodash.groupBy(partidasArray, 'grupo');
 
-        for (let key in partidasGroupByTipoCodigoCompaniaMoneda_array) {
+        for (const key in partidasGroupByTipoCodigoCompaniaMoneda_array) {
 
-            let groupArray = partidasGroupByTipoCodigoCompaniaMoneda_array[key];
-            let firstItemInGroup = groupArray[0];
+            const groupArray = partidasGroupByTipoCodigoCompaniaMoneda_array[key];
+            const firstItemInGroup = groupArray[0];
 
-            let rubro = firstItemInGroup.tipo;
-            let codigo = firstItemInGroup.codigo;
-            let compania = firstItemInGroup.compania;
-            let moneda = firstItemInGroup.moneda;
+            const rubro = firstItemInGroup.tipo;
+            const codigo = firstItemInGroup.codigo;
+            const compania = firstItemInGroup.compania;
+            const moneda = firstItemInGroup.moneda;
 
-            let sumOfMonto = lodash.sumBy(groupArray, 'monto');
+            const sumOfMonto = lodash.sumBy(groupArray, 'monto');
 
             partida = {
                 grupo: ' ',
@@ -244,13 +304,16 @@ Meteor.methods(
         let infoBanco = banco.abreviatura;
 
         if (cuentaBancaria) {
-            let monedaCuentaBancaria = Monedas.findOne(cuentaBancaria.moneda);
+            const monedaCuentaBancaria = Monedas.findOne(cuentaBancaria.moneda);
             infoBanco += ` (${monedaCuentaBancaria.simbolo} ${cuentaBancaria.tipo} ${cuentaBancaria.numero})`
         }
 
+        // -----------------------------------------------------------------------------------------------
+        // Ok, aquí termina el proceso propio de la consulta; 
+        // comienza: 1) conversión a Excel. 2) grabar a DropBox. 3) regresar download link 
 
         // Object containing attributes that match the placeholder tokens in the template
-        let values = {
+        const values = {
             fechaHoy: moment(new Date()).format("DD-MMM-YYYY"),
             nombreCiaContabSeleccionada: ciaSeleccionada.nombre,
 
@@ -268,77 +331,187 @@ Meteor.methods(
         };
 
         // Open a workbook
-        let workbook = new XlsxInjector(templatePath);
-        let sheetNumber = 1;
+        const workbook = new XlsxInjector(fileName);
+        const sheetNumber = 1;
         workbook.substitute(sheetNumber, values);
+
+        // ----------------------------------------------------------------------------------------------------
+        // nombre del archivo (fs en node) que contendrá los resultados ...
+        const resultFileName = nombrePlantillaExcel.replace('.xlsx', `_${userID2}_result.xlsx`);
+        const resultFilePath = finalPath + "/" + resultFileName;
+
         // Save the workbook
-        workbook.writeFile(outputPath);
+        workbook.writeFile(resultFilePath);
 
+        // 1) leemos el archivo desde el fs 
+        let fileContent;
 
-        // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
-        // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
-        let buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
+        try {
+            fileContent = await readFileAsync(resultFilePath);
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar leer el archivo: ${resultFilePath}. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
 
-        // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
-        // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...
+        // 2) grabamos al DropBox 
+        const dbx = new Dropbox({
+            accessToken: dropBoxAccessToken,
+            fetch: fetch
+        });
 
-        // nótese que en el tipo de plantilla ponemos 'no aplica'; la razón es que esta plantilla no es 'cargada' por el usuario y de las
-        // cuales hay diferentes tipos (islr, iva, facturas, cheques, ...). Este tipo de plantilla es para obtener algún tipo de reporte
-        // en excel y no tiene un tipo definido ...
-        return grabarDatosACollectionFS_regresarUrl(buf, outputFileName, 'no aplica', 'scrwebm', ciaSeleccionada, Meteor.user(), 'xlsx');
+        const fileName2 = `/remesas/excel/tmp/${outputFileName}`;
+
+        try {
+            await dbx.filesUpload({
+                path: fileName2,
+                contents: fileContent,
+                mode: { ".tag": "overwrite" },
+                autorename: false
+            })
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar grabar el archivo: ${name}, en la ubicación: ${fileName2}. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
+
+        // 3) obtenemos el link 
+        // creamos un sharedLink para que el usuario pueda tener acceso al file que se graba en Dropbox 
+        let sharedLinkResponse = null;
+
+        try {
+            // from npm: convert a node stream to a string or buffer; note: returns a promise 
+            sharedLinkResponse = await dbx.sharingCreateSharedLinkWithSettings({
+                path: fileName2,
+                settings: {
+                    requested_visibility: 'public',
+                }
+            });
+        } catch (err) {
+            // si el shared link ya existe, intentamos recuperarlo desde el error 
+            if (err.error && err.error.error && err.error.error['.tag'] && err.error.error['.tag'] === 'shared_link_already_exists') {
+
+                try {
+                    sharedLinkResponse = await dbx.sharingListSharedLinks({
+                        path: fileName2,
+                        direct_only: true,
+                    });
+                } catch (err) {
+                    const message = `Error: se ha producido un error al intentar producir un (shared) link
+                                        para el archivo ${filePath} desde Dropbox. <br />
+                                        El mensaje del error obtenido es: ${err.message}
+                                    `;
+                    return {
+                        error: true,
+                        message: message,
+                    }
+                }
+
+            } else {
+                const message = `Error: se ha producido un error al intentar producir un (shared) link
+                                 para el archivo ${filePath} desde Dropbox. <br />
+                                 El mensaje del error obtenido es: ${err.message}
+                                `;
+                return {
+                    error: true,
+                    message: message,
+                }
+            }
+        }
+
+        let sharedLink = '#';
+
+        if (sharedLinkResponse.url) {
+            sharedLink = sharedLinkResponse.url;
+        } else {
+            if (sharedLinkResponse.links && Array.isArray(sharedLinkResponse.links) && sharedLinkResponse.links.length) {
+                sharedLink = sharedLinkResponse.links[0].url;
+            }
+        }
+
+        // 4) eliminamos *ambos* files desde el fs 
+        // ahora eliminamos el file del disco, pues solo lo hacemos, *mientras tanto*, pues no sabemos como grabar al 
+        // Dropbox sin hacer ésto antes !!!!?????
+        try {
+            await unlinkFileAsync(fileName);            // aquí grabamos la plantilla (excel) leímo desde el dropbox 
+            await unlinkFileAsync(resultFilePath);      // aquí grabamos el resultado de aplicar la plantilla 
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar leer el archivo: ${resultFilePath}. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
+
+        // regresamos el link 
+        return {
+            error: false,
+            sharedLink: sharedLink,
+        }
     }
 });
 
 function descripcionTipoPartida(rubro) {
     // esta función regresa el nombre del rubro, para que sirva como descripción en el resumen de la
     // remesa ...
+    let descripcion = ""; 
+
     switch (rubro) {
         case 10: {
-            return 'Monto cobrado/pagado en la remesa';
+            descripcion = 'Monto cobrado/pagado en la remesa';
             break;
         }
         case 100: {
-            return 'Primas cobradas - facultativo';
+            descripcion = 'Primas cobradas - facultativo';
             break;
         }
         case 200: {
-            return 'Primas por pagar - facultativo';
+            descripcion = 'Primas por pagar - facultativo';
             break;
         }
         case 300: {
-            return 'Corretaje - facultativo';
+            descripcion = 'Corretaje - facultativo';
             break;
         }
         case 400: {
-            return 'Prima pagada - facultativo';
+            descripcion = 'Prima pagada - facultativo';
             break;
         }
         case 600: {
-            return 'Siniestros cobrados';
+            descripcion = 'Siniestros cobrados';
             break;
         }
         case 700: {
-            return 'Siniestros por pagar';
+            descripcion = 'Siniestros por pagar';
             break;
         }
         case 800: {
-            return 'Siniestros pagados';
+            descripcion = 'Siniestros pagados';
             break;
         }
         case 900: {
-            return 'Primas cobradas - contratos';
+            descripcion = 'Primas cobradas - contratos';
             break;
         }
         case 1000: {
-            return 'Primas por pagar - contratos';
+            descripcion = 'Primas por pagar - contratos';
             break;
         }
         case 1100: {
-            return 'Corretaje - contratos';
+            descripcion = 'Corretaje - contratos';
             break;
         }
         default: { 
-            return 'Rubro indefinido';
+            descripcion = 'Rubro indefinido';
         }
     }
+
+    return descripcion; 
 }
