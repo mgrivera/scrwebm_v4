@@ -375,6 +375,7 @@ Meteor.methods({
             }
         } 
 
+        // ------------------------------------------------------------------------------------------------
         // con esta función creamos un download link para que el usuario pueda tener el archivo en su pc 
         const result = await dropBoxCreateSharedLink(filePath2); 
 

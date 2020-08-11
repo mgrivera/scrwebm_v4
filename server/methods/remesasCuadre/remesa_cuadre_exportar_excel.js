@@ -16,6 +16,8 @@ import { Dropbox } from 'dropbox';
 
 import SimpleSchema from 'simpl-schema';
 
+import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink'; 
+
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
@@ -357,12 +359,13 @@ Meteor.methods(
             }
         }
 
-        // 2) grabamos al DropBox 
+        // 2) obtenemos el objeto con los métodos del dropbox api 
         const dbx = new Dropbox({
             accessToken: dropBoxAccessToken,
             fetch: fetch
         });
 
+        // 3) grabamos el archivo con los resultados al dropbox 
         const fileName2 = `/remesas/excel/tmp/${outputFileName}`;
 
         try {
@@ -381,60 +384,6 @@ Meteor.methods(
             }
         }
 
-        // 3) obtenemos el link 
-        // creamos un sharedLink para que el usuario pueda tener acceso al file que se graba en Dropbox 
-        let sharedLinkResponse = null;
-
-        try {
-            // from npm: convert a node stream to a string or buffer; note: returns a promise 
-            sharedLinkResponse = await dbx.sharingCreateSharedLinkWithSettings({
-                path: fileName2,
-                settings: {
-                    requested_visibility: 'public',
-                }
-            });
-        } catch (err) {
-            // si el shared link ya existe, intentamos recuperarlo desde el error 
-            if (err.error && err.error.error && err.error.error['.tag'] && err.error.error['.tag'] === 'shared_link_already_exists') {
-
-                try {
-                    sharedLinkResponse = await dbx.sharingListSharedLinks({
-                        path: fileName2,
-                        direct_only: true,
-                    });
-                } catch (err) {
-                    const message = `Error: se ha producido un error al intentar producir un (shared) link
-                                        para el archivo ${filePath} desde Dropbox. <br />
-                                        El mensaje del error obtenido es: ${err.message}
-                                    `;
-                    return {
-                        error: true,
-                        message: message,
-                    }
-                }
-
-            } else {
-                const message = `Error: se ha producido un error al intentar producir un (shared) link
-                                 para el archivo ${filePath} desde Dropbox. <br />
-                                 El mensaje del error obtenido es: ${err.message}
-                                `;
-                return {
-                    error: true,
-                    message: message,
-                }
-            }
-        }
-
-        let sharedLink = '#';
-
-        if (sharedLinkResponse.url) {
-            sharedLink = sharedLinkResponse.url;
-        } else {
-            if (sharedLinkResponse.links && Array.isArray(sharedLinkResponse.links) && sharedLinkResponse.links.length) {
-                sharedLink = sharedLinkResponse.links[0].url;
-            }
-        }
-
         // 4) eliminamos *ambos* files desde el fs 
         // ahora eliminamos el file del disco, pues solo lo hacemos, *mientras tanto*, pues no sabemos como grabar al 
         // Dropbox sin hacer ésto antes !!!!?????
@@ -450,10 +399,22 @@ Meteor.methods(
             }
         }
 
-        // regresamos el link 
-        return {
-            error: false,
-            sharedLink: sharedLink,
+        // ------------------------------------------------------------------------------------------------
+        // 5) con esta función creamos un (sharable) download link para que el usuario pueda tener
+        //    el archivo en su pc 
+        const result = await dropBoxCreateSharedLink(fileName2);
+
+        if (result.error) {
+            return {
+                error: true,
+                message: result.message
+            }
+        } else {
+            // regresamos el link 
+            return {
+                error: false,
+                sharedLink: result.sharedLink,
+            }
         }
     }
 });

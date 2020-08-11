@@ -9,7 +9,7 @@ const dropBoxCreateSharedLink = async function(filePath) {
 
     const dropBoxAccessToken = Meteor.settings.public.dropBox_appToken;      
 
-    // 2) grabamos al DropBox 
+    // obtenemos el objeto dropbox que nos permitirá acceder al api 
     const dbx = new Dropbox({
         accessToken: dropBoxAccessToken, 
         fetch: fetch

@@ -49,6 +49,18 @@ angular.module("scrwebm")
                     return;
                 }
 
+                if (result.error) {
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+
+                    return;
+                }
+
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
                     type: 'info',
@@ -56,7 +68,7 @@ angular.module("scrwebm")
                         Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
                 });
 
-                $scope.downLoadLink = result;
+                $scope.downLoadLink = result.sharedLink;
                 $scope.downloadDocument = true;
 
                 $scope.showProgress = false;
