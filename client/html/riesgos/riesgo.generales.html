@@ -168,7 +168,7 @@
                                 <ui-select-match placeholder="Seleccione una índole">
                                     <span ng-bind="$select.selected.descripcion"></span>
                                 </ui-select-match>
-                                <ui-select-choices repeat="value._id as value in (indoles | orderBy: 'descripcion') track by value._id"
+                                <ui-select-choices repeat="value._id as value in (indoles | filter:$select.search | orderBy: 'descripcion') track by value._id"
                                                    refresh="searchIndoles($select.search)" 
                                                    minimum-input-length="3" 
                                                    refresh-delay="500">
@@ -200,7 +200,7 @@
                                 <ui-select-match placeholder="Seleccione una compañía">
                                     <span ng-bind="$select.selected.nombre"></span>
                                 </ui-select-match>
-                                <ui-select-choices repeat="value._id as value in (companias | orderBy: 'nombre') track by value._id"
+                                <ui-select-choices repeat="value._id as value in (companias | filter:$select.search | orderBy: 'nombre') track by value._id"
                                                    refresh="searchCompanias($select.search)" 
                                                    minimum-input-length="3" 
                                                    refresh-delay="500">
@@ -229,7 +229,7 @@
                                 <ui-select-match placeholder="Seleccione un ramo">
                                     <span ng-bind="$select.selected.descripcion"></span>
                                 </ui-select-match>
-                                <ui-select-choices repeat="value._id as value in (ramos | orderBy: 'descripcion') track by value._id"
+                                <ui-select-choices repeat="value._id as value in (ramos | filter:$select.search | orderBy: 'descripcion') track by value._id"
                                                    refresh="searchRamos($select.search)" 
                                                    minimum-input-length="3" 
                                                    refresh-delay="500">
@@ -261,9 +261,10 @@
                                 <ui-select-match placeholder="Seleccione una compañía">
                                     <span ng-bind="$select.selected.nombre"></span>
                                 </ui-select-match>
-                                <ui-select-choices repeat="value._id as value in (companias | orderBy: 'nombre') track by value._id"
+                                <ui-select-choices repeat="value._id as value in (companias | filter:$select.search | orderBy: 'nombre') track by value._id"
                                                    refresh="searchCompaniasCedentes($select.search)" 
-                                                   minimum-input-length="3" refresh-delay="500">
+                                                   minimum-input-length="3" 
+                                                   refresh-delay="500">
                                     <span ng-bind="value.nombre"></span>
                                 </ui-select-choices>
                             </ui-select>
@@ -308,7 +309,7 @@
                                 <ui-select-match placeholder="Seleccione una compañía">
                                     <span ng-bind="$select.selected.nombre"></span>
                                 </ui-select-match>
-                                <ui-select-choices repeat="value._id as value in (companias | orderBy: 'nombre') track by value._id"
+                                <ui-select-choices repeat="value._id as value in (companias | filter:$select.search | orderBy: 'nombre') track by value._id"
                                                    refresh="searchCorredores($select.search)" 
                                                    minimum-input-length="3" 
                                                    refresh-delay="500">

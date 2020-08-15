@@ -3,7 +3,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false },
     cuenta: { type: String, label: "Cuenta contable", min: 1, max: 25, optional: false },
     totDet: { type: String, label: "Tipo (total/detalle)", optional: false, min: 1, max: 1, },
@@ -13,5 +13,5 @@ var schema = new SimpleSchema({
     docState: { type: Number, optional: true },
 });
 
-export const CuentasContables: any = new Mongo.Collection("cuentasContables");
+export const CuentasContables = new Mongo.Collection("cuentasContables");
 CuentasContables.attachSchema(schema);

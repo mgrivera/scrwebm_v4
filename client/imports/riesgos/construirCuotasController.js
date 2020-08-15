@@ -1,8 +1,12 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 import angular from 'angular';
 
 import moment from 'moment';
 import lodash from 'lodash';
+
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 export default angular.module("scrwebm.riesgos.movimientos.contruirCuotas", []).
                        controller('Riesgos_ConstruirCuotasController',
@@ -23,6 +27,30 @@ function ($scope, $modalInstance, riesgo, movimiento, cuotas) {
     $scope.cancel = function () {
         $modalInstance.dismiss("Cancel");
     };
+
+    // determinamos la compañía nosotros, para saber si tiene un monto de corretaje calculado. De ser así, preguntamos al 
+    // usuario si construimos una cuota de corretaje para la compañía cedente 
+    let companiaNosotros = {};
+    const result = LeerCompaniaNosotros(Meteor.userId());
+
+    if (result.error) {
+        $scope.alerts.length = 0;
+        $scope.alerts.push({
+            type: 'danger',
+            msg: `<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em><br />${result.message}`
+        });
+    }
+
+    companiaNosotros = result.companiaNosotros; 
+
+    // ahora que tenemos la compañía nosotros, revisamos a ver si su registro de primas tiene un monto de corretaje calculado 
+    // nota: en el registro de prima, hay una propiedad Nosotros; también pudimos, simplemente, haberla usado, para saber si 
+    // el registro de primas corresponde a la compañía Nosotros 
+    const companiaCedenteTieneMontoCorretaje = movimiento.primas.some(x => x.compania === companiaNosotros._id && x.corretaje); 
+
+    // si existe un monto de corretaje para la compañía cedente en el registro que corresponde a nuestra prima, 
+    // preguntamos al usuario si desea construir una cuota (cxp) para el mismo
+    $scope.preguntarGenerarCuotaCorretajeCompaniaCedente = companiaCedenteTieneMontoCorretaje; 
 
     $scope.submitted = false;
     $scope.parametros = {};
@@ -69,17 +97,16 @@ function ($scope, $modalInstance, riesgo, movimiento, cuotas) {
             }
         }
 
-
         if ($scope.construirCuotasForm.$valid) {
             $scope.submitted = false;
             $scope.construirCuotasForm.$setPristine();    // para que la clase 'ng-submitted deje de aplicarse a la forma ... button
 
             calcularCuotasMovimientoSeleccionado(riesgo, movimiento, cuotas, $scope.parametros);
 
-            if (!riesgo.docState)
+            if (!riesgo.docState) { 
                 riesgo.docState = 2;
-
-
+            }
+                
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'info',
@@ -90,17 +117,17 @@ function ($scope, $modalInstance, riesgo, movimiento, cuotas) {
 }
 ]);
 
-
 function calcularCuotasMovimientoSeleccionado(riesgo, movimiento, cuotas, parametros) {
 
     // siempre intentamos eliminar cuotas que ahora existan para el movimiento ...
     // nótese que no las eliminamos; solo las marcamos para que sean eliminadas al guardar todo
     if (cuotas.length) {
-        lodash(cuotas).filter(function (c) { return c.source.subEntityID === movimiento._id; }).map(function (c) { c.docState = 3; return c; }).value();
+        lodash(cuotas).filter(function (c) { return c.source.subEntityID === movimiento._id; })
+                      .map(function (c) { c.docState = 3; return c; })
+                      .value();
     }
 
-
-    // debemos generar cuotas para cada reasegurador, pero también par la compañía cedente;
+    // debemos generar cuotas para cada reasegurador, pero también par la compañía Nosotros;
     const factor = 1 / parametros.cantidadCuotas;
 
     movimiento.primas.forEach( function(prima) {
@@ -109,9 +136,8 @@ function calcularCuotasMovimientoSeleccionado(riesgo, movimiento, cuotas, parame
 
         for (let i = 1; i <= parametros.cantidadCuotas; i++) {
 
-            let cuota = {};
+            const cuota = {};
 
-            // TODO: agregar otros valores nuevos en el collection de cuotas ...
             cuota._id = new Mongo.ObjectID()._str;
 
             cuota.source = {};
@@ -126,9 +152,10 @@ function calcularCuotasMovimientoSeleccionado(riesgo, movimiento, cuotas, parame
 
             cuota.compania = prima.compania;
 
-            if (prima.nosotros)
+            if (prima.nosotros) { 
                 cuota.compania = riesgo.compania;
-
+            }
+                
             cuota.moneda = prima.moneda;
             cuota.numero = i;
             cuota.cantidad = parametros.cantidadCuotas;
@@ -138,7 +165,16 @@ function calcularCuotasMovimientoSeleccionado(riesgo, movimiento, cuotas, parame
             cuota.diasVencimiento = parametros.diasVencimiento;
             cuota.fechaVencimiento = moment(fechaProximaCuota).add(parametros.diasVencimiento, 'days').toDate();
 
-            cuota.montoOriginal = prima.primaNeta;
+            const montoOriginal = prima.primaNeta; 
+
+            if (parametros.generarCuotaCorretajePorPagar && prima.nosotros && prima.corretaje) {
+                // si hay un monto de corretaje para la compañía cedente, y el usuario puede decidir si generar una cuota 
+                // agregamos el corretaje a la prima, para obtener un monto 'full' que incluya el corretaje 
+                cuota.montoOriginal = montoOriginal + (prima.corretaje * -1);       // nótese que el corr viene con signo opuesto siempre
+            } else { 
+                cuota.montoOriginal = montoOriginal;
+            }
+
             cuota.factor = factor;
             cuota.monto = cuota.montoOriginal * factor;
 
@@ -146,6 +182,14 @@ function calcularCuotasMovimientoSeleccionado(riesgo, movimiento, cuotas, parame
             cuota.docState = 1;
 
             cuotas.push(cuota);
+
+            if (parametros.generarCuotaCorretajePorPagar && prima.nosotros && prima.corretaje) { 
+                // si hay un monto de corretaje para la compañía cedente, el usuario puede decidir si generar una cuota 
+                // para este monto y por pagar a esta compañía. En este caso, básicamente, duplicamos esta cuota y cambiamos el monto 
+                // por el corretaje; también debemos ajustar la prima por cobrar para agregar el corretaje 
+                const cuotaMontoCorretaje = agregarCuotaCorretajeCompaniaCedente(cuota, prima.corretaje, factor);
+                cuotas.push(cuotaMontoCorretaje);  
+            }
 
             // finalmente, calculamos la fecha de la próxima cuota ...
             if (parametros.cantidadCuotas > 1) {
@@ -158,4 +202,17 @@ function calcularCuotasMovimientoSeleccionado(riesgo, movimiento, cuotas, parame
             }
         }
     })
+}
+
+function agregarCuotaCorretajeCompaniaCedente(cuota, montoCorretaje, factor) { 
+
+    const cuotaCorretaje = Object.assign({}, cuota);        // to get a clone of object 
+  
+    cuotaCorretaje._id = new Mongo.ObjectID()._str;
+
+    cuotaCorretaje.montoOriginal = montoCorretaje;
+    cuotaCorretaje.factor = factor;
+    cuotaCorretaje.monto = cuotaCorretaje.montoOriginal * factor;
+
+    return cuotaCorretaje; 
 }

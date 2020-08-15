@@ -1,6 +1,4 @@
 
-
-
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
@@ -17,5 +15,5 @@ var schema = new SimpleSchema({
     docState: {type: Number, optional: true, }
 })
 
-export const AutosMarcas: any = new Mongo.Collection("autosMarcas");
+export const AutosMarcas = new Mongo.Collection("autosMarcas");
 AutosMarcas.attachSchema(schema);

@@ -3,9 +3,9 @@ import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
 
-export const ContratosProp_Configuracion_ListaCodigos: any = new Mongo.Collection("contratosProp_configuracion_listaCodigos");
+export const ContratosProp_Configuracion_ListaCodigos = new Mongo.Collection("contratosProp_configuracion_listaCodigos");
 
-let schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false },
     codigo: { type: String, optional: false },
     cia: { type: String, optional: false, },
@@ -20,9 +20,9 @@ if (Meteor.isServer) {
 }
 
 // ahora definimos un modelo para el collection que mantendrá las tablas de configuración
-export const ContratosProp_Configuracion_Tablas: any = new Mongo.Collection("contratosProp_configuracion_tablas");
+export const ContratosProp_Configuracion_Tablas = new Mongo.Collection("contratosProp_configuracion_tablas");
 
-let schema2 = new SimpleSchema({
+const schema2 = new SimpleSchema({
     _id: { type: String, optional: false, },
     codigo: { type: String, label: "Código del contrato", optional: false, },
 

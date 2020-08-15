@@ -10,11 +10,10 @@ Meteor.methods(
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = lodash.chain(roles).
+        const inserts = lodash.chain(roles).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
-
 
         inserts.forEach(function (item) {
             Meteor.roles.insert(item, function (error) {
@@ -23,8 +22,7 @@ Meteor.methods(
             });
         });
 
-
-        var updates = lodash.chain(roles).
+        const updates = lodash.chain(roles).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separoles el _id del objeto
@@ -39,7 +37,7 @@ Meteor.methods(
             });
         });
 
-        var removes = lodash.filter(roles, function (item) { return item.docState && item.docState == 3; });
+        const removes = lodash.filter(roles, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             Meteor.roles.remove({ _id: item._id });

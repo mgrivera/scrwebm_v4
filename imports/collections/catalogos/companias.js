@@ -2,8 +2,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-
-var personas_SimpleSchema = new SimpleSchema({
+const personas_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     titulo: { type: String, optional: false, min: 1, max: 8 },
     nombre: { type: String, optional: false, min: 1, max: 100 },
@@ -13,7 +12,7 @@ var personas_SimpleSchema = new SimpleSchema({
     emailCobranzas: { type: Number, optional: true, },
 });
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false },
     nombre: { type: String, label: "Nombre", min: 1, max: 80, optional: false },
     abreviatura: { type: String, label: "Abreviatura", min: 1, max: 15, optional: false },
@@ -29,5 +28,5 @@ var schema = new SimpleSchema({
     'personas.$': { type: personas_SimpleSchema },
 });
 
-export const Companias: any = new Mongo.Collection("companias");
+export const Companias = new Mongo.Collection("companias");
 Companias.attachSchema(schema);

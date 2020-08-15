@@ -1,10 +1,12 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular';
-import * as lodash from 'lodash'; 
+import angular from 'angular';
+import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { Asegurados } from 'imports/collections/catalogos/asegurados'; 
+import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 
 angular.module("scrwebm").controller("AseguradosController", ['$scope', function ($scope) {
 
@@ -50,58 +52,61 @@ angular.module("scrwebm").controller("AseguradosController", ['$scope', function
     }
 
     $scope.asegurados_ui_grid.columnDefs = [
-            {
-                name: 'docState',
-                field: 'docState',
-                displayName: '',
-                cellTemplate:
-                    '<span ng-show="row.entity[col.field] == 1" class="fa fa-asterisk" style="color: blue; font: xx-small; padding-top: 8px; "></span>' +
-                    '<span ng-show="row.entity[col.field] == 2" class="fa fa-pencil" style="color: brown; font: xx-small; padding-top: 8px; "></span>' +
-                    '<span ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
-                enableCellEdit: false,
-                enableColumnMenu: false,
-                enableSorting: false,
-                width: 25
-            },
-            {
-                name: 'nombre',
-                field: 'nombre',
-                displayName: 'Nombre',
-                width: 250,
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                enableSorting: true,
-                type: 'string'
-            },
-            {
-                name: 'abreviatura',
-                field: 'abreviatura',
-                displayName: 'Abreviatura',
-                width: 120,
-                headerCellClass: 'ui-grid-leftCell',
-                cellClass: 'ui-grid-leftCell',
-                enableColumnMenu: false,
-                enableCellEdit: true,
-                enableSorting: true,
-                type: 'string'
-            },
-            {
-                name: 'delButton',
-                displayName: '',
-                cellTemplate: '<span ng-click="grid.appScope.deleteItem(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
-                enableCellEdit: false,
-                enableSorting: false,
-                width: 25
-            }
+        {
+            name: 'docState',
+            field: 'docState',
+            displayName: '',
+            cellTemplate:
+                '<span ng-show="row.entity[col.field] == 1" class="fa fa-asterisk" style="color: blue; font: xx-small; padding-top: 8px; "></span>' +
+                '<span ng-show="row.entity[col.field] == 2" class="fa fa-pencil" style="color: brown; font: xx-small; padding-top: 8px; "></span>' +
+                '<span ng-show="row.entity[col.field] == 3" class="fa fa-trash" style="color: red; font: xx-small; padding-top: 8px; "></span>',
+            enableCellEdit: false,
+            enableColumnMenu: false,
+            enableSorting: false,
+            enableFiltering: false,
+            width: 25
+        },
+        {
+            name: 'nombre',
+            field: 'nombre',
+            displayName: 'Nombre',
+            width: 250,
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            enableSorting: true,
+            enableFiltering: true,
+            type: 'string'
+        },
+        {
+            name: 'abreviatura',
+            field: 'abreviatura',
+            displayName: 'Abreviatura',
+            width: 120,
+            headerCellClass: 'ui-grid-leftCell',
+            cellClass: 'ui-grid-leftCell',
+            enableColumnMenu: false,
+            enableCellEdit: true,
+            enableSorting: true,
+            enableFiltering: true,
+            type: 'string'
+        },
+        {
+            name: 'delButton',
+            displayName: '',
+            cellTemplate: '<span ng-click="grid.appScope.deleteItem(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+            enableCellEdit: false,
+            enableSorting: false,
+            enableFiltering: false, 
+            width: 25
+        }
     ]
 
     // ---------------------------------------------------------
     // subscriptions ...
     $scope.showProgress = true;
 
-   
     Meteor.subscribe('asegurados', () => {
 
         $scope.helpers({
@@ -117,7 +122,7 @@ angular.module("scrwebm").controller("AseguradosController", ['$scope', function
     $scope.deleteItem = function (item) {
         if (item.docState && item.docState === 1) { 
             // si el item es nuevo, simplemente lo eliminamos del array
-            lodash.remove($scope.asegurados, (x: any) => { return x._id === item._id; });
+            lodash.remove($scope.asegurados, (x) => { return x._id === item._id; });
         }
         else if (item.docState && item.docState === 3) {
             // permitimos hacer un 'undelete' de un item que antes se había eliminado en la lista (antes de grabar) ...
@@ -152,7 +157,7 @@ angular.module("scrwebm").controller("AseguradosController", ['$scope', function
 
                 if (!isValid) {
                     Asegurados.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
+                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
                     });
                 }
             }
@@ -184,7 +189,7 @@ angular.module("scrwebm").controller("AseguradosController", ['$scope', function
         Meteor.call('aseguradosSave', editedItems, (err, result) => {
 
         if (err) {
-            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({

@@ -61,7 +61,6 @@ import RenovarRiesgo from './renovarRiesgo/renovarRiesgoController';
 // import './notasDebito/notasDebito.html';
 import ConstruirNotasDebito from './notasDebito/notasDebito'; 
 
-
 export default angular.module("scrwebm.riesgos.riesgo", [ 
     'angular-meteor', 
     AgregarNuevoAsegurado.name, 
@@ -176,7 +175,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         suscriptores: () => { return Suscriptores.find({}); },
         monedas: () => { return Monedas.find({}); },
         // indoles: () => { return Indoles.find({}); },
-        // companias: () => { return Companias.find({}); },
+        companias: () => { return Companias.find({ $or: [ { tipo: 'REA' }, { tipo: 'CORRR' } ] }); },
         // ramos: () => { return Ramos.find({}); },
         coberturas: () => { return Coberturas.find({}); },
         asegurados: () => { return Asegurados.find({}); },
@@ -1103,7 +1102,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         Meteor.subscribe("search.companias", search, () => {
 
             $scope.helpers({
-                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+                companias: () => Companias.find()
             })
 
             $scope.uiSelectLoading_companias = false;
@@ -1118,7 +1117,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         Meteor.subscribe("search.companias", search, () => {
 
             $scope.helpers({
-                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+                companias: () => Companias.find()
             })
 
             $scope.uiSelectLoading_corredores = false;
@@ -1133,7 +1132,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         Meteor.subscribe("search.companias", search, () => {
 
             $scope.helpers({
-                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 } })
+                companias: () => Companias.find()
             })
 
             $scope.uiSelectLoading_cedenteOriginal = false;
@@ -1148,7 +1147,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         Meteor.subscribe("search.ramos", search, () => {
 
             $scope.helpers({
-                ramos: () => Ramos.find({ descripcion: new RegExp(search, 'i') }, { sort: { descripcion: 1 } })
+                ramos: () => Ramos.find()
             })
 
             $scope.uiSelectLoading_ramos = false;
@@ -1163,7 +1162,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         Meteor.subscribe("search.indoles", search, () => {
 
             $scope.helpers({
-                indoles: () => Indoles.find({ descripcion: new RegExp(search, 'i') }, { sort: { descripcion: 1 } })
+                indoles: () => Indoles.find()
             })
 
             $scope.uiSelectLoading_indoles = false;

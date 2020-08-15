@@ -44,6 +44,6 @@ dotansimha:accounts-ui-angular
 enforcer:angular-ui-bootstrap
 meanware:gridfs
 promise
-angular-templates@=1.0.3
 react-meteor-data
 matb33:collection-hooks
+angular-templates@=1.0.3

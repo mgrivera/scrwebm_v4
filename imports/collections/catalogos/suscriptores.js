@@ -2,14 +2,14 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: {
         type: String,
         optional: false
     },
-    descripcion: {
+    nombre: {
         type: String,
-        label: "Descripcion",
+        label: "Nombre",
         min: 1,
         max: 80,
         optional: false
@@ -25,7 +25,7 @@ var schema = new SimpleSchema({
         type: Number,
         optional: true
     }
-})
+});
 
-export const Indoles: any = new Mongo.Collection("indoles");
-Indoles.attachSchema(schema);
+export const Suscriptores = new Mongo.Collection("suscriptores");
+Suscriptores.attachSchema(schema);

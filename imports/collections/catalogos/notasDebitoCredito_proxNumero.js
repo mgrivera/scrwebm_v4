@@ -1,9 +1,9 @@
 
-
+import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false, },
     ano: { type: SimpleSchema.Integer, label: 'Año de la numeración', optional: false, },
     tipo: { type: String, label: 'Tipo (NC/ND)', optional: false },
@@ -11,7 +11,7 @@ var schema = new SimpleSchema({
     cia: { type: String, label: 'Cia', optional: false },
 })
 
-export const NotasDebitoCredito_proxNumero: any = new Mongo.Collection("notasDebitoCredito_proxNumero");
+export const NotasDebitoCredito_proxNumero = new Mongo.Collection("notasDebitoCredito_proxNumero");
 NotasDebitoCredito_proxNumero.attachSchema(schema);
 
 if (Meteor.isServer) {

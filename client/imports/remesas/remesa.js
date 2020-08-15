@@ -1,7 +1,8 @@
 /* eslint-disable require-atomic-updates */
-import angular from 'angular';
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
+
+import angular from 'angular';
 import lodash from 'lodash'; 
 
 import ProtegerEntidades from '/client/imports/generales/protegerEntidades'; 

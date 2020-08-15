@@ -2,7 +2,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false, },
 
     imp1Porc: { type: Number, label: "Imp1 %", optional: true, },
@@ -18,5 +18,5 @@ var schema = new SimpleSchema({
     docState: { type: Number, optional: true, }
 });
 
-export const ContratosParametros:any = new Mongo.Collection("contratosParametros");
+export const ContratosParametros = new Mongo.Collection("contratosParametros");
 ContratosParametros.attachSchema(schema);

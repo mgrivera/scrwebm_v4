@@ -2,7 +2,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-let schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: {
         type: String,
         optional: false
@@ -25,7 +25,7 @@ let schema = new SimpleSchema({
         type: Number,
         optional: true
     }
-});
+})
 
-export const Coberturas: any = new Mongo.Collection("coberturas");
-Coberturas.attachSchema(schema);
+export const Indoles = new Mongo.Collection("indoles");
+Indoles.attachSchema(schema);

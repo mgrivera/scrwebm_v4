@@ -12,11 +12,10 @@ Meteor.methods(
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = lodash.chain(monedas).
+        const inserts = lodash.chain(monedas).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
-
 
         inserts.forEach(function (item) {
             Monedas.insert(item, function (error) {
@@ -25,7 +24,7 @@ Meteor.methods(
             });
         });
 
-        var updates = lodash.chain(monedas).
+        const updates = lodash.chain(monedas).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto 
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto 
@@ -40,7 +39,7 @@ Meteor.methods(
             });
         });
 
-        var removes = lodash.filter(monedas, function (item) { return item.docState && item.docState == 3; });
+        const removes = lodash.filter(monedas, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             Monedas.remove({ _id: item._id });

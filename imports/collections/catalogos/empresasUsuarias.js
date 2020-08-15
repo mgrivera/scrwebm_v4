@@ -2,7 +2,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: {type: String,optional: false, },
     nombre: {type: String, label: "Nombre", min: 1, max: 120, optional: false, },
     nombreCorto: {type: String, label: "Nombre corto", min: 1, max: 25, optional: false, },
@@ -15,5 +15,5 @@ var schema = new SimpleSchema({
     docState: { type: Number, optional: true, }
 })
 
-export const EmpresasUsuarias: any = new Mongo.Collection("empresasUsuarias");
+export const EmpresasUsuarias = new Mongo.Collection("empresasUsuarias");
 EmpresasUsuarias.attachSchema(schema);

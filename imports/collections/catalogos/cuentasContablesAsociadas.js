@@ -1,12 +1,10 @@
 
-
-
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-export const CuentasContablesAsociadas: any = new Mongo.Collection("cuentasContablesAsociadas");
+export const CuentasContablesAsociadas = new Mongo.Collection("cuentasContablesAsociadas");
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false },
 
     tipo: { type: Number, label: "Tipo de cuenta (primas por pagar, primas por cobrar, corretaje, ...)", optional: false, custom: validarTipo, },
@@ -27,7 +25,7 @@ function validarTipo() {
         return undefined; 
     }
 
-    let origen = this.field("origen"); 
+    const origen = this.field("origen"); 
 
     if ((this.value === 10 || this.value === 100) && origen.isSet) { 
         return "Cuentas contables del tipo 'transitoria' o 'diferencia', deben tener el campo <em>Origen</em> en blanco (vacío)."; 

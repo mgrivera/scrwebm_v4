@@ -2,7 +2,7 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-var schema = new SimpleSchema({
+const schema = new SimpleSchema({
     _id: { type: String, optional: false, },
     descripcion: { type: String, label: "Descripción", min: 1, max: 120, optional: false, },
     abreviatura: { type: String, label: "Abreviatura", min: 1, max: 15, optional: false, },
@@ -10,5 +10,5 @@ var schema = new SimpleSchema({
     docState: { type: Number, optional: true, }
 });
 
-export const TiposContrato: any = new Mongo.Collection("tiposContrato");
-TiposContrato.attachSchema(schema);
+export const TiposSiniestro = new Mongo.Collection("tiposSiniestro");
+TiposSiniestro.attachSchema(schema);

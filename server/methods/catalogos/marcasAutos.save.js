@@ -12,21 +12,20 @@ Meteor.methods(
             throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
         }
 
-        var inserts = lodash.chain(items).
+        const inserts = lodash.chain(items).
                       filter(function (item) { return item.docState && item.docState == 1; }).
                       map(function (item) { delete item.docState; return item; }).
                       value();
 
-
         inserts.forEach(function (item) {
-            AutosMarcas.insert(item, function (error, result) {
+            AutosMarcas.insert(item, function (error) {
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
                 }
             });
         })
 
-        var updates = lodash.chain(items).
+        const updates = lodash.chain(items).
                         filter(function (item) { return item.docState && item.docState == 2; }).
                         map(function (item) { delete item.docState; return item; }).                // eliminamos docState del objeto
                         map(function (item) { return { _id: item._id, object: item }; }).           // separamos el _id del objeto
@@ -34,7 +33,7 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            AutosMarcas.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            AutosMarcas.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
@@ -42,7 +41,7 @@ Meteor.methods(
             })
         })
 
-        var removes = lodash.filter(items, function (item) { return item.docState && item.docState == 3; });
+        const removes = lodash.filter(items, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
             AutosMarcas.remove({ _id: item._id });

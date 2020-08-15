@@ -7,9 +7,9 @@ var schema = new SimpleSchema({
         type: String,
         optional: false
     },
-    nombre: {
+    descripcion: {
         type: String,
-        label: "Nombre",
+        label: "Descripción",
         min: 1,
         max: 80,
         optional: false
@@ -27,5 +27,5 @@ var schema = new SimpleSchema({
     }
 });
 
-export const Suscriptores: any = new Mongo.Collection("suscriptores");
-Suscriptores.attachSchema(schema);
+export const CausasSiniestro = new Mongo.Collection("causasSiniestro");
+CausasSiniestro.attachSchema(schema);
