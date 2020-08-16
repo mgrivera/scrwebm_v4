@@ -10,8 +10,9 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
-const transaccion_CobroPrimas =
-    function cuadreRemesa_Transaccion_CobroPrimas(remesa, cuota, riesgo, numeroTransaccion, parametrosEjecucion) {
+// la empresa usuaria puede ser: corredor de reaseguros (CORRR) / reasegurador (REA)
+
+export const cuadre_cobroPrimas = (remesa, cuota, numeroTransaccion, empresaUsuariaTipo, parametrosEjecucion) => {
 
     // parametrosEjecucion = {
     //     generarMontosEnFormaProporcional: boolean,
@@ -54,7 +55,7 @@ const transaccion_CobroPrimas =
     // y estamos cobrando la 2 (ej: 2 de 3), debemos leer las 2das cuotas para reaseguradores
     const restoCuotas = Cuotas.find({ $and: [{ 'source.entityID': { $eq: cuota.source.entityID }},
                                           { 'source.subEntityID': { $eq: cuota.source.subEntityID }},
-                                          { compania: { $ne: cuota.compania }},
+                                        //   { compania: { $ne: cuota.compania }},
                                           { numero: { $eq: cuota.numero }}
                                   ]}).fetch();
 
@@ -65,7 +66,8 @@ const transaccion_CobroPrimas =
     }
     // ---------------------------------------------------------------------------------------------------
 
-    restoCuotas.forEach(cuotaReasegurador => {
+    // primero leemos solo los montos que corresponden a companias diferentes (ie: reaseguradores) a la compañía del cobro (cedente) 
+    restoCuotas.filter(x => x.compania != cuota.compania ).forEach(cuotaReasegurador => {
         const partida = {};
         numeroPartida += 10;
 
@@ -95,7 +97,59 @@ const transaccion_CobroPrimas =
         balance += partida.monto;
     });
 
+
+
+
+
+
+
+
+    // ahora leemos cuotas diferentes a la original, pero para la *misma* compañía del cobro; las consideramos como un monto 
+    // de corretaje por pagar 
+    restoCuotas.filter(x => x.compania === cuota.compania && x._id != cuota._id).forEach(cuotacedente => {
+        const partida = {};
+        numeroPartida += 10;
+
+        const cedente = Companias.findOne(cuotacedente.compania);
+
+        // leemos la cuenta contable que corresonde al corretaje por pagar 
+        const cuentaContable = leerCuentaContableAsociada(55, cuotacedente.moneda, cuotacedente.compania, cuota.source.origen);
+
+        partida._id = new Mongo.ObjectID()._str;
+        partida.numero = numeroPartida;
+        partida.tipo = 250;      // 200: corretaje por pagar al cedente 
+        partida.codigo = cuentaContable && cuentaContable.cuentaContable ? cuentaContable.cuentaContable : null;
+        partida.compania = cuotacedente.compania;
+        partida.descripcion = `Corretaje por pagar - ${cedente.abreviatura} - ${moneda.simbolo}`;
+        partida.referencia = `${cuota.source.origen}-${cuota.source.numero}; cuota: ${cuota.numero.toString()}/${cuota.cantidad.toString()}`;
+        partida.moneda = cuotacedente.moneda;
+        partida.monto = cuotacedente.monto;
+
+        if (parametrosEjecucion.generarMontosEnFormaProporcional) {
+            // aplicamos la proporción que corresponde al monto cobrado ...
+            partida.monto *= proporcionCobro;
+        }
+
+        partida.monto = lodash.round(partida.monto, 2);
+
+        transaccion.partidas.push(partida);
+        balance += partida.monto;
+    });
+
+
+
+
+
+
+
+
+
+
+
+
     // finalmente, agregamos la partida que corresponde a la diferencia (corretaje)
+    // nota: la diferencia es siempre considerada como un ingreso; sin embargo, depende del tipo de la empresa usuaria: 
+    // CORRR: corretaje / REA: ingresos por negocio facultativo 
     if (balance != 0) {
 
         // leemos la cuenta contable asociada, para asignar a la partida 
@@ -106,10 +160,10 @@ const transaccion_CobroPrimas =
 
         partida._id = new Mongo.ObjectID()._str;
         partida.numero = numeroPartida;
-        partida.tipo = 300;      // 300: corretaje por cobro de primas
+        partida.tipo = 300;      // 300: ingresos por cobro de primas
         partida.codigo = cuentaContable && cuentaContable.cuentaContable ? cuentaContable.cuentaContable : null;
         partida.compania = compania._id;
-        partida.descripcion = `Corretaje por cobro de prima (fac) - ${compania.abreviatura} - ${moneda.simbolo}`;
+        partida.descripcion = `Ingresos por cobro de prima (fac) - ${compania.abreviatura} - ${moneda.simbolo}`;
         partida.referencia = `${cuota.source.origen}-${cuota.source.numero}; cuota: ${cuota.numero.toString()}/${cuota.cantidad.toString()}`;
         partida.moneda = pago.moneda;
         partida.monto = balance * -1;
@@ -124,5 +178,3 @@ const transaccion_CobroPrimas =
 
     return numeroTransaccion;
 }
-
-RemesasCuadre_Methods.transaccion_CobroPrimas = transaccion_CobroPrimas;

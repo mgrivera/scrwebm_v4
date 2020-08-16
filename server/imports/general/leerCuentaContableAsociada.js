@@ -1,14 +1,26 @@
 
+import { Meteor } from 'meteor/meteor'
+import lodash from 'lodash'; 
 
 import { CuentasContablesAsociadas } from '/imports/collections/catalogos/cuentasContablesAsociadas';
-import lodash from 'lodash'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 // esta función lee la cuenta contable asociada para un: tipo/moneda/compania/origen 
 // la idea es que los campos moneda, compania y origen pueden ser null en mongo. 
 // la función lee la cuenta que más se aproxime a los parámetros recibidos y la regresa. 
 export function leerCuentaContableAsociada(tipo, moneda, compania, origen) { 
 
-    let filtro = { 
+    // ------------------------------------------------------------------------------------------------
+    // leemos la empresa usuaria seleccionada
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let empresaSeleccionadaID = null;
+
+    if (companiaSeleccionada) {
+        empresaSeleccionadaID = companiaSeleccionada.companiaID;
+    }
+    // ------------------------------------------------------------------------------------------------
+
+    const filtro = { 
         $and: [ 
                 { tipo: tipo },                 // el tipo nunca será null en mongo (primas por pagar, corretaje, sin por pagar, ...)
                 { $or: [ 
@@ -29,10 +41,11 @@ export function leerCuentaContableAsociada(tipo, moneda, compania, origen) {
                             { origen: { $exists: false } }
                         ]
                 }, 
+                { cia: empresaSeleccionadaID }
             ]
     }; 
 
-    let cuentasContablesLeidas = CuentasContablesAsociadas.find(filtro).fetch(); 
+    const cuentasContablesLeidas = CuentasContablesAsociadas.find(filtro).fetch(); 
 
     if (!cuentasContablesLeidas.length) { 
         return null; 
@@ -40,7 +53,7 @@ export function leerCuentaContableAsociada(tipo, moneda, compania, origen) {
 
     // si las cuentas asociadas no corresponden a una moneda, compañía u origen, pueden no tener esos 'keys' en el documento. 
     // de ser así, el sort que sigue pareciera que no funciona. Por esa razón, recorremos los registros y agregamos los keys cuando no existen ... 
-    for (let cuentaAsociada of cuentasContablesLeidas) { 
+    for (const cuentaAsociada of cuentasContablesLeidas) { 
         if (!cuentaAsociada.moneda) { 
             cuentaAsociada.moneda = null; 
         }
@@ -54,7 +67,7 @@ export function leerCuentaContableAsociada(tipo, moneda, compania, origen) {
              
     // mongo puede regresar varias cuentas; el objetivo del sort es regresar la que tenga un valor, por ejemplo, en la moneda, 
     // en vez de la que tenga un null ... 
-    let cuentaContable = lodash(cuentasContablesLeidas).orderBy(['moneda', 'compania', 'origen'], ['asc', 'asc', 'asc']).first(); 
+    const cuentaContable = lodash(cuentasContablesLeidas).orderBy(['moneda', 'compania', 'origen'], ['asc', 'asc', 'asc']).first(); 
 
     return cuentaContable; 
 }

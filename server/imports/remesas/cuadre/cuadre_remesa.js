@@ -9,16 +9,16 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
 
-let transaccion_Remesa = function transaccion_Remesa(remesa, numeroTransaccion) {
+export const cuadre_remesa = (remesa, numeroTransaccion) => {
 
     // grabamos la partida (o línea) # 10 del cuadre, con el monto (completo) de la remesa ...
     // esta primera partida del cuadre muestra, simplemente, el monto de la remesa
-    let compania = Companias.findOne(remesa.compania);
-    let moneda = Monedas.findOne(remesa.moneda);
+    const compania = Companias.findOne(remesa.compania);
+    const moneda = Monedas.findOne(remesa.moneda);
 
     numeroTransaccion += 10;
 
-    let transaccion = {
+    const transaccion = {
         _id: new Mongo.ObjectID()._str,
         transaccion: {
             numero: numeroTransaccion,
@@ -39,13 +39,13 @@ let transaccion_Remesa = function transaccion_Remesa(remesa, numeroTransaccion) 
     let cuentaContable = null; 
 
     if (remesa.miSu === "SU") { 
-        let cuentaContableAsociada = leerCuentaContableAsociada(10, remesa.moneda, remesa.compania, null); 
+        const cuentaContableAsociada = leerCuentaContableAsociada(10, remesa.moneda, remesa.compania, null); 
         if (cuentaContableAsociada) { 
             cuentaContable = cuentaContableAsociada.cuentaContable; 
         }
     } else { 
-        let cuentaBancariaID = remesa && remesa.instrumentoPago && remesa.instrumentoPago.cuentaBancaria ? remesa.instrumentoPago.cuentaBancaria : "xyz"; 
-        let cuentaBancaria = CuentasBancarias.findOne(cuentaBancariaID); 
+        const cuentaBancariaID = remesa && remesa.instrumentoPago && remesa.instrumentoPago.cuentaBancaria ? remesa.instrumentoPago.cuentaBancaria : "xyz"; 
+        const cuentaBancaria = CuentasBancarias.findOne(cuentaBancariaID); 
 
         if (cuentaBancaria && cuentaBancaria.cuentaContable) { 
             cuentaContable = cuentaBancaria.cuentaContable; 
@@ -53,8 +53,8 @@ let transaccion_Remesa = function transaccion_Remesa(remesa, numeroTransaccion) 
     }
     
 
-    let partida = {};
-    let numeroPartida = 1;
+    const partida = {};
+    const numeroPartida = 1;
 
     partida._id = new Mongo.ObjectID()._str;
     partida.numero = numeroPartida;
@@ -77,6 +77,4 @@ let transaccion_Remesa = function transaccion_Remesa(remesa, numeroTransaccion) 
     remesa.cuadre.push(transaccion);
 
     return numeroTransaccion;
-};
-
-RemesasCuadre_Methods.transaccion_Remesa = transaccion_Remesa;
+}

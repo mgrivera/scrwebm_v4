@@ -59,9 +59,10 @@ angular.module("scrwebm")
             { tipo: 10, descripcion: "Transitoria", },
             { tipo: 30, descripcion: "Primas por cobrar", },
             { tipo: 50, descripcion: "Primas por pagar", },
+            { tipo: 55, descripcion: "Corretaje por pagar", },
             { tipo: 60, descripcion: "Siniestros por cobrar", },
             { tipo: 70, descripcion: "Siniestros por pagar", },
-            { tipo: 90, descripcion: "Corretaje", },
+            { tipo: 90, descripcion: "Ingresos", },
             { tipo: 100, descripcion: "Diferencia en la remesa", },
         ]
 
@@ -393,7 +394,7 @@ angular.module("scrwebm")
 
         // ------------------------------------------------------------------------------------
         // para filtrar desde el ui-grid por tipo de cuenta ... 
-        function ui_grid_filterBy_tipoCuentaContable(searchTerm, cellValue, row, column) {
+        function ui_grid_filterBy_tipoCuentaContable(searchTerm, cellValue) {
 
             // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
             if (!cellValue) {
@@ -418,7 +419,7 @@ angular.module("scrwebm")
             return false;
         }
 
-        function ui_grid_filterBy_moneda(searchTerm, cellValue, row, column) {
+        function ui_grid_filterBy_moneda(searchTerm, cellValue) {
 
             // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
 
@@ -444,7 +445,7 @@ angular.module("scrwebm")
             return false;
         }
 
-        function ui_grid_filterBy_compania(searchTerm, cellValue, row, column) {
+        function ui_grid_filterBy_compania(searchTerm, cellValue) {
 
             // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
 
@@ -470,7 +471,7 @@ angular.module("scrwebm")
             return false;
         }
 
-        function ui_grid_filterBy_origen(searchTerm, cellValue, row, column) {
+        function ui_grid_filterBy_origen(searchTerm, cellValue) {
 
             // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
 
@@ -496,7 +497,7 @@ angular.module("scrwebm")
             return false;
         }
 
-        function ui_grid_filterBy_cuentaContable(searchTerm, cellValue, row, column) {
+        function ui_grid_filterBy_cuentaContable(searchTerm, cellValue) {
 
             // cuando la columna es un ddl no hemos logrado que funcione el 'filterCellFiltered' (???) 
 

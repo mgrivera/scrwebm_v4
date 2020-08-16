@@ -31,6 +31,7 @@ function ($scope, $modalInstance, $timeout, riesgo, movimiento, cuotas) {
         $modalInstance.dismiss("Cancel");
     };
 
+    // ----------------------------------------------------------------------------------------------------------------------
     // determinamos la compañía nosotros, para saber si tiene un monto de corretaje calculado. De ser así, preguntamos al 
     // usuario si construimos una cuota de corretaje para la compañía cedente 
     let companiaNosotros = {};

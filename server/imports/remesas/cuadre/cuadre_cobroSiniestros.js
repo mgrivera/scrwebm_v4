@@ -6,19 +6,19 @@ import { leerCuentaContableAsociada } from '/server/imports/general/leerCuentaCo
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 
-let transaccion_CobroSiniestros = function cuadreRemesa_Transaccion_CobroSiniestros(remesa, cuota, siniestro, numeroTransaccion) {
+export const cuadre_cobroSiniestros = (remesa, cuota, siniestro, numeroTransaccion) => {
 
     // grabamos la partida # 10 de la transaccion, con la cuota cobrada ...
     let compania = Companias.findOne(cuota.compania);
-    let pago = lodash.find(cuota.pagos, pago => { return pago.remesaID === remesa._id; });
-    let moneda = Monedas.findOne(pago.moneda);
+    const pago = lodash.find(cuota.pagos, pago => { return pago.remesaID === remesa._id; });
+    const moneda = Monedas.findOne(pago.moneda);
 
     // leemos la cuenta contable asociada, para asignar a la partida 
     let cuentaContable = leerCuentaContableAsociada(60, pago.moneda, cuota.compania, cuota.source.origen); 
 
     numeroTransaccion += 10;
 
-    let transaccion = {
+    const transaccion = {
         _id: new Mongo.ObjectID()._str,
         transaccion: {
             numero: numeroTransaccion,
@@ -48,7 +48,7 @@ let transaccion_CobroSiniestros = function cuadreRemesa_Transaccion_CobroSiniest
     cuentaContable = leerCuentaContableAsociada(70, pago.moneda, siniestro.compania, cuota.source.origen); 
 
     partida = {};
-    numeroPartida = 10;
+    const numeroPartida = 10;
 
     compania = Companias.findOne(siniestro.compania);
 
@@ -68,6 +68,4 @@ let transaccion_CobroSiniestros = function cuadreRemesa_Transaccion_CobroSiniest
     remesa.cuadre.push(transaccion);
 
     return numeroTransaccion;
-};
-
-RemesasCuadre_Methods.transaccion_CobroSiniestros = transaccion_CobroSiniestros;
+}

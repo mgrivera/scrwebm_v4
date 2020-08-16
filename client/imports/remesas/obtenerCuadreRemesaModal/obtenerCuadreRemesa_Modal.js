@@ -1,7 +1,10 @@
 
+import { Meteor } from 'meteor/meteor'
 
 import angular from 'angular'; 
+
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 export default angular.module("scrwebm.remesas.remesa.remesasCuadreObtener", [])
                       .controller('RemesaCuadreObtener_Modal_Controller',
@@ -24,6 +27,38 @@ export default angular.module("scrwebm.remesas.remesa.remesasCuadreObtener", [])
         $modalInstance.dismiss("Cancel");
     }
 
+
+
+
+
+
+
+
+    // ----------------------------------------------------------------------------------------------------------------------
+    // determinamos la compañía nosotros, para saber si tiene un monto de corretaje calculado. De ser así, preguntamos al 
+    // usuario si construimos una cuota de corretaje para la compañía cedente 
+    let companiaNosotros = {};
+    const result = LeerCompaniaNosotros(Meteor.userId());
+
+    if (result.error) {
+        $scope.alerts.length = 0;
+        $scope.alerts.push({
+            type: 'danger',
+            msg: `<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em><br />${result.message}`
+        });
+    }
+
+    companiaNosotros = result.companiaNosotros; 
+    // ----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
     // el usuario hace un submit, cuando quiere 'salir' de edición ...
     $scope.submitted = false;
 
@@ -42,10 +77,10 @@ export default angular.module("scrwebm.remesas.remesa.remesasCuadreObtener", [])
             $scope.submitted = false;
             $scope.remesasObtenerCuadreForm.$setPristine();    // para que la clase 'ng-submitted deje de aplicarse a la forma ... button
 
-            Meteor.call('remesasObtenerCuadre', remesaID, $scope.parametros, (err, result) => {
+            Meteor.call('remesasObtenerCuadre', remesaID, companiaNosotros.tipo, $scope.parametros, (err) => {
                 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
     
                     $scope.alerts.length = 0;
                     $scope.alerts.push({

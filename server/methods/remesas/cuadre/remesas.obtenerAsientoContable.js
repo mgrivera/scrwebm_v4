@@ -2,15 +2,13 @@
 import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo'; 
 
-import moment from 'moment';
 import lodash from 'lodash';
-import numeral from 'numeral';
 
 import SimpleSchema from 'simpl-schema';
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
-import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
+// import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
 
@@ -24,7 +22,7 @@ Meteor.methods(
             opciones: { type: Object, blackbox: true, optional: false },
         }).validate({ remesaID, ciaSeleccionada, opciones, });
 
-        let remesa = Remesas.findOne(remesaID);
+        const remesa = Remesas.findOne(remesaID);
 
         if (!remesa) {
             throw new Meteor.Error('error-base-datos',
@@ -50,24 +48,20 @@ Meteor.methods(
             remesa.asientoContable = [];
         }
 
-        if (opciones.resumirPartidasAsientoContable) { 
-
-        }
-
         const instrumentoPago = remesa.instrumentoPago;
 
         const companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
         const monedas = Monedas.find({}, { fields: { _id: true, simbolo: true, }}).fetch();
         const bancos = Bancos.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
 
-        const compania = companias.find((x) => { return x._id === remesa.compania; });
-        const moneda = monedas.find((x) => { return x._id === remesa.moneda; });
+        // const compania = companias.find((x) => { return x._id === remesa.compania; });
+        // const moneda = monedas.find((x) => { return x._id === remesa.moneda; });
         const banco = bancos.find((x) => { return x._id === instrumentoPago.banco });
-        let cuentaBancaria = null;
+        // const cuentaBancaria = null;
 
-        if (instrumentoPago && instrumentoPago.banco && instrumentoPago.cuentaBancaria) {
-            cuentaBancaria = CuentasBancarias.findOne(instrumentoPago.cuentaBancaria);
-        }
+        // if (instrumentoPago && instrumentoPago.banco && instrumentoPago.cuentaBancaria) {
+        //     cuentaBancaria = CuentasBancarias.findOne(instrumentoPago.cuentaBancaria);
+        // }
 
         // -------------------------------------------------------------------------------------------------
         // resumimos las partidas del cuadre para obtener el asiento contable; además, obviamos las partidas 
@@ -109,8 +103,8 @@ Meteor.methods(
         })
 
         const partidasResumenArray = [];
-        const partida = {};
-        let granTotal = 0;
+        // const partida = {};
+        // let granTotal = 0;
         let numero = 0; 
         const partidasGroupByTipoCodigoCompaniaMoneda_array = lodash.groupBy(partidasArray, 'grupo');
 

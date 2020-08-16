@@ -9,8 +9,7 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
-let transaccion_CobroPrimasContratos =
-    function cuadreRemesa_Transaccion_CobroPrimas(remesa, cuota, contrato, numeroTransaccion, parametrosEjecucion) {
+export const cuadre_cobroPrimasContratos = (remesa, cuota, contrato, numeroTransaccion, parametrosEjecucion) => {
 
     // parametrosEjecucion = {
     //     generarMontosEnFormaProporcional: boolean,
@@ -18,17 +17,17 @@ let transaccion_CobroPrimasContratos =
     // };
 
     // grabamos una transacción que corresponde a un cobro de prima de un contrato (proporcional o no)
-    let compania = Companias.findOne(cuota.compania);
-    let moneda = Monedas.findOne(cuota.moneda);
-    let codigoContrato = contrato.codigo ? contrato.codigo : '';
+    const compania = Companias.findOne(cuota.compania);
+    const moneda = Monedas.findOne(cuota.moneda);
+    const codigoContrato = contrato.codigo ? contrato.codigo : '';
 
     // buscamos el cobro específico en la cuota, pues una cuota puede tener más de un cobro
-    let pago = lodash.find(cuota.pagos, pago => { return pago.remesaID === remesa._id; });
-    let monedaPago = Monedas.findOne(pago.moneda); 
+    const pago = lodash.find(cuota.pagos, pago => { return pago.remesaID === remesa._id; });
+    const monedaPago = Monedas.findOne(pago.moneda); 
 
     numeroTransaccion += 10;
 
-    let transaccion = {
+    const transaccion = {
         _id: new Mongo.ObjectID()._str,
         transaccion: {
             numero: numeroTransaccion,
@@ -55,7 +54,7 @@ let transaccion_CobroPrimasContratos =
     // leemos las cuotas de reaseguradores y las agregamos a la transacción ...
     // nótese que leemos justo las cuotas que corresponden; si, por ejemplo, un movimiento de un riesgo tiene 3 cuotas
     // y estamos cobrando la 2 (ej: 2 de 3), debemos leer las 2das cuotas para reaseguradores
-    let restoCuotas = Cuotas.find({ $and: [{ 'source.entityID': { $eq: cuota.source.entityID }},
+    const restoCuotas = Cuotas.find({ $and: [{ 'source.entityID': { $eq: cuota.source.entityID }},
                                           { 'source.subEntityID': { $eq: cuota.source.subEntityID }},
                                           { compania: { $ne: cuota.compania }},
                                           { numero: { $eq: cuota.numero }}
@@ -71,12 +70,12 @@ let transaccion_CobroPrimasContratos =
     restoCuotas.forEach(cuotaReasegurador => {
 
         // leemos la cuenta contable asociada, para asignar a la partida 
-        cuentaContable = leerCuentaContableAsociada(50, cuotaReasegurador.moneda, cuotaReasegurador.compania, cuota.source.origen); 
+        const cuentaContable = leerCuentaContableAsociada(50, cuotaReasegurador.moneda, cuotaReasegurador.compania, cuota.source.origen); 
 
-        let partida = {};
+        const partida = {};
         numeroPartida += 10;
 
-        reasegurador = Companias.findOne(cuotaReasegurador.compania);
+        const reasegurador = Companias.findOne(cuotaReasegurador.compania);
 
         partida._id = new Mongo.ObjectID()._str;
         partida.numero = numeroPartida;
@@ -103,9 +102,9 @@ let transaccion_CobroPrimasContratos =
     if (balance != 0) {
 
         // leemos la cuenta contable asociada, para asignar a la partida 
-        cuentaContable = leerCuentaContableAsociada(90, pago.moneda, compania._id, cuota.source.origen); 
+        const cuentaContable = leerCuentaContableAsociada(90, pago.moneda, compania._id, cuota.source.origen); 
 
-        let partida = {};
+        const partida = {};
         numeroPartida += 10;
 
         partida._id = new Mongo.ObjectID()._str;
@@ -120,12 +119,10 @@ let transaccion_CobroPrimasContratos =
         partida.monto = lodash.round(partida.monto, 2); 
 
         transaccion.partidas.push(partida);
-    };
+    }
 
     // finalmente, agregamos la transacción (con todas sus partidas) al cuadre de la remesa
     remesa.cuadre.push(transaccion);
 
     return numeroTransaccion;
-};
-
-RemesasCuadre_Methods.transaccion_CobroPrimasContratos = transaccion_CobroPrimasContratos;
+}
