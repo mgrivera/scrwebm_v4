@@ -8,10 +8,13 @@ import lodash from 'lodash';
 
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
-export default angular.module("scrwebm.riesgos.movimientos.contruirCuotas", []).
+import InfoModal from '/client/imports/genericReactComponents/infoModal/angular.module'; 
+import construirCuotasInfoText from './construirCuotas.infoText'; 
+
+export default angular.module("scrwebm.riesgos.movimientos.contruirCuotas", [ InfoModal.name ]).
                        controller('Riesgos_ConstruirCuotasController',
-['$scope', '$modalInstance', 'riesgo', 'movimiento', 'cuotas',
-function ($scope, $modalInstance, riesgo, movimiento, cuotas) {
+['$scope', '$modalInstance', '$timeout', 'riesgo', 'movimiento', 'cuotas', 
+function ($scope, $modalInstance, $timeout, riesgo, movimiento, cuotas) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -39,6 +42,24 @@ function ($scope, $modalInstance, riesgo, movimiento, cuotas) {
             type: 'danger',
             msg: `<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em><br />${result.message}`
         });
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------------
+    // para mostrar/ocultar el modal que muestra las notas para esta función; nota: el modal es un react component ... 
+    $scope.showInfoModal = false; 
+    $scope.infoText = construirCuotasInfoText(); 
+    $scope.infoHeader = "Construir cuotas de cobro y pago de primas"; 
+
+    $scope.setShowInfoModal = () => { 
+        $scope.showInfoModal = !$scope.showInfoModal; 
+
+        // el timeOut es necesario pues la función se ejecuta desde react; angular 'no se da cuenta' y este código, 
+        // probablemente, pasa desapercibido para angularjs; el $timeout hace que anular ejecute sus ciclos y revise el 
+        // resultado de este código; al hacerlo, angular actualiza su state ... 
+
+        // nótese que timeout ejecuta un callback luego que pasa un delay; cómo no necesitamos ejecutar un 
+        // callback, no lo pasamos; el delay tampoco ... 
+        $timeout(); 
     }
 
     companiaNosotros = result.companiaNosotros; 

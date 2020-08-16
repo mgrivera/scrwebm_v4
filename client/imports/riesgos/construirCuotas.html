@@ -1,10 +1,19 @@
 ﻿
-
 <div class="modal-header">
-    <h5 class="modal-title">
-        <span>Construcción de cuotas</span>
-    </h5>
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-0">
+            <h5 class="modal-title">
+                <span>Construcción de cuotas</span>
+            </h5>
+        </div>
+        <div class="col-sm-3 col-sm-offset-3" style="text-align: right;">
+            <a href="#" ng-click="setShowInfoModal()">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="color:white"></span>
+            </a>
+        </div>
+    </div>
 </div>
+
 
 <div class="modal-body">
     <div class="container-fluid">
@@ -14,6 +23,18 @@
                 <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
                     <span ng-bind-html="alert.msg | unsafe"></span>
                 </alert>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div ng-if="showInfoModal">
+                    <info-modal show-info-modal="showInfoModal" 
+                                set-show-info-modal="setShowInfoModal" 
+                                info-header="infoHeader"
+                                info-text="infoText">
+                    </info-modal>
+                </div>
             </div>
         </div>
 
@@ -166,6 +187,10 @@
 </div>
 
 <div class="modal-footer">
-    <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">Cerrar</button>
-    <button type="submit" form="construirCuotasForm" class="btn btn-sm pull-right btn-primary" style="margin-right: 15px; ">Constrir y registrar cuotas</button>
+    <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">
+        Cerrar
+    </button>
+    <button type="submit" form="construirCuotasForm" class="btn btn-sm pull-right btn-primary" style="margin-right: 15px; ">
+        Constrir y registrar cuotas
+    </button>
 </div>
