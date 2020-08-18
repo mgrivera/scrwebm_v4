@@ -62,6 +62,7 @@ function ($scope, $modalInstance, $timeout, riesgo, movimiento, cuotas) {
         // callback, no lo pasamos; el delay tampoco ... 
         $timeout(); 
     }
+    // ----------------------------------------------------------------------------------------------------------------------
 
     companiaNosotros = result.companiaNosotros; 
 

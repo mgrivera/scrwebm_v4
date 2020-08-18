@@ -1,12 +1,10 @@
 
-import { Meteor } from 'meteor/meteor'
+import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo';
 
 import lodash from 'lodash';
 import angular from 'angular';
-import saveAs from 'save-as'; 
 
-import riesgos_funcionesGenerales from './riesgos_funcionesGenerales'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { Riesgos, Riesgos_InfoRamo, Riesgo_InfoRamos_Autos_SimpleSchema } from '/imports/collections/principales/riesgos'; 
@@ -54,27 +52,26 @@ import RiesgoCuotas from './riesgo.cuotas';
 import RiesgoImprimirNotasCobertura from './imprimirNotasModalController'; 
 
 // para hacer la renovación de un riesgo 
-// import './renovarRiesgo/renovarRiesgoModal.html';
-import RenovarRiesgo from './renovarRiesgo/renovarRiesgoController'; 
+import renovarRiesgo_htmlTemplate from './renovarRiesgo/renovarRiesgoModal.html';
+import RenovarRiesgo from './renovarRiesgo/renovarRiesgoController';
+
+// para hacer el 'download to disk' del riesgo 
+import DownloadRiesgoToDisk from './downloadRiesgo/downloadRiesgo'; 
+import downloadToDisk_htmlTemplate from './downloadRiesgo/downloadRiesgo.html'; 
 
 // construir notas de débito 
 // import './notasDebito/notasDebito.html';
 import ConstruirNotasDebito from './notasDebito/notasDebito'; 
 
-export default angular.module("scrwebm.riesgos.riesgo", [ 
-    'angular-meteor', 
-    AgregarNuevoAsegurado.name, 
-    RiesgosGenerales.name, 
-    RiesgoMovimientos.name, 
-    RiesgosInfoRamo.name, 
-    RiesgoProductores.name, 
-    RiesgoCuotas.name, 
-    RiesgoImprimirNotasCobertura.name, 
-    RenovarRiesgo.name, 
-    ConstruirNotasDebito.name, 
+export default angular.module("scrwebm.riesgos.riesgo", [ 'angular-meteor', 
+                                                           AgregarNuevoAsegurado.name, RiesgosGenerales.name, 
+                                                           RiesgoMovimientos.name, RiesgosInfoRamo.name, 
+                                                           RiesgoProductores.name, RiesgoCuotas.name, 
+                                                           RiesgoImprimirNotasCobertura.name, RenovarRiesgo.name, 
+                                                           ConstruirNotasDebito.name, DownloadRiesgoToDisk.name
 ])
-    .controller("Riesgo_Controller", ['$scope', '$state', '$stateParams', '$modal', '$location', 
-                             function ($scope, $state, $stateParams, $modal, $location) {
+                       .controller("Riesgo_Controller", ['$scope', '$state', '$stateParams', '$modal', '$location', 
+function ($scope, $state, $stateParams, $modal, $location) {
 
     $scope.showProgress = true;
 
@@ -95,8 +92,10 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
     const empresaUsuariaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = {}; 
+
     if (empresaUsuariaSeleccionada) { 
-        var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(empresaUsuariaSeleccionada.companiaID, { fields: { nombre: 1 } });
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(empresaUsuariaSeleccionada.companiaID, { fields: { nombre: 1 } });
     }
         
     $scope.companiaSeleccionada = {};
@@ -174,9 +173,9 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     $scope.helpers({
         suscriptores: () => { return Suscriptores.find({}); },
         monedas: () => { return Monedas.find({}); },
-        // indoles: () => { return Indoles.find({}); },
-        companias: () => { return Companias.find({ $or: [ { tipo: 'REA' }, { tipo: 'CORRR' } ] }); },
-        // ramos: () => { return Ramos.find({}); },
+        indoles: () => { return Indoles.find({}); },
+        companias: () => { return Companias.find({}); },
+        ramos: () => { return Ramos.find({}); },
         coberturas: () => { return Coberturas.find({}); },
         asegurados: () => { return Asegurados.find({}); },
         tiposFacultativo: () => { return TiposFacultativo.find({}); },
@@ -186,7 +185,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     $scope.nuevo0 = function () {
 
         if ($scope.riesgo.docState && $scope.origen == 'edicion') {
-            var promise = DialogModal($modal,
+            const promise = DialogModal($modal,
                                     "<em>Riesgos</em>",
                                     "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa para agregar un nuevo registro, " +
                                     "los cambios se perderán.<br /><br />Desea continuar y perder los cambios efectuados al registro actual?",
@@ -214,64 +213,36 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         inicializarItem(); 
     }
 
-
-    // para copiar el riesgo seleccionado en uno nuevo que el usuario pueda editar y grabar como uno diferente
-    $scope.copiarEnUnNuevoRiesgo = function() {
+    $scope.DownloadToDisk = function () {
 
         if ($scope.riesgo.docState && $scope.origen == 'edicion') {
-            DialogModal($modal, "<em>Riesgos - Copiar riesgo en uno nuevo ...</em>",
-                                "Aparentemente, <em>se han efectuado cambios</em> en el registro.<br /><br />" +
-                                "Por favor guarde estos cambios antes de intentar ejecutar esta función.",
-                                false).then();
+            DialogModal($modal, "<em>Riesgos - Download</em>",
+                "Aparentemente, <em>se han efectuado cambios</em> en el registro.<br /><br />" +
+                "Por favor guarde estos cambios antes de intentar ejecutar esta función.",
+                false).then();
             return;
         }
 
-        $scope.showProgress = true;
-
-        const message = `Este proceso copiará el riesgo que ahora está en la página, a un nuevo riesgo. <br />
-                       Desea continuar y crear un nuevo riesgo en base al que ahora está en la página?`; 
-
-        DialogModal($modal, "<em>Riesgos</em>", message, true).then(
-            function () {
-                const result = riesgos_funcionesGenerales.copiarRiesgoEnUnoNuevo($scope.riesgo); 
-
-                if (result.error) { 
-
-                    $scope.alerts.length = 0;
-                    $scope.alerts.push({
-                        type: 'alert',
-                        msg: result.message
-                    });
-
-                    return; 
+        $modal.open({
+            templateUrl: downloadToDisk_htmlTemplate,
+            controller: 'DownloadRiesgoToDisk_ModalController',
+            size: 'md',
+            resolve: {
+                riesgoOriginal: function () {
+                    return $scope.riesgo;
+                }, 
+                riesgos_infoRamo: function() { 
+                    return $scope.riesgos_infoRamo ? $scope.riesgos_infoRamo : []; 
                 }
-
-                const message = result.message; 
-
-                $scope.alerts.length = 0;
-                $scope.alerts.push({
-                    type: 'info',
-                    msg: message
-                });
-
-                // nótese como *sustituimos* el riesgo actual por el nuevo ... 
-                $scope.riesgo = {}; 
-                $scope.cuotas = [];         // nótese que las cuotas no se copian; el usuario debe construirlas nuevamente ... 
-
-                $scope.riesgo = result.nuevoRiesgo; 
-
-                $scope.showProgress = false;
-                $scope.$apply();
-        
-                $scope.goToState('generales');
+            }
+        }).result.then(
+            function () {
+                return true;
             },
             function () {
-                $scope.showProgress = false;
                 return true;
-            }
-        )
-    } 
-
+            })
+    }
 
     $scope.renovarRiesgo = function() { 
 
@@ -284,16 +255,13 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         }
 
         $modal.open({
-            templateUrl: 'client/html/riesgos/renovarRiesgo/renovarRiesgoModal.html',
+            templateUrl: renovarRiesgo_htmlTemplate,
             controller: 'RenovarRiesgo_ModalController',
             size: 'md',
             resolve: {
                 riesgoOriginal: function () {
                     return $scope.riesgo;
-                },
-                companiaSeleccionada: function () {
-                    return $scope.companiaSeleccionada;
-                },
+                }
             }
         }).result.then(
           function () {
@@ -302,8 +270,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
           function () {
               return true;
           })
-    }
-            
+    }   
 
     $scope.origen = $stateParams.origen;
     $scope.id = $stateParams.id;
@@ -331,8 +298,8 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         $scope.showProgress = true;
 
         // nótese como validamos antes de intentar guardar en el servidor
-        var isValid = false;
-        var errores = [];
+        let isValid = false;
+        const errores = [];
             
         if ($scope.riesgo.docState != 3) {
             isValid = Riesgos.simpleSchema().namedContext().validate($scope.riesgo);
@@ -430,7 +397,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
             // guardamos, separadamente, las cuotas (solo las que el usuario ha editado
             // nota: eliminamos $$hashKey a cada row (agregado por ui-grid),  antes de grabar en mongo
-            var cuotasArray = $scope.cuotas.filter(c => c.docState);  
+            const cuotasArray = $scope.cuotas.filter(c => c.docState);  
 
             Meteor.call('cuotasSave', cuotasArray, (err) => {
 
@@ -822,7 +789,7 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             if ($scope.vieneDeAfuera) {
                 // commo el riesgo se consulta 'desde afuera', no se aplicó el filtro en forma normal y
                 // no se hizo el subscribe; por lo tanto, lo más seguro es que el riesgo no exista en minimongo ...
-                var filtro = { _id: $scope.id };
+                const filtro = { _id: $scope.id };
                 Meteor.subscribe('riesgos', JSON.stringify(filtro), () => {
 
                     $scope.helpers({
@@ -986,35 +953,6 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         }
     }
 
-    $scope.DownloadToDisk = function() { 
-        // para grabar una copia del riesgo, como un simple json, al disco. Luego, este json podrá ser importado como 
-        // un riesgo nuevo ... 
-        let message = ""; 
-        try {
-            const riesgo_json = lodash.cloneDeep($scope.riesgo); 
-
-            // la información adicional para el riesgo Autos (u otros ramos) puede o no existir 
-            riesgo_json.riesgos_infoRamo = []; 
-
-            if ($scope.riesgos_infoRamo) { 
-                riesgo_json.riesgos_infoRamo = $scope.riesgos_infoRamo; 
-            }
-
-            var blob = new Blob([JSON.stringify(riesgo_json)], {type: "text/plain;charset=utf-8"});
-            saveAs(blob, "riesgo");
-        }
-        catch(err) {
-            message = err.message ? err.message : err.toString();
-        }
-        finally {
-            if (message) {
-                DialogModal($modal, "<em>Riesgos - Exportar el riesgo a un archivo en disco</em>",
-                                    "Ha ocurrido un error al intentar ejecutar esta función:<br />" +
-                                    message, false).then();
-            }
-        }
-    }
-
     $scope.importFromJson = function() { 
         // leemos algún riesgo que se haya exportado antes (con un Download) y lo agregamos como un riesgo nuevo ... 
         const inputFile = angular.element("#fileInput");
@@ -1026,9 +964,12 @@ export default angular.module("scrwebm.riesgos.riesgo", [
     $scope.uploadFile = function(files) {
 
         if (!$scope.riesgo || !$scope.riesgo.docState || $scope.riesgo.docState != 1) {
-            DialogModal($modal, "<em> Riesgos</em>",
+            DialogModal($modal, "<em>Riesgos - Download</em>",
                                 `Aparentemente, el riesgo que <em>recibirá la copia</em> <b>no es nuevo</b> (ya existía).<br /> 
-                                 Ud. debe importar un riesgo siempre en un riesgo <b>nuevo</b>; es decir, <b>no</b> en uno que ya exista.
+                                 Ud. debe importar un riesgo siempre en un riesgo <b>nuevo</b>; es decir, 
+                                 <b>no</b> en uno que ya exista.<br />
+                                 Haga <em>click</em> en <em>Nuevo</em> para crear un nuevo registro; luego haga <em>click</em> en 
+                                 <em>Importar</em> para importar el riesgo original. 
                                 `,
                                 false).then();
 
@@ -1044,9 +985,10 @@ export default angular.module("scrwebm.riesgos.riesgo", [
         const userSelectedFile = files[0];
 
         if (!userSelectedFile) {
-            DialogModal($modal, "<em> Riesgos</em>",
-                                "Aparentemente, Ud. no ha seleccionado un archivo.<br />" +
-                                "Por favor seleccione un archivo que corresponda a un riesgo <em>exportado</em> antes, con la opción <em>download</em>.",
+            DialogModal($modal, "<em>Riesgos - Download</em>",
+                                `Aparentemente, Ud. no ha seleccionado un archivo.<br />
+                                 Ud. debe seleccionar un archivo que haya sido creado antes 
+                                 mediante la opción <em>Download</em>, que existe en este mismo menú.`,
                                 false).then();
 
             const inputFile = angular.element("#fileInput");
@@ -1058,9 +1000,8 @@ export default angular.module("scrwebm.riesgos.riesgo", [
             return;
         }
 
-        var reader = new FileReader();
+        const reader = new FileReader();
         
-
         reader.onload = function(e) {
             
             // esta función importa (merge) el contenido del archivo, que es un json, al riesgo en el $scope ... 
@@ -1173,12 +1114,15 @@ export default angular.module("scrwebm.riesgos.riesgo", [
 
 function importarRiesgoFromTextFile(e, companiaSeleccionada) { 
 
+    // esta función recibe un riesgo que fue exportado a un archivo de texto; la idea es permitir crear un nuevo en base 
+    // al que fue exportado antes. 
+
     let riesgos_infoRamo = []; 
-    const riesgo = {}; 
+    let riesgo = {}; 
     let empresaUsuariaDiferente = false; 
 
     try {
-        var content = e.target.result;
+        const content = e.target.result;
         const riesgoJson = JSON.parse(content);
 
         // con el riesgo en json viene la información del ramo, si existe (no siempre existe) 
@@ -1188,7 +1132,7 @@ function importarRiesgoFromTextFile(e, companiaSeleccionada) {
         }
 
         // hacemos un merge del objeto que el usuario importa
-        lodash.merge(riesgo, riesgoJson); 
+        riesgo = Object.assign({}, riesgoJson);         // to clone an object 
 
         // determinamos si el riesgo que estamos importando se registró bajo una empresa usuaria diferente 
         if (riesgo.cia != companiaSeleccionada._id) { 
@@ -1207,13 +1151,16 @@ function importarRiesgoFromTextFile(e, companiaSeleccionada) {
         riesgo.ultAct = null; 
         riesgo.ultUsuario = null; 
 
-        // nótese como las fechas vienen como strings 
+        // nótese como las fechas vienen como strings (pues hicimos un json.parse del objecto original)
         riesgo.desde = new Date(riesgo.desde); 
         riesgo.hasta = new Date(riesgo.hasta); 
 
         if (riesgo.documentos) { 
             riesgo.documentos.forEach((x) => x._id = new Mongo.ObjectID()._str); 
         }
+
+        // siempre eliminamos alguna información de renovación que pueda existir en el riesgo de origen 
+        riesgo.renovacion = {}; 
 
         for (const movimiento of riesgo.movimientos) { 
             // guardamos el _id original del movimiento, para asignarlo en el array de info del ramo (si existe) ... 
@@ -1322,11 +1269,11 @@ function importarRiesgoFromTextFile(e, companiaSeleccionada) {
     }
 
     let message = `<em>Riesgos - Importar un riesgo</em> <br /> 
-                   Ok, el riesgo ha sido importado en un riesgo nuevo. 
+                   Ok, el riesgo ha sido importado en un riesgo nuevo.<br />
                    Ud. puede hacer modificaciones y luego hacer un <em>click</em> en <em>Grabar</em>.`; 
 
     if (empresaUsuariaDiferente) { 
-        message += `<br /><br /><b>Nota:</b> el riesgo original fue registrado para una <em>empresa usuaria</em> diferente. 
+        message += `<br /><br /><b>Nota:</b> el riesgo original fue registrado en una <em>empresa usuaria</em> diferente. 
                     La compañía usuaria ha sido cambiada para reflejar la que ahora está seleccionada para el usuario.`
     }
 

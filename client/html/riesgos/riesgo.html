@@ -49,11 +49,18 @@
                             <li role="separator" class="divider"></li>
                             <li><a href="#" ng-click="registroCumulos()" class="navbar_custom_small_node">Cúmulos <i style="color: #F2353B; " class="fa fa-umbrella"></i></a></li>
                             <li ng-if="origen == 'edicion'" role="separator" class="divider"></li>
-                            <li ng-if="origen == 'edicion'"><a href="#" ng-click="copiarEnUnNuevoRiesgo()" class="navbar_custom_small_node">Copiar en uno nuevo <i class="fa fa-copy"></i></a></li>
                             <li ng-if="origen == 'edicion'"><a href="#" ng-click="renovarRiesgo()" class="navbar_custom_small_node">Renovar riesgo <i class="fa fa-magic"></i></a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#" ng-click="DownloadToDisk()" class="navbar_custom_xsmall_node">Download <i style="color: #5B98F3; " class="fa fa-cloud-download"></i></a></li>
-                            <li><a href="#" ng-click="importFromJson()" class="navbar_custom_small_node">Importar&nbsp;&nbsp;<span class="fa fa-reply"></span></a></li>
+                            <li>
+                                <a href="#" ng-click="DownloadToDisk()" class="navbar_custom_xsmall_node">
+                                    Download <i style="color: #5B98F3; " class="fa fa-cloud-download"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" ng-click="importFromJson()" class="navbar_custom_small_node">
+                                    Importar&nbsp;&nbsp;<span class="fa fa-reply"></span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

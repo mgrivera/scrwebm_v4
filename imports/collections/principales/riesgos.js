@@ -11,7 +11,6 @@ const objetoAsegurado_SimpleSchema = new SimpleSchema({
     ubicacion: { type: String, optional: true }
 })
 
-
 // -----------------------------------------------------------------------
 // Renovación (riesgo sub-document)
 // -----------------------------------------------------------------------
@@ -35,7 +34,6 @@ const companias_SimpleSchema = new SimpleSchema({
     impuestoSobrePNPorc: { type: Number, optional: true, },
 })
 
-
 // -----------------------------------------------------------------------
 // Coberturas (movimiento sub-document)
 // -----------------------------------------------------------------------
@@ -48,7 +46,6 @@ const coberturas_SimpleSchema = new SimpleSchema({
     tasa: { type: Number, optional: true, },
     prima: { type: Number, optional: true, }
 })
-
 
 // -----------------------------------------------------------------------
 // CoberturasCompanias (movimiento sub-document)
@@ -70,7 +67,6 @@ const coberturasCompanias_SimpleSchema = new SimpleSchema({
     factorProrrata: { type: Number, optional: true, },
     primaBruta: { type: Number, optional: false, }
 })
-
 
 // -----------------------------------------------------------------------
 // Primas (movimiento sub-document)
@@ -105,7 +101,6 @@ const productores_SimpleSchema = new SimpleSchema({
     monto: { type: Number, optional: false, }
 })
 
-
 // -----------------------------------------------------------------------
 // Documentos (riesgo y movimientos sub-document)
 // -----------------------------------------------------------------------
@@ -114,7 +109,6 @@ const documentos_SimpleSchema = new SimpleSchema({
     tipo: { type: String, optional: false },
     numero: { type: String, optional: false }
 })
-
 
 // -----------------------------------------------------------------------
 // Movimientos
@@ -127,10 +121,8 @@ const movimientos_SimpleSchema = new SimpleSchema({
     desde: { type: Date, optional: false },
     hasta: { type: Date, optional: false },
 
-
     documentos: { type: Array, optional: true, minCount: 0 },
     'documentos.$': { type: documentos_SimpleSchema },
-
 
     cantidadDias: { type: Number, optional: false },
     factorProrrata: { type: Number, optional: false, },
@@ -138,23 +130,17 @@ const movimientos_SimpleSchema = new SimpleSchema({
     companias: { type: Array, optional: true, minCount: 0 },
     'companias.$': { type: companias_SimpleSchema },
 
-
     coberturas: { type: Array, optional: true, minCount: 0 },
     'coberturas.$': { type: coberturas_SimpleSchema },
-
 
     coberturasCompanias: { type: Array, optional: true, minCount: 0 },
     'coberturasCompanias.$': { type: coberturasCompanias_SimpleSchema },
 
-
     primas: { type: Array, optional: true, minCount: 0 },
     'primas.$': { type: primas_SimpleSchema },
 
-
     productores: { type: Array, optional: true, minCount: 0 },
     'productores.$': { type: productores_SimpleSchema },
-
-
 })
 
 // -----------------------------------------------------------------------
@@ -165,7 +151,6 @@ const persona_SimpleSchema = new SimpleSchema({
     titulo: { type: String, optional: false, min: 1, max: 8 },
     nombre: { type: String, optional: false, min: 1, max: 100 }
 })
-
 
 // -----------------------------------------------------------------------
 // Riesgos
@@ -189,7 +174,6 @@ const Riesgo_SimpleSchema = new SimpleSchema({
     personas: { type: Array, optional: true, minCount: 0 },
     'personas.$': { type: persona_SimpleSchema },
 
-
     ramo: { type: String, optional: false },
     asegurado: { type: String, optional: false },
     corredor: { type: String, optional: true },
@@ -201,11 +185,8 @@ const Riesgo_SimpleSchema = new SimpleSchema({
     documentos: { type: Array, optional: true, minCount: 0 },
     'documentos.$': { type: documentos_SimpleSchema },
 
-
     movimientos: { type: Array, optional: true, minCount: 0 },
     'movimientos.$': { type: movimientos_SimpleSchema },
-
-
 
     ingreso: { type: Date, optional: false },
     ultAct: { type: Date, optional: true },

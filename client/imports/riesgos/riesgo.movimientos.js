@@ -17,7 +17,7 @@ import ConstruirCuotas from './construirCuotasController';
 import ConstruirCuotasProductor from './construirCuotasProductoresController'; 
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
-import construirCuotasMovimientoTemplate from '/client/imports/riesgos/construirCuotas.html'; 
+import construirCuotasMovimiento_htmlTemplate from '/client/imports/riesgos/construirCuotas.html'; 
 
 export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasBrutas.name, 
                                                                ConstruirCuotas.name, 
@@ -1872,7 +1872,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     function construirCuotasMovimiento() {
 
         $modal.open({
-            templateUrl: construirCuotasMovimientoTemplate,
+            templateUrl: construirCuotasMovimiento_htmlTemplate,
             controller: 'Riesgos_ConstruirCuotasController',
             size: 'md',
             resolve: {

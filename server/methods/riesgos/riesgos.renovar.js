@@ -11,13 +11,6 @@ import { calcularNumeroReferencia } from '/server/imports/general/calcularNumero
 Meteor.methods({
     'riesgos.renovar': function (riesgoOriginal, parametros) {
 
-        // agregamos este método para contar la cantidad de registros que contiene un collection;
-        // Nota Importante: no usamos 'tmeasday:publish-counts' pues indica en su documentación que
-        // puede ser muy ineficiente si el dataset contiene muchos registros; además, este package
-        // es reactive, lo cual agregar un cierto costo a su ejecución ...
-
-        // nota: solo a veces usamos filtro ... 
-
         const parametrosSchema = new SimpleSchema({ 
             desde: { type: Date, optional: false, }, 
             hasta: { type: Date, optional: false, }, 
@@ -27,7 +20,6 @@ Meteor.methods({
             riesgoOriginal: { type: Object, blackbox: true, }, 
             parametros: { type: parametrosSchema, optional: false, }
             }).validate({ riesgoOriginal, parametros });
-
 
         const riesgoNuevo = { 
             _id: new Mongo.ObjectID()._str,
@@ -42,6 +34,7 @@ Meteor.methods({
             moneda : riesgoOriginal.moneda,
             indole : riesgoOriginal.indole,
             compania : riesgoOriginal.compania,
+            cedenteOriginal: riesgoOriginal.cedenteOriginal ? riesgoOriginal.cedenteOriginal : riesgoOriginal.compania, 
             ramo : riesgoOriginal.ramo,
             asegurado : riesgoOriginal.asegurado,
             corredor: riesgoOriginal.corredor ? riesgoOriginal.corredor : null, 
@@ -73,15 +66,6 @@ Meteor.methods({
                 // los items en el array de personas no tienen un _id; creo que ésto se nos pasó en su momento (????)
                 riesgoNuevo.personas.push(x); 
             })
-        }
-
-        // determinamos un nuevo número para el riesgo 
-        const numeroAnterior = Riesgos.findOne({ cia: riesgoNuevo.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
-        if (!numeroAnterior || !numeroAnterior.numero) { 
-            riesgoNuevo.numero = 1;
-        } 
-        else { 
-            riesgoNuevo.numero = numeroAnterior.numero + 1;
         }
 
         // determinamos una referencia para el riesgo 
@@ -149,8 +133,16 @@ Meteor.methods({
                 })
             }
         }
-            
 
+        // determinamos un nuevo número para el riesgo 
+        const numeroAnterior = Riesgos.findOne({ cia: riesgoNuevo.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+        if (!numeroAnterior || !numeroAnterior.numero) {
+            riesgoNuevo.numero = 1;
+        }
+        else {
+            riesgoNuevo.numero = numeroAnterior.numero + 1;
+        }
+            
         Riesgos.insert(riesgoNuevo); 
 
         const nuevoRiesgo = Riesgos.findOne(riesgoNuevo._id, { fields: { numero: true, }}); 
