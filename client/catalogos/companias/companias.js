@@ -50,10 +50,11 @@ angular.module("scrwebm")
             enableCellEdit: false,
             enableCellEditOnFocus: true,
             enableRowSelection: true,
+            enableFiltering: true,
             enableRowHeaderSelection: true,
             multiSelect: false,
             enableSelectAll: false,
-            selectionRowHeaderWidth: 35,
+            selectionRowHeaderWidth: 25,
             rowHeight: 25,
             onRegisterApi: function (gridApi) {
 
@@ -106,6 +107,7 @@ angular.module("scrwebm")
                 enableCellEdit: false,
                 enableColumnMenu: false,
                 enableSorting: false,
+                enableFiltering: false, 
                 width: 25
             },
            {
@@ -118,6 +120,7 @@ angular.module("scrwebm")
                enableColumnMenu: false,
                enableCellEdit: false,
                enableSorting: true,
+               enableFiltering: true,
                type: 'string'
            },
            {
@@ -130,6 +133,7 @@ angular.module("scrwebm")
                cellClass: 'ui-grid-leftCell',
                enableColumnMenu: false,
                enableCellEdit: false,
+               enableFiltering: true,
                type: 'string'
            },
            {
@@ -144,6 +148,7 @@ angular.module("scrwebm")
                enableColumnMenu: false,
                enableCellEdit: false,
                enableSorting: true,
+               enableFiltering: false,
                type: 'boolean'
            },
            {
@@ -152,6 +157,7 @@ angular.module("scrwebm")
                cellTemplate: '<span ng-click="grid.appScope.deleteCompania(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
                enableCellEdit: false,
                enableSorting: false,
+               enableFiltering: false,
                width: 25
            }
         ];
@@ -188,7 +194,7 @@ angular.module("scrwebm")
             enableRowHeaderSelection: true,
             multiSelect: false,
             enableSelectAll: false,
-            selectionRowHeaderWidth: 35,
+            selectionRowHeaderWidth: 25,
             rowHeight: 25,
             onRegisterApi: function (gridApi) {
 

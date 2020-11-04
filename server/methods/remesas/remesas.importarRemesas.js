@@ -8,7 +8,7 @@ import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancaria
 
 Meteor.methods(
 {
-    'leerInfoAutos.importarRemesas': function (cuentaBancariaNumero, companiaAbreviatura) {
+    'remesas.importarRemesas': function (cuentaBancariaNumero, companiaAbreviatura) {
 
         new SimpleSchema({
             cuentaBancariaNumero: { type: String, optional: false, },
@@ -18,8 +18,9 @@ Meteor.methods(
         let error = false; 
         let message = ""; 
 
-        // leemos la compañía que tiene la misma abreviatura; regresamos el _id de la compañía 
-        const compania = Companias.findOne({ abreviatura: companiaAbreviatura }, { fields: { _id: 1, }}); 
+        // leemos la compañía que tiene la misma abreviatura; regresamos el _id de la compañía; nótese cómo usamos regex para 
+        // que el find encuentre case insensitive ... 
+        const compania = Companias.findOne({ abreviatura: { $regex: companiaAbreviatura, $options: 'i' }}, { fields: { _id: 1, }}); 
 
         if (!compania) { 
             error = true; 

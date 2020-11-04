@@ -18,7 +18,12 @@ Meteor.publish("search.monedas", function (search) {
 })
 
 Meteor.publish("search.companias", function (search) {
-    return Companias.find({ nombre: new RegExp(search, 'i') }, { fields: { nombre: 1, tipo: 1 }});
+    return Companias.find({
+        $or: [
+                { nombre: new RegExp(search, 'i') },
+                { abreviatura: new RegExp(search, 'i') },
+            ]
+    }, { fields: { nombre: 1, tipo: 1 }});
 })
 
 Meteor.publish("search.ramos", function (search) {
@@ -33,8 +38,8 @@ Meteor.publish("search.bancos", function (search) {
     return Bancos.find({ nombre: new RegExp(search, 'i') });
 })
 
-Meteor.publish("leer.cuentasBancarias.banco", function (banco) {
-    return CuentasBancarias.find({ banco: banco });
+Meteor.publish("leer.cuentasBancarias.banco", function (banco, cia) {
+    return CuentasBancarias.find({ banco, cia });
 })
 
 Meteor.publish("search.indoles", function (search) {

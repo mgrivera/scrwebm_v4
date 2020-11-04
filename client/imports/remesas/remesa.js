@@ -406,10 +406,11 @@ export default angular.module("scrwebm.remesas.remesa",
                 const banco = $scope.remesa.instrumentoPago.banco; 
 
                 // leemos las cuentas bancarias que corresponden al banco 
-                Meteor.subscribe("leer.cuentasBancarias.banco", banco, () => { 
+                Meteor.subscribe("leer.cuentasBancarias.banco", banco, $scope.companiaSeleccionada._id, () => { 
 
                     $scope.helpers({
-                        cuentasBancarias: () => CuentasBancarias.find({ banco: banco }, { sort: { numero: 1 }})
+                        cuentasBancarias: () => CuentasBancarias.find({ banco: banco, cia: $scope.companiaSeleccionada._id }, 
+                                                                      { sort: { numero: 1 }})
                     })
 
                     // preparamos una lista especial para mostrar las cuentas bancarias en el ddl 
@@ -1243,7 +1244,18 @@ export default angular.module("scrwebm.remesas.remesa",
     }
 
     $scope.importarRemesa = function() {
-        // permitimos al usuario leer, en un nuevo asiento contable, alguno que se haya exportado a un text file ...
+        // siempre debemos importar desde un registro nuevo 
+        if (!$scope.remesa.docState || $scope.remesa.docState != 1) {
+            DialogModal($modal, "<em>Remesas</em>",
+                "Ud. debe usar esta función sobre un movimiento <em>nuevo</em>; es decir, que se está agregando ahora.<br />" +
+                "Antes de ejecutar esta función, Ud. debe hacer siempre un <em>click</em> en <em>Nuevo</em>.",
+                false).then();
+
+            return;
+        }
+
+        // permitimos al usuario leer los datos básicos de la remesa desde un movimiento bancario que fue exportado 
+        // a un archivo de texto 
         const inputFile = angular.element("#fileInput");
         if (inputFile) { 
             inputFile.click();        // simulamos un click al input (file)
@@ -1304,7 +1316,7 @@ export default angular.module("scrwebm.remesas.remesa",
                     $scope.remesa.miSu = "SU"; 
                 }
 
-                $scope.remesa.instrumentoPago.numero = remesa.transaccion; 
+                $scope.remesa.instrumentoPago.numero = remesa.transaccion.toString(); 
                 $scope.remesa.observaciones = remesa.concepto; 
 
                 $scope.remesa.instrumentoPago.monto = Math.abs(remesa.monto); 
@@ -1330,7 +1342,7 @@ export default angular.module("scrwebm.remesas.remesa",
                 // la compañía puede no venir, pues hay movimientos bancarios sin ella ... 
                 const compania = remesa.compania && remesa.compania.abreviatura ? remesa.compania.abreviatura : ""; 
 
-                Meteor.call('leerInfoAutos.importarRemesas', remesa.cuentaBancaria, compania, (err, result)  => {
+                Meteor.call('remesas.importarRemesas', remesa.cuentaBancaria, compania, (err, result)  => {
             
                     if (err) {
                         const errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -1351,10 +1363,26 @@ export default angular.module("scrwebm.remesas.remesa",
                         $scope.remesa.compania = result.compania._id; 
                     }
 
-                    if (result.cuentaBancaria) { 
-                        $scope.remesa.instrumentoPago.cuentaBancaria = result.cuentaBancaria._id; 
-                        $scope.remesa.moneda = result.cuentaBancaria.moneda; 
-                        $scope.remesa.instrumentoPago.banco = result.cuentaBancaria.banco; 
+                    const companiaId = result.compania && result.compania._id ? result.compania._id : null; 
+                    const bancoId = result.cuentaBancaria && result.cuentaBancaria.banco ? result.cuentaBancaria.banco : null; 
+                    const monedaId = result.cuentaBancaria && result.cuentaBancaria.moneda ? result.cuentaBancaria.moneda : null; 
+
+                    // el método arriba lee y regresa _ids de compañía, banco y moneda; debemos ejecutar estas funciones que son las 
+                    // que agregan estos catálogos a las listas para que se muestren en los diferentes ddl (drop down lists) 
+                    const compania = Companias.findOne(companiaId); 
+                    const banco = Bancos.findOne(bancoId); 
+                    const moneda = Monedas.findOne(monedaId); 
+                    
+                    // esta función es usada por el ddl para buscar los items que corresponden al search que indique el usuario; 
+                    // la usamos aquí para agregar la compañía usada en exportar a la lista de compañías 
+                    $scope.searchCompanias(compania.abreviatura); 
+                    $scope.searchMonedas(moneda.descripcion); 
+                    $scope.searchBancos(banco.nombre); 
+
+                    if (result.cuentaBancaria) {
+                        $scope.remesa.instrumentoPago.cuentaBancaria = result.cuentaBancaria._id;
+                        $scope.remesa.moneda = result.cuentaBancaria.moneda;
+                        $scope.remesa.instrumentoPago.banco = result.cuentaBancaria.banco;
                     }
 
                     const inputFile = angular.element("#fileInput");
@@ -1370,8 +1398,26 @@ export default angular.module("scrwebm.remesas.remesa",
                         });
                     }
 
-                    $scope.showProgress = false;
-                    $scope.$apply();
+                    // finalmente, ejecutamos este pub en el servidor para leer las cuentas bancarias que corresponden al banco 
+                    // aunque ahora tenemos la cuenta bancaria usada al exportar, no tenemos las cuentas bancarias en la lista, 
+                    // para que sean mostradas en el ddl 
+                    Meteor.subscribe("leer.cuentasBancarias.banco", bancoId, $scope.companiaSeleccionada._id, () => {
+
+                        $scope.helpers({
+                            cuentasBancarias: () => CuentasBancarias.find({ banco: bancoId, cia: $scope.companiaSeleccionada._id },
+                                { sort: { numero: 1 } })
+                        })
+
+                        // preparamos una lista especial para mostrar las cuentas bancarias en el ddl 
+                        const listaCuentasBancarias = prepararListaCuentasBancarias($scope.cuentasBancarias);
+
+                        $scope.helpers({
+                            listaCuentasBancarias: () => listaCuentasBancarias
+                        })
+
+                        $scope.showProgress = false;
+                        $scope.$apply();
+                    })
                 })
             }
 
@@ -1401,7 +1447,12 @@ export default angular.module("scrwebm.remesas.remesa",
         Meteor.subscribe("search.companias", search, () => { 
 
             $scope.helpers({
-                companias: () => Companias.find({ nombre: new RegExp(search, 'i') }, { sort: { nombre: 1 }})
+                companias: () => Companias.find(
+                    { $or: [ 
+                        { nombre: new RegExp(search, 'i') },  
+                        { abreviatura: new RegExp(search, 'i') },  
+                    ] }, 
+                    { sort: { nombre: 1 }})
             })
 
             $scope.uiSelectLoading = false;
