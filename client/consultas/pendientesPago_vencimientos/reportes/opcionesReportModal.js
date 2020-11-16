@@ -1,12 +1,15 @@
 
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular';
+import angular from 'angular';
 
-import { Filtros } from 'imports/collections/otros/filtros'; 
-import { mensajeErrorDesdeMethod_preparar } from '../../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { Filtros } from '/imports/collections/otros/filtros'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller('Consultas_montosPendientesPago_vencimientos_opcionesReportController',
-['$scope', '$modalInstance', 'companiaSeleccionada', function ($scope, $modalInstance, companiaSeleccionada) {
+angular.module("scrwebm")
+       .controller('Consultas_montosPendientesPago_vencimientos_opcionesReportController', ['$scope', '$modalInstance', 'companiaSeleccionada', 
+function ($scope, $modalInstance, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -26,7 +29,7 @@ angular.module("scrwebm").controller('Consultas_montosPendientesPago_vencimiento
     $scope.companiaSeleccionada = companiaSeleccionada; 
 
     // construimos el url que se debe usar para obtener el reporte (sql server reporting services - asp.net)
-    let scrwebm_net_app_address = Meteor.settings.public.scrwebm_net_app_address;
+    const scrwebm_net_app_address = Meteor.settings.public.scrwebm_net_app_address;
     
     $scope.reportLink = "#";
     if (scrwebm_net_app_address) {
@@ -49,7 +52,7 @@ angular.module("scrwebm").controller('Consultas_montosPendientesPago_vencimiento
         // leemos dos fechas que el usuario pasa al proceso para: 1) calcular vencimientos; 2) leer montos hasta. La idea es 
         // pasar ambas fechas como parte de las opciones del reporte. Ambas están en Filtros, por eso leemos el filtro recién 
         // indicado 
-        let filtroAnterior = Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos', userId: Meteor.userId() });
+        const filtroAnterior = Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos', userId: Meteor.userId() });
 
         $scope.opcionesReport.fechaPendientesAl = new Date(); 
         $scope.opcionesReport.fechaLeerHasta = new Date(); 
@@ -68,7 +71,7 @@ angular.module("scrwebm").controller('Consultas_montosPendientesPago_vencimiento
             (err, result) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
@@ -128,7 +131,6 @@ angular.module("scrwebm").controller('Consultas_montosPendientesPago_vencimiento
         )
     }
 
-
     // ------------------------------------------------------------------------------------------------------
     // intentamos leer las opciones usadas antes por el usuario, para mostrarlas en el diálogo ... 
     $scope.opcionesReport = {};
@@ -138,6 +140,4 @@ angular.module("scrwebm").controller('Consultas_montosPendientesPago_vencimiento
         $scope.opcionesReport = filtroAnterior.filtro;
     }
     // ------------------------------------------------------------------------------------------------------
-
-}
-])
+}])

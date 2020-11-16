@@ -190,3 +190,8 @@ a:hover.toolBarLink {
   color: #428BCA !important;
   font-style: italic;
 }
+
+/* para lograr que el footer en el main page quede abajo ...  */
+.space-filler { 
+    min-height: calc(100vh - 180px - 51.6px - 1px - 51.6px);
+}

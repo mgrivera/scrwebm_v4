@@ -44,6 +44,16 @@
                             <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
                             <li class="divider-vertical-small"></li>
                             <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="agregarItemsATabla()">Construir esta tabla ... <span class="fa fa-gears"></span></a></li>
+
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button"
+                                    aria-expanded="false">Otros ...&nbsp;&nbsp;<span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" ng-click="exportarTablaConfiguracion()" class="navbar_custom_xsmall_node">Exportar &nbsp;&nbsp;</a></li>
+                                    <li><a href="#" ng-click="importarTablaConfiguracion()" class="navbar_custom_xsmall_node">Importar &nbsp;&nbsp;</a></li>
+                                </ul>
+                            </li>
+
                         </ul>
 
                         <ul class="nav navbar-nav navbar-right">

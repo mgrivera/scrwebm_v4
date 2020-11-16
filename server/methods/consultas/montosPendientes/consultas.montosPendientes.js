@@ -239,7 +239,7 @@ Meteor.methods(
         const monedas = Monedas.find({}, { fields: { descripcion: 1, simbolo: 1, }}).fetch(); 
         const companias = Companias.find({}, { fields: { nombre: 1, abreviatura: 1, }}).fetch(); 
         const ramos = Ramos.find({}, { fields: { descripcion: 1, abreviatura: 1, }}).fetch(); 
-        const asegurados = Asegurados.find({}, { fields: { abreviatura: 1, }}).fetch(); 
+        const asegurados = Asegurados.find({}, { fields: { nombre: 1, abreviatura: 1, }}).fetch(); 
         const suscriptores = Suscriptores.find({}, { fields: { abreviatura: 1, }}).fetch(); 
 
         // -------------------------------------------------------------------------------------------------------------
@@ -263,13 +263,43 @@ Meteor.methods(
 
         let cantidadRegistrosAgregados = 0;
 
-        result.forEach(cuota => {
+        // el usuario puede indicar nombres de compañía, moneda, ramo y asegurado como parte de su filtro
+        // la idea es que puede indicar *solo* parte del nombre para filtrar por allí 
+        const { compania_text, ramo_text, moneda_text, asegurado_text } = filtro; 
+
+        for (const cuota of result) {
 
             const moneda = lodash.find(monedas, (x) => { return x._id === cuota.moneda; }); 
             const compania = lodash.find(companias, (x) => { return x._id === cuota.compania; }); 
             const ramo = lodash.find(ramos, (x) => { return x._id === (cuota.ramo ? cuota.ramo : "..."); }); 
             const asegurado = lodash.find(asegurados, (x) => { return x._id === (cuota.asegurado ? cuota.asegurado : "..."); }); 
             const suscriptor = lodash.find(suscriptores, (x) => { return x._id === (cuota.suscriptor ? cuota.suscriptor : "..."); }); 
+
+            // si el usuario indicó filtros por catálogos, en texto, los aplicamos ahora 
+
+            // buscamos por compañía 
+            if (compania && compania_text && !(compania.nombre.toLowerCase().includes(compania_text.toLowerCase()) || 
+                                               compania.abreviatura.toLowerCase().includes(compania_text.toLowerCase()))) { 
+                continue; 
+            }
+
+            // buscamos por moneda 
+            if (moneda && moneda_text && !(moneda.descripcion.toLowerCase().includes(moneda_text.toLowerCase()) ||
+                                           moneda.simbolo.toLowerCase().includes(moneda_text.toLowerCase()))) {
+                continue;
+            }
+
+            // buscamos por ramo 
+            if (ramo && ramo_text && !(ramo.descripcion.toLowerCase().includes(ramo_text.toLowerCase()) ||
+                                       ramo.abreviatura.toLowerCase().includes(ramo_text.toLowerCase()))) {
+                continue;
+            }
+
+            // buscamos por asegurado 
+            if (asegurado && asegurado_text && !(asegurado.nombre.toLowerCase().includes(asegurado_text.toLowerCase()) ||
+                                                 asegurado.abreviatura.toLowerCase().includes(asegurado_text.toLowerCase()))) {
+                continue;
+            }
 
             const cuotaPendiente = {
                 _id: new Mongo.ObjectID()._str,
@@ -320,6 +350,13 @@ Meteor.methods(
             // que sean mostradas como valores para el asegurado en el reporte y para los contratos 
             if (cuota.source.origen === 'cuenta' || cuota.source.origen === 'capa') { 
                 cuotaPendiente.aseguradoAbreviatura = cuota.asegurado ? cuota.asegurado : "";   
+
+                // aplicamos el filtro por asegurado (texto) ahora para contemplar el caso en contratos
+                // en estos casos, la referencia del contrato viene en el field asegurado 
+                if (cuotaPendiente.aseguradoAbreviatura && asegurado_text && 
+                    !cuotaPendiente.aseguradoAbreviatura.toLowerCase().includes(asegurado_text.toLowerCase())) {
+                    continue;
+                }
             } 
 
             // ------------------------------------------------------------------------------------------------------------------
@@ -358,9 +395,10 @@ Meteor.methods(
                 });
             }
 
-            if (pagosMismaMoneda)
+            if (pagosMismaMoneda) { 
                 montoPendiente += montoPagos;       // ya el monto pagado viene (siempre) con el signo contrario
-
+            }
+                
             cuotaPendiente.cantidadPagosParciales = cantidadPagosParciales;
             cuotaPendiente.montoPendiente = montoPendiente;
 
@@ -394,7 +432,7 @@ Meteor.methods(
                 }
             }
             // -------------------------------------------------------------------------------------------------------
-        })
+        }
 
         return "Ok, el proceso se ha ejecutado en forma satisfactoria.<br /><br />" +
                "En total, " + cantidadRegistrosAgregados.toString() + " registros han sido seleccionados y conforman esta consulta.";

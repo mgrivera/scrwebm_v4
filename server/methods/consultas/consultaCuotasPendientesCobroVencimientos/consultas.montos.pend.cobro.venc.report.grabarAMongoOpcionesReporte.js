@@ -1,9 +1,8 @@
 
-
-import { Consulta_MontosPendientesCobro_Vencimientos_config } from 'imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
-
+import { Meteor } from 'meteor/meteor';
 import SimpleSchema from 'simpl-schema';
-import { Meteor } from 'meteor/meteor'; 
+
+import { Consulta_MontosPendientesCobro_Vencimientos_config } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
 
 Meteor.methods(
 {

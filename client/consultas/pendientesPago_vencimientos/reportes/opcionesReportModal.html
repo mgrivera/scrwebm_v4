@@ -1,6 +1,4 @@
 
-
-
 <div class="modal-header">
     <h5 class="modal-title">
         Montos pendientes de pago - Vencimientos - Consulta - Obtener reporte ... 
@@ -56,10 +54,8 @@
                             <div class="col-sm-5 col-sm-offset-1 ">
                                 <div class="form-group form-group-sm">
                                     <div class="checkbox">
-                                        <label class="control-label myinput-sm">
-                                            <input type="checkbox"
-                                                    ng-model="opcionesReport.mostrarColores"
-                                                    style="margin-top: 0; " />
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="opcionesReport.mostrarColores" />
                                             <span style="font-weight: bold; ">Mostrar colores</span>
                                         </label>
                                     </div>
@@ -68,14 +64,27 @@
                             <div class="col-sm-5 col-sm-offset-1 ">
                                 <div class="form-group form-group-sm">
                                     <div class="checkbox">
-                                        <label class="control-label myinput-sm">
-                                            <input type="checkbox"
-                                                    ng-model="opcionesReport.formatoExcel"
-                                                    style="margin-top: 0; " />
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="opcionesReport.formatoExcel" />
                                             <span style="font-weight: bold; ">Formato Excel</span>
                                         </label>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-5 col-sm-offset-1 ">
+                                <div class="form-group form-group-sm">
+                                    <div class="checkbox">
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="opcionesReport.resumen">
+                                            <span style="font-weight: bold; ">Resumen</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-5 col-sm-offset-1 ">
                             </div>
                         </div>
 

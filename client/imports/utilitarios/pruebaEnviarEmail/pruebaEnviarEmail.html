@@ -1,0 +1,48 @@
+
+<div>
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+
+    <h3>Scrwebm - Prueba a enviar un Email</h3>
+
+    <div style="text-align: left; padding-left: 200px; padding-right: 200px; padding-top: 15px; ">
+        <p>
+            Permitimos enviar un Email desde el programa, para revisar si la configuración de este
+            módulo es correcta.
+        </p>
+        <p>
+            El correo que se intenta enviar, tiene estas características: <br />
+        <ul>
+            <li> to: smr.software@outlook.com </li>
+            <li> from: smr.software@gmail.com </li>
+            <li> cc: smr.software@gmail.com </li>
+        </ul>
+        </p>
+        <p>
+            Ud. debe hacer un click en el botón que se muestra más abajo y esperar un rato; luego
+            revisar las direcciones de correo indicadas a ver si el correo ha llegado.
+        </p>
+        <p>
+            <b>Nota:</b> también se puede revisar la consola del server para el programa; si el Email está allí, es que
+            ni siquiera se indicó una configuración en la veriable: <em>mail_url</em>, en la configuración
+            (settings.json)
+            en el programa.
+        </p>
+    </div>
+
+    <div style="margin-top: 25px; ">
+        <button class="btn btn-primary btn-sm" ng-click="sendTestEmail()" style="min-width: 300px; ">
+            Probar a enviar un E-mail ...
+        </button>
+    </div>
+
+
+    <div style="text-align: right; padding-right: 200px; padding-top: 15px; ">
+        <span>
+            <meteor-login></meteor-login>
+        </span>
+    </div>
+</div>

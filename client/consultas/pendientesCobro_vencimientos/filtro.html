@@ -1,7 +1,7 @@
 ﻿
 <div>
     <div class="row">
-        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: center; vertical-align: middle; ">
             <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
             <div ng-show="showProgress">
                 <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
@@ -15,7 +15,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
                 <span ng-bind-html="alert.msg | unsafe"></span>
             </alert>
@@ -142,7 +142,39 @@
 
                         </div>
 
-                    </tab>  
+                        <div class="row row-centered">
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Compañía </label>
+                                    <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.compania_text" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Moneda </label>
+                                    <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.moneda_text" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Suscriptor </label>
+                                    <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.suscriptor_text" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                            </div>
+                            
+                            <div class="col-sm-2 col-centered">
+                            </div>
+
+                        </div>
+
+                    </tab> 
+                    
                     <tab heading="Listas">
 
                         <br> 
@@ -187,8 +219,6 @@
 
                     </tab>
                 </tabset>   
-
-                <br />
             </div>
         </form>
     </div>

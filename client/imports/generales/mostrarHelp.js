@@ -19,6 +19,12 @@ export function mostrarHelp (currentStateName) {
         case 'registrarImagenes':
             window.open('https://scrwebm.wordpress.com/2016/04/26/logos-en-notas-impresas/', '_blank');
             break;
+
+        case 'montosPendientesFiltro':
+        case 'montosPendientesLista':
+            window.open('https://sites.google.com/view/scrwebm/consultas/montos-pendientes', '_blank');
+            break;
+
         case 'pendientesCobro_vencimientos_consulta':
         case 'pendientesCobro_vencimientos_consulta_filter':
         case 'pendientesCobro_vencimientos_consulta_list':

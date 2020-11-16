@@ -32,7 +32,7 @@ Meteor.methods(
         // antes que nada, eliminamos del collection de la consulta, los registros de la consulta anterior
         Consulta_MontosPendientesPago_Vencimientos.remove({ user: this.userId });
 
-        var matchCriteria = {
+        const matchCriteria = {
             fecha: { $lte: filtro.fechaLeerHasta },
             'pagos.completo' : { $nin: [ true ] },
             cia: filtro.cia,
@@ -62,7 +62,7 @@ Meteor.methods(
 
 
         if (filtro.compania && lodash.isArray(filtro.compania) && filtro.compania.length > 0) {
-            var array = lodash.clone(filtro.compania);
+            const array = lodash.clone(filtro.compania);
             matchCriteria.compania = { $in: array };
         }
 
@@ -236,12 +236,36 @@ Meteor.methods(
         let suscriptor = {};
         let asegurado = {};
 
-        result.forEach(cuota => {
+        // el usuario puede indicar nombres de compañía, moneda y suscriptor como parte de su filtro
+        // la idea es que puede indicar *solo* parte del nombre para filtrar por allí 
+        const { compania_text, moneda_text, suscriptor_text } = filtro; 
+
+        for (const cuota of result) {
 
             moneda = Monedas.findOne(cuota.moneda, { fields: { simbolo: 1, descripcion: 1, }});
             compania = Companias.findOne(cuota.compania, { fields: { abreviatura : 1, nombre: 1, }});
-            suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura : 1 }});
+            suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura : 1, nombre: 1 }});
             asegurado = Asegurados.findOne(cuota.asegurado, { fields: { abreviatura : 1 }});
+
+            // si el usuario indicó filtros por catálogos, en texto, los aplicamos ahora 
+
+            // buscamos por compañía 
+            if (compania && compania_text && !(compania.nombre.toLowerCase().includes(compania_text.toLowerCase()) ||
+                                               compania.abreviatura.toLowerCase().includes(compania_text.toLowerCase()))) {
+                continue;
+            }
+
+            // buscamos por moneda 
+            if (moneda && moneda_text && !(moneda.descripcion.toLowerCase().includes(moneda_text.toLowerCase()) ||
+                                           moneda.simbolo.toLowerCase().includes(moneda_text.toLowerCase()))) {
+                continue;
+            }
+
+            // buscamos por suscriptor 
+            if (suscriptor && suscriptor_text && !(suscriptor.nombre.toLowerCase().includes(suscriptor_text.toLowerCase()) ||
+                                                   suscriptor.abreviatura.toLowerCase().includes(suscriptor_text.toLowerCase()))) {
+                continue;
+            }
 
             const cuotaPendiente = {
                 _id: new Mongo.ObjectID()._str,
@@ -341,7 +365,7 @@ Meteor.methods(
                 }
             }
             // -------------------------------------------------------------------------------------------------------
-        })
+        }
 
         // el usuario puede indicar que quiere *solo* montos pendientes de pago que tengan montos cobrados
         if (filtro.soloConMontoCobrado) {

@@ -22,7 +22,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
                 <span ng-bind-html="alert.msg | unsafe"></span>
             </alert>
@@ -147,6 +147,46 @@
                             </div>
 
                         </div>
+
+                        <div class="row row-centered">
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Compañía </label>
+                                    <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.compania_text" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Moneda </label>
+                                    <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.moneda_text" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Suscriptor </label>
+                                    <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.suscriptor_text" />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                            </div>
+
+                        </div>
+
+
+
+
+
+
+
+
+
 
                     </tab>  
 

@@ -1375,10 +1375,18 @@ export default angular.module("scrwebm.remesas.remesa",
                     
                     // esta función es usada por el ddl para buscar los items que corresponden al search que indique el usuario; 
                     // la usamos aquí para agregar la compañía usada en exportar a la lista de compañías 
-                    $scope.searchCompanias(compania.abreviatura); 
-                    $scope.searchMonedas(moneda.descripcion); 
-                    $scope.searchBancos(banco.nombre); 
-
+                    if (compania && compania.abreviatura) {
+                        $scope.searchCompanias(compania.abreviatura); 
+                    }
+                    
+                    if (moneda && moneda.descripcion) { 
+                        $scope.searchMonedas(moneda.descripcion); 
+                    }
+                    
+                    if (banco && banco.nombre) { 
+                        $scope.searchBancos(banco.nombre); 
+                    }
+                    
                     if (result.cuentaBancaria) {
                         $scope.remesa.instrumentoPago.cuentaBancaria = result.cuentaBancaria._id;
                         $scope.remesa.moneda = result.cuentaBancaria.moneda;
@@ -1393,12 +1401,12 @@ export default angular.module("scrwebm.remesas.remesa",
         
                     if (result.error) { 
                         $scope.alerts.push({
-                            type: 'danger',
+                            type: 'warning',
                             msg: result.message
                         });
                     }
 
-                    // finalmente, ejecutamos este pub en el servidor para leer las cuentas bancarias que corresponden al banco 
+                    // finalmente, ejecutamos este publishing en el servidor para leer las cuentas bancarias que corresponden al banco 
                     // aunque ahora tenemos la cuenta bancaria usada al exportar, no tenemos las cuentas bancarias en la lista, 
                     // para que sean mostradas en el ddl 
                     Meteor.subscribe("leer.cuentasBancarias.banco", bancoId, $scope.companiaSeleccionada._id, () => {

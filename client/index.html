@@ -129,6 +129,8 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                                 <li class="divider"></li>
                                 <li><a ui-sref="utilitarios_reconversion">Reconversión monetaria - Cuotas</a></li>
                                 <li><a ui-sref="utilitarios_reconversion_riesgos">Reconversión monetaria - Riesgos (facultativo)</a></li>
+                                <li class="divider"></li>
+                                <li><a ui-sref="utilitarios.pruebaEnviarEmail">Enviar Email (prueba)</a></li>
                             </ul>
                         </li>
 
@@ -164,7 +166,11 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
 
             <div class="row" ui-view></div>
 
-            <br /><br />
+            <!-- Nota: en contab ésto funcionó mejor pues el home page se quita cuando se monta cualquier página de cualquier subsistema 
+            (contab, bancos, nómina, etc.). En este programa, scrwebm, el home page se mantiene siempre y todo se monto con él. Sin 
+            embargo, pareciera que el mecanismo que hace space-filler no se recalcula y el footer queda super abajo ...  -->
+            <!-- <div class="space-filler">
+            </div> -->
 
             <div class="navbar navbar-default">
                 <div class="container">
@@ -175,7 +181,7 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                         <div class="col-sm-4">
                         </div>
                         <div class="col-sm-3 col-sm-offset-1">
-                            <p class="navbar-text"><login-buttons></login-buttons></p>
+                            <p class="navbar-text"><meteor-login></meteor-login></p>
                         </div>
                     </div>
                 </div>

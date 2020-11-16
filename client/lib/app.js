@@ -82,7 +82,8 @@ import Consultas from '/client/imports/consultas/angularModule';
 
 // import 'client/imports/generales/cumulos/registro/registroCumulos.html'; 
 
-
+import Utilitarios from '/client/imports/utilitarios/angular.module'; 
+import MeteorLogin from '/client/imports/generales/meteor.login/angular.module'; 
 
 angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'angularUtils.directives.dirPagination', 'accounts.ui',
@@ -92,6 +93,6 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             ngSanitize, uiSelect, 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
                             Generales.name, Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
-                            Administracion.name, Consultas.name
+                            Administracion.name, Consultas.name, Utilitarios.name, MeteorLogin.name
                           ]);
 

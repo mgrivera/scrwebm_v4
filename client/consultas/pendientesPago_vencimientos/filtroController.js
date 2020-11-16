@@ -1,5 +1,8 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
+import angular from 'angular';
 import lodash from 'lodash'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
@@ -12,9 +15,9 @@ import { Filtros } from '/imports/collections/otros/filtros';
 
 import { Consulta_MontosPendientesPago_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesPago_Vencimientos';
 
-angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_Filtro_Controller",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+angular.module("scrwebm")
+       .controller("ConsultasMontosPendientesPagoVencimientos_Filtro_Controller", ['$scope', '$state',
+function ($scope, $state) {
 
     $scope.processProgress = {
         current: 0,
@@ -48,7 +51,7 @@ angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = null;
 
     if (companiaSeleccionada) { 
@@ -98,7 +101,7 @@ angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_
         $scope.showProgress = true;
 
         // preparamos el filtro (selector)
-        var filtro = {};
+        let filtro = {};
 
         // agregamos la compañía seleccionada al filtro
         filtro = $scope.filtro;
@@ -110,106 +113,95 @@ angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_
         $scope.processProgress.progress = 0;
         $scope.processProgress.message = "";
 
-        $meteor.call('consultas_MontosPendientesPago_Vencimientos', filtro).then(
-            function (data) {
-                // si se efectuó un subscription al collection antes, la detenemos ...
-                if (Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle) { 
-                    Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle.stop();
+        let Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle = null; 
+
+        Meteor.call('consultas_MontosPendientesPago_Vencimientos', filtro, (err) => {
+
+            if (err) {
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: errorMessage
+                });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
+
+            // si se efectuó un subscription al collection antes, la detenemos ...
+            if (Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle) { 
+                Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle.stop();
+            }
+
+            Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle = null;
+
+            Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle =
+            Meteor.subscribe('consulta_MontosPendientesPago_Vencimientos', () => {
+
+                // ------------------------------------------------------------------------------------------------------
+                // guardamos el filtro indicado por el usuario
+                const filtroActual = lodash.clone($scope.filtro);
+
+                if (Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos' })) { 
+                    // el filtro existía antes; lo actualizamos
+                    // validate false: como el filtro puede ser vacío (ie: {}), simple schema no permitiría eso; por eso saltamos la validación
+                    Filtros.update(Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos' })._id,
+                                    { $set: { filtro: filtroActual } },
+                                    { validate: false });
+                }
+                else { 
+                    Filtros.insert({
+                        _id: new Mongo.ObjectID()._str,
+                        userId: Meteor.userId(),
+                        nombre: 'consultas_MontosPendientesDePago_vencimientos',
+                        filtro: filtroActual
+                    });
+                }
+                // ------------------------------------------------------------------------------------------------------
+
+                if (Consulta_MontosPendientesPago_Vencimientos.find({ user: Meteor.userId() }).count() == 0) {
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'warning',
+                        msg: "0 registros seleccionados. Por favor revise el criterio de selección indicado e indique uno diferente.<br />" +
+                            "(Nota: el filtro <b>solo</b> regresará registros si existe una <em>compañía seleccionada</em>.)"
+                    });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                    
+                    return;
                 }
 
-                Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle = null;
+                $scope.showProgress = false;
 
-                $meteor.subscribe('consulta_MontosPendientesPago_Vencimientos').then(
+                // abrimos el state Lista ...
+                const parametrosReporte =
+                    {
+                        fechaPendientesAl: filtro.fechaPendientesAl,
+                        fechaLeerHasta: filtro.fechaLeerHasta
+                    };
 
-                    function (subscriptionHandle) {
-
-                        Consultas_MontosPendientesPago_Vencimientos_SubscriptionHandle = subscriptionHandle;
-                        // ------------------------------------------------------------------------------------------------------
-                        // guardamos el filtro indicado por el usuario
-                        var filtroActual = lodash.clone($scope.filtro);
-
-                        if (Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos' })) { 
-                            // el filtro existía antes; lo actualizamos
-                            // validate false: como el filtro puede ser vacío (ie: {}), simple schema no permitiría eso; por eso saltamos la validación
-                            Filtros.update(Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos' })._id,
-                                            { $set: { filtro: filtroActual } },
-                                            { validate: false });
-                        }
-                        else { 
-                            Filtros.insert({
-                                _id: new Mongo.ObjectID()._str,
-                                userId: Meteor.userId(),
-                                nombre: 'consultas_MontosPendientesDePago_vencimientos',
-                                filtro: filtroActual
-                            });
-                        }
-                        // ------------------------------------------------------------------------------------------------------
-
-                        if (Consulta_MontosPendientesPago_Vencimientos.find({ user: Meteor.userId() }).count() == 0) {
-                            $scope.alerts.length = 0;
-                            $scope.alerts.push({
-                                type: 'warning',
-                                msg: "0 registros seleccionados. Por favor revise el criterio de selección indicado e indique uno diferente.<br />" +
-                                    "(Nota: el filtro <b>solo</b> regresará registros si existe una <em>compañía seleccionada</em>.)"
-                            });
-                            $scope.showProgress = false;
-                            return;
-                        };
-
-                        $scope.showProgress = false;
-
-                        // abrimos el state Lista ...
-                        let parametrosReporte =
-                            {
-                                fechaPendientesAl: filtro.fechaPendientesAl,
-                                fechaLeerHasta: filtro.fechaLeerHasta
-                            };
-
-                        $state.go('pendientesPago_vencimientos_consulta_list',
-                                    {
-                                        companiaSeleccionada: JSON.stringify(companiaSeleccionadaDoc),
-                                        parametrosReporte: JSON.stringify(parametrosReporte)
-                                    });
-                    },
-                    function (err) {
-
-                        let errMessage = mensajeErrorDesdeMethod_preparar(err);
-
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({
-                            type: 'danger',
-                            msg: errMessage
-                        });
-
-                        $scope.showProgress = false;
-                    })
-
-        },
-        function (err) {
-
-            let errMessage = mensajeErrorDesdeMethod_preparar(err);
-
-            $scope.alerts.length = 0;
-            $scope.alerts.push({
-                type: 'danger',
-                msg: errMessage
-            });
-
-            $scope.showProgress = false;
-        });
+                $state.go('pendientesPago_vencimientos_consulta_list',
+                    {
+                        companiaSeleccionada: JSON.stringify(companiaSeleccionadaDoc),
+                        parametrosReporte: JSON.stringify(parametrosReporte)
+                    });
+            })
+        })
     }
 
-    // ------------------------------------------------------------------------------------------------------
     // si hay un filtro anterior, lo usamos
     // los filtros (solo del usuario) se publican en forma automática cuando se inicia la aplicación
-
     $scope.filtro = {};
-    var filtroAnterior = Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos' });
+    const filtroAnterior = Filtros.findOne({ nombre: 'consultas_MontosPendientesDePago_vencimientos' });
 
     // solo hacemos el subscribe si no se ha hecho antes; el collection se mantiene a lo largo de la session del usuario
     if (filtroAnterior) { 
         $scope.filtro = lodash.clone(filtroAnterior.filtro);
     }
-    // ------------------------------------------------------------------------------------------------------
-  }
-]);
+}])

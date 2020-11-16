@@ -96,7 +96,6 @@ Meteor.methods(
         Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);
         // -------------------------------------------------------------------------------------------------------------
 
-
         // leemos y recorremos los items seleccionados arriba para registrar el nombre de suscriptor y asegurado
         // nótese como, para contratos, leemos código y referencia en vez de asegurado
         result.forEach(cuota => {
@@ -193,11 +192,35 @@ Meteor.methods(
         let suscriptor = {};
         let asegurado = null;
 
-        result.forEach(cuota => {
+        // el usuario puede indicar nombres de compañía, moneda y suscriptor como parte de su filtro
+        // la idea es que puede indicar *solo* parte del nombre para filtrar por allí 
+        const { compania_text, moneda_text, suscriptor_text } = filtro; 
+
+        for (const cuota of result) {
 
             moneda = Monedas.findOne(cuota.moneda, { fields: { simbolo: 1, descripcion: 1, }});
             compania = Companias.findOne(cuota.compania, { fields: { abreviatura : 1, nombre: 1, }});
-            suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura : 1 }});
+            suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura : 1, nombre: 1 }});
+
+            // si el usuario indicó filtros por catálogos, en texto, los aplicamos ahora 
+
+            // buscamos por compañía 
+            if (compania && compania_text && !(compania.nombre.toLowerCase().includes(compania_text.toLowerCase()) ||
+                                               compania.abreviatura.toLowerCase().includes(compania_text.toLowerCase()))) {
+                continue;
+            }
+
+            // buscamos por moneda 
+            if (moneda && moneda_text && !(moneda.descripcion.toLowerCase().includes(moneda_text.toLowerCase()) ||
+                                           moneda.simbolo.toLowerCase().includes(moneda_text.toLowerCase()))) {
+                continue;
+            }
+
+            // buscamos por suscriptor 
+            if (suscriptor && suscriptor_text && !(suscriptor.nombre.toLowerCase().includes(suscriptor_text.toLowerCase()) ||
+                                                   suscriptor.abreviatura.toLowerCase().includes(suscriptor_text.toLowerCase()))) {
+                continue;
+            }
             
             if (cuota.source.origen === 'capa' || cuota.source.origen === 'cuenta') {
                 // arriba asignamos la referencia del contrato como asegurado ... 
@@ -340,7 +363,7 @@ Meteor.methods(
                 }
             }
             // -------------------------------------------------------------------------------------------------------
-        })
+        }
 
         return "Ok, el proceso se ha ejecutado en forma satisfactoria.<br /><br />" +
                "En total, " + cantidadRegistrosAgregados.toString() + 

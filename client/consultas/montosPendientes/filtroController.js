@@ -1,5 +1,7 @@
 
 import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
+
 import angular from 'angular';
 import lodash from 'lodash';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
@@ -144,7 +146,7 @@ angular.module("scrwebm")
             Meteor.subscribe('consulta.montosPendientes', () => {
 
                 // guardamos el filtro indicado por el usuario
-                var filtroActual = _.clone($scope.filtro);
+                var filtroActual = lodash.clone($scope.filtro);
 
                 if (Filtros.findOne({ nombre: 'consultas_MontosPendientes' })) {
                     // el filtro existía antes; lo actualizamos
@@ -196,6 +198,6 @@ angular.module("scrwebm")
 
     // solo hacemos el subscribe si no se ha hecho antes; el collection se mantiene a lo largo de la session del usuario
     if (filtroAnterior) { 
-        $scope.filtro = _.clone(filtroAnterior.filtro);
+        $scope.filtro = lodash.clone(filtroAnterior.filtro);
     }
   }])

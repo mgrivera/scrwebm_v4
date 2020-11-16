@@ -83,47 +83,49 @@
                             </div>
 
                             <div class="col-sm-4">
-                                <div style="margin: 0 20px; ">
-                                    <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
-                                        <legend class="scheduler-border-radioButtons">Origen: </legend>
+                            </div>
+                        </div>
 
-                                        <div class="form-group">
-                                            <br />
-                                            <label style='font-weight: normal; '>
-                                                <input type="checkbox"
-                                                       ng-model="filtro.origen.primasProporcional">
-                                                Primas proporcional
-                                            </label>
-                                            <br />
-                                            <label style='font-weight: normal; '>
-                                                <input type="checkbox"
-                                                       ng-model="filtro.origen.primasNoProporcional">
-                                                Primas no proporcional
-                                            </label>
-                                            <br />
-                                            <label style='font-weight: normal; '>
-                                                <input type="checkbox"
-                                                       ng-model="filtro.origen.primasFacultativo">
-                                                Primas facultativo
-                                            </label>
-                                            <br />
-                                            <label style='font-weight: normal; '>
-                                                <input type="checkbox"
-                                                       ng-model="filtro.origen.siniestrosFacultativo">
-                                                Siniestros facultativo
-                                            </label>
-                                            <br />
-                                            <label style='font-weight: normal; '>
-                                                <input type="checkbox"
-                                                       ng-model="filtro.origen.todo">
-                                                Todo
-                                            </label>
-                                        </div>
+                        <div class="row" style="margin-top: 20px; ">
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Compañia </label>
+                                    <input type="text" 
+                                        class="form-control input-sm myinput-sm"
+                                        ng-model="filtro.compania_text" />
+                                </div>
+                            </div>
 
-                                    </fieldset>
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Moneda </label>
+                                    <input type="text" 
+                                        class="form-control input-sm myinput-sm" 
+                                        ng-model="filtro.moneda_text" /> 
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Ramo </label>
+                                    <input type="text" 
+                                        class="form-control input-sm myinput-sm" 
+                                        ng-model="filtro.ramo_text" />
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row" style="margin-top: 20px; ">
+                            <div class="col-sm-4">
+                                <div class="form-group form-group-sm" style="margin: 0 20px; ">
+                                    <label class="control-label input-label pull-left">Asegurado </label>
+                                    <input type="text" 
+                                        class="form-control input-sm myinput-sm" 
+                                        ng-model="filtro.asegurado_text" />
+                                </div>
+                            </div>
+                        </div>
+
                     </tab>
 
                     <tab heading="Listas">
@@ -196,6 +198,51 @@
                                 </div>
                             </div>
                         </div>
+                    </tab>
+
+                    <tab heading="Opciones">
+
+                        <div class="row" style="margin-top: 20px; ">
+                            
+                            <div class="col-sm-4">
+                                <div style="margin: 0 20px; ">
+                                    <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
+                                        <legend class="scheduler-border-radioButtons">Origen: </legend>
+
+                                        <div class="form-group">
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox" ng-model="filtro.origen.primasProporcional">
+                                                Primas proporcional
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox" ng-model="filtro.origen.primasNoProporcional">
+                                                Primas no proporcional
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox" ng-model="filtro.origen.primasFacultativo">
+                                                Primas facultativo
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox" ng-model="filtro.origen.siniestrosFacultativo">
+                                                Siniestros facultativo
+                                            </label>
+                                            <br />
+                                            <label style='font-weight: normal; '>
+                                                <input type="checkbox" ng-model="filtro.origen.todo">
+                                                Todo
+                                            </label>
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </tab>
                 </tabset>
             </div>

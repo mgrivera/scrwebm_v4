@@ -614,6 +614,12 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         // utilitarios
         // ----------------------------------------------------------------
+        .state('utilitarios', {
+            url: '/utilitarios',
+            templateUrl: 'client/imports/utilitarios/utilitarios.html',
+            controller: 'Utilitarios_Controller'
+        })
+
         // tabla de números de referencia
         .state('utilitarios_tablaNumerosReferencia', {
             url: '/utilitarios/tablaNumerosReferencia',
@@ -630,6 +636,14 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             templateUrl: 'client/utilitarios/reconversionRiesgos/reconversion.html',
             controller: 'Utilitarios_Reconversion_Riesgos_Controller'
         })
+
+        .state('utilitarios.pruebaEnviarEmail', {
+            url: '/pruebaEnviarEmail',
+            templateUrl: 'client/imports/utilitarios/pruebaEnviarEmail/pruebaEnviarEmail.html',
+            controller: 'Prueba_EnviarEmail_Controller', 
+            parent: 'utilitarios',
+        })
+
         // ----------------------------------------------------------------
         // administración (funciones para el administrador)
         // ---------------------------------------------------------------- /consultas/pendientesCobroVencimientos/filtro
