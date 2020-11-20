@@ -661,6 +661,10 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             url: '/administracion/usuariosEmpresas',
             template: '<usuarios-empresas />'
         })
+        .state('usuariosLogin', {
+            url: '/administracion/usuariosLogin',
+            template: '<usuarios-login />'
+        })
 
         // ----------------------------------------------------------------
         // notas de crédito/débito 

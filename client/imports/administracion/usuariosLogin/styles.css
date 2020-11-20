@@ -1,0 +1,114 @@
+
+.cellNumber {
+    text-align: right; 
+    font-size: x-small; 
+}
+
+.alignLeft {
+    text-align: left; 
+}
+
+.alignCenter {
+    text-align: center; 
+}
+
+.fontXSmall { 
+    font-size: x-small; 
+}  
+
+.fontSmall { 
+    font-size: small; 
+}  
+
+/* los buttons son muy altos en el navBar */
+@media (min-width: 768px) { 
+    .navbar-nav > .navBar_button > a {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
+
+/* el navBar sigue siendo muy alto pues aplica un margin de 20x */
+nav.toolBar_navBar.navbar.navbar-default {
+     margin-bottom: 0px;
+     min-height: 0px;
+}
+
+/* para poner en rojo un icon de font awesome cuando el usaurio hace hover 
+   (por ejemplo el X en los grids ...)   style="color: #A5999C" */
+.fa-close:hover {
+    color: red;
+}
+
+.fa-pencil:hover {
+    color: #337AB7;
+}
+
+/* para aplicar estilos al fixed-data-table-2 */
+
+.tableCell { 
+    font-size: small; 
+}
+
+.tableCell-left { 
+    font-size: x-small; 
+    text-align: left; 
+}
+
+.tableCell-right { 
+    font-size: x-small; 
+    text-align: right; 
+}
+
+.tableCell-center { 
+    font-size: x-small; 
+    text-align: center; 
+}
+
+.tableColHeader {
+    font-size: small; 
+}
+
+.tableColHeader-left {
+    font-size: small; 
+    text-align: left; 
+}
+
+.tableColHeader-center {
+    font-size: small; 
+    text-align: center; 
+    display: inline-block !important;
+}
+
+.tableColHeader-right {
+    font-size: small; 
+    text-align: right; 
+    display: inline-block !important;
+}
+
+/* para cambiar estilos en bs navbar  */
+
+.toolBar.navbar {
+  min-height: 30px;
+  max-height: 30px;
+  margin-bottom: 10px;
+}
+
+.toolBar .navbar-brand {
+    height: 30px;
+    padding: 5px 5px;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: bold;
+    color: #77778C;
+}
+
+.toolBar .navbar-nav > li > a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.toolBar .navbar-text {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
