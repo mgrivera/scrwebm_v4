@@ -121,33 +121,34 @@ Meteor.methods(
             }
         }
 
-         const tiposMovimiento = [
-             { tipo: 'OR', descripcion: 'Original' },
-             { tipo: 'AS', descripcion: 'Aumento de Suma Asegurada' },
-             { tipo: 'DS', descripcion: 'Disminución de Suma Asegurada' },
-             { tipo: 'COAD', descripcion: 'Cobro Adicional de Prima' },
-             { tipo: 'DP', descripcion: 'Devolucion de Prima' },
-             { tipo: 'EC', descripcion: 'Extensión de Cobertura' },
-             { tipo: 'CR', descripcion: 'Cambio de Reasegurador' },
-             { tipo: 'SE', descripcion: 'Sin Efecto' },
-             { tipo: 'AN', descripcion: 'Anulación' },
-             { tipo: 'AE', descripcion: 'Anulación de Endoso' },
-             { tipo: 'CAPA', descripcion: 'Cambio de Participación' },
-             { tipo: 'PRAJ', descripcion: 'Prima de Ajuste' },
-             { tipo: 'AJPR', descripcion: 'Ajuste de Prima' },
-             { tipo: 'FRPR', descripcion: 'Fraccionamiento de Prima' },
-             { tipo: 'DE', descripcion: 'Endoso declarativo' },
-             { tipo: 'IncCob', descripcion: 'Inclusión de Cobertura' }
-         ];
+        const tiposMovimiento = [
+            { tipo: 'OR', descripcion: 'Original' },
+            { tipo: 'AS', descripcion: 'Aumento de Suma Asegurada' },
+            { tipo: 'DS', descripcion: 'Disminución de Suma Asegurada' },
+            { tipo: 'COAD', descripcion: 'Cobro Adicional de Prima' },
+            { tipo: 'DP', descripcion: 'Devolucion de Prima' },
+            { tipo: 'EC', descripcion: 'Extensión de Cobertura' },
+            { tipo: 'CR', descripcion: 'Cambio de Reasegurador' },
+            { tipo: 'SE', descripcion: 'Sin Efecto' },
+            { tipo: 'AN', descripcion: 'Anulación' },
+            { tipo: 'AE', descripcion: 'Anulación de Endoso' },
+            { tipo: 'CAPA', descripcion: 'Cambio de Participación' },
+            { tipo: 'PRAJ', descripcion: 'Prima de Ajuste' },
+            { tipo: 'AJPR', descripcion: 'Ajuste de Prima' },
+            { tipo: 'FRPR', descripcion: 'Fraccionamiento de Prima' },
+            { tipo: 'DE', descripcion: 'Endoso declarativo' },
+            { tipo: 'IncCob', descripcion: 'Inclusión de Cobertura' }
+        ];
 
-         const tipoMovimiento = lodash.find(tiposMovimiento, (x) => { return movimiento.tipo === x.tipo; });
+        const tipoMovimiento = lodash.find(tiposMovimiento, (x) => { return movimiento.tipo === x.tipo; });
 
-         const compania = Companias.findOne(riesgo.compania);
-         const asegurado = Asegurados.findOne(riesgo.asegurado);
-         const ramo = Ramos.findOne(riesgo.ramo);
-         const moneda = Monedas.findOne(riesgo.moneda);
-         const suscriptor = Suscriptores.findOne(riesgo.suscriptor);
-         const indole = Indoles.findOne(riesgo.indole);
+        const compania = Companias.findOne(riesgo.compania);
+        const cedenteOriginal = riesgo.cedenteOriginal ? Companias.findOne(riesgo.cedenteOriginal) : { nombre: "Indefinida" }; 
+        const asegurado = Asegurados.findOne(riesgo.asegurado);
+        const ramo = Ramos.findOne(riesgo.ramo);
+        const moneda = Monedas.findOne(riesgo.moneda);
+        const suscriptor = Suscriptores.findOne(riesgo.suscriptor);
+        const indole = Indoles.findOne(riesgo.indole);
 
         // leemos las personas definidas para el riesgo
         let persona = "";
@@ -211,9 +212,24 @@ Meteor.methods(
 
         // para calcular un corretaje aún cuando éste no sea explicito, sino que corresonda a una diferencia entre primas netas, 
         // nuestra y de reaseguradores ... 
-        const nuestraPrimaNeta = primas.primaNeta; 
-        const primaNetaReaseguradores = lodash(movimiento.primas).filter((x) => { return !x.nosotros && x.primaNeta; }).sumBy('primaNeta'); 
-        let corretajeTotal = nuestraPrimaNeta + primaNetaReaseguradores;        // ambas primas tienen signos contrarios 
+
+        // si nosotros somos un corredor de reaseguro, el corretaje (ingresos) es calculado sumando en forma algebraica las primas netas; 
+        // si nosotros somos un reasegurador, el corretaje, de existir, es un costo y lo leemos directamente del valor corretaje 
+
+        let corretajeTotal = 0; 
+        const primaNetaReaseguradores = lodash(movimiento.primas).filter((x) => { return !x.nosotros && x.primaNeta; }).sumBy('primaNeta');
+
+        if (companiaNosotros.tipo === "CORRR") { 
+            // somos un corredor de reaseguro 
+            const nuestraPrimaNeta = primas.primaNeta;
+            corretajeTotal = nuestraPrimaNeta + primaNetaReaseguradores;        // ambas primas tienen signos contrarios 
+        } else { 
+            // somos un reasegurador; hacemos un tratamiento diferente; normalmente, no habrá corretaje o, de haberlo, será un 
+            // costo que nos cobrará el cedente, si es un corredor de reaseguros. A reaseguradores de nuestra parte, no será normal 
+            // cobrar un corretaje 
+            corretajeTotal = 0; 
+        }
+        
         if (!corretajeTotal) { corretajeTotal = 0; }
 
         // para obtener totales para cifras de reaseguradores 
@@ -244,9 +260,21 @@ Meteor.methods(
             comMasImp += primaItem.impuesto ? primaItem.impuesto : 0;
 
             // calculamos el corretaje del reasegurador como una proporción de su prima y la prima total de reaseguradores 
-            const suPrimaNeta = primaItem && primaItem.primaNeta ? primaItem.primaNeta : 0;
-            const proporcionReasegurador = suPrimaNeta / primaNetaReaseguradores;
-            const suParteCorretaje = corretajeTotal * proporcionReasegurador;
+            // nótese que lo anterior aplica solo cuando somos corredores, no reaseguradores 
+
+            let suParteCorretaje = 0;
+
+            if (companiaNosotros.tipo === "CORRR") {
+                // somos un corredor de reaseguro 
+                const suPrimaNeta = primaItem && primaItem.primaNeta ? primaItem.primaNeta : 0;
+                const proporcionReasegurador = suPrimaNeta / primaNetaReaseguradores;
+                suParteCorretaje = corretajeTotal * proporcionReasegurador;
+            } else {
+                // somos un reasegurador; en este caso, puede venir un corretaje en nuestra orden (nosotros), pero será el que nos 
+                // cobre el cedente, que será, probablemente, un corredor de reaseguros 
+                // otros reaseguradores, a quines cedamos parte de nuestra orden, no deberían, en teoría, tener corretaje 
+                suParteCorretaje = primaItem && primaItem.corretaje ? primaItem.corretaje : 0;
+            }
 
             const compania = {
                 nombre: Companias.findOne(reaseg.compania).abreviatura,
@@ -343,7 +371,8 @@ Meteor.methods(
             referencia: riesgo.referencia,
             tipoMovimiento: tipoMovimiento && tipoMovimiento.descripcion ? tipoMovimiento.descripcion : 'Indefinido',
             cedente: compania.nombre,
-            direccionCedente: compania.direccion ? compania.direccion : "Indefinida (por registrar en catálogo)",
+            cedenteOriginal: cedenteOriginal.nombre, 
+            direccionCedente: compania.direccion ? compania.direccion : "Indefinida (por registrar en el catálogo)",
             retencionCedente: `${numeral(abs(retencionCedente)).format('0,0.00')}`,
             ramo: ramo.descripcion,
             moneda: moneda.descripcion,

@@ -122,11 +122,12 @@ Meteor.methods({
             }
         }
 
-         const compania = Companias.findOne(riesgo.compania);
-         const asegurado = Asegurados.findOne(riesgo.asegurado);
-         const ramo = Ramos.findOne(riesgo.ramo);
-         const moneda = Monedas.findOne(riesgo.moneda);
-         const indole = Indoles.findOne(riesgo.indole);
+        const compania = Companias.findOne(riesgo.compania);
+        const cedenteOriginal = riesgo.cedenteOriginal ? Companias.findOne(riesgo.cedenteOriginal) : { nombre: "Indefinida" };
+        const asegurado = Asegurados.findOne(riesgo.asegurado);
+        const ramo = Ramos.findOne(riesgo.ramo);
+        const moneda = Monedas.findOne(riesgo.moneda);
+        const indole = Indoles.findOne(riesgo.indole);
 
         // leemos las personas definidas para el riesgo
         let persona = "";
@@ -285,6 +286,7 @@ Meteor.methods({
             movimiento: movimiento.numero,
             referencia: riesgo.referencia,
             cedente: compania.nombre,
+            cedenteOriginal: cedenteOriginal.nombre, 
             retencionCedente: `${numeral(abs(retencionCedente)).format('0,0.00')}`,
             direccionCedente: compania.direccion ? compania.direccion : "Indefinida (por registrar en catálogo)",
             ramo: ramo.descripcion,
