@@ -1,10 +1,10 @@
 
 import { Meteor } from 'meteor/meteor'; 
-import * as angular from 'angular'; 
+import angular from 'angular'; 
 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
-import { ContratosParametros } from 'imports/collections/catalogos/contratosParametros'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
 angular.module("scrwebm").controller("ContratosProp_Configuracion_Controller", ['$scope', function ($scope) {
 
@@ -16,7 +16,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Controller", [
     let companiaSeleccionadaDoc = {};
 
     if (companiaSeleccionada) { 
-        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1, abreviatura: 1 } });
     } 
 
     $scope.companiaSeleccionada = {};

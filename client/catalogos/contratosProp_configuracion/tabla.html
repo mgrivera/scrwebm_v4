@@ -73,4 +73,13 @@
             </div>
         </div>
     </div>
+
+    <!-- con este input (type file) permitimos al usuario importar los items desde un archivo csv, que se ha exportado en forma previa 
+    con la opción Exportar  -->
+    <input type="file" 
+           id="fileInput" 
+           accept=".txt" 
+           multiple="false"
+           onchange="angular.element(this).scope().importarTablaConfiguracion2(this.files)" 
+           ng-show="false" />
 </div>
