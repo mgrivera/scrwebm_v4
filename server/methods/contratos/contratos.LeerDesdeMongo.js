@@ -12,6 +12,7 @@ import { Ramos } from '/imports/collections/catalogos/ramos';
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Cumulos_Registro } from '/imports/collections/principales/cumulos_registro'; 
 import { Temp_Consulta_Contratos } from '/imports/collections/consultas/tempConsultaContratos'; 
 
@@ -88,6 +89,73 @@ Meteor.methods(
         if (filtro2.descripcion) {
             const search = new RegExp(filtro2.descripcion, 'i');
             where.descripcion = search;
+        }
+
+        // -------------------------------------------------------------------------------------------------------------
+        // ahora el usuario puede indicar un pedazo del nombre de: moneda, asegurado, ramo, compañía 
+        // buscamos en el catálogo y preparamo un array con _ids 
+        if (filtro2.moneda_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.moneda_text}`.replace('$', '\\$');
+            const search = { $or: [{ descripcion: { $regex: expr, $options: "i" } }, { simbolo: { $regex: expr, $options: "i" } }] };
+
+            const items = Monedas.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+
+            // normalmemnte, el contrato tiene capas (noProp) o cuentas (definiciones de ...) (prop) 
+            where.$or = [{ 'capas.moneda': { $in: array } }, 
+                         { 'cuentasTecnicas_definicion.moneda': { $in: array } }
+                        ]; 
+        }
+
+        if (filtro2.compania_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.compania_text}`;
+            const search = { $or: [{ nombre: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+            const items = Companias.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            where.cedenteOriginal = { $in: array };
+        }
+
+        if (filtro2.ramo_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.ramo_text}`;
+            const search = { $or: [{ descripcion: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+            const items = Ramos.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            where.ramo = { $in: array };
+        }
+
+        if (filtro2.tipo_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.tipo_text}`;
+            const search = { $or: [{ descripcion: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+            const items = TiposContrato.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            where.tipo = { $in: array };
+        }
+
+
+        // -------------------------------------------------------------------------------------------------------------
+        // para saber si un contrato es prop o noProp, simplemente buscamos si tienen o no items en cada (respectivo) array 
+        if (filtro2.propNoProp && filtro2.propNoProp != "todos") {
+            switch (filtro2.propNoProp) {
+                case "prop": {
+                    where.cuentasTecnicas_definicion = { $exists: true, $ne: [] }; 
+                    break;
+                }
+                case "noProp": {
+                    where.capas = { $exists: true, $ne: [] }; 
+                    break;
+                }
+            }
         }
 
         where.cia = ciaSeleccionadaID;

@@ -18,9 +18,11 @@ import { TiposObjetoAsegurado } from '/imports/collections/catalogos/tiposObjeto
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import "./filtro.html"; 
 
-export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosFiltro_Controller",
-['$scope', '$state', '$stateParams', function ($scope, $state, $stateParams) {
+export default angular.module("scrwebm.riesgos.filtro", [])
+                      .controller("RiesgosFiltro_Controller", ['$scope', '$state', '$stateParams', 
+function ($scope, $state, $stateParams) {
 
     $scope.showProgress = false;
 
@@ -85,7 +87,6 @@ export default angular.module("scrwebm.riesgos.filtro", []).controller("RiesgosF
     $scope.limpiarFiltro = function () {
         $scope.filtro = {};
     }
-
 
     $scope.aplicarFiltroYAbrirLista = function () {
 

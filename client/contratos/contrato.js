@@ -31,9 +31,8 @@ import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, 
 import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
 import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
 
-angular.module("scrwebm").controller("ContratoController",
-                          ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$location', 
-                  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $location) {
+angular.module("scrwebm").controller("ContratoController", ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$location', 
+function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $location) {
 
     $scope.showProgress = false;
     $scope.dataHasBeenEdited = false; 

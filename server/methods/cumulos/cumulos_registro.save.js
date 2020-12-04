@@ -23,7 +23,9 @@ Meteor.methods(
 
         return { 
             error: false, 
-            message: "Ok, los datos han sido actualizados en la base de datos.", 
+            message: `Ok, los datos han sido actualizados en la base de datos.<br /> 
+                      Ud. puede grabar un nuevo registro ahora, o regresar a la <em>Lista</em> para ver el registro que se ha grabado. 
+            `, 
         }
     }, 
 

@@ -236,7 +236,7 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('riesgosFiltro', {
             url: '/riesgos/filtro?origen',
-            templateUrl: 'client/html/riesgos/filtro.html',
+            templateUrl: 'client/imports/riesgos/filtro.html',
             controller: 'RiesgosFiltro_Controller',
             params: { 'origen': null, },
         })

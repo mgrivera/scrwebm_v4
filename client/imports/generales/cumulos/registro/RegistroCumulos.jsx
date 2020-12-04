@@ -117,13 +117,14 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
                                 {(currentTab === 2) && (
                                     <Nuevo defaults={defaultValues} 
                                             cumulos={cumulos} 
-                                            ciaSeleccionadaId={companiaSeleccionada._id} />
+                                            ciaSeleccionadaId={companiaSeleccionada._id} 
+                                            setCurrentTab={setCurrentTab} />
                                 )}
                         </Tab>}
 
                         <Tab eventKey={3} title="Detalles">
                             {(currentTab === 3) && ( 
-                                <Detalles modo={modo} itemId={itemDetallesId} cumulos={cumulos} /> 
+                                <Detalles modo={modo} itemId={itemDetallesId} cumulos={cumulos} setCurrentTab={setCurrentTab} /> 
                             )}
                         </Tab>
                     </Tabs>

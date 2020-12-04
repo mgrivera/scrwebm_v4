@@ -8,7 +8,7 @@ function Message({ type, message, handleMessageDismiss }) {
 
     return (
         <Alert bsStyle={type} onDismiss={() => handleMessageDismiss()}>
-            <p>{message}</p>
+            <div style={{ textAlign: 'left' }} dangerouslySetInnerHTML={outputHtmlMarkup(message)} />
         </Alert>
     )
 }
@@ -20,3 +20,7 @@ Message.propTypes = {
 };
 
 export default Message; 
+
+function outputHtmlMarkup(text) {
+    return { __html: text };
+}

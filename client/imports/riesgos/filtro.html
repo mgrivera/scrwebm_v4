@@ -1,5 +1,4 @@
 ﻿
-
 <div class="ui-viewBorder">
 
     <div class="row">
@@ -28,122 +27,162 @@
     </div>
 
     <div class="row">
-        <form class="form-horizontal" role="form" novalidate style="margin-top: 15px; ">
+        <form role="form" novalidate style="margin-top: 15px; ">
             <div class="container-fluid">
 
                 <tabset style="text-align: left; ">
                     <tab heading="Generales">
 
-                        <div class="row" style="margin-top: 20px; ">
-                            <!-- número -->
-                            <div class="col-sm-6">
+                        <div class="row row-centered" style="margin-top: 20px; ">
+                            <div class="col-sm-2 col-centered">
                                 <div class="form-group form-group-sm">
-                                    <label class="col-sm-2 control-label input-label">Número: </label>
+                                    <label class="control-label input-label pull-left">Numero: </label>
+                                    <input type="number"
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.numero1" 
+                                           ng-model-options="{ updateOn: 'blur' }"/>
+                                </div>
+                            </div>
+                        
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">&nbsp;</label>
+                                    <input type="number" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.numero2" 
+                                           ng-model-options="{ updateOn: 'blur' }"/>
+                                </div>
+                            </div>
+                        
+                            <div class="col-sm-2 col-centered"></div>
+                        
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Código: </label>
+                                    <input type="text" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.codigo" 
+                                           ng-model-options="{ updateOn: 'blur' }"/>
+                                </div>
+                            </div>
+                        
+                            <div class="col-sm-2 col-centered"></div>
+                        </div>
 
-                                    <div class="col-sm-5">
-                                        <input type="number"
-                                            class="form-control input-sm myinput-sm"
-                                            style="max-width: 150px; "
-                                            ng-model="filtro.numero1"
-                                            ng-model-options="{ updateOn: 'blur' }" />
-                                    </div>
-                                    <div class="col-sm-5">
-                                        <input type="number"
-                                            class="form-control input-sm myinput-sm"
-                                            style="max-width: 150px; "
-                                            ng-model="filtro.numero2"
-                                            ng-model-options="{ updateOn: 'blur' }" />
-                                    </div>
-
+                        <div class="row row-centered">
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Desde: </label>
+                                    <input type="date" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.desde1" 
+                                           ng-model-options="{ updateOn: 'blur' }"/>
                                 </div>
                             </div>
 
-                            <!-- Código -->
-                            <div class="col-sm-6">
+                            <div class="col-sm-2 col-centered">
                                 <div class="form-group form-group-sm">
-                                    <label class="col-sm-2 control-label input-label">Código: </label>
-                                    <div class="col-sm-5">
-                                        <input type="text"
-                                            name="codigo"
-                                            style="max-width: 150px; "
-                                            class="form-control input-sm myinput-sm"
-                                            ng-model="filtro.codigo"
-                                            ng-model-options="{ updateOn: 'blur' }" />
-                                    </div>
+                                    <label class="control-label input-label pull-left">&nbsp;</label>
+                                    <input type="date" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.desde2" 
+                                           ng-model-options="{ updateOn: 'blur' }"/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered"></div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Hasta: </label>
+                                    <input type="date" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.hasta1" 
+                                           ng-model-options="{ updateOn: 'blur' }"/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">&nbsp;</label>
+                                    <input type="date" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.hasta2" 
+                                           ng-model-options="{ updateOn: 'blur' }"/>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <!-- desde -->
-                            <div class="col-sm-6">
+                        <div class="row row-centered">
+                            <div class="col-sm-4 col-centered">
                                 <div class="form-group form-group-sm">
-                                    <label class="col-sm-2 control-label input-label">Desde: </label>
-
-                                    <div class="col-sm-5">
-                                        <input type="date"
-                                            name="desde1"
-                                            style="max-width: 150px; "
-                                            class="form-control input-sm myinput-sm"
-                                            ng-model="filtro.desde1" />
-                                    </div>
-                                    <div class="col-sm-5">
-                                        <input type="date"
-                                            name="desde2"
-                                            style="max-width: 150px; "
-                                            class="form-control input-sm myinput-sm"
-                                            ng-model="filtro.desde2" />
-                                    </div>
+                                    <label class="control-label input-label pull-left">Comentarios: </label>
+                                    <input type="text" 
+                                        class="form-control input-sm myinput-sm" 
+                                        ng-model="filtro.comentarios"
+                                        ng-model-options="{ updateOn: 'blur' }" />
                                 </div>
                             </div>
 
-                            <!-- hasta -->
-                            <div class="col-sm-6">
+                            <div class="col-sm-2 col-centered"></div>
+
+                            <div class="col-sm-2 col-centered">
                                 <div class="form-group form-group-sm">
-                                    <label class="col-sm-2 control-label input-label">Hasta: </label>
-                                    <div class="col-sm-5">
-                                        <input type="date"
-                                            name="hasta1"
-                                            style="max-width: 150px; "
-                                            class="form-control input-sm myinput-sm"
-                                            ng-model="filtro.hasta1" />
-                                    </div>
-                                    <div class="col-sm-5">
-                                        <input type="date"
-                                            name="hasta2"
-                                            style="max-width: 150px; "
-                                            class="form-control input-sm myinput-sm"
-                                            ng-model="filtro.hasta2" />
-                                    </div>
+                                    <label class="control-label input-label pull-left">Referencia: </label>
+                                    <input type="text" 
+                                        class="form-control input-sm myinput-sm" 
+                                        ng-model="filtro.referencia"
+                                        ng-model-options="{ updateOn: 'blur' }" />
                                 </div>
                             </div>
+
+                            <div class="col-sm-2 col-centered"></div>
                         </div>
 
-                        <div class="row">
-                            <!-- descripcion -->
-                            <div class="col-sm-6">
+                        <div class="row row-centered">
+                            <div class="col-sm-2 col-centered">
                                 <div class="form-group form-group-sm">
-                                    <label class="col-sm-2 control-label input-label">Comentarios: </label>
-                                    <div class="col-sm-10">
-                                        <input type="text"
-                                            class="form-control input-sm myinput-sm"
-                                            style="max-width: 390px; "
-                                            ng-model="filtro.comentarios"
-                                            ng-model-options="{ updateOn: 'blur' }" />
-                                    </div>
+                                    <label class="control-label input-label pull-left">Moneda: </label>
+                                    <input type="text" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.moneda_text"
+                                           ng-model-options="{ updateOn: 'blur' }" 
+                                           placeholder="bs, $, ..."/>
                                 </div>
                             </div>
-                            <!-- referencia -->
-                            <div class="col-sm-6">
+
+                            <div class="col-sm-2 col-centered">
                                 <div class="form-group form-group-sm">
-                                    <label class="col-sm-2 control-label input-label">Referencia: </label>
-                                    <div class="col-sm-5">
-                                        <input type="text"
-                                            class="form-control input-sm myinput-sm"
-                                            style="max-width: 150px; "
-                                            ng-model="filtro.referencia"
-                                            ng-model-options="{ updateOn: 'blur' }" />
-                                    </div>
+                                    <label class="control-label input-label pull-left">Compañía: </label>
+                                    <input type="text" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.compania_text"
+                                           ng-model-options="{ updateOn: 'blur' }" 
+                                           placeholder="delta, atrio, ..." />
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered"></div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Ramo: </label>
+                                    <input type="text" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.ramo_text"
+                                           ng-model-options="{ updateOn: 'blur' }" 
+                                           placeholder="auto, incend, ..."/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Asegurado: </label>
+                                    <input type="text" 
+                                           class="form-control input-sm myinput-sm" 
+                                           ng-model="filtro.asegurado_text"
+                                           ng-model-options="{ updateOn: 'blur' }" 
+                                           placeholder="hector, manuel, rafael, ..."/>
                                 </div>
                             </div>
                         </div>

@@ -137,6 +137,52 @@ Meteor.methods(
             where.comentarios = search;
         }
 
+        // ahora el usuario puede indicar un pedazo del nombre de: moneda, asegurado, ramo, compañía 
+        // buscamos en el catálogo y preparamo un array con _ids 
+        if (filtro2.moneda_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.moneda_text}`.replace('$', '\\$');
+            const search = { $or: [{ descripcion: { $regex: expr, $options: "i" } }, { simbolo: { $regex: expr, $options: "i" } }] };
+
+            const items = Monedas.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            where.moneda = { $in: array };
+        }
+
+        if (filtro2.compania_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.compania_text}`;
+            const search = { $or: [{ nombre: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+            const items = Companias.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            where.cedenteOriginal = { $in: array };
+        }
+
+        if (filtro2.ramo_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.ramo_text}`;
+            const search = { $or: [{ descripcion: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+            const items = Ramos.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            where.ramo = { $in: array };
+        }
+
+        if (filtro2.asegurado_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${filtro2.asegurado_text}`;
+            const search = { $or: [{ nombre: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+            const items = Asegurados.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            where.asegurado = { $in: array };
+        }
+
         where.cia = ciaSeleccionadaID;
 
         // eliminamos los asientos que el usuario pueda haber registrado antes ...

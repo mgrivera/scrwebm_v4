@@ -1,6 +1,5 @@
 
 import { Meteor } from 'meteor/meteor'; 
-import { Mongo } from 'meteor/mongo';
 
 import { check } from 'meteor/check';
 import { Match } from 'meteor/check'
@@ -65,40 +64,47 @@ Meteor.methods(
 
 async function leerFacultativo (filtro) { 
 
-   const match = { $and: [] }; 
+    const match = { $and: [] };
+
+    match['$and'].push({ cia: filtro.cia }); 
+
+    if (filtro.fechaEmision1) {
+        match['$and'].push({ 'movimientos.fechaEmision': { $gte: filtro.fechaEmision1 } });
+    }
+
+    if (filtro.fechaEmision2) {
+        match['$and'].push({ 'movimientos.fechaEmision': { $lte: filtro.fechaEmision2 } });
+    }
+
+    // ------------------------------------------------------------------------------------
+    // ahora construimos el filtro pero para los cúmulos; recuérdese que la vigencia 
+    // (desde, hasta) viene en cada cúmulo 
+    const cumulos_match = []; 
    
-   match['$and'].push({ cia: filtro.cia }); 
-
-   if (filtro.fechaEmision1) { 
-       match['$and'].push({ 'movimientos.fechaEmision': { $gte: filtro.fechaEmision1 } }); 
-   }
-
-   if (filtro.fechaEmision2) { 
-       match['$and'].push({ 'movimientos.fechaEmision': { $lte: filtro.fechaEmision2 } }); 
-   }
+    cumulos_match.push({ $eq: [ '$cia', filtro.cia ] });
 
    if (filtro.vigenciaInicial1) { 
-       match['$and'].push({ 'movimientos.desde': { $gte: filtro.vigenciaInicial1 } }); 
+       cumulos_match.push({ $gte: [ '$desde', filtro.vigenciaInicial1 ] }); 
    }
 
    if (filtro.vigenciaInicial2) { 
-       match['$and'].push({ 'movimientos.desde': { $lte: filtro.vigenciaInicial2 } }); 
+       cumulos_match.push({ $lte: ['$desde', filtro.vigenciaInicial2] }); 
    }
 
    if (filtro.vigenciaFinal1) { 
-       match['$and'].push({ 'movimientos.hasta': { $gte: filtro.vigenciaFinal1 } }); 
+       cumulos_match.push({ $gte: ['$hasta', filtro.vigenciaFinal1] }); 
    }
 
    if (filtro.vigenciaFinal2) { 
-       match['$and'].push({ 'movimientos.hasta': { $lte: filtro.vigenciaFinal2 } }); 
+       cumulos_match.push({ $lte: ['$hasta', filtro.vigenciaFinal2] }); 
    }
 
    // estas fechas deben siempre venir ambas (o ninguna) 
    // si el usuario indica un periodo de vigencia, seleccionamos items que se inician en el período *o* que terminan en el período 
    if (filtro.periodoVigencia1 && filtro.periodoVigencia2) { 
-       match['$and'].push({ '$or': [ 
-           { 'movimientos.desde': { $gte: filtro.periodoVigencia1, $lte: filtro.periodoVigencia2 } }, 
-           { 'movimientos.hasta': { $gte: filtro.periodoVigencia1, $lte: filtro.periodoVigencia2 } }
+       cumulos_match.push({ '$or': [ 
+           { $and: [{ $gte: ['$desde', filtro.periodoVigencia1] }, { $lte: ['$desde', filtro.periodoVigencia2] } ]}, 
+           { $and: [{ $gte: ['$hasta', filtro.periodoVigencia1] }, { $lte: ['$hasta', filtro.periodoVigencia2] } ]}
        ] }); 
    }
 
@@ -122,8 +128,6 @@ async function leerFacultativo (filtro) {
            compania: 1, 
            ramo: 1, 
            fechaEmision: '$movimientos.fechaEmision', 
-           desde: '$movimientos.desde', 
-           hasta: '$movimientos.hasta', 
            cia: 1 
         }}, 
         
@@ -178,34 +182,34 @@ async function leerFacultativo (filtro) {
         { $unwind: "$ramos" }, 
 
         // para leer los cúmulos asociados a los movimientos de facultativo 
-        { $lookup:
-            {
-            // este es el foreign collection 
-            from: "cumulos_registro",                        
-            // (optional) estos son los local fields (from the aggregation); pueden ser definidos como variables  
-            let: { entityId: "$entityId", subEntityId: "$subEntityId" },           
-            pipeline: [
-                    { $match:
-                        { $expr:
-                            { $and:
-                            [
-                                { $eq: [ "$entityId",  "$$entityId" ] },
-                                { $eq: [ "$subEntityId", "$$subEntityId" ] }
-                            ]
+        {   $lookup: {
+                // este es el foreign collection 
+                from: "cumulos_registro",                        
+                // (optional) estos son los local fields (from the aggregation); pueden ser definidos como variables  
+                let: { entityId: "$entityId", subEntityId: "$subEntityId" },           
+                pipeline: [
+                            { 
+                                $match: { $expr:
+                                    {   $and:
+                                        [
+                                            { $eq: [ "$entityId",  "$$entityId" ] },
+                                            { $eq: [ "$subEntityId", "$$subEntityId" ] }, 
+                                            { $and: cumulos_match }
+                                        ]
+                                    }
                             }
-                        }
-                    },
-                    { $project: { 
-                        _id: 0, 
-                        entityId: 0, 
-                        subEntityId: 0, 
-                        ingreso: 0, 
-                        ultAct: 0, 
-                        usuario: 0, 
-                        ultUsuario: 0, 
-                        cia: 0
-                    }}
-                ],
+                        },
+                        { $project: { 
+                            _id: 0, 
+                            entityId: 0, 
+                            subEntityId: 0, 
+                            ingreso: 0, 
+                            ultAct: 0, 
+                            usuario: 0, 
+                            ultUsuario: 0, 
+                            cia: 0
+                        }}
+                    ],
                 as: "cumulos"
             }
         },
@@ -253,6 +257,9 @@ async function leerFacultativo (filtro) {
     await Riesgos.rawCollection().aggregate(pipeline).toArray(); 
 }
 
+// ---------------------------------------------------------------------------------------
+// leemos cúmulos de contratos proporcionales 
+// ---------------------------------------------------------------------------------------
 async function leerContratosProp (filtro) { 
 
    const match = { $and: [] }; 
@@ -267,30 +274,39 @@ async function leerContratosProp (filtro) {
        match['$and'].push({ fechaEmision: { $lte: filtro.fechaEmision2 } }); 
    }
 
-   if (filtro.vigenciaInicial1) { 
-       match['$and'].push({ desde: { $gte: filtro.vigenciaInicial1 } }); 
-   }
+    // ------------------------------------------------------------------------------------
+    // ahora construimos el filtro pero para los cúmulos; recuérdese que la vigencia 
+    // (desde, hasta) viene en cada cúmulo 
+    const cumulos_match = [];
 
-   if (filtro.vigenciaInicial2) { 
-       match['$and'].push({ desde: { $lte: filtro.vigenciaInicial2 } }); 
-   }
+    cumulos_match.push({ $eq: ['$cia', filtro.cia] });
 
-   if (filtro.vigenciaFinal1) { 
-       match['$and'].push({ hasta: { $gte: filtro.vigenciaFinal1 } }); 
-   }
+    if (filtro.vigenciaInicial1) {
+        cumulos_match.push({ $gte: ['$desde', filtro.vigenciaInicial1] });
+    }
 
-   if (filtro.vigenciaFinal2) { 
-       match['$and'].push({ hasta: { $lte: filtro.vigenciaFinal2 } }); 
-   }
+    if (filtro.vigenciaInicial2) {
+        cumulos_match.push({ $lte: ['$desde', filtro.vigenciaInicial2] });
+    }
 
-   // estas fechas deben siempre venir ambas (o ninguna) 
-   // si el usuario indica un periodo de vigencia, seleccionamos items que se inician en el período *o* que terminan en el período 
-   if (filtro.periodoVigencia1 && filtro.periodoVigencia2) { 
-       match['$and'].push({ '$or': [ 
-           { desde: { $gte: filtro.periodoVigencia1, $lte: filtro.periodoVigencia2 } }, 
-           { hasta: { $gte: filtro.periodoVigencia1, $lte: filtro.periodoVigencia2 } }
-       ] }); 
-   }
+    if (filtro.vigenciaFinal1) {
+        cumulos_match.push({ $gte: ['$hasta', filtro.vigenciaFinal1] });
+    }
+
+    if (filtro.vigenciaFinal2) {
+        cumulos_match.push({ $lte: ['$hasta', filtro.vigenciaFinal2] });
+    }
+
+    // estas fechas deben siempre venir ambas (o ninguna) 
+    // si el usuario indica un periodo de vigencia, seleccionamos items que se inician en el período *o* que terminan en el período 
+    if (filtro.periodoVigencia1 && filtro.periodoVigencia2) {
+        cumulos_match.push({
+            '$or': [
+                { $and: [{ $gte: ['$desde', filtro.periodoVigencia1] }, { $lte: ['$desde', filtro.periodoVigencia2] }] },
+                { $and: [{ $gte: ['$hasta', filtro.periodoVigencia1] }, { $lte: ['$hasta', filtro.periodoVigencia2] }] }
+            ]
+        });
+    }
 
    const userId = Meteor.userId(); 
 
@@ -313,8 +329,6 @@ async function leerContratosProp (filtro) {
            compania: 1,  
            ramo: 1, 
            fechaEmision: 1, 
-           desde: 1, 
-           hasta: 1, 
            cia: 1 
         }}, 
         
@@ -379,9 +393,10 @@ async function leerContratosProp (filtro) {
                     { $match:
                         { $expr:
                             { $and:
-                            [
-                                { $eq: [ "$entityId",  "$$entityId" ] }
-                            ]
+                                [
+                                    { $eq: [ "$entityId",  "$$entityId" ] }, 
+                                    { $and: cumulos_match }
+                                ]
                             }
                         }
                     },
@@ -399,6 +414,7 @@ async function leerContratosProp (filtro) {
                 as: "cumulos"
             }
         },
+
         { $match: { cumulos: { $exists: true, $ne: [ ] }}},       // solo riesgos con cúmulos 
         { $unwind: "$cumulos" }, 
 
@@ -446,9 +462,9 @@ async function leerContratosProp (filtro) {
 async function leerContratosNoProp (filtro) { 
 
    const match = { $and: [] }; 
-   
-   match['$and'].push({ cia: filtro.cia }); 
 
+    match['$and'].push({ cia: filtro.cia }); 
+   
    if (filtro.fechaEmision1) { 
        match['$and'].push({ fechaEmision: { $gte: filtro.fechaEmision1 } }); 
    }
@@ -457,30 +473,39 @@ async function leerContratosNoProp (filtro) {
        match['$and'].push({ fechaEmision: { $lte: filtro.fechaEmision2 } }); 
    }
 
-   if (filtro.vigenciaInicial1) { 
-       match['$and'].push({ desde: { $gte: filtro.vigenciaInicial1 } }); 
-   }
+    // ------------------------------------------------------------------------------------
+    // ahora construimos el filtro pero para los cúmulos; recuérdese que la vigencia 
+    // (desde, hasta) viene en cada cúmulo 
+    const cumulos_match = [];
 
-   if (filtro.vigenciaInicial2) { 
-       match['$and'].push({ desde: { $lte: filtro.vigenciaInicial2 } }); 
-   }
+    cumulos_match.push({ $eq: ['$cia', filtro.cia] });
 
-   if (filtro.vigenciaFinal1) { 
-       match['$and'].push({ hasta: { $gte: filtro.vigenciaFinal1 } }); 
-   }
+    if (filtro.vigenciaInicial1) {
+        cumulos_match.push({ $gte: ['$desde', filtro.vigenciaInicial1] });
+    }
 
-   if (filtro.vigenciaFinal2) { 
-       match['$and'].push({ hasta: { $lte: filtro.vigenciaFinal2 } }); 
-   }
+    if (filtro.vigenciaInicial2) {
+        cumulos_match.push({ $lte: ['$desde', filtro.vigenciaInicial2] });
+    }
 
-   // estas fechas deben siempre venir ambas (o ninguna) 
-   // si el usuario indica un periodo de vigencia, seleccionamos items que se inician en el período *o* que terminan en el período 
-   if (filtro.periodoVigencia1 && filtro.periodoVigencia2) { 
-       match['$and'].push({ '$or': [ 
-           { desde: { $gte: filtro.periodoVigencia1, $lte: filtro.periodoVigencia2 } }, 
-           { hasta: { $gte: filtro.periodoVigencia1, $lte: filtro.periodoVigencia2 } }
-       ] }); 
-   }
+    if (filtro.vigenciaFinal1) {
+        cumulos_match.push({ $gte: ['$hasta', filtro.vigenciaFinal1] });
+    }
+
+    if (filtro.vigenciaFinal2) {
+        cumulos_match.push({ $lte: ['$hasta', filtro.vigenciaFinal2] });
+    }
+
+    // estas fechas deben siempre venir ambas (o ninguna) 
+    // si el usuario indica un periodo de vigencia, seleccionamos items que se inician en el período *o* que terminan en el período 
+    if (filtro.periodoVigencia1 && filtro.periodoVigencia2) {
+        cumulos_match.push({
+            '$or': [
+                { $and: [{ $gte: ['$desde', filtro.periodoVigencia1] }, { $lte: ['$desde', filtro.periodoVigencia2] }] },
+                { $and: [{ $gte: ['$hasta', filtro.periodoVigencia1] }, { $lte: ['$hasta', filtro.periodoVigencia2] }] }
+            ]
+        });
+    }
 
    const userId = Meteor.userId(); 
 
@@ -570,7 +595,8 @@ async function leerContratosNoProp (filtro) {
                         { $expr:
                             { $and:
                             [
-                                { $eq: [ "$entityId",  "$$entityId" ] }
+                                { $eq: [ "$entityId",  "$$entityId" ] }, 
+                                { $and: cumulos_match }
                             ]
                             }
                         }

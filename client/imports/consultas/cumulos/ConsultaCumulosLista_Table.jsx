@@ -14,8 +14,8 @@ const TableRow = ({ item }) => {
             <td>{item.monedas.simbolo}</td>
             <td>{item.companias.abreviatura}</td>
             <td>{item.ramos.abreviatura}</td>
-            <td>{moment(item.desde).format('DD-MM-YYYY')}</td>
-            <td>{moment(item.hasta).format('DD-MM-YYYY')}</td>
+            <td>{moment(item.cumulos.desde).format('DD-MM-YYYY')}</td>
+            <td>{moment(item.cumulos.hasta).format('DD-MM-YYYY')}</td>
             <td>{item.cumulos.origen}</td>
             <td>{item.numero}</td>
             <td>{item.tiposCumulo.zonas.abreviatura}</td>
