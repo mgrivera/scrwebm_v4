@@ -1,5 +1,4 @@
 
-
 import { Mongo } from 'meteor/mongo';
 
 export const Consulta_Corretaje = new Mongo.Collection("consulta_corretaje");

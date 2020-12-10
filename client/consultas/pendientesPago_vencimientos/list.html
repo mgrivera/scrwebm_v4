@@ -1,21 +1,9 @@
 
-
 <div class="row">
     <div class="col-sm-11 col-sm-offset-0">
-        <div class="col-sm-2 col-sm-offset-0" style="text-align: left; vertical-align: middle; ">
-            <a href="#" ng-click="exportarDatosConsulta()">Exportar</a>
-        </div>
-
-        <div class="col-sm-2 col-sm-offset-0" style="text-align: left; vertical-align: middle; ">
-                <a href="#" ng-click="reporteOpcionesModal()" class="navbar_custom_small_node">Reporte&nbsp;&nbsp;<span class="fa fa-print"></span></a>
-        </div>
-
-        <div class="col-sm-4 col-sm-offset-0" style="text-align: center; vertical-align: middle; ">
+        <div class="col-sm-4 col-sm-offset-4" style="text-align: center; vertical-align: middle; ">
             <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
         </div>
-    </div>
-    <div class="col-sm-1" style="text-align: right; ">
-        <a href="#" ng-click="regresar()">Regresar</a>
     </div>
 </div>
 
@@ -30,6 +18,24 @@
 <div class="row" style="text-align: center; ">
     <div class="col-sm-12 col-sm-offset-0">
 
+        <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#" class="navbar_custom_small_header">Montos pendientes de pago / Consulta</a></li>
+                        
+                        <li><a href="#" ng-click="reporteOpcionesModal()" class="navbar_custom_xsmall_node">Reporte&nbsp;&nbsp;<span class="fa fa-print"></span></a></li>
+                        <li><a href="#" ng-click="exportarDatosConsulta()" class="navbar_custom_xsmall_node">Exportar&nbsp;&nbsp;<span class="fa fa-file-text-o"></span></a></li>
+
+                    </ul>
+        
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" ng-click="regresar()" class="navbar_custom_small_node">Regresar ...</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
         <div ui-grid="items_ui_grid"
              ui-grid-resize-columns
              ui-grid-selection
@@ -38,4 +44,13 @@
              style="height: auto; width: 100%; ">
         </div>
     </div>
+
+    <!-- con este input (type file) permitimos al usuario importar los items desde un archivo csv, que se ha exportado en forma previa 
+        con la opción Exportar  -->
+    <input type="file" 
+           id="fileInput" 
+           accept=".txt" 
+           multiple="false"
+           onchange="angular.element(this).scope().importarTablaConfiguracion2(this.files)" 
+           ng-show="false" />
 </div>

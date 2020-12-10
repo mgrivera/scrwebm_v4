@@ -101,11 +101,8 @@ function ($scope, $state) {
         $scope.showProgress = true;
 
         // preparamos el filtro (selector)
-        let filtro = {};
-
-        // agregamos la compañía seleccionada al filtro
-        filtro = $scope.filtro;
-        filtro.cia = companiaSeleccionadaDoc && companiaSeleccionadaDoc._id ? companiaSeleccionadaDoc._id : -999;
+        const cia = companiaSeleccionadaDoc && companiaSeleccionadaDoc._id ? companiaSeleccionadaDoc._id : -999;
+        const filtro = Object.assign({ cia }, $scope.filtro);
 
         // para medir y mostrar el progreso de la tarea ...
         $scope.processProgress.current = 0;

@@ -1,19 +1,19 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
+import angular from 'angular';
 import moment from 'moment';
+
 import Papa from 'papaparse';
+import saveAs from 'save-as'
 
 import { Consulta_MontosPendientesPago_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesPago_Vencimientos'; 
-import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("ConsultasMontosPendientesPagoVencimientos_Lista_Controller",
-['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',
-function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
+angular.module("scrwebm")
+       .controller("ConsultasMontosPendientesPagoVencimientos_Lista_Controller", ['$scope', '$state', '$modal', 'uiGridConstants',
+function ($scope, $state, $modal, uiGridConstants) {
 
     $scope.showProgress = false;
-
-    let parametrosReporte = JSON.parse($stateParams.parametrosReporte);
-    let companiaSeleccionada = JSON.parse($stateParams.companiaSeleccionada);
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -34,79 +34,80 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
         $state.go('pendientesPago_vencimientos_consulta_filter');
     }
 
-
     $scope.exportarDatosConsulta = () => {
+        // permitimos grabar el asiento contable, como un json, a un archivo en la máquina. Luego, este archivo podrá
+        // ser importado como un asiento nuevo ...
+        try {
+            $scope.showProgress = true;
 
-        $scope.showProgress = true;
+            const items = Consulta_MontosPendientesPago_Vencimientos.find({ user: Meteor.userId() }).fetch(); 
 
-        // construimos un array con los datos que deben ser exportados como 'csv'; luego, usamos una
-        // funcionalidad que ya habíamos agregado al programa, para construir el 'csv' y exportar a un
-        // archivo en disco ...
+            // eliminamos algunas propiedades que no queremos en el txt (csv) 
+            items.forEach(x => {
+                delete x._id;
+                delete x.moneda;
+                delete x.compania; 
+                delete x.companiaNombre; 
+                delete x.suscriptor; 
+                delete x.user; 
+                delete x.cia; 
 
-        let montosPendientes = [];
+                x.fecha = moment(x.fecha).format("YYYY-MM-DD"); 
+                x.fechaEmision = moment(x.fechaEmision).format("YYYY-MM-DD"); 
+                x.fechaVencimiento = moment(x.fechaVencimiento).format("YYYY-MM-DD"); 
+            });
 
-        Consulta_MontosPendientesPago_Vencimientos.find({ user: Meteor.userId() }).forEach(monto => {
+            // papaparse: convertimos el array json a un string csv ...
+            const config = {
+                quotes: true,
+                quoteChar: "'",
+                delimiter: "\t",
+                header: true
+            };
 
-            let montoPendiente = {};
+            let csvString = Papa.unparse(items, config);
 
-            montoPendiente.moneda = monto.monedaSimbolo;
-            montoPendiente.compania = monto.companiaAbreviatura;
-            montoPendiente.suscriptor = monto.suscriptorAbreviatura;
-            montoPendiente.asegurado = monto.aseguradoAbreviatura;
+            // cambiamos los headers por textos más apropiados (pareciera que ésto no se puede hacer desde el config)
+            csvString = csvString.replace("monedaDescripcion", "moneda");
+            csvString = csvString.replace("monedaSimbolo", "simbolo");
+            csvString = csvString.replace("companiaAbreviatura", "compañía");
+            csvString = csvString.replace("suscriptorAbreviatura", "suscriptor");
+            csvString = csvString.replace("aseguradoAbreviatura", "asegurado");
+            csvString = csvString.replace("codigo", "código");
+            csvString = csvString.replace("numero", "número");
 
-            montoPendiente.origen = monto.origen;
-            montoPendiente.numero = monto.numero.toString() + "/" + monto.cantidad.toString();
-            montoPendiente.fecha = moment(monto.fecha).format("YYYY-MM-DD");
-            montoPendiente.fechaVencimiento = moment(monto.fechaVencimiento).format("YYYY-MM-DD");;
-            montoPendiente.diasPendientes = monto.diasPendientes;
-            montoPendiente.diasVencidos = monto.diasVencidos;
+            var blob = new Blob([csvString], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "montos por pagar");
 
-            montoPendiente.montoCuota = monto.montoCuota;
-            montoPendiente.montoPorPagar = monto.montoPorPagar;
-            montoPendiente.saldo1 = monto.saldo1;
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'info',
+                msg: `Ok, el contenido de la lista ha sido exportado a un archivo de texto en forma exitosa. <br /> 
+                      En total, se han exportado <b>${items.length.toString()}</b> lineas. 
+                     `
+            });
 
-            montoPendiente.montoCobrado = monto.montoCobrado;
-            montoPendiente.montoPagado = monto.montoPagado;
-            montoPendiente.saldo2 = monto.saldo2;
+            // por alguna razón el ui-grid deja de mostrarse en forma correcta cuando este proceso termina ... 
+            // $scope.configuracionContrato_ui_grid.data = $scope.contratosProp_configuracion_tablas;
 
-            montosPendientes.push(montoPendiente);
-        });
+            $scope.showProgress = false;
+        }
+        catch (err) {
+            const message = err.message ? err.message : err.toString();
 
-        let montosPendientes_CSV = Papa.unparse(montosPendientes, { header: true, enconding: 'UTF-8', error: 'dataToCSVUnparseError' });
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: message
+            });
 
-        let files = [];
-
-        files.push({ fileContent: montosPendientes_CSV, fileName: 'montosPorCobrar_Pendientes_consulta.csv' });
-
-        var mensajeAlUsuario = "<ol>" +
-            "<li>Para grabar el archivo en el disco duro local, haga un <em>click</em> sobre el mismo</b></li>" +
-            "<li>De inmediato, se abrirá un diálogo que le permitirá grabar el archivo en el directorio que Ud. indique.</li>" +
-            "</ol>"
-
-        // para mostrar al usuario un diálogo y permitir guardar el archivo (file) al disco duro ...
-        Global_Methods.PermitirUsuarioDownloadFiles($modal, files, mensajeAlUsuario);
-
-        $scope.showProgress = false;
-    };
-
-    let dataToCSVUnparseError = (error, file) => {
-
-        let type = error.type ? error.type : "<indef>";
-        let code = error.code ? error.code : "<indef>";
-        let message = error.message ? error.message : "<indef>";
-        let row = error.row ? error.row : "<indef>";
-
-        let errorMessage = `Se ha obtenido un error al intentar exportar los datos a un archivo. El mensaje del error obtenido es:
-        Error al intentar crear el archivo: <em>${message}</em>; del tipo: ${type}; cuyo código es: ${code}; en la linea: ${row}.
-                            Por favor intente corregir esta situación, y luego intente ejecutar esta función nuevamente.`;
-
-        DialogModal($modal, "<em>Consultas</em>", errorMessage, false).then();
-        return;
+            $scope.showProgress = false;
+        }
     }
 
     $scope.reporteOpcionesModal = function () {
 
-        var modalInstance = $modal.open({
+        $modal.open({
             templateUrl: 'client/consultas/pendientesPago_vencimientos/reportes/opcionesReportModal.html',
             controller: 'Consultas_montosPendientesPago_vencimientos_opcionesReportController',
             size: 'md',
@@ -116,15 +117,13 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
                 },
             }
         }).result.then(
-            function (resolve) {
+            function () {
                 return true;
             },
-            function (cancel) {
+            function () {
                 return true;
         })
     }
-
-    let selectedItem = {};
 
     $scope.items_ui_grid = {
         enableSorting: true,
@@ -136,20 +135,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
         enableSelectAll: false,
         selectionRowHeaderWidth: 0,
         rowHeight: 25,
-        onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                //debugger;
-                selectedItem = {};
-
-                if (row.isSelected) {
-                    selectedItem = row.entity;
-                }
-                else { 
-                return;
-                } 
-            })
+        onRegisterApi: function () {
         },
 
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
@@ -190,14 +176,13 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
             type: 'string'
         },
         {
-            name: 'suscriptorAbreviatura',
-            field: 'suscriptorAbreviatura',
-            displayName: 'Suscriptor',
-            width: 80,
+            name: 'aseguradoAbreviatura',
+            field: 'aseguradoAbreviatura',
+            displayName: 'Asegurado',
+            width: 100,
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
-            enableCellEdit: false,
             enableSorting: true,
             enableFiltering: true,
             pinnedLeft: true,
@@ -306,7 +291,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
             cellFilter: 'currencyFilterAndNull',
             enableColumnMenu: false,
             enableSorting: true,
-            enableFiltering: false,
+            enableFiltering: true,
             type: 'number',
 
             aggregationType: uiGridConstants.aggregationTypes.sum,
@@ -324,7 +309,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
             cellFilter: 'currencyFilterAndNull',
             enableColumnMenu: false,
             enableSorting: true,
-            enableFiltering: false,
+            enableFiltering: true,
             type: 'number',
 
             aggregationType: uiGridConstants.aggregationTypes.sum,
@@ -342,7 +327,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
             cellFilter: 'currencyFilterAndNull',
             enableColumnMenu: false,
             enableSorting: true,
-            enableFiltering: false,
+            enableFiltering: true,
             type: 'number',
 
             aggregationType: uiGridConstants.aggregationTypes.sum,
@@ -360,7 +345,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
             cellFilter: 'currencyFilterAndNull',
             enableColumnMenu: false,
             enableSorting: true,
-            enableFiltering: false,
+            enableFiltering: true,
             type: 'number',
 
             aggregationType: uiGridConstants.aggregationTypes.sum,
@@ -372,5 +357,4 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
 
       $scope.items_ui_grid.data = [];
       $scope.items_ui_grid.data = $scope.montosPendientes;
-  }
-]);
+}])

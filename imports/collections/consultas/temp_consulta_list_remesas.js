@@ -1,5 +1,5 @@
 
-
+import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo';
 
 // nótese que no usamos schema en tablas de este tipo ... 

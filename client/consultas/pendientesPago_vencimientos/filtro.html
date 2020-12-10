@@ -172,22 +172,16 @@
                             </div>
 
                             <div class="col-sm-2 col-centered">
+                                <div class="form-group form-group-sm">
+                                    <label class="control-label input-label pull-left">Asegurado (solo fac) </label>
+                                    <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.asegurado_text" />
+                                </div>
                             </div>
 
                             <div class="col-sm-2 col-centered">
                             </div>
 
                         </div>
-
-
-
-
-
-
-
-
-
-
                     </tab>  
 
                     <tab heading="Listas">
@@ -235,20 +229,41 @@
                         <br>
                         <div class="row row-centered">
                             
+                            <div class="col-sm-4 col-centered" style="vertical-align: top; ">
+                                <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
+                                    <legend class="scheduler-border-radioButtons">Opciones: </legend>
+                                    <div class="form-group">
+                                        <br />
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="filtro.soloConMontoCobrado">
+                                            Solo montos por pagar con algún monto ya cobrado
+                                        </label>
+                                    </div>
+                                </fieldset>
+                            </div>
+
                             <div class="col-sm-4 col-centered">
-                                <div style="margin: 0 20px; ">
-                                    <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
-                                        <legend class="scheduler-border-radioButtons">Opciones: </legend>
-                                        <div class="form-group">
-                                            <br />
-                                            <label style='font-weight: normal; '>
-                                                <input type="checkbox"
-                                                        ng-model="filtro.soloConMontoCobrado">
-                                                Solo montos por pagar con algún monto ya cobrado
-                                            </label>
-                                        </div>
-                                    </fieldset>
-                                </div>
+                                <fieldset class="scheduler-border-radioButtons" style="font-size: small; text-align: left; ">
+                                    <legend class="scheduler-border-radioButtons">Tipos de negocio: </legend>
+                                    <div class="form-group">
+                                        <br />
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="filtro.tipoNegocioFac">&nbsp;Facultativo
+                                        </label>
+                                        <br />
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="filtro.tipoNegocioProp">&nbsp;Proporcional
+                                        </label>
+                                        <br />
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="filtro.tipoNegocioNoProp">&nbsp;No proporcional
+                                        </label>
+                                        <br />
+                                        <label style='font-weight: normal; '>
+                                            <input type="checkbox" ng-model="filtro.tipoNegocioSinFac">&nbsp;Siniestros (fac)
+                                        </label>
+                                    </div>
+                                </fieldset>
                             </div>
 
                         </div>

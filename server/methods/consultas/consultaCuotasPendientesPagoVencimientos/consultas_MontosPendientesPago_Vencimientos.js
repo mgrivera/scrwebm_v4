@@ -60,15 +60,63 @@ Meteor.methods(
             };
         }
 
-
-        if (filtro.compania && lodash.isArray(filtro.compania) && filtro.compania.length > 0) {
+        if (filtro.compania && Array.isArray(filtro.compania) && filtro.compania.length > 0) {
             const array = lodash.clone(filtro.compania);
             matchCriteria.compania = { $in: array };
         }
 
-        if (filtro.moneda && lodash.isArray(filtro.moneda) && filtro.moneda.length > 0) {
+        if (filtro.moneda && Array.isArray(filtro.moneda) && filtro.moneda.length > 0) {
             const array = lodash.clone(filtro.moneda);
             matchCriteria.moneda = { $in: array };
+        }
+
+        if (filtro.tipoNegocioFac || filtro.tipoNegocioProp || filtro.tipoNegocioNoProp || filtro.tipoNegocioSinFac) { 
+            const array = []; 
+
+            if (filtro.tipoNegocioFac) {
+                array.push('fac'); 
+            }
+
+            if (filtro.tipoNegocioProp) {
+                array.push('cuenta'); 
+            }
+
+            if (filtro.tipoNegocioNoProp) {
+                array.push('capa'); 
+            }
+
+            if (filtro.tipoNegocioSinFac) {
+                array.push('sinFac'); 
+            }
+
+            matchCriteria['source.origen'] = { $in: array }; 
+        }
+
+        // -------------------------------------------------------------------------------------------------------
+        // ahora el usuario puede indicar un pedazo del nombre de: moneda, asegurado, ramo, compañía 
+        // buscamos en el catálogo y preparamo un array con _ids 
+        const { compania_text, moneda_text } = filtro; 
+
+        if (moneda_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${moneda_text}`.replace('$', '\\$');
+            const search = { $or: [{ descripcion: { $regex: expr, $options: "i" } }, { simbolo: { $regex: expr, $options: "i" } }] };
+
+            const items = Monedas.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            matchCriteria.moneda = { $in: array };
+        }
+
+        if (compania_text) {
+            // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+            const expr = `${compania_text}`;
+            const search = { $or: [{ nombre: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+            const items = Companias.find(search, { fields: { _id: 1 } }).fetch();
+            const array = [];
+            items.forEach(x => array.push(x._id));
+            matchCriteria.compania = { $in: array };
         }
 
         // cuotas (por pagar; negativa) para la cia seleccionada y que no tengan pagos o que tengan
@@ -129,6 +177,11 @@ Meteor.methods(
                     if (riesgo) {
                         cuota.suscriptor = riesgo.suscriptor ? riesgo.suscriptor : null;
                         cuota.asegurado = riesgo.asegurado ? riesgo.asegurado : null;
+                        cuota.codigo = riesgo.codigo ? riesgo.codigo : null; 
+                        cuota.referencia = riesgo.referencia ? riesgo.referencia : null; 
+
+                        // intentamos usar el cedente original ... 
+                        cuota.cedente = riesgo.cedenteOriginal ? riesgo.cedenteOriginal : riesgo.compania; 
                     }
 
                     break;
@@ -140,6 +193,10 @@ Meteor.methods(
                     if (siniestro) {
                         cuota.suscriptor = siniestro.suscriptor ? siniestro.suscriptor : null;
                         cuota.asegurado = siniestro.asegurado ? siniestro.asegurado : null;
+                        cuota.codigo = siniestro.codigo ? siniestro.codigo : null;
+                        cuota.referencia = siniestro.referencia ? siniestro.referencia : null; 
+
+                        cuota.cedente = siniestro.compania;
                     }
 
                     break;
@@ -151,7 +208,12 @@ Meteor.methods(
 
                     if (contrato) {
                         cuota.suscriptor = contrato.suscriptor ? contrato.suscriptor : null;
-                        cuota.asegurado = contrato.referencia ? contrato.referencia : null;
+                        cuota.asegurado = null;
+                        cuota.codigo = contrato.codigo ? contrato.codigo : null;
+                        cuota.referencia = contrato.referencia ? contrato.referencia : null; 
+
+                        // intentamos usar el cedente original ... 
+                        cuota.cedente = contrato.cedenteOriginal ? contrato.cedenteOriginal : contrato.compania; 
                     }
 
                     break;
@@ -205,7 +267,7 @@ Meteor.methods(
         // si el usuario indica filtros para: suscriptor, los aplicamos ahora (con lodash)
         // (pues el suscriptor no está en la cuota; lo leemos en el riesgo, siniestro, etc.)
 
-        if (filtro.suscriptor && lodash.isArray(filtro.suscriptor) && filtro.suscriptor.length > 0) {
+        if (filtro.suscriptor && Array.isArray(filtro.suscriptor) && filtro.suscriptor.length > 0) {
             result = lodash.filter(result, r => {
                 return r.suscriptor &&
                 lodash.some(filtro.suscriptor, a => { return a === r.suscriptor; })
@@ -235,35 +297,34 @@ Meteor.methods(
         let compania = {};
         let suscriptor = {};
         let asegurado = {};
+        let cedente = {}; 
 
         // el usuario puede indicar nombres de compañía, moneda y suscriptor como parte de su filtro
         // la idea es que puede indicar *solo* parte del nombre para filtrar por allí 
-        const { compania_text, moneda_text, suscriptor_text } = filtro; 
+        const { suscriptor_text, asegurado_text } = filtro; 
 
         for (const cuota of result) {
 
             moneda = Monedas.findOne(cuota.moneda, { fields: { simbolo: 1, descripcion: 1, }});
             compania = Companias.findOne(cuota.compania, { fields: { abreviatura : 1, nombre: 1, }});
             suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura : 1, nombre: 1 }});
-            asegurado = Asegurados.findOne(cuota.asegurado, { fields: { abreviatura : 1 }});
+            asegurado = Asegurados.findOne(cuota.asegurado, { fields: { nombre: 1, abreviatura : 1 }});
+            cedente = Companias.findOne(cuota.cedente, { fields: { abreviatura: 1, nombre: 1, } });
 
-            // si el usuario indicó filtros por catálogos, en texto, los aplicamos ahora 
-
-            // buscamos por compañía 
-            if (compania && compania_text && !(compania.nombre.toLowerCase().includes(compania_text.toLowerCase()) ||
-                                               compania.abreviatura.toLowerCase().includes(compania_text.toLowerCase()))) {
-                continue;
-            }
-
-            // buscamos por moneda 
-            if (moneda && moneda_text && !(moneda.descripcion.toLowerCase().includes(moneda_text.toLowerCase()) ||
-                                           moneda.simbolo.toLowerCase().includes(moneda_text.toLowerCase()))) {
-                continue;
-            }
-
+            // si el usuario indicó filtros por catálogos, en texto, los aplicamos ahora (solo suscriptor y asegurado)
             // buscamos por suscriptor 
             if (suscriptor && suscriptor_text && !(suscriptor.nombre.toLowerCase().includes(suscriptor_text.toLowerCase()) ||
                                                    suscriptor.abreviatura.toLowerCase().includes(suscriptor_text.toLowerCase()))) {
+                continue;
+            }
+
+            if (asegurado_text && !asegurado) {
+                // para contratos, 'asegurado' viene en undefined 
+                continue;
+            }
+
+            if (asegurado && asegurado_text && !(asegurado.nombre.toLowerCase().includes(asegurado_text.toLowerCase()) ||
+                                                 asegurado.abreviatura.toLowerCase().includes(asegurado_text.toLowerCase()))) {
                 continue;
             }
 
@@ -275,12 +336,17 @@ Meteor.methods(
                 compania: cuota.compania,
                 companiaNombre: compania ? compania.abreviatura : "Indef",
                 companiaAbreviatura: compania ? compania.abreviatura : "Indef",
+                cedenteNombre: cedente ? cedente.nombre : "Indef", 
+                cedenteAbreviatura: cedente ? cedente.abreviatura : "Indef", 
                 suscriptor: cuota.suscriptor ? cuota.suscriptor : null,
                 suscriptorAbreviatura: suscriptor ? suscriptor.abreviatura : "Indef",
 
                 // en contratos, viene la referencia del contrato, para que el usuario identifique la cuota
                 // en riesgos y siniestros ésto es fácil con el asegurado
-                aseguradoAbreviatura: asegurado ? asegurado.abreviatura : (cuota.asegurado ? cuota.asegurado : "Indef"),
+                aseguradoAbreviatura: asegurado ? asegurado.abreviatura : (cuota.source.origen.toLowerCase().includes("fac") ? "Indef": null),
+
+                codigo: cuota.codigo, 
+                referencia: cuota.referencia, 
 
                 origen: cuota.source.origen + '-' + cuota.source.numero,
                 numero: cuota.numero,
@@ -307,7 +373,7 @@ Meteor.methods(
 
             // determinamos el monto ya pagado para el monto de la cuota
             // (nótese que ya sabemos que ningún pago es 'total')
-            if (lodash.isArray(cuota.pagos) && cuota.pagos.length) {
+            if (Array.isArray(cuota.pagos) && cuota.pagos.length) {
                 cuotaPendiente.montoYaPagado = lodash.sumBy(cuota.pagos, 'monto');
                 // sumamos en forma algebraica pues, normalmente, el monto por pagar es negativo y el monto pagado es positivo; ambos
                 // se restan ...

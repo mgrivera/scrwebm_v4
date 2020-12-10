@@ -1,5 +1,4 @@
 
-
 import { Mongo } from 'meteor/mongo';
 
 export const Consulta_MontosPendientesPago_Vencimientos = new Mongo.Collection("consulta_MontosPendientesPago_Vencimientos");
