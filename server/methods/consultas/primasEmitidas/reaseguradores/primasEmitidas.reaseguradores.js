@@ -52,7 +52,7 @@ Meteor.methods(
         let recordCount = 0; 
 
         for (const r of riesgos) { 
-            
+
             const { _id, numero, estado, cia } = r; 
 
             const moneda = monedas.find(x => x._id === r.moneda); 
@@ -103,6 +103,10 @@ Meteor.methods(
                     let sumaReasegurada = 0; 
                     let ordenPorc = 0; 
 
+                    if (!m.coberturasCompanias || !Array.isArray(m.coberturasCompanias)) {
+                        continue;
+                    }
+
                     valorARiesgo = m.coberturasCompanias.filter(x => x.compania == c.compania).reduce((accum, item) => (accum + item.valorARiesgo), 0); 
                     sumaAsegurada = m.coberturasCompanias.filter(x => x.compania == c.compania).reduce((accum, item) => (accum + item.sumaAsegurada), 0); 
                     prima = m.coberturasCompanias.filter(x => x.compania == c.compania).reduce((accum, item) => (accum + item.prima), 0); 
@@ -118,6 +122,10 @@ Meteor.methods(
                     let corretaje = 0; 
                     let impuestoSobrePN = 0; 
                     let primaNeta = 0; 
+
+                    if (!m.primas || !Array.isArray(m.primas)) {
+                        continue;
+                    }
 
                     primaBruta = m.primas.filter(x => x.compania == c.compania).reduce((accum, item) => (accum + item.primaBruta), 0); 
                     comision = m.primas.filter(x => x.compania == c.compania).reduce((accum, item) => (accum + item.comision), 0); 
@@ -266,6 +274,11 @@ function prepararFiltro(f, ciaSeleccionadaID) {
         if (vigFinalHasta) { 
             filtro['movimientos.hasta'] = { $lte: vigFinalHasta }
         }
+    }
+
+    if (f.estados && Array.isArray(f.estados) && f.estados.length) {
+        const array = f.estados;
+        filtro.estado = { $in: array };
     }
 
     if (f.monedas && Array.isArray(f.monedas) && f.monedas.length) { 

@@ -5,7 +5,7 @@ import React from 'react';
 import AsyncSelect from 'react-select/async';
 import lodash from 'lodash'; 
 
-import { Grid, Menu, Loader, Tab, Form, Input, Message, Table, Icon } from 'semantic-ui-react';
+import { Grid, Menu, Loader, Tab, Form, Input, Message, Table, Icon, Checkbox } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css'
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
@@ -122,7 +122,8 @@ export default class ConsultasPrimasEmitidasReaseguradores extends React.Compone
                 companias: [],
                 cedentes: [],
                 asegurados: [], 
-                ramos: []
+                ramos: [], 
+                estados: []
             }, 
 
             companiaSeleccionada: {}
@@ -168,7 +169,51 @@ export default class ConsultasPrimasEmitidasReaseguradores extends React.Compone
                             </Grid.Column>
 
                             <Grid.Column width={3} />
-                            <Grid.Column width={6} />
+                            <Grid.Column width={6}>
+
+                                <Checkbox
+                                    label='Cotizado'
+                                    onChange={(e) => this.onCheckBoxEstadoChange(e, "CO")}
+                                    checked={this.state.values.estados.some(x => x === 'CO')}
+                                />
+                                &nbsp;&nbsp;
+                                <Checkbox
+                                    label='Aceptado'
+                                    onChange={(e) => this.onCheckBoxEstadoChange(e, "AC")}
+                                    checked={this.state.values.estados.some(x => x === 'AC')}
+                                />
+                                &nbsp;&nbsp;
+                                <Checkbox
+                                    label='Emitido'
+                                    onChange={(e) => this.onCheckBoxEstadoChange(e, "EM")}
+                                    checked={this.state.values.estados.some(x => x === 'EM')}
+                                />
+                                &nbsp;&nbsp;
+                                <Checkbox
+                                    label='Renovado'
+                                    onChange={(e) => this.onCheckBoxEstadoChange(e, "RV")}
+                                    checked={this.state.values.estados.some(x => x === 'RV')}
+                                />
+                                <br /> 
+                                <Checkbox
+                                    label='Renovación'
+                                    onChange={(e) => this.onCheckBoxEstadoChange(e, "RE")}
+                                    checked={this.state.values.estados.some(x => x === 'RE')}
+                                />
+                                &nbsp;&nbsp;
+                                <Checkbox
+                                    label='Anulado'
+                                    onChange={(e) => this.onCheckBoxEstadoChange(e, "AN")}
+                                    checked={this.state.values.estados.some(x => x === 'AN')}
+                                />
+                                &nbsp;&nbsp;
+                                <Checkbox
+                                    label='Declinado'
+                                    onChange={(e) => this.onCheckBoxEstadoChange(e, "DE")}
+                                    checked={this.state.values.estados.some(x => x === 'DE')}
+                                />
+
+                            </Grid.Column>
                         </Grid.Row>
 
                         <Grid.Row style={{ paddingBottom: '0' }}>
@@ -197,13 +242,14 @@ export default class ConsultasPrimasEmitidasReaseguradores extends React.Compone
                                             control='input'
                                             type='date'
                                             size='mini'
-                                            onChange={(e) => this.onInputChange(e)} />
+                                            onChange={(e) => this.onInputChange(e)} />  
                                     </Form.Field>
                                 </Form.Group>
                             </Grid.Column>
 
                             <Grid.Column width={3} />
-                            <Grid.Column width={6} /> 
+                            <Grid.Column width={6}>
+                            </Grid.Column> 
                         </Grid.Row>
 
                         <Grid.Row style={{ paddingBottom: '0' }}>
@@ -486,11 +532,29 @@ export default class ConsultasPrimasEmitidasReaseguradores extends React.Compone
         e.preventDefault(); 
     }
 
-    onInputChange = (e) => { 
+    onInputChange = (e) => {
         const { values } = this.state;
-        const name = e.target.name; 
-        const value = e.target.value; 
-        this.setState({ values: { ...values, [name]: value }}); 
+        const name = e.target.name;
+        const value = e.target.value;
+        this.setState({ values: { ...values, [name]: value } });
+    } 
+
+    onCheckBoxEstadoChange = (e, value) => {
+        const state = this.state; 
+        let { estados } = state.values; 
+
+        // value: CO, AC, EM, RV, RE, AN, DE
+        const checked = estados.some(x => x === value);         // consideramos checked si el valor existía 
+
+        // simplemente, si existía lo eliminamos; si no, lo agregamos  
+        if (!checked) { 
+            estados.push(value); 
+        } else { 
+            estados = estados.filter(val => val !== value);
+        }
+
+        state.values.estados = estados; 
+        this.setState(state);
     } 
 
     limpiarFiltro() { 
