@@ -160,6 +160,9 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         monedas: () => {
             return Monedas.find();
         },
+        companias: () => {
+            return Companias.find();
+        },
         suscriptores: () => {
             return Suscriptores.find();
         },
@@ -190,7 +193,6 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
                 return true;
             });
     }
-
 
     // ---------------------------------------------------------------
     // Grabar()
@@ -285,7 +287,6 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         }
     }
 
-
     $scope.setIsEdited = function (field) {
 
         switch (field) {
@@ -301,7 +302,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
                 break;
             } 
             case 'compania': { 
-                if ($scope.contrato.compania) { 
+                if ($scope.contrato.compania && !$scope.contrato.cedenteOriginal) { 
                     $scope.contrato.cedenteOriginal = $scope.contrato.compania; 
                 }
                 

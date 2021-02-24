@@ -130,8 +130,7 @@
                                 <ui-select-match placeholder="Seleccione una compañía">
                                     <span ng-bind="$select.selected.nombre"></span>
                                 </ui-select-match>
-                                <ui-select-choices repeat="value._id as value in (companias | orderBy: 'nombre') track by value._id"
-                                    refresh="searchCompanias($select.search)" 
+                                <ui-select-choices repeat="value._id as value in (companias | filter: $select.search | orderBy: 'nombre') track by value._id"
                                     minimum-input-length="3" 
                                     refresh-delay="500">
                                     <span ng-bind="value.nombre"></span>
@@ -182,8 +181,7 @@
                                 <ui-select-match placeholder="Seleccione una compañía">
                                     <span ng-bind="$select.selected.nombre"></span>
                                 </ui-select-match>
-                                <ui-select-choices repeat="value._id as value in (companias | orderBy: 'nombre') track by value._id"
-                                                   refresh="searchCedenteOriginal($select.search)" 
+                                <ui-select-choices repeat="value._id as value in (companias | filter: $select.search | orderBy: 'nombre') track by value._id"
                                                    minimum-input-length="3" 
                                                    refresh-delay="500">
                                     <span ng-bind="value.nombre"></span>

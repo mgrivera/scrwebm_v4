@@ -20,10 +20,10 @@ Meteor.publish("search.monedas", function (search) {
 Meteor.publish("search.companias", function (search) {
     return Companias.find({
         $or: [
-                { nombre: new RegExp(search, 'i') },
-                { abreviatura: new RegExp(search, 'i') },
-            ]
-    }, { fields: { nombre: 1, tipo: 1 }});
+            { nombre: new RegExp(search, 'i') },
+            { abreviatura: new RegExp(search, 'i') },
+        ]
+    }, { fields: { nombre: 1, tipo: 1 } });
 })
 
 Meteor.publish("search.ramos", function (search) {
