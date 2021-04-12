@@ -1,56 +1,63 @@
 
+import { Meteor } from 'meteor/meteor';
+import lodash from 'lodash';
 
-import { Meteor } from 'meteor/meteor'; 
-import { Promise } from 'meteor/promise'; 
 import SimpleSchema from 'simpl-schema';
-import { readDir } from '@cloudcmd/dropbox';
 
-// para leer un node stream y convertirlo en un string; nota: returns a promise 
-import getStream from 'get-stream'; 
+import { Dropbox } from 'dropbox';
+import fetch from 'isomorphic-fetch';
 
 Meteor.methods({
-    'plantillas.obtenerListaArchivosDesdeDirectorio': function (folderPath) {
+    'plantillas.obtenerListaArchivosDesdeDirectorio': async function (folderPath) {
 
         new SimpleSchema({
             folderPath: { type: String }
         }).validate({ folderPath });
 
-        const sort = 'name';
-        const order = 'asc';
-        const token = Meteor.settings.public.dropBox_appToken;
-        const type = 'raw';
+        const accessToken = Meteor.settings.public.dropBox_appToken;
 
-        let files = {}; 
-        let message = ""; 
-        let error = false; 
-        
+        let files = [];
+        let message = "";
+
         try {
-            files = Promise.await(readDir(token, folderPath, { type, sort, order }));
-            files = files.files.filter(x => x.type === "file"); 
-        } catch(err) { 
-            error = true; 
-            message = `Error: se ha producido un error al intentar obtener el contenido del directorio en Dropbox. <br />
-                El mensaje del error obtenido es: ${err}
-                `; 
-        } 
+            const dbx = new Dropbox({ accessToken, fetch });
 
-        if (!error && files && Array.isArray(files) && files.length) { 
-            const filesCount =  files.length.toString(); 
-            message = `Ok, hemos leído <b>${filesCount}</b> archivos para este tipo de plantillas. `; 
-        } else { 
-            error = true; 
+            const files0 = await dbx.filesListFolder({ path: folderPath });
+            const files1 = files0.entries.filter(x => x[".tag"] === "file").map(x => ({ name: x.name }));
+
+            files = lodash.orderBy(files1, ['name'], ['asc']);
+
+        } catch (err) {
+            console.log(JSON.stringify(err))
+            
+            message = err && err.message ? err.message : (err && err.error && err.error.error_summary ? err.error.error_summary : err);
+            message = `Error: se ha producido un error al intentar obtener el contenido del directorio (${folderPath}) en Dropbox. <br />
+                El mensaje del error obtenido es: <br /><br />${message}
+                `;
+            return {
+                error: true,
+                message: message,
+            }
+        }
+
+        if (files && Array.isArray(files) && files.length) {
+            const filesCount = files.length.toString();
+            message = `Ok, hemos leído <b>${filesCount}</b> archivos para este tipo de plantillas. `;
+        } else {
             message = `Error: no hemos podido leer plantillas registradas en Dropbox, para este tipo de proceso en particular. <br /> 
                        Ud. debe registrar al menos una plantilla para este tipo de proceso, en el directorio adecuado 
                        (<em>${folderPath}</em>) en el Dropbox del programa. 
-                      `; 
+                      `;
+            return {
+                error: true,
+                message: message,
+            }
         }
 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-        
-        return { 
-            error: error, 
-            message: message, 
-            files: files, 
+        return {
+            error: false,
+            message: message,
+            files: files,
         }
-   }, 
+    },
 })

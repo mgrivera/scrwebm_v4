@@ -1,0 +1,40 @@
+
+/* los buttons son muy altos en el navBar */
+@media (min-width: 768px) { 
+    .navbar-nav > .navBar_button > a {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
+
+/* el navBar sigue siendo muy alto pues aplica un margin de 20x */
+nav.toolBar_navBar.navbar.navbar-default {
+     margin-bottom: 0px;
+     min-height: 0px;
+}
+
+/* para cambiar estilos en bs navbar  */
+.toolBar.navbar {
+  min-height: 30px;
+  max-height: 30px;
+  margin-bottom: 10px;
+}
+
+.toolBar .navbar-brand {
+    height: 30px;
+    padding: 5px 5px;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: bold;
+    color: #77778C;
+}
+
+.toolBar .navbar-nav > li > a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.toolBar .navbar-text {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

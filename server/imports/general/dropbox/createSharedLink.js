@@ -48,9 +48,9 @@ const dropBoxCreateSharedLink = async function(filePath) {
             }
 
         } else {
-            const message = `Error: se ha producido un error al intentar producir un (shared) link
-                                para el archivo ${filePath} desde Dropbox. <br />
-                                El mensaje del error obtenido es: ${err.message}
+            console.log(JSON.stringify(err))
+            const message = `Error: se ha producido un error al intentar producir un (shared) link para el archivo ${filePath} desde Dropbox. <br />
+                             El mensaje del error obtenido es: ${err}
                             `;
             return {
                 error: true,

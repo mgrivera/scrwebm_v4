@@ -1,5 +1,7 @@
 
 import { Meteor } from 'meteor/meteor'; 
+import { Accounts } from 'meteor/accounts-base'
+
 import lodash from 'lodash'; 
 
 Meteor.startup(function () {
@@ -11,14 +13,17 @@ Meteor.startup(function () {
     console.log("mongodb driver version: ", MongoInternals.NpmModules.mongodb.version)
   });
 
-Accounts.onCreateUser(function(options, user) {
-  // para agregar el rol 'admin' cuando el usuario crea el administrador
-  if (user.emails && lodash.some(user.emails, (email) => { return email.address === 'admin@admin.com'; } )) {
-      if (!user.roles || !lodash.some(user.roles, (rol) => { return rol === 'admin'; } )) {
-          user.roles = [];
-          user.roles.push('admin');
-      }
-  }
+Accounts.onCreateUser(function (options, user) {
+    // un usuario que se llame admin es automáticamente administrador
+    if (user.username && user.username === "admin") {
+        if (!user.roles) {
+            user.roles = [];
+        }
 
-  return user;
+        if (!lodash.some(user.roles, (rol) => { return rol === 'admin'; })) {
+            user.roles.push('admin');
+        }
+    }
+
+    return user;
 })

@@ -2,7 +2,8 @@
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
-const personas_SimpleSchema = new SimpleSchema({
+// nótese que exportamos este schema para validar las personas en la opción que premite registrar compañías
+export const personas_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
     titulo: { type: String, optional: false, min: 1, max: 8 },
     nombre: { type: String, optional: false, min: 1, max: 100 },
@@ -10,6 +11,7 @@ const personas_SimpleSchema = new SimpleSchema({
     departamento: { type: String, optional: true, min: 0, max: 100 },
     email: { type: String, optional: true, min: 0, max: 100 },
     emailCobranzas: { type: Number, optional: true, },
+    docState: { type: Number, optional: true }
 });
 
 const schema = new SimpleSchema({
@@ -25,7 +27,7 @@ const schema = new SimpleSchema({
     nosotros: { type: Boolean, label: "Nosotros", optional: false },
     docState: { type: Number, optional: true },
     personas: { type: Array, optional: true, minCount: 0 },
-    'personas.$': { type: personas_SimpleSchema },
+    'personas.$': { type: personas_SimpleSchema }
 });
 
 export const Companias = new Mongo.Collection("companias");

@@ -8,8 +8,9 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { mostrarHelp } from '../imports/generales/mostrarHelp'; 
 
 // Este controller se carga con la página primera del programa; es decir, la que muestra el menú (navBar) principal
-angular.module("scrwebm").controller("MainController", ['$rootScope', '$scope', '$modal', '$location', 
-function ($rootScope, $scope, $modal, $location) {
+angular.module("scrwebm")
+       .controller("MainController", ['$rootScope', '$scope', '$location', 
+function ($rootScope, $scope, $location) {
 
     // este código jQuery permite que los 'subMenu' se muestren con un click en el Bootstrap navBar
     (function($){

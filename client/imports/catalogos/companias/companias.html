@@ -1,0 +1,243 @@
+﻿
+<div ng-controller="CompaniasController">
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0">
+            <!--    <h4 class="generaSimplelTitle">Empresas usuarias</h4>-->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-sm-offset-0" style="text-align: left; ">
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </alert>
+        </div>
+    </div>
+
+    <!-- el siguiente component (react2angular: angular comp >> react comp) abre un modal que le permite al usuario 
+    registrar personas para la compañia seleccionada en la lista  -->
+    <div ng-if='openPersonasModal'>
+        <personas-registro-modal compania-seleccionada='companiaSeleccionada' toogle-open-personas-modal='toogleOpenPersonasModal'>
+        </personas-registro-modal>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-0">
+
+            <nav class="navbar navbar-default navbar_custom_small_toolBar" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" class="navbar_custom_small_header">Compañías</a></li>
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li>
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
+                            <li class="divider-vertical-small"></li>
+                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="toogleOpenPersonasModal([])">Personas <span class="fa fa-user"></span></a></li>
+                            
+                            <li class="divider-vertical-small"></li>
+                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button"
+                                    aria-expanded="false">Exportar (csv) <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" ng-click="exportToCsv_Companias()" class="navbar_custom_small_node">Compañías&nbsp;&nbsp;<span class="fa fa-building-o"></span></a></li>
+                                    <li><a href="#" ng-click="exportToCsv_Personas()" class="navbar_custom_small_node">Personas&nbsp;&nbsp;<span class="fa fa-user-o"></span></a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div ui-grid="companias_ui_grid"
+                 ui-grid-resize-columns
+                 ui-grid-selection
+                 class="angularGrid"
+                 style="height: 100%; width: 100%; ">
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-sm-offset-0" style="height: auto; overflow: auto;">
+
+            <form novalidate style="text-align: left; padding: 10px 5px 10px 5px; margin-top: 10px; margin-bottom: 20px; "
+                             ng-if="companiaSeleccionada"
+                             class="form-horizontal formlyBackground">
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <!-- nombre -->
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group form-group-sm">
+                                <label class="col-sm-3 control-label input-label-xs">Nombre: </label>
+                                <div class="col-sm-9">
+                                    <input type="text"
+                                           name="nombre"
+                                           class="form-control input-sm"
+                                           style="font-size: x-small !important; height: 25px; "
+                                           ng-model="companiaSeleccionada.nombre"
+                                           ng-change="setIsEdited(companiaSeleccionada)"
+                                           ng-model-options="{ updateOn: 'blur' }" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- abreviatura -->
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group form-group-sm">
+                                <label class="col-sm-3 control-label input-label-xs">Abreviatura: </label>
+                                <div class="col-sm-9">
+                                    <input type="text"
+                                           name="abreviatura"
+                                           class="form-control input-sm"
+                                           style="font-size: x-small !important; height: 25px; "
+                                           ng-model="companiaSeleccionada.abreviatura"
+                                           ng-change="setIsEdited(companiaSeleccionada)"
+                                           ng-model-options="{ updateOn: 'blur' }" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- tipo -->
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group form-group-sm">
+                                <label class="col-sm-3 control-label input-label-xs">Tipo: </label>
+                                <div class="col-sm-9">
+                                    <select name="tipo"
+                                            class="form-control input-sm"
+                                            style="font-size: x-small !important; height: 25px; "
+                                            ng-model="companiaSeleccionada.tipo"
+                                            ng-change="setIsEdited(companiaSeleccionada)"
+                                            ng-options="item.tipo as item.descripcion for item in tiposCompania"
+                                            ng-model-options="{ updateOn: 'blur' }"
+                                            required></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- puedeCederRiesgos -->
+                        <div class="col-sm-8 col-sm-offset-2">
+                            <div class="checkbox">
+                                <div class="col-sm-10 col-offset-1" 
+                                     popover="Marque si la compañía no es del tipo 'compañía de seguros', pero puede ser nuestro cedente" 
+                                     popover-trigger="mouseenter">
+                                    <input type="checkbox"
+                                           name="nosotros"
+                                           ng-model="companiaSeleccionada.puedeCederRiesgos"
+                                           style="font-size: x-small !important; "
+                                           ng-change="setIsEdited(companiaSeleccionada)" />
+                                    <label class="col-sm-12 input-label-xs" style="padding-left: 5px; padding-top: 4px; ">Puede ceder riesgos</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 15px; ">
+                        <!-- rif -->
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group form-group-sm">
+                                <label class="col-sm-3 control-label input-label-xs">Rif: </label>
+                                <div class="col-sm-9">
+                                    <input type="text"
+                                           name="rif"
+                                           class="form-control input-sm"
+                                           style="font-size: x-small !important; height: 25px; "
+                                           ng-model="companiaSeleccionada.rif"
+                                           ng-change="setIsEdited(companiaSeleccionada)"
+                                           ng-model-options="{ updateOn: 'blur' }" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- direccion -->
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group form-group-sm">
+                                <label class="col-sm-3 control-label input-label-xs">Dirección: </label>
+                                <div class="col-sm-9">
+                                    <textarea rows="3"
+                                              name="direccion"
+                                              class="form-control input-sm"
+                                              style="font-size: x-small !important; height: 25px; "
+                                              ng-model="companiaSeleccionada.direccion"
+                                              ng-change="setIsEdited(companiaSeleccionada)"
+                                              ng-model-options="{ updateOn: 'blur' }">
+                                     </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- teléfono -->
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group form-group-sm">
+                                <label class="col-sm-3 control-label input-label-xs">Teléfono: </label>
+                                <div class="col-sm-9">
+                                    <input type="text"
+                                           name="telefono"
+                                           class="form-control input-sm"
+                                           style="font-size: x-small !important; height: 25px; "
+                                           ng-model="companiaSeleccionada.telefono"
+                                           ng-change="setIsEdited(companiaSeleccionada)"
+                                           ng-model-options="{ updateOn: 'blur' }" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- fax -->
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <div class="form-group form-group-sm">
+                                <label class="col-sm-3 control-label input-label-xs">Fax: </label>
+                                <div class="col-sm-9">
+                                    <input type="text"
+                                           name="fax"
+                                           class="form-control input-sm"
+                                           style="font-size: x-small !important; height: 25px; "
+                                           ng-model="companiaSeleccionada.fax"
+                                           ng-change="setIsEdited(companiaSeleccionada)"
+                                           ng-model-options="{ updateOn: 'blur' }" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Nosotros -->
+                        <div class="col-sm-8 col-sm-offset-2">
+                            <div class="checkbox">
+                                <div class="col-sm-10 col-offset-1" 
+                                     popover="Marque si la compañía corresponde a nuestra propia compañía" 
+                                     popover-trigger="mouseenter">
+                                    <input type="checkbox"
+                                           name="nosotros"
+                                           ng-model="companiaSeleccionada.nosotros"
+                                           style="font-size: x-small !important; "
+                                           ng-change="setIsEdited(companiaSeleccionada)" />
+                                           <label class="col-sm-12 input-label-xs" style="padding-left: 5px; padding-top: 4px; ">Nosotros</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

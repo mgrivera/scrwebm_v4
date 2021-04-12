@@ -243,6 +243,8 @@ Meteor.methods(
                 aseguradoAbreviatura: asegurado ? asegurado : "Indef", 
 
                 cuotaID: cuota._id,
+                entidadOriginalID: cuota.source.entityID,
+                entidadOriginalTipo: cuota.source.origen, 
                 origen: cuota.source.origen + '-' + cuota.source.numero,
                 numero: cuota.numero,
                 cantidad: cuota.cantidad,

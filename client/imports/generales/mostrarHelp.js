@@ -37,6 +37,16 @@ export function mostrarHelp (currentStateName) {
             window.open('https://sites.google.com/view/scrwebm/consultas/montos-pendientes-de-pago-vencimientos', '_blank');
             break;
 
+        case 'consultas.montosCobrados.filtro':
+        case 'consultas.montosCobrados.lista':
+            window.open('https://sites.google.com/view/scrwebm/consultas/montos-cobrados', '_blank');
+            break;
+
+        case 'consultas.montosPagados.filtro':
+        case 'consultas.montosPagados.lista':
+            window.open('https://sites.google.com/view/scrwebm/consultas/montos-pagados', '_blank');
+            break;
+
         case 'usuarios':
             window.open('https://scrwebm.wordpress.com/2016/06/21/usuarios/', '_blank');
             break;

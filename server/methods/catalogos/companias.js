@@ -9,8 +9,19 @@ Meteor.methods(
     companiasSave: function (companias) {
 
         if (!lodash.isArray(companias) || companias.length == 0) {
-            throw new Meteor.Error("Aparentemente, no se han editado los datos en la forma. No hay nada que actualizar.");
+            const message = "Aparentemente, no se han editado los registros en la página. No hay nada que actualizar."; 
+
+            return { 
+                error: true, 
+                message
+            }
         }
+
+        // eliminamos del array alguna persona que el usuario haya eliminado 
+        companias.forEach(c => c.personas = c.personas.filter(p => !(p.docState && p.docState === 3)));
+
+        // eliminamos un posible docState en algún item en el array de personas 
+        companias.forEach(c => c.personas.forEach(p => delete p.docState ));
 
         const inserts = lodash.chain(companias).
                       filter(function (item) { return item.docState && item.docState == 1; }).
@@ -20,10 +31,11 @@ Meteor.methods(
 
         inserts.forEach(function (item) {
             Companias.insert(item, function (error) {
-                if (error)
+                if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
-            });
-        });
+                }
+            })
+        })
 
         const updates = lodash.chain(companias).
                         filter(function (item) { return item.docState && item.docState == 2; }).
@@ -35,8 +47,9 @@ Meteor.methods(
         updates.forEach(function (item) {
             Companias.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
-                if (error)
+                if (error) {
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
+                }
             });
         });
 
@@ -46,6 +59,11 @@ Meteor.methods(
             Companias.remove({ _id: item._id });
         });
 
-        return "Ok, los datos han sido actualizados en la base de datos.";
+        const message = "Ok, los registros han sido actualizados en la base de datos de manera satisfactoria.";
+
+        return {
+            error: false,
+            message
+        }
     }
 })

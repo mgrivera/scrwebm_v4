@@ -1,18 +1,12 @@
 
 node_modules/
-pdfMake_from_bower/imports/build/pdfmake.min.js
-pdfMake_from_bower/imports/build/pdfmake.min.js.map
-pdfMake_from_bower/imports/build/vfs_fonts.js
 
-pdfMake_from_bower/build/pdfmake.min.js
-pdfMake_from_bower/build/pdfmake.min.js.map
-pdfMake_from_bower/build/vfs_fonts.js
-
-run.bat
-settings.json
-
-run_prc.bat 
-settings_prc.json 
+run*.bat
+settings*.json
 
 # ignorar archivos de configuración de visual studio code 
 .vscode/
+
+# a veces el programa registra aquí archivos que tienen un uso solo temporal, etc. 
+.temp/
+package-lock.json

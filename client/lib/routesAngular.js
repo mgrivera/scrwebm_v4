@@ -51,7 +51,7 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
 
         .state('catalogos.companias', {
             url: '/companias',
-            templateUrl: 'client/catalogos/companias/companias.html',
+            templateUrl: 'client/imports/catalogos/companias/companias.html',
             controller: 'CompaniasController'
         })
         .state('catalogos.asegurados', {
@@ -96,12 +96,12 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('catalogos.tiposObjetoAsegurado', {
             url: '/tiposObjetoAsegurado',
-            templateUrl: 'client/html/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado.html',
+            templateUrl: 'client/imports/catalogos/tiposObjetoAsegurado/tiposObjetoAsegurado.html',
             controller: 'TiposObjetoAseguradoController'
         })
         .state('catalogos.cumulos', {
             url: '/cumulos',
-            templateUrl: 'client/html/catalogos/cumulos/cumulos.html',
+            templateUrl: 'client/imports/catalogos/cumulos/cumulos.html',
             controller: 'CumulosController'
         })
         .state('catalogos.suscriptores', {
@@ -393,7 +393,6 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             parent: 'siniestro'
         })
 
-
         // ----------------------------------------------------------------
         // consultas            
         // ----------------------------------------------------------------
@@ -456,20 +455,23 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             params: { 'companiaSeleccionada': null, 'parametrosReporte': null }
         })
 
+        // ------------------------------------------------------------------------------------
+        // montos pendientes de cobro - vencimientos 
         .state('pendientesCobro_vencimientos_consulta', {
-            url: '/consultas/pendientesCobro_vencimientos',
-            templateUrl: 'client/consultas/pendientesCobro_vencimientos/main.html',
-            controller: 'ConsultasMontosPendientesCobroVencimientos_Controller'
+            url: '/pendientesCobro_vencimientos',
+            templateUrl: 'client/imports/consultas/pendientesCobro_vencimientos/main.html',
+            controller: 'ConsultasMontosPendientesCobroVencimientos_Controller', 
+            parent: 'consultas'
         })
         .state('pendientesCobro_vencimientos_consulta_filter', {
             url: '/filter',
-            templateUrl: 'client/consultas/pendientesCobro_vencimientos/filtro.html',
+            templateUrl: 'client/imports/consultas/pendientesCobro_vencimientos/filtro.html',
             controller: 'ConsultasMontosPendientesCobroVencimientos_Filtro_Controller',
             parent:'pendientesCobro_vencimientos_consulta',
         })
         .state('pendientesCobro_vencimientos_consulta_list', {
             url: '/list?companiaSeleccionada&parametrosReporte',
-            templateUrl: 'client/consultas/pendientesCobro_vencimientos/list.html',
+            templateUrl: 'client/imports/consultas/pendientesCobro_vencimientos/list.html',
             controller: 'ConsultasMontosPendientesCobroVencimientos_Lista_Controller',
             params: { companiaSeleccionada: null, parametrosReporte: null },
             parent:'pendientesCobro_vencimientos_consulta',
@@ -513,6 +515,7 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             parent:'corretaje_consulta',
         })
 
+        // ------------------------------------------------------------------------------------
         // cúmulos - consulta 
         .state('consultas.cumulos', {
             url: '/cumulos',
@@ -552,6 +555,92 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
 
             template: `<consulta-cumulos-lista record-count="ctrl.recCount" />`,
             parent: 'consultas.cumulos', 
+        }) 
+        
+        // ------------------------------------------------------------------------------------
+        // montos cobrados - consulta 
+        // ------------------------------------------------------------------------------------
+        .state('consultas.montosCobrados', {
+            url: '/montosCobrados',
+            abstract: true,
+            template: '<div class="row" ui-view></div>',
+            parent: 'consultas'
+        })
+
+        .state('consultas.montosCobrados.filtro', {
+            url: '/filtro',
+            template: '<consulta-montos-cobrados-filtro />',
+            parent: 'consultas.montosCobrados',
+        })
+        // IMPORTANTE: nótese lo que hacemos para pasar props al react component. En realidad, aquí se pasan al angular 
+        // component; luego, con react2angular, al react component. En resolve, obtenemos los datos que necesitamos; en este 
+        // caso, usamos un meteor method. Luego, en el (inline) controller, usamos this para mantener estos datos. Para 
+        // poder pasarlos al template, usamos controllerAs, para crear un controller (ctrl) que es el que se pasa 
+        // en el template (upppssss!) 
+        .state('consultas.montosCobrados.lista', {
+            url: '/lista',
+
+            resolve: {
+                recCount: () => {
+                    return new Promise((resolve) => {
+                        Meteor.call('consultas.montosCobrados.getRecCount', Meteor.userId(), (err, result) => {
+                            this.recCount = result.recordCount;
+                            resolve(result.recordCount);
+                        })
+                    })
+                }
+            },
+
+            controller: ['recCount', function (recCount) {
+                this.recCount = recCount;
+            }],
+            controllerAs: 'ctrl',
+
+            template: `<consulta-montos-cobrados-lista record-count="ctrl.recCount" />`,
+            parent: 'consultas.montosCobrados',
+        }) 
+
+        // ------------------------------------------------------------------------------------
+        // montos pagados - consulta 
+        // ------------------------------------------------------------------------------------
+        .state('consultas.montosPagados', {
+            url: '/montosPagados',
+            abstract: true,
+            template: '<div class="row" ui-view></div>',
+            parent: 'consultas'
+        })
+
+        .state('consultas.montosPagados.filtro', {
+            url: '/filtro',
+            template: '<consulta-montos-pagados-filtro />',
+            parent: 'consultas.montosPagados',
+        })
+        // IMPORTANTE: nótese lo que hacemos para pasar props al react component. En realidad, aquí se pasan al angular 
+        // component; luego, con react2angular, al react component. En resolve, obtenemos los datos que necesitamos; en este 
+        // caso, usamos un meteor method. Luego, en el (inline) controller, usamos this para mantener estos datos. Para 
+        // poder pasarlos al template, usamos controllerAs, para crear un controller (ctrl) que es el que se pasa 
+        // en el template (upppssss!) 
+        .state('consultas.montosPagados.lista', {
+            url: '/lista',
+
+            resolve: {
+                recCount: () => {
+                    return new Promise((resolve) => {
+                        Meteor.call('consultas.montosPagados.getRecCount', Meteor.userId(), (err, result) => {
+                            this.recCount = result.recordCount;
+                            resolve(result.recordCount);
+                        })
+                    })
+                }
+            },
+
+            controller: ['recCount', function (recCount) {
+                this.recCount = recCount;
+            }],
+            controllerAs: 'ctrl',
+
+            template: `<consulta-montos-pagados-lista record-count="ctrl.recCount" />`,
+            parent: 'consultas.montosPagados',
         }) 
 
         // ----------------------------------------------------------------

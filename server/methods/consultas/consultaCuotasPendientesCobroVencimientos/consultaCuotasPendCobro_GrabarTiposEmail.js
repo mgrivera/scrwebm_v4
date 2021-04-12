@@ -18,6 +18,7 @@ import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
+import { EmailsCobranzaCuotasPendientes } from '/imports/collections/otros/emailsCobranzaCuotasPendientes';
 
 Meteor.methods(
 {
@@ -71,9 +72,7 @@ Meteor.methods(
             throw new Meteor.Error(`Error inesperado: no hemos podido leer el registro que contiene las
                                     condiciones de generación de e-mails, para la compañía seleccionada.
                                    `);
-        };
-
-
+        }
 
         // ---------------------------------------------------------------------------------------------------
         // leemos las condiciones indicadas por el usuario; intentamos construir un e-mail para 'from' y
@@ -108,11 +107,6 @@ Meteor.methods(
         }
         // ---------------------------------------------------------------------------------------------------
 
-
-
-
-
-
         if (!condicionesEmail.atencion) {
             throw new Meteor.Error(`Error: Ud. debe indicar, en el campo Atención, las personas
                                     que deben recibir el e-mail.
@@ -137,7 +131,6 @@ Meteor.methods(
         if (condicionesEmail.atencion.nombre3) atencion_personas_array.push(3);
         if (condicionesEmail.atencion.nombre4) atencion_personas_array.push(4);
         if (condicionesEmail.atencion.nombre5) atencion_personas_array.push(5);
-
 
         // verificamos que las compañías seleccionadas tengan, todas, las personas que se indica
         // en el array 'Atención'; además, que sus datos (email, cargo, ...) estén completos
@@ -418,7 +411,6 @@ Meteor.methods(
 
                 throw new Meteor.Error(mensajeError);
             }
-
 
             // tratamos, separadamente, cada cuota asociada a este tipo de e-mail
             tiposEmail_array[tipoEmail].forEach((cuota) => {

@@ -98,6 +98,9 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                                 <li><a ui-sref="pendientesCobro_vencimientos_consulta">Montos por cobrar - vencimientos</a></li>
                                 <li><a ui-sref="pendientesPago_vencimientos_consulta">Montos por pagar - vencimientos</a></li>
                                 <li class="divider"></li>
+                                <li><a ui-sref="consultas.montosCobrados.filtro">Montos cobrados</a></li>
+                                <li><a ui-sref="consultas.montosPagados.filtro">Montos pagados</a></li>
+                                <li class="divider"></li>
                                 <li><a ui-sref="corretaje_consulta_filter">Corretaje</a></li>
                                 <li class="divider"></li>
                                 <li><a ui-sref="consultas.cumulos.filtro">Cúmulos</a></li>
@@ -167,29 +170,30 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
             </div>
 
             <div class="row" ui-view></div>
+        </div>
 
-            <!-- Nota: en contab ésto funcionó mejor pues el home page se quita cuando se monta cualquier página de cualquier subsistema 
-            (contab, bancos, nómina, etc.). En este programa, scrwebm, el home page se mantiene siempre y todo se monto con él. Sin 
-            embargo, pareciera que el mecanismo que hace space-filler no se recalcula y el footer queda super abajo ...  -->
-            <!-- <div class="space-filler">
-            </div> -->
+        <!-- Nota: en contab ésto funcionó mejor pues el home page se quita cuando se monta cualquier página de cualquier subsistema 
+        (contab, bancos, nómina, etc.). En este programa, scrwebm, el home page se mantiene siempre y todo se monto con él. Sin 
+        embargo, pareciera que el mecanismo que hace space-filler no se recalcula y el footer queda super abajo ...  -->
+        <!-- <div class="space-filler">
+        </div> -->
 
-            <div class="navbar navbar-default">
-                <div class="container">
-                    <div class="row" style="padding-top: 12px; ">
-                        <div class="col-sm-4">
-                            <p class="navbar-text">&copy; 2020 - <em>scrwebm ...</em></p>
-                        </div>
-                        <div class="col-sm-4">
-                        </div>
-                        <div class="col-sm-3 col-sm-offset-1">
-                            <p class="navbar-text"><meteor-login></meteor-login></p>
-                        </div>
+        <div class="navbar navbar-default">
+            <div class="container">
+                <div class="row" style="padding-top: 12px; ">
+                    <div class="col-sm-4">
+                        <p class="navbar-text">&copy; 2021 - <em>scrwebm ...</em></p>
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-3 col-sm-offset-1">
+                        <p class="navbar-text">
+                            <meteor-login></meteor-login>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
-
 </body>

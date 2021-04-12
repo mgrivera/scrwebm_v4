@@ -3,6 +3,6 @@
 // este módulo es pasado en DI en el 'main' (scrwebm) module, que se define en client/lib/app.js 
 import angular from 'angular';
 
-import Cumulos from './cumulos/angularModule'; 
+import CumulosRegistro from './cumulos/angularModule'; 
 
-export default angular.module("scrwebm.generales", [ Cumulos.name ]);
+export default angular.module("scrwebm.generales", [ CumulosRegistro.name ]);

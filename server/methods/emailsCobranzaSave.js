@@ -1,7 +1,8 @@
 ﻿
 import { Meteor } from 'meteor/meteor'; 
-
 import lodash from 'lodash'; 
+
+import { EmailsCobranzaCuotasPendientes } from '/imports/collections/otros/emailsCobranzaCuotasPendientes';
 
 Meteor.methods(
 {
@@ -33,7 +34,6 @@ Meteor.methods(
             EmailsCobranzaCuotasPendientes.insert(item);
         }
 
-
         if (item.docState && item.docState == 2) {
             var item2 = lodash.clone(item, true);
 
@@ -42,7 +42,6 @@ Meteor.methods(
 
             EmailsCobranzaCuotasPendientes.update({ _id: item._id }, { $set: item2 });
         }
-
 
         if (item.docState && item.docState == 3) {
             EmailsCobranzaCuotasPendientes.remove({ _id: item._id });

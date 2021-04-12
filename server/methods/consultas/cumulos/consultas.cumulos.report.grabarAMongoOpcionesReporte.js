@@ -1,6 +1,6 @@
 
-import SimpleSchema from 'simpl-schema';
 import { Meteor } from 'meteor/meteor'; 
+import SimpleSchema from 'simpl-schema';
 
 import { Temp_consulta_cumulos_config } from '/imports/collections/consultas/temp_consulta_cumulos'; 
 

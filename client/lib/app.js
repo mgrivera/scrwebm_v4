@@ -25,14 +25,14 @@ import uiSelect from "ui-select";
 import 'ui-select/dist/select.css';
 
 // hacemos un import de los módulos (angular modules) que están en /client/imports, y los pasamos en DI (angular dependency injection) 
-import Generales from '/client/imports/generales/generalesAngularModule'; 
+import Generales from '/client/imports/generales/generalesAngularModule';
+import Catalogos from '/client/imports/catalogos/angularModule';
 import Riesgos from '/client/imports/riesgos/riesgosAngularModule'; 
 import Remesas from '/client/imports/remesas/remesasAngularModule'; 
 import NotasDebitoCredito from '/client/imports/notasDebitoCredito/notasDebitoCreditoModule'; 
 import Cobranzas from '/client/imports/cobranzas/cobranzasModule'; 
 import Administracion from '/client/imports/administracion/angularModule'; 
 import Consultas from '/client/imports/consultas/angularModule'; 
-
 
 // ---------------------------------------------------------------------------------------------------------------
 // NOTA: cuando pasamos a la versión 1.10, no pudimos mantener la ultima versión de angular-templates (1.0.9) 
@@ -92,7 +92,7 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             ngSanitize, uiSelect, 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
-                            Generales.name, Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
+                            Generales.name, Catalogos.name,
+                            Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
                             Administracion.name, Consultas.name, Utilitarios.name, MeteorLogin.name
-                          ]);
-
+                          ])
