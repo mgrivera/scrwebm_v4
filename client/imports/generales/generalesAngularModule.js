@@ -4,5 +4,6 @@
 import angular from 'angular';
 
 import CumulosRegistro from './cumulos/angularModule'; 
+import RegistrarPersonasAEntidad from './registrarPersonasAEntidad/registrarPersonas'; 
 
-export default angular.module("scrwebm.generales", [ CumulosRegistro.name ]);
+export default angular.module("scrwebm.generales", [ CumulosRegistro.name, RegistrarPersonasAEntidad.name ]);

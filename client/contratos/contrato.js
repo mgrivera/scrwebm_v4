@@ -360,7 +360,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
 
 
         $modal.open({
-            templateUrl: 'client/generales/registrarPersonas.html',
+            templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {

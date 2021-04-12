@@ -603,7 +603,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
         }
 
         $modal.open({
-            templateUrl: 'client/generales/registrarPersonas.html',
+            templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {

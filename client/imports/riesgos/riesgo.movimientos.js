@@ -663,7 +663,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
 
         $modal.open({
-            templateUrl: 'client/generales/registrarPersonas.html',
+            templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {

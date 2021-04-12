@@ -1,13 +1,13 @@
 
-
+import angular from 'angular';
+import lodash from 'lodash'; 
 
 import { Companias } from '/imports/collections/catalogos/companias'; 
+import './registrarPersonas.html'; 
 
-angular.module("scrwebm").controller('RegistrarPersonasController',
-['$scope', '$modalInstance', 'companias',
+export default angular.module("scrwebm.generales.registrarPersonasAEntidad", [])
+                      .controller('RegistrarPersonasController', ['$scope', '$modalInstance', 'companias',
 function ($scope, $modalInstance, companias) {
-
-    // debugger;
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -27,7 +27,6 @@ function ($scope, $modalInstance, companias) {
     // para usarlas en el filtro de compañías en el grid ...
     $scope.companiasLista = Companias.find().fetch();
 
-
     // leemos las personas registradas para las compañías en el movimiento
     // la idea es que el usuario pueda seleccionarlas en una lista ...
 
@@ -37,9 +36,6 @@ function ($scope, $modalInstance, companias) {
     // ui-grid de Compañías y sus personas (para seleccionar la persona y asignar a la
     // compañía del movimiento)
     // --------------------------------------------------------------------------------------
-
-    //debugger;
-
     let personaSeleccionada = {};
     let entityUpdated = false;
 
@@ -66,21 +62,20 @@ function ($scope, $modalInstance, companias) {
                     personaSeleccionada = row.entity;
 
                     // buscamos la compañía en la 2da. lista y actualizamos su título y nombre
-
-                    const companiaSeleccionada = _.find(companias, function(c) { return c.compania === personaSeleccionada.compania; });
+                    const companiaSeleccionada = companias.find(c => c.compania === personaSeleccionada.compania);
 
                     if (companiaSeleccionada) {
                         companiaSeleccionada.titulo = personaSeleccionada.titulo;
                         companiaSeleccionada.nombre = personaSeleccionada.nombre;
 
                         entityUpdated = true;
-                    };
+                    }
                 }
                 else
                     return;
             });
         }
-    };
+    }
 
     $scope.personasRegistradas_ui_grid.columnDefs = [
           {
@@ -117,15 +112,11 @@ function ($scope, $modalInstance, companias) {
               enableCellEdit: false,
               type: 'string'
           },
-    ];
-
+    ]
 
     // --------------------------------------------------------------------------------------
     // ui-grid de personas para las compañías del movimiento seleccionado
     // --------------------------------------------------------------------------------------
-
-    //debugger;
-
     $scope.personas_ui_grid = {
         enableSorting: false,
         showColumnFooter: false,
@@ -140,7 +131,7 @@ function ($scope, $modalInstance, companias) {
                     entityUpdated = true;
             });
         }
-    };
+    }
 
     $scope.personas_ui_grid.columnDefs = [
           {
@@ -186,18 +177,17 @@ function ($scope, $modalInstance, companias) {
               enableSorting: false,
               width: 25
           }
-    ];
+    ]
 
     $scope.eliminarPersona = function(item) {
-        _.remove(companias, function(x) { return x == item; });
+        lodash.remove(companias, function(x) { return x == item; });
 
         entityUpdated = true;
     };
 
     $scope.personasRegistradas_ui_grid.data = personasRegistradas;
     $scope.personas_ui_grid.data = companias;
-}
-]);
+}])
 
 function leerPersonasRegistradasParaCompanias(companias) {
     // recuérdese que el catálogo de compañías (y todos) siempre están completos en el cliente
@@ -216,8 +206,8 @@ function leerPersonasRegistradasParaCompanias(companias) {
                     nombre: p.nombre
                 });
             });
-        };
+        }
     });
 
     return personasRegistradas;
-};
+}
