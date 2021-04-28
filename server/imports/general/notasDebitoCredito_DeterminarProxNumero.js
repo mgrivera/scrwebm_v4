@@ -1,8 +1,8 @@
 
 import { Meteor } from 'meteor/meteor'; 
-import { NotasDebitoCredito_proxNumero } from 'imports/collections/catalogos/notasDebitoCredito_proxNumero'; 
+import { NotasDebitoCredito_proxNumero } from '/imports/collections/catalogos/notasDebitoCredito_proxNumero'; 
 
-const determinarProxNumero = function(tipo: string, ano: number, cia: string) { 
+const determinarProxNumero = function(tipo, ano, cia) { 
     
     // en NotasDebitoCredito_proxNumero está el último número usado. Debemos incrementar 1 para usar como el 
     // número de la próxima nota 
@@ -25,11 +25,10 @@ const determinarProxNumero = function(tipo: string, ano: number, cia: string) {
         }
     } catch(err) { 
 
-        let message = `Ha ocurrido un error al intentar obtener el número de la próxima nota de débito/crédito.<br /> 
+        const message = `Ha ocurrido un error al intentar obtener el número de la próxima nota de débito/crédito.<br /> 
                        El mensaje de error es: ${err.number ? err.number.toString() : ''} - ${err.name ? err.name : ''} - 
                        ${err.message ? err.message : ''}. 
                       `; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
         result = { 
             error: true, 

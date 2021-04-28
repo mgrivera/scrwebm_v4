@@ -207,7 +207,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
                     return $scope.siniestro;
                 },
                 documentos: function () {
-                    if (!lodash.isArray($scope.siniestro.documentos))
+                    if (!Array.isArray($scope.siniestro.documentos))
                     $scope.siniestro.documentos = [];
 
                     return $scope.siniestro.documentos;
@@ -225,13 +225,13 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
             });
     }
 
-    $scope.registrarPersonasCompanias = function() {
+    $scope.registrarPersonasCompanias = function () {
 
         if (!$scope.siniestro || !$scope.siniestro.compania) {
             DialogModal($modal, "<em>Siniestros</em>",
-                                "Aparentemente, Ud. no ha seleccionado una compañía como cedente para este siniestro.<br />" +
-                                "El siniestro debe tener una compañía cedente antes de intentar registrar sus personas.",
-                                false).then();
+                "Aparentemente, Ud. no ha seleccionado una compañía cedente para este siniestro.<br />" +
+                "El siniestro debe tener una compañía cedente antes de intentar registrar sus personas.",
+                false).then();
 
             return;
         }
@@ -241,58 +241,51 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {
-                companias: function () {
-                    const siniestro = $scope.siniestro;
+                companias: () => {
+                    // pasamos un array con las compañías que se han definido para el riesgo (ced y reasegs)
                     const companias = [];
+                    const siniestro = $scope.siniestro;
 
-                    if (lodash.isArray(siniestro.personas)) {
-                        siniestro.personas.forEach(persona => {
-                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
-                        });
-                    }
-
-                    // ahora revisamos las compañías en el riesgo y agregamos las que
-                    // *no* existan en el array de compañías
-                    if (!lodash.some(companias, c => { return c.compania == siniestro.compania; } ))
-                        companias.push({ compania: siniestro.compania });
-
-                    if (lodash.isArray(siniestro.companias)) {
-                        siniestro.companias.forEach(r => {
-                            if (!r.nosotros)
-                                if (!lodash.some(companias, c => { return c.compania == r.compania; } ))
-                                    companias.push({ compania: r.compania });
+                    companias.push(siniestro.compania); 
+                
+                    if (Array.isArray(siniestro.companias)) {
+                        siniestro.companias.forEach(c => {
+                            if (!c.nosotros) {
+                                if (!companias.some(x => x.compania === c.compania)) {
+                                    companias.push(c.compania);
+                                }
+                            }
                         });
                     }
 
                     return companias;
+                },
+                personas: function () {
+                    // pasamos un array con las personas (si hay) asociadas al siniestro 
+                    const siniestro = $scope.siniestro;
+                    return siniestro && siniestro.personas ? siniestro.personas : [];
                 }
             }
         }).result.then(
-            function () {
-                return true;
-            },
-            function (cancel) {
+            function (result) {
                 // recuperamos las personas de compañías, según las indicó el usuario en el modal
-                if (cancel.entityUpdated) {
-                    const companias = cancel.companias;
+                if (result.personas.some(x => x.docState)) {
+                    // sustituimos las personas en el riesgo por las recibidas desde el modal 
                     $scope.siniestro.personas = [];
+                    const personas = result.personas && Array.isArray(result.personas) ? result.personas : [];
+                    personas.forEach(p => $scope.siniestro.personas.push(p));
 
-                    if (lodash.isArray(companias)) {
-                        companias.forEach(c => {
-                            $scope.siniestro.personas.push({
-                                compania: c.compania,
-                                titulo: c.titulo ? c.titulo : null,
-                                nombre: c.nombre? c.nombre : null
-                            });
-                        });
+                    if (!$scope.siniestro.docState) {
+                        $scope.siniestro.docState = 2;
                     }
-
-                if (!$scope.siniestro.docState)
-                    $scope.siniestro.docState = 2;
                 }
 
                 return true;
-            });
+            },
+            function () {
+                return true;
+            }
+        )
     }
 
     // --------------------------------------------------------------------
@@ -403,7 +396,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
     $scope.agregarCompania = function () {
 
-        if (!lodash.isArray($scope.siniestro.companias))
+        if (!Array.isArray($scope.siniestro.companias))
             $scope.siniestro.companias = [];
 
         const compania = {
@@ -591,7 +584,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
     $scope.agregarRegistroReserva = function () {
 
-        if (!lodash.isArray($scope.siniestro.reservas)) { 
+        if (!Array.isArray($scope.siniestro.reservas)) {
             $scope.siniestro.reservas = [];
         }
             
@@ -811,7 +804,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
     $scope.agregarRegistroLiquidaciones = function () {
 
-        if (!lodash.isArray($scope.siniestro.liquidaciones)) {
+        if (!Array.isArray($scope.siniestro.liquidaciones)) {
             $scope.siniestro.liquidaciones = [];
         }
 
@@ -1233,7 +1226,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
             return;
         }
 
-        if (!lodash.isArray($scope.cuotas))
+        if (!Array.isArray($scope.cuotas))
             $scope.cuotas = [];
 
         const cuota = {};

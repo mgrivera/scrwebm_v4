@@ -204,7 +204,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         $scope.processProgress.progress = 0;
         $scope.processProgress.message = "";
 
-        Contratos_Methods.grabar($state, $scope, $modal, $meteor, uiGridConstants);
+        Contratos_Methods.grabar($state, $scope, $modal, uiGridConstants);
     }
 
     $scope.regresarALista = function () {
@@ -229,7 +229,6 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
             $state.go('contratosLista', { origen: $scope.origen, limit: $scope.limit });
         } 
     }
-
 
     $scope.eliminar = function () {
         if ($scope.contrato.docState && $scope.contrato.docState == 1) {
@@ -349,6 +348,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     }
 
     $scope.registrarPersonasCompanias = () => {
+
         if (!$scope.contrato || !$scope.contrato.compania) {
             DialogModal($modal, "<em>Contratos</em>",
             "Aparentemente, Ud. no ha seleccionado una compañía como cedente para el contrato.<br />" +
@@ -358,78 +358,66 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
             return;
         }
 
-
         $modal.open({
             templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {
                 companias: function () {
-                //   debugger;
                     const contrato = $scope.contrato;
                     const companias = [];
 
-                    if (Array.isArray(contrato.personas)) {
-                        contrato.personas.forEach(persona => {
-                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
-                        });
-                    }
-
-                    // ahora revisamos las compañías en el contrato (cedente, cuentas, caaps) y agregamos las que
-                    // *no* existan en el array de compañías
-
-                    if (!lodash.some(companias, (c) => { return c.compania == contrato.compania; } ))
-                        companias.push({ compania: contrato.compania });
+                    companias.push(contrato.compania);
 
                     if (Array.isArray(contrato.capas)) {
                         contrato.capas.forEach(capa => {
                             if (Array.isArray(capa.reaseguradores)) {
                                 capa.reaseguradores.forEach(r => {
-                                    if (!lodash.some(companias, (c) => { return c.compania == r.compania; } ))
-                                        companias.push({ compania: r.compania });
-                                });
+                                    if (!companias.some(c => c === r.compania )) { 
+                                        companias.push(r.compania);
+                                    }  
+                                })
                             }
-                        });
+                        })
                     }
 
                     if (contrato.cuentas && Array.isArray(contrato.cuentas.reaseguradores)) {
                         contrato.cuentas.reaseguradores.forEach(r => {
-                        if (!lodash.some(companias, (c) => { return c.compania == r.compania; } ))
-                            companias.push({ compania: r.compania });
-                        });
+                            if (!companias.some(c => c === r.compania)) { 
+                                companias.push(r.compania);
+                            }
+                        })
                     }
 
                     return companias;
+                }, 
+                personas: function () {
+                    // pasamos un array con las personas (si hay) asociadas al riesgo 
+                    const contrato = $scope.contrato;
+                    return contrato && contrato.personas ? contrato.personas : [];
                 }
             }
         }).result.then(
-            function () {
-                return true;
-            },
-            function (cancel) {
+            function (result) {
                 // recuperamos las personas de compañías, según las indicó el usuario en el modal
-            //   debugger;
-                if (cancel.entityUpdated) {
-                    const companias = cancel.companias;
+                if (result.personas.some(x => x.docState)) {
+                    // sustituimos las personas en el contrato por las recibidas desde el modal 
                     $scope.contrato.personas = [];
+                    const personas = result.personas && Array.isArray(result.personas) ? result.personas : [];
+                    personas.forEach(p => $scope.contrato.personas.push(p));
 
-                    if (Array.isArray(companias)) {
-                        companias.forEach(c => {
-                            $scope.contrato.personas.push({
-                                compania: c.compania,
-                                titulo: c.titulo ? c.titulo : null,
-                                nombre: c.nombre? c.nombre : null
-                            });
-                        });
+                    if (!$scope.contrato.docState) {
+                        $scope.contrato.docState = 2;
+                        $scope.dataHasBeenEdited = true;
                     }
-
-                if (!$scope.contrato.docState)
-                    $scope.contrato.docState = 2;
-                    $scope.dataHasBeenEdited = true; 
                 }
 
                 return true;
-            });
+            },
+            function () {
+                return true;
+            }
+        )
     }
 
     // --------------------------------------------------------------------------------------

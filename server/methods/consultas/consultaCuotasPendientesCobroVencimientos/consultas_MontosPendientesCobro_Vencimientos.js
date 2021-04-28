@@ -16,6 +16,7 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
+import { Ramos } from '/imports/collections/catalogos/ramos'; 
 
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos'; 
 
@@ -111,6 +112,7 @@ Meteor.methods(
                     if (riesgo) {
                         cuota.suscriptor = riesgo.suscriptor ? riesgo.suscriptor : null;
                         cuota.asegurado = riesgo.asegurado ? riesgo.asegurado : null;
+                        cuota.ramo = riesgo.ramo ? riesgo.ramo : null;
                     }
 
                     break;
@@ -121,6 +123,7 @@ Meteor.methods(
                     if (siniestro) {
                         cuota.suscriptor = siniestro.suscriptor ? siniestro.suscriptor : null;
                         cuota.asegurado = siniestro.asegurado ? siniestro.asegurado : null;
+                        cuota.ramo = siniestro.ramo ? siniestro.ramo : null;
                     }
 
                     break;
@@ -132,6 +135,7 @@ Meteor.methods(
                     if (contrato) {
                         cuota.suscriptor = contrato.suscriptor ? contrato.suscriptor : null;
                         cuota.asegurado = contrato.referencia ? contrato.referencia : null;
+                        cuota.ramo = contrato.ramo ? contrato.ramo : null;
                     }
 
                     break;
@@ -191,6 +195,7 @@ Meteor.methods(
         let compania = {};
         let suscriptor = {};
         let asegurado = null;
+        let ramo = {}; 
 
         // el usuario puede indicar nombres de compañía, moneda y suscriptor como parte de su filtro
         // la idea es que puede indicar *solo* parte del nombre para filtrar por allí 
@@ -200,7 +205,8 @@ Meteor.methods(
 
             moneda = Monedas.findOne(cuota.moneda, { fields: { simbolo: 1, descripcion: 1, }});
             compania = Companias.findOne(cuota.compania, { fields: { abreviatura : 1, nombre: 1, }});
-            suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura : 1, nombre: 1 }});
+            suscriptor = Suscriptores.findOne(cuota.suscriptor, { fields: { abreviatura: 1, nombre: 1 } });
+            ramo = Ramos.findOne(cuota.ramo, { fields: { abreviatura: 1, descripcion: 1 } });
 
             // si el usuario indicó filtros por catálogos, en texto, los aplicamos ahora 
 
@@ -232,12 +238,19 @@ Meteor.methods(
 
             const cuotaPendiente = {
                 _id: new Mongo.ObjectID()._str,
+                
                 moneda: cuota.moneda,
                 monedaDescripcion: moneda ? moneda.descripcion : "Indef",
                 monedaSimbolo: moneda ? moneda.simbolo : "Indef",
+
                 compania: cuota.compania,
                 companiaNombre: compania ? compania.nombre : "Indef",
                 companiaAbreviatura: compania ? compania.abreviatura : "Indef",
+
+                ramo: cuota.ramo,
+                ramoDescripcion: ramo ? ramo.descripcion : "Indef",
+                ramoAbreviatura: ramo ? ramo.abreviatura : "Indef",
+
                 suscriptor: cuota.suscriptor,
                 suscriptorAbreviatura: suscriptor ? suscriptor.abreviatura : "Indef",
                 aseguradoAbreviatura: asegurado ? asegurado : "Indef", 

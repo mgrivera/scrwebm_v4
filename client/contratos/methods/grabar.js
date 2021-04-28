@@ -20,7 +20,7 @@ import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, 
 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
-const grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
+const grabar = ($state, $scope, $modal, uiGridConstants) => {
 
     if (!$scope.dataHasBeenEdited) {
         DialogModal($modal,
@@ -38,7 +38,6 @@ const grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
         $scope.contrato.referencia = '0';
     }
 
-    const isValid = false;
     const errores = [];
 
     // validamos el contenido del item contra el simple-schema que se ha asociado al mongo collection 
@@ -268,4 +267,4 @@ const grabar = ($state, $scope, $modal, $meteor, uiGridConstants) => {
     })
 }
 
-Contratos_Methods.grabar = grabar;
+Contratos_Methods.grabar = grabar; 

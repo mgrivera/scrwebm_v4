@@ -35,6 +35,13 @@ Meteor.methods(
                 item.referencia = result.referencia;
             }
 
+            // si el usuario editó el array de personas, pueden venir con docState ... 
+            if (item.personas && Array.isArray(item.personas)) {
+                // primero eliminamos las personas que el usuario pueda haber eliminado 
+                item.personas = item.personas.filter(x => !(x.docState && x.docState === 3));
+                item.personas.forEach(x => delete x.docState);
+            }
+
             Siniestros.insert(item);
         }
 
@@ -67,6 +74,13 @@ Meteor.methods(
                         `Hemos obtenido un error al intentar asignar un número de referencia:<br />${result.message}`);
                 }
                 item2.referencia = result.referencia;
+            }
+
+            // si el usuario editó el array de personas, pueden venir con docState ... 
+            if (item2.personas && Array.isArray(item2.personas)) {
+                // primero eliminamos las personas que el usuario pueda haber eliminado 
+                item2.personas = item2.personas.filter(x => !(x.docState && x.docState === 3));
+                item2.personas.forEach(x => delete x.docState);
             }
 
             Siniestros.update({ _id: item._id }, { $set: item2 });

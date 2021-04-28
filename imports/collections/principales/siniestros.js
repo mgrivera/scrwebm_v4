@@ -69,13 +69,16 @@ const siniestroSource_SimpleSchema = new SimpleSchema({
 // Compañías (movimiento sub-document)
 // -----------------------------------------------------------------------
 const persona_SimpleSchema = new SimpleSchema({
+    _id: { type: String, optional: true },                  // antes no existía; prevenimos que no venga en algunos casos 
+    persona: { type: String, optional: true },              // antes no existía; prevenimos que no venga en algunos casos 
     compania: { type: String, optional: false },
     titulo: { type: String, optional: false, min: 1, max: 8 },
-    nombre: { type: String, optional: false, min: 1, max: 100 }
+    nombre: { type: String, optional: false, min: 1, max: 100 }, 
+    docState: { type: Number, optional: true }
 })
 
 // -----------------------------------------------------------------------
-// Documenos (riesgo y movimientos sub-document)
+// Documentos (riesgo y movimientos sub-document)
 // -----------------------------------------------------------------------
 const documentos_SimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },

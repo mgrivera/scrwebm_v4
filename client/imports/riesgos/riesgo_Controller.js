@@ -297,7 +297,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
 
         $scope.showProgress = true;
 
-        // nótese como validamos antes de intentar guardar en el servidor
+        // nótese como validamos antes de intentar guardar en el server
         let isValid = false;
         const errores = [];
             
@@ -607,66 +607,53 @@ function ($scope, $state, $stateParams, $modal, $location) {
             controller: 'RegistrarPersonasController',
             size: 'lg',
             resolve: {
-                companias: function () {
-                    const riesgo = $scope.riesgo;
-                    const companias = [];
+                companias: () => { 
+                    // pasamos un array con las compañías que se han definido para el riesgo (ced y reasegs)
+                    const companias = []; 
+                    const riesgo = $scope.riesgo; 
 
-                    if (lodash.isArray(riesgo.personas)) {
-                        riesgo.personas.forEach(persona => {
-                            companias.push({ compania: persona.compania, titulo: persona.titulo, nombre: persona.nombre });
-                        });
-                    }
+                    companias.push(riesgo.compania);
+                    
+                    const movimientos = riesgo.movimientos ? riesgo.movimientos : []; 
 
-                    // ahora revisamos las compañías en el riesgo y agregamos las que *no* existan en el array de compañías
-                    if (!lodash.some(companias, (c) => { return c.compania == riesgo.compania; } )) { 
-                        companias.push({ compania: riesgo.compania });
-                    }
-                        
-                    if (lodash.isArray(riesgo.movimientos)) {
-                        riesgo.movimientos.forEach(movimiento => {
-                        if (lodash.isArray(movimiento.companias)) {
-                            movimiento.companias.forEach(r => {
-                                if (!r.nosotros) { 
-                                    if (!lodash.some(companias, (c) => { return c.compania == r.compania; } )) { 
-                                        companias.push({ compania: r.compania });
-                                    } 
+                    movimientos.forEach(m => { 
+                        m.companias && m.companias.forEach(c => { 
+                            if (!c.nosotros) { 
+                                // normalmente, un riesgo tiene varios movimientos; las companias se repiten 
+                                // en los movimientos 
+                                if (!companias.some(x => x.compania === c.compania)) { 
+                                    companias.push(c.compania);
                                 }
-                            })
-                        }
+                            }
                         })
-                    }
+                    })
 
-                    return companias;
+                    return companias; 
+                }, 
+                personas: function () {
+                    // pasamos un array con las personas (si hay) asociadas al riesgo 
+                    const riesgo = $scope.riesgo;
+                    return riesgo && riesgo.personas ? riesgo.personas : [];
                 }
             }
         }).result.then(
-            function () {
-                return true;
-            },
-            function (cancel) {
+            function (result) {
                 // recuperamos las personas de compañías, según las indicó el usuario en el modal
-                if (cancel.entityUpdated) {
-                    const companias = cancel.companias;
+                if (result.personas.some(x => x.docState)) {
+                    // sustituimos las personas en el riesgo por las recibidas desde el modal 
                     $scope.riesgo.personas = [];
+                    const personas = result.personas && Array.isArray(result.personas) ? result.personas : []; 
+                    personas.forEach(p => $scope.riesgo.personas.push(p)); 
 
-                    if (lodash.isArray(companias)) {
-                        for (const compania of companias) { 
-                            if (compania.titulo && compania.nombre) { 
-                                $scope.riesgo.personas.push({
-                                    compania: compania.compania,
-                                    titulo: compania.titulo,
-                                    nombre: compania.nombre, 
-                                })
-                            }
-                        }
-                    }
-
-                    if (!$scope.riesgo.docState) { 
+                    if (!$scope.riesgo.docState) {
                         $scope.riesgo.docState = 2;
                     }
                 }
 
                 return true;
+            },
+            function () {
+                return true; 
             }
         )
     }

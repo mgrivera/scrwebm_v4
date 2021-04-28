@@ -18,10 +18,23 @@ const ListaPlantillas = ({ plantillas, setSelectedPlantillas }) => {
         // todos los indices vienen en rows 
         // agregamos los rows seleccionados (sus indices) a una variable en el state 
 
+        // cómo queremos seleccionar un solo item, salimos cuando el usuario hace una selección de más de 1 row
+        if (rows.length > 1) { 
+            return; 
+        }
+
         // primero eliminamos algún indice en el array que ya haya sido seleccionado antes. Esto puede ocurrir cuando el usuario selecciona 
         // todos los items. Si, por ejemplo, había seleccionado el item #3 y luego selecciona todos, el item #3 se selecciona otra vez 
         const selectedRows = rows.filter(x => { return !selectedIndexes.some(y => { return (y === x) }) });
-        const selectedRowIndexes = selectedIndexes.concat(selectedRows.map(r => r.rowIdx));
+
+        // aparentemente, no se puede indicar a react-data-grid que se desea seleccionar un solo row (simple selection) 
+        // por eso lo hacemos con code ... 
+
+        // para seleccionar varios items 
+        //const selectedRowIndexes = selectedIndexes.concat(selectedRows.map(r => r.rowIdx));
+
+        // para seleccionar un solo item 
+        const selectedRowIndexes = selectedRows.map(r => r.rowIdx);
 
         setSelectedIndexes(selectedRowIndexes);
         setSelectedPlantillas(selectedRowIndexes);       // para regresar el array de selected items (indexes) al parent component 
@@ -45,7 +58,7 @@ const ListaPlantillas = ({ plantillas, setSelectedPlantillas }) => {
                 minHeight={400}
 
                 rowSelection={{
-                    showCheckbox: false,
+                    showCheckbox: true,
                     enableShiftSelect: true,
                     // cada vez que el usuario selecciona un item en la lista, se ejecuta esta función para mantener estos items en el state 
                     onRowsSelected: onRowsSelected,

@@ -1,23 +1,23 @@
 
 import { Meteor } from 'meteor/meteor'; 
 
-import * as lodash from 'lodash'; 
-import * as moment from 'moment';
+import lodash from 'lodash'; 
+import moment from 'moment';
 
-import { Contratos } from 'imports/collections/principales/contratos'; 
-import { Cuotas } from 'imports/collections/principales/cuotas'; 
+import { Contratos } from '/imports/collections/principales/contratos'; 
+import { Cuotas } from '/imports/collections/principales/cuotas';
 
 // siguen todos las tablas (collections) para el registro de contratos proporcionales 
-import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_comAdic_resumen, ContratosProp_comAdic_distribucion, ContratosProp_comAdic_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_partBeneficios_resumen, ContratosProp_partBeneficios_distribucion, ContratosProp_partBeneficios_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_entCartPr_resumen, ContratosProp_entCartPr_distribucion, ContratosProp_entCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, ContratosProp_entCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from 'imports/collections/principales/contratos'; 
-import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from 'imports/collections/principales/contratos'; 
+import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos';
+import { ContratosProp_comAdic_resumen, ContratosProp_comAdic_distribucion, ContratosProp_comAdic_montosFinales, } from '/imports/collections/principales/contratos';
+import { ContratosProp_partBeneficios_resumen, ContratosProp_partBeneficios_distribucion, ContratosProp_partBeneficios_montosFinales, } from '/imports/collections/principales/contratos';
+import { ContratosProp_entCartPr_resumen, ContratosProp_entCartPr_distribucion, ContratosProp_entCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, ContratosProp_entCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
+import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
 
-import { mongoCollection_array_grabar } from '../../imports/general/mongoCollection.grabar'; 
-import { calcularNumeroReferencia } from '../../imports/general/calcularNumeroReferencia'; 
+import { mongoCollection_array_grabar } from '/server/imports/general/mongoCollection.grabar'; 
+import { calcularNumeroReferencia } from '/server/imports/general/calcularNumeroReferencia'; 
 
 Meteor.methods(
 {
@@ -31,8 +31,6 @@ Meteor.methods(
                             contratosProp_retCartSn_resumen, contratosProp_retCartSn_distribucion, contratosProp_retCartSn_montosFinales 
                             ) 
     {
-        
-
         reportarProgresoAlCliente(4); 
 
         if (contrato.docState && contrato.docState == 1) {
@@ -52,8 +50,8 @@ Meteor.methods(
 
             // si la referencia viene en '0', asignamos una ...
             if (!contrato.referencia || contrato.referencia === '0') {
-                let ano = parseInt(moment(contrato.desde).format('YYYY'));
-                let result = calcularNumeroReferencia('contr', contrato.tipo, ano, contrato.cia);
+                const ano = parseInt(moment(contrato.desde).format('YYYY'));
+                const result = calcularNumeroReferencia('contr', contrato.tipo, ano, contrato.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",
@@ -63,12 +61,19 @@ Meteor.methods(
                 contrato.referencia = result.referencia;
             }
 
+            // si el usuario editó el array de personas, pueden venir con docState ... 
+            if (contrato.personas && Array.isArray(contrato.personas)) {
+                // primero eliminamos las personas que el usuario pueda haber eliminado 
+                contrato.personas = contrato.personas.filter(x => !(x.docState && x.docState === 3));
+                contrato.personas.forEach(x => delete x.docState);
+            }
+
             Contratos.insert(contrato); 
         }
 
         if (contrato.docState && contrato.docState == 2) {
 
-            var item2 = lodash.cloneDeep(contrato);
+            const item2 = lodash.cloneDeep(contrato);
 
             delete item2.docState;
             delete item2._id;
@@ -78,7 +83,7 @@ Meteor.methods(
 
             // si el número viene en '0', asignamos un número consecutivo al contrato
             if (!item2.numero) {
-                var numeroAnterior = Contratos.findOne({ cia: contrato.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+                const numeroAnterior = Contratos.findOne({ cia: contrato.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
                 if (!numeroAnterior.numero) { 
                     item2.numero = 1;
                 }  
@@ -89,8 +94,8 @@ Meteor.methods(
 
             // si la referencia viene en '0', asignamos una ...
             if (!item2.referencia || item2.referencia === '0') {
-                let ano = parseInt(moment(item2.desde).format('YYYY'));
-                let result = calcularNumeroReferencia('contr', item2.tipo, ano, item2.cia);
+                const ano = parseInt(moment(item2.desde).format('YYYY'));
+                const result = calcularNumeroReferencia('contr', item2.tipo, ano, item2.cia);
 
                 if (result.error) {
                     throw new Meteor.Error("error-asignar-referencia",
@@ -99,9 +104,15 @@ Meteor.methods(
                 item2.referencia = result.referencia;
             }
 
+            // si el usuario editó el array de personas, pueden venir con docState ... 
+            if (item2.personas && Array.isArray(item2.personas)) {
+                // primero eliminamos las personas que el usuario pueda haber eliminado 
+                item2.personas = item2.personas.filter(x => !(x.docState && x.docState === 3));
+                item2.personas.forEach(x => delete x.docState);
+            }
+
             Contratos.update({ _id: contrato._id }, { $set: item2 });
         }
-
 
         if (contrato.docState && contrato.docState == 3) {
             
@@ -135,7 +146,6 @@ Meteor.methods(
 
         // usamos esta función para grabar a mongo el contenido de los arrays; nótese que pasamos el array y el mongo collection ... 
 
-       
         reportarProgresoAlCliente(8); 
         mongoCollection_array_grabar(contratosProp_cuentas_resumen.filter(x => x.primas || x.siniestros), ContratosProp_cuentas_resumen); 
 
@@ -155,7 +165,6 @@ Meteor.methods(
         reportarProgresoAlCliente(28); 
         mongoCollection_array_grabar(contratosProp_comAdic_montosFinales, ContratosProp_comAdic_montosFinales); 
 
-
         reportarProgresoAlCliente(32); 
         mongoCollection_array_grabar(contratosProp_partBeneficios_resumen.filter(x => x.monto), ContratosProp_partBeneficios_resumen); 
 
@@ -164,8 +173,6 @@ Meteor.methods(
 
         reportarProgresoAlCliente(40); 
         mongoCollection_array_grabar(contratosProp_partBeneficios_montosFinales, ContratosProp_partBeneficios_montosFinales); 
-
-
 
         reportarProgresoAlCliente(44); 
         mongoCollection_array_grabar(contratosProp_entCartPr_resumen.filter(x => x.monto), ContratosProp_entCartPr_resumen); 
@@ -176,8 +183,6 @@ Meteor.methods(
         reportarProgresoAlCliente(52); 
         mongoCollection_array_grabar(contratosProp_entCartPr_montosFinales, ContratosProp_entCartPr_montosFinales); 
 
-
-
         reportarProgresoAlCliente(56); 
         mongoCollection_array_grabar(contratosProp_entCartSn_resumen.filter(x => x.monto), ContratosProp_entCartSn_resumen); 
 
@@ -186,7 +191,6 @@ Meteor.methods(
 
         reportarProgresoAlCliente(64); 
         mongoCollection_array_grabar(contratosProp_entCartSn_montosFinales, ContratosProp_entCartSn_montosFinales); 
-
 
         reportarProgresoAlCliente(68); 
         mongoCollection_array_grabar(contratosProp_retCartPr_resumen.filter(x => x.monto), ContratosProp_retCartPr_resumen); 
@@ -197,7 +201,6 @@ Meteor.methods(
         reportarProgresoAlCliente(76); 
         mongoCollection_array_grabar(contratosProp_retCartPr_montosFinales, ContratosProp_retCartPr_montosFinales); 
 
-
         reportarProgresoAlCliente(80); 
         mongoCollection_array_grabar(contratosProp_retCartSn_resumen.filter(x => x.monto), ContratosProp_retCartSn_resumen); 
 
@@ -207,7 +210,6 @@ Meteor.methods(
         reportarProgresoAlCliente(88); 
         mongoCollection_array_grabar(contratosProp_retCartSn_montosFinales, ContratosProp_retCartSn_montosFinales); 
 
-
         reportarProgresoAlCliente(92); 
         mongoCollection_array_grabar(cuotas, Cuotas); 
 
@@ -215,13 +217,13 @@ Meteor.methods(
     }
 })
 
-function reportarProgresoAlCliente(progress: number): void { 
+function reportarProgresoAlCliente(progress) { 
    
     // valores para reportar el progreso
-    let eventName = "contratos_grabar_reportProgress";
-    let eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'contratos_grabar' };
-    let eventData = { progress: progress, };
+    const eventName = "contratos_grabar_reportProgress";
+    const eventSelector = { myuserId: Meteor.userId(), app: 'scrwebm', process: 'contratos_grabar' };
+    const eventData = { progress: progress, };
 
     // sync call
-    let methodResult = Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);   
+    Meteor.call('eventDDP_matchEmit', eventName, eventSelector, eventData);   
 }

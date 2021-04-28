@@ -21,3 +21,13 @@ Meteor.publish('allUsers', function () {
 
     return Meteor.users.find();
 })
+
+Meteor.publish('userData', function () {
+
+    // para publicar el field personales en users. Allí tenemos: título, nombre, cargo 
+    if (this.userId) {
+        return Meteor.users.find({ _id: this.userId }, { fields: { personales: 1 }});
+    } else {
+        this.ready();
+    }
+})

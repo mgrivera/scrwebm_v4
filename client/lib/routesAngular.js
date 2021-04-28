@@ -242,7 +242,7 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('riesgosLista', {
             url: '/riesgos/lista?origen&limit',
-            templateUrl: 'client/html/riesgos/lista.html',
+            templateUrl: 'client/imports/riesgos/lista.html',
             controller: 'RiesgosLista_Controller',
             params: { 'origen': null, 'limit': null, },
         })

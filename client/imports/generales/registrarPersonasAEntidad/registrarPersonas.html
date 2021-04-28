@@ -5,7 +5,6 @@
     </h5>
 </div>
 
-
 <div class="modal-body">
     <div class="container-fluid">
 
@@ -17,65 +16,82 @@
             </div>
         </div>
 
-        <div class="row" style="margin-bottom: 15px; ">
-
-            <div class="col-sm-10 col-sm-offset-1" style="font-size: small; ">
-                <p>
-                    <ol>
-                        <li>Seleccione las personas que desee, para cada compañía, en la 1ra. lista.</li>
-                        <li><em>Note</em> que puede editar directamente en la 2da. lista.</li>
-                        <li>Las personas en la 2da. lista serán las destinatarias de las notas que genera el programa.</li>
-                    </ol>
-                </p>
-            </div>
-
-            <div class="col-sm-6" style="font-size: small; ">
-
-                <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
-                    <div class="container-fluid navbar-nopaddingleft">
-                        <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav">
-                                <li><a href="#" class="navbar_custom_small_header">Personas registradas</a></li>
-                            </ul>
+        <tabset style="text-align: left; ">
+            <tab heading="Personas">
+                <div class="row"  style="padding: 20px; ">
+                
+                    <div class="col-sm-6" style="font-size: small; ">
+                
+                        <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                            <div class="container-fluid navbar-nopaddingleft">
+                                <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                                    <ul class="nav navbar-nav">
+                                        <li><a href="#" class="navbar_custom_small_header">Personas registradas</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                
+                        <div ui-grid="personasRegistradasEnLasCompanias_ui_grid" ui-grid-resize-columns ui-grid-selection
+                            class="angularGrid_Wide">
                         </div>
+                
                     </div>
-                </nav>
-
-                <div ui-grid="personasRegistradas_ui_grid"
-                     ui-grid-resize-columns
-                     ui-grid-selection
-                     class="angularGrid_Wide">
-                </div>
-
-            </div>
-
-            <div class="col-sm-6" style="font-size: small; ">
-
-                <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
-                    <div class="container-fluid navbar-nopaddingleft">
-                        <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav">
-                                <li><a href="#" class="navbar_custom_small_header">Personas</a></li>
-                            </ul>
+                
+                    <div class="col-sm-6" style="font-size: small; ">
+                
+                        <nav class="navbar navbar-default navbar_custom_small_fullWidth" role="navigation">
+                            <div class="container-fluid navbar-nopaddingleft">
+                                <div class="collapse navbar-collapse navbar-nopaddingleft" id="bs-example-navbar-collapse-1">
+                                    <ul class="nav navbar-nav">
+                                        <li><a href="#" class="navbar_custom_small_header">Personas</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                
+                        <div ui-grid="personasRegistradasEnLaEntidad_ui_grid" ui-grid-cellnav ui-grid-resize-columns
+                            class="angularGrid_Wide">
                         </div>
+                
                     </div>
-                </nav>
-
-                <div ui-grid="personas_ui_grid"
-                     ui-grid-edit
-                     ui-grid-cellnav
-                     ui-grid-resize-columns
-                     class="angularGrid_Wide">
+                
                 </div>
-
-            </div>
-
-        </div>
+            </tab>
+            <tab heading="Notas">
+                <div class="row" style="padding: 20px; ">
+                    <div class="col-sm-10 col-sm-offset-1" style="font-size: small; ">
+                        <p>
+                            En la lista de la izquierda, el programa muestra las personas registradas para las compañías usadas 
+                            en la entidad (riesgo, siniestro, etc.).
+                        </p>
+                        <p>
+                            Ud. debe hacer un click en alguna persona, para agregarla a la lista de la derecha. Estas serán las 
+                            personas asignadas a la entidad (riesgo, contrato, siniestro), y a las cuales se dirigirán las 
+                            notas impresas (notas de cobertura, de siniestro, etc.). 
+                        </p>
+                        <p>
+                            Si Ud. no ve alguna persona en la lista de la izquierda, debe abrir el catálogo <em>Compañías</em>, 
+                            seleccionar la que corresponde y agregar o editar las personas allí. Solo entonces podrá ver las personas en esta ventana. 
+                        </p>
+                        <p>
+                            Nótese que también puede eliminar personas asignadas; es decir, que ya están en la lista de la derecha. Para hacerlo, 
+                            basta con hacer un click en la pequeña x roja que está al final de cada registro. 
+                        </p>
+                        <p>
+                            Cuando Ud. hace cambios en esta ventana, siempre deberá hacer un click en Grabar, al cerrar la misma. 
+                            Si Ud. edita la información en esta ventana, pero no hace un click en Grabar al cerrarla, los cambios 
+                            no permanecerán con la entidad (riesgo, contrato, siniestro, etc.). 
+                        </p>
+                    </div>
+                </div>
+            </tab>
+        </tabset>
 
     </div>
 </div>
 
 <div class="modal-footer">
-    <!-- <button ng-click="ok()" class="btn btn-sm btn-primary">OK</button> -->
+    <button ng-click="ok()" class="btn btn-sm btn-primary">Cerrar - mantener cambios</button>
     <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">Cerrar</button>
 </div>
