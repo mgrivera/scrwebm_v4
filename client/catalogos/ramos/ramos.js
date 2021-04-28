@@ -1,11 +1,15 @@
 ﻿
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular';
+import angular from 'angular';
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
+import { Ramos } from '/imports/collections/catalogos/ramos'; 
 
-angular.module("scrwebm").controller("RamosController", ['$scope', function ($scope) {
+angular.module("scrwebm")
+       .controller("RamosController", ['$scope', 
+function ($scope) {
 
     $scope.showProgress = false;
 
@@ -118,114 +122,119 @@ angular.module("scrwebm").controller("RamosController", ['$scope', function ($sc
       ]
 
 
-      // ---------------------------------------------------------
-      // subscriptions ...
-      $scope.showProgress = true;
+    // ---------------------------------------------------------
+    // subscriptions ...
+    $scope.showProgress = true;
 
-      Meteor.subscribe('ramos', () => {
-          $scope.helpers({
-              ramos: () => {
-                  return Ramos.find({}, { sort: { descripcion: 1 } });
-              },
-          });
+    let subscriptionHandle = null;
 
-          $scope.ramos_ui_grid.data = $scope.ramos;
-          $scope.showProgress = false;
-      })
+    subscriptionHandle = Meteor.subscribe('ramos', () => {
+        $scope.helpers({
+            ramos: () => {
+                return Ramos.find({}, { sort: { descripcion: 1 } });
+            },
+        });
+
+        $scope.ramos_ui_grid.data = $scope.ramos;
+        $scope.showProgress = false;
+    })
 
 
-      $scope.deleteItem = function (item) {
-          item.docState = 3;
-      }
+    $scope.deleteItem = function (item) {
+        item.docState = 3;
+    }
 
-      $scope.nuevo = function () {
-          $scope.ramos.push({
-              _id: new Mongo.ObjectID()._str,
-              docState: 1
-          });
-      }
+    $scope.nuevo = function () {
+        $scope.ramos.push({
+            _id: new Mongo.ObjectID()._str,
+            docState: 1
+        });
+    }
 
-      $scope.save = function () {
+    $scope.save = function () {
 
-          $scope.showProgress = true;
+        $scope.showProgress = true;
 
-          // eliminamos los items eliminados; del $scope y del collection
-          var editedItems = $scope.ramos.filter(x => x.docState);
+        // eliminamos los items eliminados; del $scope y del collection
+        var editedItems = $scope.ramos.filter(x => x.docState);
 
-          // nótese como validamos cada item antes de intentar guardar en el servidor
-          var isValid = false;
-          var errores = [];
+        // nótese como validamos cada item antes de intentar guardar en el servidor
+        var isValid = false;
+        var errores = [];
 
-          editedItems.forEach(function (item) {
-              if (item.docState != 3) {
-                  isValid = Ramos.simpleSchema().namedContext().validate(item);
+        editedItems.forEach(function (item) {
+            if (item.docState != 3) {
+                isValid = Ramos.simpleSchema().namedContext().validate(item);
 
-                  if (!isValid) {
-                      Ramos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                          errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
-                      });
-                  }
-              }
-          })
+                if (!isValid) {
+                    Ramos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
+                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
+                    });
+                }
+            }
+        })
 
-          if (errores && errores.length) {
+        if (errores && errores.length) {
 
-              $scope.alerts.length = 0;
-              $scope.alerts.push({
-                  type: 'danger',
-                  msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
-                      errores.reduce(function (previous, current) {
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
+                    errores.reduce(function (previous, current) {
 
-                          if (previous == "")
-                              // first value
-                              return current;
-                          else
-                              return previous + "<br />" + current;
-                      }, "")
-              });
+                        if (previous == "")
+                            // first value
+                            return current;
+                        else
+                            return previous + "<br />" + current;
+                    }, "")
+            });
 
-              $scope.showProgress = false;
-              return;
-          }
+            $scope.showProgress = false;
+            return;
+        }
 
-          // eliminamos la conexión entre angular y meteor
-          $scope.ramos = [];
-          $scope.ramos_ui_grid.data = [];
+        // eliminamos la conexión entre angular y meteor
+        $scope.ramos = [];
+        $scope.ramos_ui_grid.data = [];
 
-          Meteor.call('ramosSave', editedItems, (err, result) => {
+        Meteor.call('ramosSave', editedItems, (err, result) => {
 
-              if (err) {
-                  let errorMessage = mensajeErrorDesdeMethod_preparar(err);
-
-                  $scope.alerts.length = 0;
-                  $scope.alerts.push({
-                      type: 'danger',
-                      msg: errorMessage
-                  });
-
-                  $scope.showProgress = false;
-                  $scope.$apply();
-
-                  return;
-              }
+            if (err) {
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
-                    type: 'info',
-                    msg: result
+                    type: 'danger',
+                    msg: errorMessage
                 });
 
-                $scope.helpers({
-                    ramos: () => {
-                        return Ramos.find({}, { sort: { descripcion: 1 } });
-                    },
-                });
-
-                $scope.ramos_ui_grid.data = $scope.ramos;
                 $scope.showProgress = false;
-
                 $scope.$apply();
-            })
-      }
-  }
-])
+
+                return;
+            }
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'info',
+                msg: result
+            });
+
+            $scope.helpers({
+                ramos: () => {
+                    return Ramos.find({}, { sort: { descripcion: 1 } });
+                },
+            });
+
+            $scope.ramos_ui_grid.data = $scope.ramos;
+            $scope.showProgress = false;
+
+            $scope.$apply();
+        })
+    }
+
+    $scope.$on('$destroy', function () {
+        subscriptionHandle.stop();
+    })
+}])

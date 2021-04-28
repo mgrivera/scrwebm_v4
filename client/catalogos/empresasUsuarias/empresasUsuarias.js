@@ -1,15 +1,18 @@
 ﻿
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash'; 
+import angular from 'angular'; 
+import lodash from 'lodash'; 
 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar';
 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias';
-import { Companias } from 'imports/collections/catalogos/companias';  
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
+import { Companias } from '/imports/collections/catalogos/companias';
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada';
 
-angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', 
+function ($scope) {
 
     $scope.showProgress = false;
 
@@ -181,12 +184,14 @@ angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', f
         }
     ]
 
-
     $scope.showProgress = true;
 
     // ---------------------------------------------------------
     // subscriptions ...
-    Meteor.subscribe('empresasUsuarias', () => {
+    let subscriptionHandle_empresasUsuaria = null;
+    let subscriptionHandle_companiaSeleccionada = null; 
+
+    subscriptionHandle_empresasUsuaria = Meteor.subscribe('empresasUsuarias', () => {
         $scope.helpers({
             empresasUsuarias: () => {
                 return EmpresasUsuarias.find({}, { sort: { nombre: 1 } });
@@ -195,7 +200,7 @@ angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', f
 
         $scope.ciasUsuarias_ui_grid.data = $scope.empresasUsuarias;
 
-        Meteor.subscribe('companiaSeleccionada', () => {
+        subscriptionHandle_companiaSeleccionada = Meteor.subscribe('companiaSeleccionada', () => {
             $scope.helpers({
                 ciaSeleccionada: () => {
                     return CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
@@ -219,7 +224,6 @@ angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', f
         });
     }
 
-
     $scope.save = function () {
 
         $scope.showProgress = true;
@@ -238,14 +242,14 @@ angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', f
 
                 if (!isValid) {
                     EmpresasUsuarias.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + "." as never);
+                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + error.name + "'; error de tipo '" + error.type + ".");
                     });
                 }
             }
             else {
                 // si el usuario intenta eliminar una compañía, rechazamos si el la cia seleccionada
                 if ($scope.ciaSeleccionada && $scope.ciaSeleccionada.companiaID && $scope.ciaSeleccionada.companiaID == item._id) {
-                    errores.push("La compañía <b><em>" + item.nombre + "</em></b> no puede ser eliminada, pues es la que ahora está seleccionada para el usuario." as never);
+                    errores.push("La compañía <b><em>" + item.nombre + "</em></b> no puede ser eliminada, pues es la que ahora está seleccionada para el usuario.");
                 }
             }
         })
@@ -275,7 +279,7 @@ angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', f
         Meteor.call('empresasUsuariasSave', editedItems, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -309,5 +313,9 @@ angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', f
             $scope.$apply();
         });
     }
-  }
-]);
+
+    $scope.$on('$destroy', function () {
+        subscriptionHandle_empresasUsuaria.stop();
+        subscriptionHandle_companiaSeleccionada.stop();
+    })
+}])

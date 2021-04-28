@@ -1,20 +1,22 @@
 ﻿
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash'; 
+import angular from 'angular'; 
+import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Bancos } from 'imports/collections/catalogos/bancos'; 
-import { CuentasBancarias } from 'imports/collections/catalogos/cuentasBancarias'; 
+import { Monedas } from '/imports/collections/catalogos/monedas';
+import { Bancos } from '/imports/collections/catalogos/bancos';
+import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias';
 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CuentasContables } from 'imports/collections/catalogos/cuentasContables';
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
+import { CuentasContables } from '/imports/collections/catalogos/cuentasContables';
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada';
 
-angular.module("scrwebm").controller("CuentasBancariasController",
- ['$scope', function ($scope) {
+angular.module("scrwebm").controller("CuentasBancariasController", ['$scope', 
+function ($scope) {
 
     $scope.showProgress = false;
 
@@ -27,13 +29,12 @@ angular.module("scrwebm").controller("CuentasBancariasController",
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
-    let companiaSeleccionadaDoc = {} as any;
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    let companiaSeleccionadaDoc = {};
 
     if (companiaSeleccionada) {
         companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
     }
-
 
     $scope.companiaSeleccionada = {};
 
@@ -231,7 +232,6 @@ angular.module("scrwebm").controller("CuentasBancariasController",
         }
     ]
 
-
     $scope.deleteItem = function (item) {
         item.docState = 3;
     }
@@ -260,7 +260,7 @@ angular.module("scrwebm").controller("CuentasBancariasController",
 
                 if (!isValid) {
                     CuentasBancarias.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + CuentasBancarias.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'." as never);
+                        errores.push("El valor '" + error.value + "' no es adecuado para el campo '" + CuentasBancarias.simpleSchema().label(error.name) + "'; error de tipo '" + error.type + "'.");
                     })
                 }
             }
@@ -291,7 +291,7 @@ angular.module("scrwebm").controller("CuentasBancariasController",
         Meteor.call('cuentasBancariasSave', editedItems, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -332,7 +332,8 @@ angular.module("scrwebm").controller("CuentasBancariasController",
 
     // ---------------------------------------------------------
     // subscriptions ...
-    Meteor.subscribe('cuentasContablesSoloDetalles', () => { 
+    let subscriptionHandle = null;
+    subscriptionHandle = Meteor.subscribe('cuentasContablesSoloDetalles', () => {
 
         $scope.helpers({
             cuentasContables: () => {
@@ -354,5 +355,8 @@ angular.module("scrwebm").controller("CuentasBancariasController",
         $scope.showProgress = false;
         $scope.$apply();
     })
-  }
-])
+
+    $scope.$on('$destroy', function () {
+        subscriptionHandle.stop();
+    })
+}])

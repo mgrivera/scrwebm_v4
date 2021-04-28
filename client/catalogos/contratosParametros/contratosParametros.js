@@ -28,7 +28,7 @@ angular.module("scrwebm").controller("ContratosParametrosController", ['$scope',
             $scope.contratosParametros.docState = 2;
         }
 
-        let subscriptionHandle = {};
+        let subscriptionHandle = null;
 
         $scope.save = function () {
 
@@ -97,20 +97,19 @@ angular.module("scrwebm").controller("ContratosParametrosController", ['$scope',
                     subscriptionHandle.stop();
                 }
 
-                subscriptionHandle =
-                    Meteor.subscribe('contratosParametros', () => {
-                        $scope.contratosParametros = {};
-                        $scope.contratosParametros = ContratosParametros.findOne();
+                subscriptionHandle = Meteor.subscribe('contratosParametros', () => {
+                    $scope.contratosParametros = {};
+                    $scope.contratosParametros = ContratosParametros.findOne();
 
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({
-                            type: 'info',
-                            msg: result
-                        });
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'info',
+                        msg: result
+                    });
 
-                        $scope.showProgress = false;
-                        $scope.$apply();
-                    })
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                })
             })
         }
 

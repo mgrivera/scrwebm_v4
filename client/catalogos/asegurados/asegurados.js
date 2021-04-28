@@ -107,7 +107,9 @@ angular.module("scrwebm").controller("AseguradosController", ['$scope', function
     // subscriptions ...
     $scope.showProgress = true;
 
-    Meteor.subscribe('asegurados', () => {
+    let subscriptionHandle = null;
+
+    subscriptionHandle = Meteor.subscribe('asegurados', () => {
 
         $scope.helpers({
             asegurados: () => {
@@ -223,4 +225,8 @@ angular.module("scrwebm").controller("AseguradosController", ['$scope', function
 
         $scope.$apply();
     })}
+
+    $scope.$on('$destroy', function () {
+        subscriptionHandle.stop();
+    })
 }])
