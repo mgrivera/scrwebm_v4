@@ -735,15 +735,15 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
 
         // ----------------------------------------------------------------
         // administración (funciones para el administrador)
-        // ---------------------------------------------------------------- /consultas/pendientesCobroVencimientos/filtro
+        // ---------------------------------------------------------------- 
         .state('usuarioRoles', {
             url: '/administracion/usuariosYRoles',
-            templateUrl: 'client/html/administracion/usuariosRoles/usuariosRoles.html',
+            templateUrl: 'client/imports/administracion/usuariosRoles/usuariosRoles.html',
             controller: 'UsuariosRolesController'
         })
         .state('usuarios', {
             url: '/administracion/usuarios',
-            templateUrl: 'client/html/administracion/usuarios/usuarios.html',
+            templateUrl: 'client/imports/administracion/usuarios/usuarios.html',
             controller: 'UsuariosDatosPersonalesController'
         })
         .state('usuariosEmpresas', {

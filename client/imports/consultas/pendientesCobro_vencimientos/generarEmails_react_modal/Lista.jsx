@@ -26,7 +26,7 @@ const columns = [
     { key: 'persona_titulo', name: 'Título', resizable: true, width: 60, sortable: true, sortDescendingFirst: false },
     { key: 'persona_nombre', name: 'Nombre', resizable: true, width: 100, sortable: true, sortDescendingFirst: false },
     { key: 'persona_departamento', name: 'Departamento', resizable: true, width: 100, sortable: true, sortDescendingFirst: false },
-    { key: 'persona_email', name: 'Email', resizable: true, width: 160, sortable: true, sortDescendingFirst: false },
+    { key: 'persona_email', name: 'Email', resizable: true, width: 200, sortable: true, sortDescendingFirst: false },
 ];
 
 const Lista = ({ items, selectedItems, setSelectedItems }) => {
@@ -72,6 +72,10 @@ const Lista = ({ items, selectedItems, setSelectedItems }) => {
 
     return (
         <div className="div-react-data-grid">
+            <p style={{ marginTop: '15px' }}>
+                Seleccione en la lista las cuotas para la cuales quiere enviar Emails. <br /> 
+                <b>Nota:</b> puede hacer un click en el <em>checkbox</em> arriba en el encabezado, para seleccionar <em>todas</em> las cuotas.
+            </p>
             <ReactDataGrid
                 columns={columns}
                 rowGetter={i => gridItems[i]}

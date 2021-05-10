@@ -1,11 +1,10 @@
 
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 
 import React, { useState, useEffect } from 'react'; 
 import PropTypes from 'prop-types';
 
-import { useTracker } from "meteor/react-meteor-data";
+// import { useTracker } from "meteor/react-meteor-data";
 
 import { Modal, Button } from 'react-bootstrap';
 import { Tabs, Tab } from 'react-bootstrap';
@@ -16,9 +15,13 @@ import Spinner from '/client/imports/genericReactComponents/Spinner';
 import Lista from './Lista';
 import ListaPlantillas from './ListaPlantillas';
 import Configuracion from './Configuracion'; 
+import Notas from './Notas'; 
 
 import { Consulta_MontosPendientesCobro_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesCobro_Vencimientos';
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada';
 import { Filtros } from '/imports/collections/otros/filtros';
+
 import { MessageModal } from '/client/imports/genericReactComponents/MessageModal';
 
 const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
@@ -40,8 +43,12 @@ const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
     const [messageModalTitle, setMessageModalTitle] = useState("");
     const [messageModalMessage, setMessageModalMessage] = useState({ type: '', message: '', show: false });
 
-    // para guardar el filtro; usamos el filtro para guardar la configuración del proceso; como hacemos normalmente 
-    const [filtro, setFiltro] = useState({}); 
+    const [companiaSeleccionada, setCompaniaSeleccionada] = useState({});
+    const [user, setUser] = useState({});
+
+    // datos del usuario, compañía seleccionada, emails, etc.; sirven para firmar el Email, etc. 
+    // Importante: se guardan en Filtros, como si fueran uno ... 
+    const [datosConfiguracion, setDatosConfiguracion] = useState({}); 
 
     const handleModalClose = () => { 
         setShowModal(false); 
@@ -50,25 +57,62 @@ const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
         toogleAbrirGenerarEmailsModal(); 
     }
 
-    // leemos los datos de configuración del proceso, que guardamos como si fuera un filtro 
-  
+    // el el siguiente useEffect() preparamos los datos de configuración: nombre de la compañía seleccionada, datos del user, 
+    // email, etc. 
+    // Nótese que estos datos luego se guardan como un filtro. Si el usuario modifica algo, lo puede ver la próxima vez. 
+    // La excepción es el nombre de la compañía seleccionada, que no se puede cambiar 
     useEffect(() => { 
-        const filtro = Filtros.findOne({ nombre: 'consultas_MontosPendientesDeCobro_Emails', userId: Meteor.userId() });
-        setFiltro(filtro); 
-    }, [])
-    
-    const [isLoading] = useTracker(() => {
-        // para que el user tenga el field 'personales' en el client ... 
-        const subscription = Meteor.subscribe('userData');
-        return [!subscription.ready()];
-    })
+        setShowSpinner(true); 
+        // Primero leemos la empresa usuaria seleccionada 
+        const empresaSeleccionadaUsuario = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+        let empresaSeleccionada = null;
 
-    const [ userPersonalData ] = useTracker(() => {
-        // leemos algunos datos que se registran para el user. 
-        // en el collection user podemos registrar: personales: { titulo, nombre, cargo } 
-        const userPersonalData = Meteor.user({ fields: { 'personales': 1 } });
-        return [(userPersonalData.personales ? userPersonalData.personales : {})];
-    })
+        if (empresaSeleccionadaUsuario) {
+            empresaSeleccionada = EmpresasUsuarias.findOne(empresaSeleccionadaUsuario.companiaID);
+            setCompaniaSeleccionada(empresaSeleccionada);
+        }
+
+        // leemos los datos de configuración del proceso, que guardamos como si fuera un filtro 
+        const filtro = Filtros.findOne({ nombre: 'consultas_MontosPendientesDeCobro_Emails', userId: Meteor.userId() });
+        
+        // Segundo, leemos el usuario y sus datos personales; nótese que debemos esperar por un subscription 
+        Meteor.subscribe('userData', () => { 
+
+            const user = Meteor.user({ fields: { emails: 1, personales: 1 } });
+            setUser(user); 
+
+            // preparamos los datos de configuración 
+
+            // si existe un filtro anterior, lo usamos; nótese que siempre usamos la compañia seleccionada, pues puede cambiar 
+            if (filtro) {
+                filtro.filtro.nombreCompania = empresaSeleccionada.nombre; 
+                setDatosConfiguracion(filtro.filtro);
+            } else { 
+                const configuracion = {
+                    nombreCompania: empresaSeleccionada.nombre,
+                    enviarSoloEmailsCC: false,
+                    emailSubject: `Montos pendientes de pago a ${empresaSeleccionada.nombre}`, 
+
+                    usuario: {
+                        titulo: user?.personales?.titulo,
+                        nombre: user?.personales?.nombre,
+                        cargo: user?.personales?.cargo
+                    },
+                    copiar_1: {
+                        copiar: true,
+                        email: user?.emails[0]?.address
+                    },
+                    copiar_2: {
+                        copiar: false,
+                        email: ''
+                    }
+                };
+                setDatosConfiguracion(configuracion);
+            }
+            
+            setShowSpinner(false); 
+        })
+    }, [])
 
     // leemos las plantillas que se han registrado para este proceso en el DropBox de la empresa 
     useEffect(() => {
@@ -239,7 +283,6 @@ const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
 
         // siempre debemos asegurarnos que el usuario seleccione *solo* rows con emails asociados 
         // en selectedItems están los rows de registros seleccionados; en items están los rows 
-
         const selectedRows = []; 
         selectedItems.forEach(x => selectedRows.push(items[x])); 
         
@@ -266,7 +309,8 @@ const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
         const plantillaHtml = plantillas[selectedPlantillas[0]]; 
 
         const dropBoxFilePath = "/html/emails/cobranzaMontosPendientes"; 
-        Meteor.call("consultas.montosPendientesCobroVencimientos.generarEmailsCobranza", dropBoxFilePath, plantillaHtml, selectedRows, (error, result) => {
+        Meteor.call("consultas.montosPendientesCobroVencimientos.generarEmailsCobranza", 
+            dropBoxFilePath, plantillaHtml, selectedRows, datosConfiguracion, (error, result) => {
 
             if (error) {
                 setMessageModalMessage({
@@ -291,27 +335,6 @@ const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
 
                 return;
             }
-
-            // ------------------------------------------------------------------------------------------------------
-            // guardamos el filtro indicado por el usuario
-            const filtroActual = filtro;
-
-            if (Filtros.findOne({ nombre: 'consultas_MontosPendientesDeCobro_Emails', userId: Meteor.userId() })) {
-                // el filtro existía antes; lo actualizamos
-                // validate false: como el filtro puede ser vacío (ie: {}), simple schema no permitiría eso; por eso saltamos la validación
-                Filtros.update(Filtros.findOne({ nombre: 'consultas_MontosPendientesDeCobro_Emails', userId: Meteor.userId() })._id,
-                    { $set: { filtro: filtroActual } },
-                    { validate: false });
-            }
-            else {
-                Filtros.insert({
-                    _id: new Mongo.ObjectID()._str,
-                    userId: Meteor.userId(),
-                    nombre: 'consultas_MontosPendientesDeCobro_Emails',
-                    filtro: filtroActual
-                });
-            }
-            // ------------------------------------------------------------------------------------------------------
 
             setMessageModalMessage({
                 type: 'info',
@@ -349,7 +372,7 @@ const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
                 </Modal.Header>
 
                 <Modal.Body>
-                    {(showSpinner || isLoading) && <Spinner />}
+                    {(showSpinner) && <Spinner />}
                     {message.show && <Message message={message} setMessage={setMessage} />}
 
                     {/* desde el modal mostramos, a su vez, un (sub) modal, para mostrar un spinner o un mensaje cuando 
@@ -366,16 +389,23 @@ const ConsultaPendientesCobroEmails = ({ toogleAbrirGenerarEmailsModal }) => {
                     }
 
                     <Tabs activeKey={currentTab} onSelect={(key) => handleTabSelect(key)} id="controlled-tab-example">
-                        <Tab eventKey={1} title="Lista">
+                        <Tab eventKey={1} title="1) Lista">
                             {currentTab === 1 && <Lista items={items} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />}
                         </Tab>
 
-                        <Tab eventKey={2} title="Plantillas">
+                        <Tab eventKey={2} title="2) Plantillas">
                             {currentTab === 2 && <ListaPlantillas plantillas={plantillas} setSelectedPlantillas={setSelectedPlantillas} />}
                         </Tab>
 
-                        <Tab eventKey={3} title="Configuración">
-                            {currentTab === 3 && <Configuracion userPersonalData={userPersonalData} filtro={filtro} setFiltro={setFiltro} />}
+                        <Tab eventKey={3} title="3) Configuración">
+                            {currentTab === 3 && <Configuracion datosConfiguracion={datosConfiguracion} 
+                                                                setDatosConfiguracion={setDatosConfiguracion} 
+                                                                companiaSeleccionada={companiaSeleccionada}
+                                                                user={user} />}
+                        </Tab>
+
+                        <Tab eventKey={4} title="Notas">
+                            {currentTab === 4 && <Notas />}
                         </Tab>
                     </Tabs>
                 </Modal.Body>

@@ -69,8 +69,9 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
     const companiaSeleccionadaUsuario = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionada = null;
 
-    if (companiaSeleccionadaUsuario)
+    if (companiaSeleccionadaUsuario) { 
         companiaSeleccionada = EmpresasUsuarias.findOne(companiaSeleccionadaUsuario.companiaID);
+    }
     // ------------------------------------------------------------------------------------------------
 
     $scope.submitted = false;

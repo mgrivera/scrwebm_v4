@@ -2,6 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check'; 
 import { Match } from 'meteor/check'; 
+import { Email } from 'meteor/email';
 
 import lodash from 'lodash'; 
 import moment from 'moment';
@@ -23,10 +24,19 @@ import { myMkdirSync } from '/server/imports/general/generalFunctions';
 
 Meteor.methods(
     {
-        'consultas.montosPendientesCobroVencimientos.generarEmailsCobranza': async function (dropBoxFilePath, plantilla, cuotas) {
+        'consultas.montosPendientesCobroVencimientos.generarEmailsCobranza': async function (dropBoxFilePath, plantilla, cuotas, datosConfiguracion) {
 
             check(plantilla, Object);
             check(cuotas, [Match.Any]);
+
+            // simplificamos un poco el objeto que trae los datos de configuración (user, nombre empresa, etc.) 
+            const user = {
+                nombreCompania: datosConfiguracion.nombreCompania,
+
+                usuario_titulo: datosConfiguracion?.usuario?.titulo,
+                usuario_nombre: datosConfiguracion?.usuario?.nombre,
+                usuario_cargo: datosConfiguracion?.usuario?.cargo
+            };
 
             const fileContent = await readTextFileFromDropBox(dropBoxFilePath, plantilla.name);
 
@@ -40,6 +50,9 @@ Meteor.methods(
             const cuotasGroupByEmail = lodash.groupBy(cuotas, 'persona.email'); 
 
             let count = 0; 
+
+            // tenemos que inicializar esta variable para que sea usada por el Email package 
+            process.env.MAIL_URL = Meteor.settings.mail_url;
 
             // agrupamos las cuotas por email; la idea es construir *un solo* email para todas las cuotas que tengan la misma dirección de corro 
             for (const [key, value] of Object.entries(cuotasGroupByEmail)) { 
@@ -78,25 +91,48 @@ Meteor.methods(
                     }))
 
                 const email = { 
+                    user, 
                     persona, 
                     items
                 }
 
+                // usamos mustache para reemplazar los campos en el texto con los valores en el object 
                 const output = Mustache.render(fileContent.toString(), email);
 
-                console.log('')
-                console.log(`Ok, estos son los datos para el correo: ${key}`)
-                console.log(JSON.stringify(persona))
+                // Let other method calls from the same client start running, without waiting for the email sending to complete.
+                this.unblock();
 
-                items.forEach(x => (
-                    console.log(JSON.stringify(x))
-                ))
+                // finalmente, enviamos el Email 
+                const to = []; 
+                const from = datosConfiguracion.copiar_1.email; 
+                const cc = []; 
+                const subject = datosConfiguracion.emailSubject; 
 
-                count++;
-                await saveFileToDisk(finalPath, `email # ${count}.html`, output);
+                if (datosConfiguracion.copiar_1?.copiar && datosConfiguracion.copiar_1?.email) {
+                    cc.push(datosConfiguracion.copiar_1.email)
+                }
 
-                console.log('')
-                // TODO: Ok, la idea ahora es que usemos aquí mustache para obtener el texto (html) de cada correo 
+                if (datosConfiguracion.copiar_2?.copiar && datosConfiguracion.copiar_2?.email) {
+                    cc.push(datosConfiguracion.copiar_2.email)
+                }
+
+                if (!datosConfiguracion.enviarSoloEmailsCC) {
+                    // el usuario puede indicar que solo se envien copias del Email 
+                    // en key está la dirección de correo de la persona en la compañia ... 
+                    // recuérdese que arriba se agruparon las cuotas, justamente, por dirección de correo, para enviar un solo correo a 
+                    // cada grupo de cuotas que compartan un correo 
+                    to.push(key);
+                }
+
+                try {
+                    Email.send({ to, from, cc, subject, html: output });
+                    count++;
+                } catch (error) {
+                    return {
+                        error: true,
+                        message: error.message
+                    }
+                }
             }
 
             if (result.error) { 
@@ -107,7 +143,7 @@ Meteor.methods(
             }
 
             const message = `Ok, Ud. seleccionó <b>${cuotas.length}</b> elementos en la lista. <br />
-                             Esta función ha construido y enviado Emails para notificar el estado de estos montos 
+                             Esta función ha construido y enviado <b>${count}</b> Emails para notificar el estado de estos montos
                              pendientes a las compañías que corresponden.`;
 
             return {
@@ -170,7 +206,7 @@ Meteor.methods(
                 }
 
                 // si había un array de personas en la entidad, intentamos encontrar la persona especifica allí 
-                // nótese que buscamos por 3Id 
+                // nótese que buscamos por Id 
                 let entidadPersona = {}; 
 
                 if (entidadPersonas.length) { 
@@ -182,7 +218,7 @@ Meteor.methods(
 
                 // la idea de hacerlo así, es que el usuario puede haber registrado *vairas* personas para una misma 
                 // compañía 
-                const compania = Companias.findOne(row.compania, { fields: { personas: 1 }}); 
+                const compania = Companias.findOne(row.compania, { fields: { nombre: 1, personas: 1 }}); 
 
                 // 1) la compañía debe tener un array de personas 
                 if (!compania || !compania.personas || !Array.isArray(compania.personas) || !compania.personas.length) {
@@ -199,6 +235,7 @@ Meteor.methods(
                     if (compania.personas.some(x => x._id === entidadPersona.persona)) {
 
                         const p = compania.personas.find(x => x._id === entidadPersona.persona);
+                        p.nombreCompania = compania.nombre;
                         row.persona = p;
                         finalRows.push(row);
 
@@ -210,6 +247,7 @@ Meteor.methods(
                 // 6) no había una persona en la entidad o no la encontramos en el array de personas en la compania 
                 // regresamos la primera persona en el compañía; nota: aquí sabemos que la compañía tiene personas registradas 
                 const p = compania.personas[0];
+                p.nombreCompania = compania.nombre; 
                 row.persona = p;
 
                 finalRows.push(row);

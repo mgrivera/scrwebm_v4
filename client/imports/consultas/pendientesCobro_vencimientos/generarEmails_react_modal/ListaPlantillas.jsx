@@ -51,6 +51,9 @@ const ListaPlantillas = ({ plantillas, setSelectedPlantillas }) => {
 
     return (
         <div className="div-react-data-grid">
+            <p style={{ marginTop: '15px' }}>
+                Seleccione la plantilla que desea usar para construir los Emails.
+            </p>
             <ReactDataGrid
                 columns={columns}
                 rowGetter={i => plantillas[i]}
