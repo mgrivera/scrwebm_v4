@@ -46,11 +46,8 @@ function transformDoc(doc) {
   doc = { 
     ...doc, 
     
-    tipoCumulo: tipoCumulo && tipoCumulo.descripcion ? tipoCumulo.descripcion : 'Indefinido', 
-    zona: zona && zona.descripcion ? zona.descripcion : 'Indefinido', 
-
-    ingreso: doc.ingreso, 
-    ultAct: doc.ultAct
+    tipoCumulo: tipoCumulo?.descripcion ? tipoCumulo.descripcion : 'Indefinido', 
+    zona: zona?.descripcion ? zona.descripcion : 'Indefinido', 
   }
 
   return doc

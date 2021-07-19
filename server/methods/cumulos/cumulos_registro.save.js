@@ -10,13 +10,18 @@ Meteor.methods(
         Cumulos_Registro.insert(item, function (error) {
             if (error) { 
                 if (error.invalidKeys) { 
-                    throw new Meteor.Error('error-base-datos',
-                                           `Error inesperado al intentar ejecutar la operación de base de datos: 
-                                           ${error.invalidKeys.toString()}.`);
+                    const message = error.invalidKeys.toString(); 
+                    return {
+                        error: false,
+                        message
+                    }
+                    
                 } else { 
-                    throw new Meteor.Error('error-base-datos',
-                                           `Error inesperado al intentar ejecutar la operación de base de datos: 
-                                           ${error.message}.`);
+                    const message = error.message; 
+                    return {
+                        error: false,
+                        message
+                    }
                 }     
             }
         })

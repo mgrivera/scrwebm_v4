@@ -60,16 +60,18 @@ const TableRow = ({ item, handleItemDetalles, modo, setShowConfirmDeleteModal, s
     return (
         <tr>
             <td>{item.origen}</td>
+            <td>{`${item.numero.toString()} - ${item.subNumero.toString()}`}</td>
             <td>{item.tipoCumulo}</td>
             <td>{item.zona}</td>
             <td>{item.desde ? item.desde.toLocaleDateString() : 'Indef'}</td>
             <td>{item.hasta ? item.hasta.toLocaleDateString() : 'Indef'}</td>
             <td>{numeral(item.valorARiesgo).format("0,0.0")}</td>
             <td>{numeral(item.sumaAsegurada).format("0,0.0")}</td>
-            <td>{numeral(item.montoAceptado).format("0,0.0")}</td>
-            <td>{numeral(item.cesionCuotaParte).format("0,0.0")}</td>
-            <td>{numeral(item.cesionExcedente).format("0,0.0")}</td>
-            <td>{numeral(item.cesionFacultativo).format("0,0.0")}</td>
+            <td>{numeral(item.nuestraOrdenMonto_cp).format("0,0.0")}</td>
+            <td>{numeral(item.nuestraOrdenMonto_ex).format("0,0.0")}</td>
+            <td>{numeral(item.nuestraOrdenMonto_noProp).format("0,0.0")}</td>
+            <td>{numeral(item.nuestraOrdenMonto_fac).format("0,0.0")}</td>
+            <td>{numeral(item.monto_ret).format("0,0.0")}</td>
             <td>{numeral(item.cumulo).format("0,0.0")}</td>
             
             <td>
@@ -167,21 +169,34 @@ const Lista = ({ items, handleItemDetalles, modo }) => {
                                 handleRemoveItem={handleRemoveItem} />
             }
 
-            <div style={{ width: 'auto', height: '350px', overflowX: 'auto' }}>
+            <div style={{ width: 'auto', height: '250px', overflowX: 'auto' }}>
                 <Table striped bordered condensed hover>
                     <thead>
                         <tr>
+                            <th colSpan="8"></th>
+                            <th colSpan="4">Nuestra parte</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            {modo != "consulta" && <th></th>}
+                        </tr>
+
+                        <tr>
                             <th>Origen</th>
+                            <th>Número</th>
                             <th>Tipo cúmulo</th>
                             <th>Zona</th>
                             <th>Desde</th>
                             <th>Hasta</th>
+
                             <th>Valor a riesgo</th>
                             <th>Suma aseg</th>
-                            <th>Aceptado</th>
-                            <th>Cesión CP</th>
-                            <th>Cesión exc</th>
-                            <th>Cesión fac</th>
+
+                            <th>Monto CP</th>
+                            <th>Monto Exed</th>
+                            <th>Monto No prop</th>
+                            <th>Monto Fac</th>
+                            <th>Monto Retro</th>
                             <th>Cúmulo</th>
                             <th></th>
                             { modo != "consulta" && <th></th> }

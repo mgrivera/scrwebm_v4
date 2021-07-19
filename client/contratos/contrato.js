@@ -2262,7 +2262,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         }
 
         // RegistroCumulos, que es un angular component, que monta, a su vez, un react component del mismo nombre 
-        $state.go('cumulos.registro', { modo: $scope.origen, 
+        $state.go('cumulos.registro', { modo: $scope.origen,                    // edicion / consulta 
                                         origen: tipoContrato,
                                         entityId: contrato._id,
                                         subEntityId: '',

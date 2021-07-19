@@ -26,7 +26,7 @@ const MessageModal = ({ messageModalTitle,
     }
 
     return (
-        <Modal show={showMessageModal} onHide={handleClose}>
+        <Modal show={showMessageModal} onHide={handleClose} backdrop = "static">
 
             <Modal.Header closeButton style={{ background: '#88A0B9' }}>
                 <Modal.Title>

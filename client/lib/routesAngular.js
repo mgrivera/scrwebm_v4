@@ -652,6 +652,12 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             template: '<div class="row" ui-view></div>', 
         })
 
+        // nótese cómo funciona este (angular) state: 
+        // 1) el state tiene un nombre: 'cumulos.registro' 
+        // 2) el state tiene un url; con el url, el state recibe parámetros 
+        // 3) los parámetros son pasados al controller ($stateParams); el controller está codificado allí mismo 
+        // 4) se intenta montar el component, pero angular, y se pasan los parámetros como props 
+        // 5) finalmente, con react2angular, se monta el react component, el cual recibe todos estos props pues se definen en PropTypes 
         .state('cumulos.registro', {
             url: '/registro?modo&origen&entityId&subEntityId&url',
             controller: ['$stateParams', function ($stateParams) {

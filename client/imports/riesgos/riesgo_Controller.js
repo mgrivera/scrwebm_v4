@@ -693,12 +693,22 @@ function ($scope, $state, $stateParams, $modal, $location) {
 
     $scope.registroCumulos = function() {
 
-        if (!$scope.movimientoSeleccionado || lodash.isEmpty($scope.movimientoSeleccionado)) {
+        if ($scope?.riesgo?.docState) {
             DialogModal($modal, "<em>Riesgos - Cúmulos - Registro</em>",
-                                "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
-                                "Debe seleccionar un movimiento antes de intentar abrir el registro de cúmulos.",
-                                false).then();
+                `Aparentemente, el riesgo ha recibido modificaciones que no han sido grabadas. <br />
+                 Ud. debe hacer un <em>click</em> en <em>Grabar</em> para guardar las modificaciones efectuadas,
+                 antes de intentar ejecutar esta función. 
+                `,
+                false).then();
+            return;
+        }
 
+        if (!$scope.riesgo || !$scope.riesgo.movimientos || !Array.isArray($scope.riesgo.movimientos) || !$scope.riesgo.movimientos.length) {
+            DialogModal($modal, "<em>Riesgos - Cúmulos - Registro</em>",
+                `Aparentemente, el riesgo no tiene movimientos registrados. <br />
+                 El riesgo debe tener movimientos registrados para que la opción al registro de cúmulos esté disponible. 
+                `,
+                false).then();
             return;
         }
 
@@ -707,12 +717,12 @@ function ($scope, $state, $stateParams, $modal, $location) {
         const riesgo = $scope.riesgo; 
         const movimiento = $scope.movimientoSeleccionado; 
  
-        // TODO: aquí debemos ir al state: 'cumulos.registro'; desde este state se monta el angular component
+        // aquí debemos ir al state: 'cumulos.registro'; desde este state se monta el angular component
         // RegistroCumulos, que es un angular component, que monta, a su vez, un react component del mismo nombre 
-        $state.go('cumulos.registro', { modo: $scope.origen, 
+        $state.go('cumulos.registro', { modo: $scope.origen,                // edicion / consulta 
                                         origen: 'fac', 
                                         entityId: riesgo._id, 
-                                        subEntityId: movimiento._id, 
+                                        subEntityId: movimiento?._id, 
                                         url: $location.url() });
     }
 

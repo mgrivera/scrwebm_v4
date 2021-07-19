@@ -19,11 +19,23 @@ import Detalles from './Detalles';
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
 import { Cumulos } from '/imports/collections/catalogos/cumulos'; 
+import { Companias } from '/imports/collections/catalogos/companias';
+import { Monedas } from '/imports/collections/catalogos/monedas';
+import { Ramos } from '/imports/collections/catalogos/ramos';
+import { Asegurados } from '/imports/collections/catalogos/asegurados';
+
+import { MessageModal } from '/client/imports/genericReactComponents/MessageModal';
 
 // en este (client only) collection, recibimos el collection desde el publish más abajo ... 
 const CumulosRegistroQuery = new Mongo.Collection('cumulosRegistroQuery');
 
 const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => { 
+
+    // state para el MessageModal; este es un pequeño modal que muestra un spinner cuando un proceso largo se ejecuta; también un mensaje 
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [messageModalShowSpinner, setMessageModalShowSpinner] = useState(false);
+    const [messageModalTitle, setMessageModalTitle] = useState("");
+    const [messageModalMessage, setMessageModalMessage] = useState({ type: '', message: '', show: false });
 
     const [companiaSeleccionada, setCompaniaSeleccionada] = useState({}); 
     const [currentTab, setCurrentTab] = useState(1); 
@@ -32,9 +44,9 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
     const [itemDetallesId, setItemDetallesId] = useState(null); 
 
     const defaultValues = { 
-        origen: origen,
-        entityId: entityId,
-        subEntityId: subEntityId,
+        origen,
+        entityId,
+        subEntityId
     }
 
     // para leer los tipos de cúmulo y las zonas definidas para éstos 
@@ -44,10 +56,16 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
         return !handle.ready();
     }, []);
 
-    const cumulos = useTracker(() => Cumulos.find().fetch(), []);
+    const cumulos = useTracker(() => Cumulos.find({}, { sort: { descripcion: 1 }}).fetch(), []);
+    const monedas = useTracker(() => Monedas.find({}, { sort: { descripcion: 1 } }).fetch(), []);
+    const companias = useTracker(() => Companias.find({}, { sort: { nombre: 1 } }).fetch(), []);
+    const ramos = useTracker(() => Ramos.find({}, { sort: { descripcion: 1 } }).fetch(), []);
+    const asegurados = useTracker(() => Asegurados.find({}, { sort: { nombre: 1 } }).fetch(), []);
+    const empresasUsuarias = useTracker(() => EmpresasUsuarias.find({}, { sort: { nombreCorto: 1 } }).fetch(), []);
 
     const cumulosQueryLoading = useTracker(() => { 
         // Note that this subscription will get cleaned up when your component is unmounted or deps change.
+        // para leer los registros de cúmulo que se hayan agregado para el entityId 
         const handle = Meteor.subscribe('cumulosRegistro.query', entityId);
         return !handle.ready();
     }, [ entityId ]); 
@@ -80,6 +98,36 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
         setCurrentTab(3); 
     }
 
+    const irANuevo = () => {
+        // origen, entityId, subEntityId
+        if (origen === "fac" && !(entityId && subEntityId)) { 
+            setShowMessageModal(true);
+            setMessageModalShowSpinner(false);
+            setMessageModalTitle("Registro de cúmulos - No se ha seleccionado un movimiento en el riesgo");
+
+            const message = `Ud. abrió esta función desde el registro de riesgos. <br /> 
+                             Para agregar un nuevo registro de cúmulos para el riesgo, Ud. <b>debe</b> seleccionar 
+                             antes un movimiento en el riesgo. <br /><br />
+                             Este proceso, entonces, le permitirá agregar un nuevo registro de cúmulos y <em>lo asociará</em> 
+                             al riesgo y al movimiento. <br /><br />
+                             Por favor regrese al registro de riesgos, seleccione un movimiento y luego regrese e intente 
+                             agregar un registro de cúmulos para el mismo. 
+                            `
+            setMessageModalMessage({
+                type: 'danger',
+                message,
+                show: true
+            });
+
+            return; 
+        }
+
+        handleTabSelect(2); 
+    }
+
+    // desabilitamos el tab Nuevo cuando el usuario viene de fac y no ha seleccionado un movimiento 
+    const disableTabNuevo = (origen === "fac" && !(entityId && subEntityId)) ? true : false;
+
     return (
         LoadingData ? (
             <Spinner />
@@ -90,6 +138,20 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
                 <div style={{ textAlign: 'right', fontStyle: 'italic' }}>
                     <span style={{ color: 'dodgerblue' }}>{companiaSeleccionada.nombre}</span>
                 </div >
+
+                {   /* para mostrar un modal que muestra un spinner y luego un mensaje al final 
+                    super apropiado para que el usuario espere por un proceso en el server y luego pueda ver un 
+                    mensaje con el resultado */}
+                    {showMessageModal &&
+                        <MessageModal messageModalTitle={messageModalTitle}
+                            showMessageModal={showMessageModal}
+                            setShowMessageModal={setShowMessageModal}
+                            messageModalShowSpinner={messageModalShowSpinner}
+                            messageModalMessage={messageModalMessage}
+                            setMessageModalMessage={setMessageModalMessage}
+                        >
+                        </MessageModal>
+                }
 
                 <ToolBar url={url} />
 
@@ -102,8 +164,8 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
                                     <Lista modo={modo} items={cumulosRegistroQuery} handleItemDetalles={handleItemDetalles} />
 
                                     { modo != "consulta" && 
-                                        <div style={{ textAlign: 'right' }}>
-                                            <Button bsStyle="primary" bsSize="small" onClick={() => handleTabSelect(2)}>Nuevo</Button>
+                                        <div style={{ textAlign: 'right', marginTop: '20px' }}>
+                                            <Button bsStyle="primary" bsSize="small" onClick={irANuevo}>Nuevo</Button>
                                         </div>
                                     }
                                 </div>
@@ -112,19 +174,34 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
                         </Tab>
 
                         {modo != "consulta" && 
-                        <Tab eventKey={2} title="Nuevo">
+                        <Tab eventKey={2} title="Nuevo" disabled={disableTabNuevo}>
 
                                 {(currentTab === 2) && (
                                     <Nuevo defaults={defaultValues} 
-                                            cumulos={cumulos} 
+                                            cumulos={cumulos}
+                                            monedas={monedas}
+                                            companias={companias}
+                                            ramos={ramos}
+                                            asegurados={asegurados}
                                             ciaSeleccionadaId={companiaSeleccionada._id} 
+                                            empresasUsuarias={empresasUsuarias}
                                             setCurrentTab={setCurrentTab} />
                                 )}
                         </Tab>}
 
                         <Tab eventKey={3} title="Detalles">
                             {(currentTab === 3) && ( 
-                                <Detalles modo={modo} itemId={itemDetallesId} cumulos={cumulos} setCurrentTab={setCurrentTab} /> 
+                                <Detalles modo={modo} 
+                                          itemId={itemDetallesId} 
+                                          cumulos={cumulos} 
+                                          setCurrentTab={setCurrentTab} 
+                                          monedas={monedas}
+                                          companias={companias}
+                                          ramos={ramos}
+                                          asegurados={asegurados}
+                                          ciaSeleccionadaId={companiaSeleccionada._id}
+                                          empresasUsuarias={empresasUsuarias}
+                                          /> 
                             )}
                         </Tab>
                     </Tabs>
