@@ -1,20 +1,17 @@
 
+import { Mongo } from 'meteor/mongo';
 
-import * as moment from 'moment';
-import * as lodash from 'lodash';
-import * as angular from 'angular';
-
-import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo'; 
+import moment from 'moment';
+import lodash from 'lodash';
+import angular from 'angular';
 
 import { Monedas } from 'imports/collections/catalogos/monedas'; 
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q', '$interval', 
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q, $interval) {
+angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller", ['$scope', '$modal', 'uiGridConstants', '$q', '$interval', 
+function ($scope, $modal, uiGridConstants, $q, $interval) {
 
     $scope.showProgress = false;
 
@@ -24,7 +21,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
     // --------------------------------------------------------------------------------------
     // ui-grid de Cuentas
     // --------------------------------------------------------------------------------------
-    let definicionCuentaTecnicaSeleccionada = {} as any;
+    let definicionCuentaTecnicaSeleccionada = {};
     $scope.definicionCuentaTecnicaSeleccionada_Info = {};       // para mostrar la cuenta seleccionada en las páginas (html)
 
     $scope.cuentasTecnicas_definiciones_ui_grid = {
@@ -205,9 +202,9 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
             $scope.contrato.cuentasTecnicas_definicion = [];
         }
 
-        let monedaDefault = Monedas.findOne({ defecto: true }); 
+        const monedaDefault = Monedas.findOne({ defecto: true });
             
-        var cuentaMayorNumero = lodash.maxBy($scope.contrato.cuentasTecnicas_definicion, (cuenta: any) => { return cuenta.numero; });
+        var cuentaMayorNumero = lodash.maxBy($scope.contrato.cuentasTecnicas_definicion, (cuenta) => { return cuenta.numero; });
         var cuenta = {
             _id: new Mongo.ObjectID()._str, 
             numero: 0, 
@@ -239,7 +236,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
     $scope.eliminarCuenta = function () {
 
         if (definicionCuentaTecnicaSeleccionada && !lodash.isEmpty(definicionCuentaTecnicaSeleccionada)) {
-            lodash.remove($scope.contrato.cuentasTecnicas_definicion, (c: any) => { return c._id === definicionCuentaTecnicaSeleccionada._id; });
+            lodash.remove($scope.contrato.cuentasTecnicas_definicion, (c) => { return c._id === definicionCuentaTecnicaSeleccionada._id; });
             $scope.cuentasTecnicas_definiciones_ui_grid.data = $scope.contrato.cuentasTecnicas_definicion;
 
             if (!$scope.$parent.$parent.contrato.docState) { 
@@ -279,7 +276,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
             return;
         }
 
-        let definicionID = definicionCuentaTecnicaSeleccionada._id; 
+        const definicionID = definicionCuentaTecnicaSeleccionada._id;
 
         // si no hay saldos de cuentas técnicas ni de complementarios (ent cart de primas, etc.), notificamos al usuario 
         let existenSaldos = {}; 
@@ -303,7 +300,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
         }
 
         // TODO: determinar si las cuotas ya existen. De ser así, informar y pedir confirmación ...
-        let existenCuotasParaLaDefinicionSeleccionada = $scope.cuotas.find(c => c.source.subEntityID === definicionID); 
+        const existenCuotasParaLaDefinicionSeleccionada = $scope.cuotas.find(c => c.source.subEntityID === definicionID);
 
         if (existenCuotasParaLaDefinicionSeleccionada) {
             DialogModal($modal,
@@ -331,18 +328,18 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
     function generarCuotasCuentaTecnica2() {
 
         // pasamos al modal todos los arrays que contienen las: 1) cuentas; 2) complementarios (6) 
-        let definicionID = definicionCuentaTecnicaSeleccionada._id; 
+        const definicionID = definicionCuentaTecnicaSeleccionada._id; 
 
-        let cuentas_saldos = $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionID); 
-        let comAdic_montosFinales = $scope.contratosProp_comAdic_montosFinales.filter(x => x.definicionID === definicionID);
-        let entCartPr_montosFinales = $scope.contratosProp_entCartPr_montosFinales.filter(x => x.definicionID === definicionID);
-        let entCartSn_montosFinales = $scope.contratosProp_entCartSn_montosFinales.filter(x => x.definicionID === definicionID);
-        let retCartPr_montosFinales = $scope.contratosProp_retCartPr_montosFinales.filter(x => x.definicionID === definicionID);
-        let retCartSn_montosFinales = $scope.contratosProp_retCartSn_montosFinales.filter(x => x.definicionID === definicionID);
-        let partBeneficios_montosFinales = $scope.contratosProp_partBeneficios_montosFinales.filter(x => x.definicionID === definicionID); 
+        const cuentas_saldos = $scope.contratosProp_cuentas_saldos.filter(x => x.definicionID === definicionID); 
+        const comAdic_montosFinales = $scope.contratosProp_comAdic_montosFinales.filter(x => x.definicionID === definicionID);
+        const entCartPr_montosFinales = $scope.contratosProp_entCartPr_montosFinales.filter(x => x.definicionID === definicionID);
+        const entCartSn_montosFinales = $scope.contratosProp_entCartSn_montosFinales.filter(x => x.definicionID === definicionID);
+        const retCartPr_montosFinales = $scope.contratosProp_retCartPr_montosFinales.filter(x => x.definicionID === definicionID);
+        const retCartSn_montosFinales = $scope.contratosProp_retCartSn_montosFinales.filter(x => x.definicionID === definicionID);
+        const partBeneficios_montosFinales = $scope.contratosProp_partBeneficios_montosFinales.filter(x => x.definicionID === definicionID); 
 
 
-        let modalInstance = $modal.open({
+        $modal.open({
                templateUrl: 'client/contratos/methods/generarCuotasCuentasTecnicas/cuentasGenerarCuotas.html',
                controller: 'CuentasGenerarCuotasController',
                size: 'md',
@@ -368,10 +365,10 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
                     partBeneficios_montosFinales: function() { return partBeneficios_montosFinales; }
                }
            }).result.then(
-               function (resolve) {
+               function () {
                    return true;
                },
-               function (cancel) {
+               function () {
                    // refrescamos el ui-grid para que se muestren las cuotas registradas
                    $scope.cuentasCuotas_ui_grid.data = []
 
@@ -383,7 +380,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
 
                    // solo si el usuario actualizó el array de cuotas para la definición, ponemos el flag en true 
                    if ($scope.cuotas && Array.isArray($scope.cuotas)) {
-                        let arrayCuotasDefinicion = $scope.cuotas.filter((c) => 
+                       const arrayCuotasDefinicion = $scope.cuotas.filter((c) =>
                             {  
                                 return (c.source.subEntityID === definicionCuentaTecnicaSeleccionada._id && 
                                         c.docState); 
@@ -402,7 +399,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
     // ---------------------------------------------------------------------
     // ui-grid: cuotas para la definición (de cuenta técnica) seleccionada
     // ----------------------------------------------------------------------
-    var definicionCuentaCuotaSeleccionada = {} as any;
+    var definicionCuentaCuotaSeleccionada = {};
 
     $scope.cuentasCuotas_ui_grid = {
         enableSorting: true,
@@ -422,7 +419,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                 definicionCuentaCuotaSeleccionada = {};
                 if (row.isSelected) { 
-                definicionCuentaCuotaSeleccionada = row.entity;
+                    definicionCuentaCuotaSeleccionada = row.entity;
                 }
                 else { 
                 return;
@@ -685,13 +682,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
                 <b>antes</b> de intentar ejecutar esta función.`,
                 false).then();
             return;
-        };
+        }
 
         if (!Array.isArray($scope.cuotas)) { 
             $scope.cuotas = [];
         }
             
-        var cuota = {} as any;
+        var cuota = {};
 
         cuota._id = new Mongo.ObjectID()._str;
 
@@ -732,7 +729,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller",
             return;
         }
 
-        lodash.remove($scope.cuotas, function (cuota: any) { return cuota._id === definicionCuentaCuotaSeleccionada._id; });
+        lodash.remove($scope.cuotas, function (cuota) { return cuota._id === definicionCuentaCuotaSeleccionada._id; });
 
         $scope.cuentasCuotas_ui_grid.data = lodash.filter($scope.cuotas, function (c) { return c.source.subEntityID === definicionCuentaTecnicaSeleccionada._id; });
         $scope.dataHasBeenEdited = true; 

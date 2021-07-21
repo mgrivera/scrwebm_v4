@@ -1,27 +1,19 @@
 
-
-import * as moment from 'moment';
-import * as lodash from 'lodash';
-import * as numeral from 'numeral'; 
-import * as angular from 'angular';
-
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo'; 
+import { Mongo } from 'meteor/mongo';
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import lodash from 'lodash';
+import numeral from 'numeral'; 
+import angular from 'angular';
+
 import { ContratosProp_Configuracion_Tablas } from 'imports/collections/catalogos/ContratosProp_Configuracion';
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q) {
+angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controller", ['$scope', '$modal', 'uiGridConstants', '$q',
+function ($scope, $modal, uiGridConstants, $q) {
 
     $scope.showProgress = false;
 
@@ -29,9 +21,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.companiaSeleccionada = $scope.$parent.$parent.companiaSeleccionada; 
     $scope.definicionCuentaTecnicaSeleccionada = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada; 
     $scope.definicionCuentaTecnicaSeleccionada_Info = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada_Info;
-   
-    // ui-grid para el registro del resumen de primas y siniestros para la cuenta técnica
-    let contProp_resumenPrimasSiniestros_seleccionado = {};
 
     $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid = {
         enableSorting: true,
@@ -46,18 +35,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contProp_resumenPrimasSiniestros_seleccionado = {};
-                if (row.isSelected) {
-                    contProp_resumenPrimasSiniestros_seleccionado = row.entity;
-                }
-                else { 
-                    return;
-                }  
-            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -214,13 +191,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.deleteItem_resumenPrimasSiniestros = (entity) => {
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_cuentas_resumen, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_cuentas_resumen, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_cuentas_resumen.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_cuentas_resumen.find(x => x._id === entity._id); 
+            if (item) { item.docState = 3; }
         }
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
         $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid.data = [];
         $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid.data = 
@@ -235,15 +212,14 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         // contratos proporcionales: leemos la tabla de configuración y regresamos un resumen de las combinaciones
         // mon/ramo/tipo/serie, para que el usuario indique primas y siniestros para cada una ...
 
-        let codigo = $scope.contrato.codigo;
-        let contratoID = $scope.contrato._id; 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
-        let moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
-        let ano = $scope.contrato.desde.getFullYear();
-        let ciaSeleccionadaID = $scope.companiaSeleccionada._id;
+        const codigo = $scope.contrato.codigo;
+        const contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
+        const ano = $scope.contrato.desde.getFullYear();
+        const ciaSeleccionadaID = $scope.companiaSeleccionada._id;
 
-        Contratos_Methods.contratosProporcionales_leerTablaConfiguracion
-            ($q, codigo, moneda, ano, ciaSeleccionadaID).then(
+        Contratos_Methods.contratosProporcionales_leerTablaConfiguracion($q, codigo, moneda, ano, ciaSeleccionadaID).then(
             (result) => {
                 // el método, aunque su ejecución haya sido correcta, puede reguresar un error ... 
                 if (result.error) { 
@@ -264,7 +240,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
 
                 result.resumenPrimasSiniestros_array.forEach((x) => {
 
-                    let existeEnLaLista = $scope.contratosProp_cuentas_resumen.find(y => 
+                    const existeEnLaLista = $scope.contratosProp_cuentas_resumen.find(y =>
                         y.definicionID === definicionSeleccionadaID && 
                         y.moneda === x.moneda && 
                         y.ramo === x.ramo && 
@@ -273,7 +249,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                     )
 
                     if (!existeEnLaLista) { 
-                        let resumenPrimaSiniestros_item = {
+                        const resumenPrimaSiniestros_item = {
                             _id: new Mongo.ObjectID()._str,
                             contratoID: contratoID, 
                             definicionID: definicionSeleccionadaID,
@@ -319,8 +295,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     // --------------------------------------------------------------------------------------
     // ui-grid para el registro de la distribución de primas y siniestros en las compañías
     // del contrato (ie: cifras detalladas *antes* de saldos) ...
-    let contProp_distribucionPrimasSiniestros_seleccionado = {};
-
     $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
@@ -334,17 +308,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contProp_distribucionPrimasSiniestros_seleccionado = {};
-                if (row.isSelected) {
-                    contProp_distribucionPrimasSiniestros_seleccionado = row.entity;
-                }
-                else
-                    return;
-            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -820,13 +783,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.deleteItem_distribucionPrimasSiniestros = (entity) => {
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_cuentas_distribucion, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_cuentas_distribucion, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_cuentas_distribucion.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_cuentas_distribucion.find(x => x._id === entity._id); 
+            if (item) { item.docState = 3; }
         }
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
         $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = [];
         $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = 
@@ -839,14 +802,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.distribuirMontosPrSinEnCompanias = () => {
 
         // suscribimos a la tabla de configuracion y efectuamos la distribucion en las compañías
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
-        let codigo = $scope.contrato.codigo;
-        let contratoID = $scope.contrato._id; 
-        let moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
-        let ano = $scope.contrato.desde.getFullYear();
-        let ciaSeleccionadaID = $scope.companiaSeleccionada._id;
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const codigo = $scope.contrato.codigo;
+        const contratoID = $scope.contrato._id; 
+        const moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
+        const ciaSeleccionadaID = $scope.companiaSeleccionada._id;
 
-        let filtro = {
+        const filtro = {
             codigo: codigo,
             moneda: moneda,
             // quitamos el año del filtro para que el código traiga cualquier seríe que el usuario haya incluído en la 
@@ -865,7 +827,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                 .filter(x => x.definicionID === definicionSeleccionadaID)
                 .forEach((x) => { 
                     if (x.docState && x.docState === 1) { 
-                        lodash.remove($scope.contratosProp_cuentas_distribucion, (y: any) => { return y._id === x._id; });
+                        lodash.remove($scope.contratosProp_cuentas_distribucion, (y) => { return y._id === x._id; });
                     } else { 
                         $scope.contratosProp_cuentas_distribucion.find(y => y._id === x._id).docState = 3; 
                     }
@@ -873,17 +835,17 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
 
             // leemos en un array los registros en la tabla de configuración del contrato;
             // nótese que usamos el mismo filtro que usamos en el subscribe
-            let tablaConfiguracion = ContratosProp_Configuracion_Tablas.find(filtro).fetch();
+            const tablaConfiguracion = ContratosProp_Configuracion_Tablas.find(filtro).fetch();
 
             // ahora leemos cada linea, con primas y siniestros, y distribuimos en la compañía particular ...
             $scope.contratosProp_cuentas_resumen.
                   filter((x) => { return x.definicionID === definicionSeleccionadaID; }).
                   filter((x) => { return x.primas || x.siniestros; }).
-                  forEach((x: any) => {
+                  forEach((x) => {
                       // para cada item de primas y siniestros (para año, mon, ramo y tipo), leemos
                       // los registros que corresponden (1 por cada compañía del contrato) en la tabla
                       // de configuración
-                      let config_array = lodash.filter(tablaConfiguracion, (t) => {
+                      const config_array = lodash.filter(tablaConfiguracion, (t) => {
                           return t.codigo === codigo &&
                           t.moneda === x.moneda &&
                           t.ano === x.serie &&
@@ -893,7 +855,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                       });
 
                       config_array.forEach((config) => {
-                          let distribucion = {
+                          const distribucion = {
                               _id: new Mongo.ObjectID()._str,
                               contratoID: contratoID, 
                               definicionID: definicionSeleccionadaID,
@@ -926,7 +888,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                 forEach((x) => {
 
                     let signo = 1; 
-                    if (!x.nosotros) { signo = -1; }; 
+                    if (!x.nosotros) { signo = -1; }
 
                     x.prima = x.prima * signo;
                     x.siniestros = x.siniestros * -signo;
@@ -957,9 +919,9 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         // calculamos las cifras para las compañías del contrato. Simplemente, recorremos el array de cifras por
         // compañía y calculamos cada cifra en base al porcentaje correspondiente ...
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
-        let cifrasPorCompania_array = $scope.contratosProp_cuentas_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
+        const cifrasPorCompania_array = $scope.contratosProp_cuentas_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
 
         cifrasPorCompania_array.forEach((x) => {
 
@@ -1001,10 +963,10 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
 
         // finalmente, recorremos el array de cifras y sumarizamos para obtener solo un registro para
         // cada compañía, el cual debe contener una sumarización de las cifras separadas por ramo, serie, etc.
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
-        let contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const contratoID = $scope.contrato._id; 
 
-        let cifrasPorCompania_array = $scope.contratosProp_cuentas_distribucion
+        const cifrasPorCompania_array = $scope.contratosProp_cuentas_distribucion
                                             .filter((x) => { return x.definicionID === definicionSeleccionadaID; })
                                             .filter((x) => { return !(x.docState && x.docState === 3); })
                                             .filter((x) => { return x.saldo; });
@@ -1015,24 +977,24 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
             .filter(x => x.definicionID === definicionSeleccionadaID)
             .forEach((x) => { 
                 if (x.docState && x.docState === 1) { 
-                    lodash.remove($scope.contratosProp_cuentas_saldos, (y: any) => { return y._id === x._id; });
+                    lodash.remove($scope.contratosProp_cuentas_saldos, (y) => { return y._id === x._id; });
                 } else { 
                     $scope.contratosProp_cuentas_saldos.find(y => y._id === x._id).docState = 3; 
                 }
             })
 
 
-        let saldosPorCompania_array = [];
+        const saldosPorCompania_array = [];
 
         // nótese que basta con agrupar por compañía, pues solo existe una moneda en el array
         // agrupamos por compañía y creamos un item para cada una
-        let sumArray = lodash.groupBy(cifrasPorCompania_array, (x) => { return x.compania + '-' + x.moneda + '-' + x.serie; });
+        const sumArray = lodash.groupBy(cifrasPorCompania_array, (x) => { return x.compania + '-' + x.moneda + '-' + x.serie; });
 
-        for (let key in sumArray) {
+        for (const key in sumArray) {
 
-            let saldosArray = sumArray[key]; 
+            const saldosArray = sumArray[key]; 
 
-            let saldo = {
+            const saldo = {
                 _id: new Mongo.ObjectID()._str,
                 contratoID: contratoID, 
                 definicionID: definicionSeleccionadaID,
@@ -1055,7 +1017,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
                 saldo: lodash.sumBy(saldosArray, 'saldo'),
                 resultadoTecnico: lodash.sumBy(saldosArray, 'resultadoTecnico'),
                 docState: 1, 
-            } as never;         // solo para que la instrucción que sigue compile en ts ... 
+            };         // solo para que la instrucción que sigue compile en ts ... 
             
             saldosPorCompania_array.push(saldo);
         }   
@@ -1076,7 +1038,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     // --------------------------------------------------------------------------------------
     // ui-grid para el registro de la distribución de primas y siniestros en las compañías
     // del contrato (ie: cifras detalladas *antes* de saldos) ...
-    let contProp_saldo_seleccionado = {};
 
     $scope.cuentasTecnicas_Saldos_ui_grid = {
         enableSorting: true,
@@ -1091,17 +1052,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contProp_saldo_seleccionado = {};
-                if (row.isSelected) {
-                    contProp_saldo_seleccionado = row.entity;
-                }
-                else
-                    return;
-            });
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -1465,13 +1415,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     $scope.deleteItem_contrPropSaldos = (entity) => {
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_cuentas_saldos, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_cuentas_saldos, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_cuentas_saldos.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_cuentas_saldos.find(x => x._id === entity._id); 
+            if (item) { item.docState = 3; }
         }
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
         $scope.cuentasTecnicas_Saldos_ui_grid.data = [];
         $scope.cuentasTecnicas_Saldos_ui_grid.data = 
@@ -1529,7 +1479,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controlle
     }
 
     // hacemos el binding entre los arrays en el contrato y los ui-grids 
-    let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+    const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
     $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid.data = $scope.contratosProp_cuentas_resumen.filter(x => x.definicionID === definicionSeleccionadaID );
     $scope.cuentasTecnicas_DistribucionPrimasSiniestros_ui_grid.data = $scope.contratosProp_cuentas_distribucion.filter(x => x.definicionID === definicionSeleccionadaID );
@@ -1542,16 +1492,16 @@ angular.module("scrwebm").filter('contPr_cuentas_resultadoTecnico', function () 
         // siniestros, es dificil mostrar este en el grid. Aquí, simplemente, agregamos el corretaje al saldo del row, para 
         // obtener, de la forma más simple, el resultado técnico ... 
 
-        let row = scope.row.entity;
+        const row = scope.row.entity;
 
         // normalmente, el corretaje viene con un signo diferente al saldo; por eso basta con sumar para que el corretaje se reste al saldo 
-        let resultadoTecnico = (row.saldo ? row.saldo : 0) + (row.corretaje ? row.corretaje : 0); 
+        const resultadoTecnico = (row.saldo ? row.saldo : 0) + (row.corretaje ? row.corretaje : 0); 
 
         return numeral(resultadoTecnico).format('0,0.00');
-    };
+    }
 })
 
-function ui_grid_filterBy_nosotros(searchTerm, cellValue, row, column) {
+function ui_grid_filterBy_nosotros(searchTerm, cellValue) {
 
     // para poder filtrar el ui-grid por nosotros una vez aplicado el filtro para el ddl
     if (searchTerm.toLowerCase() === "si" && cellValue) { 

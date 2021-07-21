@@ -21,7 +21,9 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "react", "import"
+        "react", 
+        "import", 
+        "html"
     ],
     "rules": {
         "prefer-const": ["error", {

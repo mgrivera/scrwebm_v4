@@ -1,25 +1,17 @@
 
-
-import * as moment from 'moment';
-import * as lodash from 'lodash';
-import * as angular from 'angular';
-
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo'; 
+import { Mongo } from 'meteor/mongo';
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import lodash from 'lodash';
+import angular from 'angular';
+
 import { ContratosProp_Configuracion_Tablas } from 'imports/collections/catalogos/ContratosProp_Configuracion';
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q) {
+angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller", ['$scope', '$modal', 'uiGridConstants', '$q',
+function ($scope, $modal, uiGridConstants, $q) {
 
     $scope.showProgress = false;
 
@@ -27,8 +19,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
     $scope.companiaSeleccionada = $scope.$parent.$parent.companiaSeleccionada; 
     $scope.definicionCuentaTecnicaSeleccionada = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada; 
     $scope.definicionCuentaTecnicaSeleccionada_Info = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada_Info;
-
-    let contratoProp_retCartSn_resumen_itemSeleccionado = {};
 
     $scope.contratoProp_retCartSn_resumen_ui_grid = {
         enableSorting: true,
@@ -43,18 +33,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contratoProp_retCartSn_resumen_itemSeleccionado = {};
-                if (row.isSelected) {
-                    contratoProp_retCartSn_resumen_itemSeleccionado = row.entity;
-                }
-                else { 
-                    return;
-                }  
-            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -186,13 +164,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
     $scope.deleteItem_contProp_retCartSn_resumen = (entity) => {
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_retCartSn_resumen, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_retCartSn_resumen, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_retCartSn_resumen.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_retCartSn_resumen.find(x => x._id === entity._id);
+            if (item) { item.docState = 3; }
         }
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;
 
         $scope.contratoProp_retCartSn_resumen_ui_grid.data = [];
                 $scope.contratoProp_retCartSn_resumen_ui_grid.data = 
@@ -213,12 +191,12 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
             return;
         }
 
-        let codigo = $scope.contrato.codigo;
-        let contratoID = $scope.contrato._id; 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
-        let moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
-        let ano = $scope.contrato.desde.getFullYear();
-        let ciaSeleccionadaID = $scope.companiaSeleccionada._id;
+        const codigo = $scope.contrato.codigo;
+        const contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
+        const ano = $scope.contrato.desde.getFullYear();
+        const ciaSeleccionadaID = $scope.companiaSeleccionada._id;
 
         Contratos_Methods.contratosProporcionales_leerTablaConfiguracion($q, codigo, moneda, ano, ciaSeleccionadaID).then(
             (result) => {
@@ -241,7 +219,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
 
                 result.resumenPrimasSiniestros_array.forEach((x) => {
 
-                    let existeEnLaLista = $scope.contratosProp_retCartSn_resumen.find(y => 
+                    const existeEnLaLista = $scope.contratosProp_retCartSn_resumen.find(y => 
                         y.definicionID === definicionSeleccionadaID && 
                         y.moneda === x.moneda && 
                         y.ramo === x.ramo && 
@@ -250,7 +228,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
                     )
 
                     if (!existeEnLaLista) { 
-                        let resumenPrimaSiniestros_item = {
+                        const resumenPrimaSiniestros_item = {
                             _id: new Mongo.ObjectID()._str,
                             contratoID: contratoID, 
                             definicionID: definicionSeleccionadaID,
@@ -296,14 +274,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
     $scope.distribuirMontosRetCartSnEnCompanias = () => {
         // suscribimos a la tabla de configuracion y efectuamos la distribucion en las compañías
 
-        let codigo = $scope.contrato.codigo;
-        let contratoID = $scope.contrato._id; 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
-        let moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
-        let ano = $scope.contrato.desde.getFullYear();
-        let ciaSeleccionadaID = $scope.companiaSeleccionada._id;
+        const codigo = $scope.contrato.codigo;
+        const contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
+        const ciaSeleccionadaID = $scope.companiaSeleccionada._id;
 
-        let filtro = {
+        const filtro = {
             codigo: codigo,
             moneda: moneda,
             // quitamos el año del filtro para que el código traiga cualquier seríe que el usuario haya incluído en la 
@@ -322,7 +299,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
                     .filter(x => x.definicionID === definicionSeleccionadaID)
                     .forEach((x) => { 
                         if (x.docState && x.docState === 1) { 
-                            lodash.remove($scope.contratosProp_retCartSn_distribucion, (y: any) => { return y._id === x._id; });
+                            lodash.remove($scope.contratosProp_retCartSn_distribucion, (y) => { return y._id === x._id; });
                         } else { 
                             $scope.contratosProp_retCartSn_distribucion.find(y => y._id === x._id).docState = 3; 
                         }
@@ -330,7 +307,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
 
             // leemos en un array los registros en la tabla de configuración del contrato;
             // nótese que usamos el mismo filtro que usamos en el subscribe
-            let tablaConfiguracion = ContratosProp_Configuracion_Tablas.find(filtro).fetch();
+            const tablaConfiguracion = ContratosProp_Configuracion_Tablas.find(filtro).fetch();
 
             // ahora leemos cada linea, con primas y siniestros, y distribuimos en la compañía particular ...
             $scope.contratosProp_retCartSn_resumen
@@ -341,7 +318,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
                       // para cada item de primas y siniestros (para año, mon, ramo y tipo), leemos
                       // los registros que corresponden (1 por cada compañía del contrato) en la tabla
                       // de configuración
-                      let config_array = lodash.filter(tablaConfiguracion, (t) => {
+                      const config_array = lodash.filter(tablaConfiguracion, (t) => {
                           return t.codigo === codigo &&
                           t.moneda === x.moneda &&
                           t.ano === x.serie &&
@@ -351,7 +328,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
                       });
 
                       config_array.forEach((config) => {
-                          let distribucion = {
+                          const distribucion = {
                               _id: new Mongo.ObjectID()._str,
                               contratoID: contratoID, 
                               definicionID: definicionSeleccionadaID,
@@ -377,7 +354,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
                 .forEach((x) => {
 
                     let signo = 1; 
-                    if (!x.nosotros) { signo = -1; }; 
+                    if (!x.nosotros) { signo = -1; }
 
                     x.monto = x.monto * -signo;
                 })      
@@ -386,7 +363,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
             $scope.contratoProp_retCartSn_distribucion_ui_grid.data = [];
             $scope.contratoProp_retCartSn_distribucion_ui_grid.data =
                     $scope.contratosProp_retCartSn_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
-
 
             $scope.$parent.alerts.length = 0;
             $scope.$parent.alerts.push({
@@ -403,12 +379,11 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
         })
     }
 
-
     $scope.distribuirRetCartSnEnCompanias_calcular = () => {
 
         // calculamos las cifras para las compañías del contrato. Simplemente, recorremos el array de cifras por
         // compañía y calculamos cada cifra en base al porcentaje correspondiente ...
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;  
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;  
         $scope.contratosProp_retCartSn_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; })
                                                  .filter((x) => { return (x.monto || x.monto === 0) && (x.ordenPorc || x.ordenPorc === 0); })
                                                  .forEach((x) => 
@@ -420,16 +395,15 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-
     $scope.distribuirRetCartSnEnCompanias_obtenerSaldosFinales = () => {
 
         // finalmente, recorremos el array de cifras y sumarizamos para obtener solo un registro para
         // cada compañía, el cual debe contener una sumarización de las cifras separadas por ramo, serie, etc.
 
-        let contratoID = $scope.contrato._id; 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
-        let cifrasPorCompania_array = $scope.contratosProp_retCartSn_distribucion
+        const cifrasPorCompania_array = $scope.contratosProp_retCartSn_distribucion
                                             .filter((x) => { return x.definicionID === definicionSeleccionadaID; })
                                             .filter((x) => { return !(x.docState && x.docState === 3); })
                                             .filter((x) => { return x.monto_suParte; });
@@ -439,7 +413,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
                     .filter(x => x.definicionID === definicionSeleccionadaID)
                     .forEach((x) => { 
                         if (x.docState && x.docState === 1) { 
-                            lodash.remove($scope.contratosProp_retCartSn_montosFinales, (y: any) => { return y._id === x._id; });
+                            lodash.remove($scope.contratosProp_retCartSn_montosFinales, (y) => { return y._id === x._id; });
                         } else { 
                             $scope.contratosProp_retCartSn_montosFinales.find(y => y._id === x._id).docState = 3; 
                         }
@@ -447,17 +421,14 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
 
 
         // cada vez, inicializamos el array para sustituir siempre los registros anteriores por los nuevos
-        let saldosPorCompania_array = [];
+        const saldosPorCompania_array = [];
 
         // nótese que basta con agrupar por compañía, pues solo existe una moneda en el array
         // agrupamos por compañía y creamos un item para cada una
-        let sumArray = lodash.groupBy(cifrasPorCompania_array, (x) => { return x.compania + '-' + x.moneda + '-' + x.serie; });
+        const sumArray = lodash.groupBy(cifrasPorCompania_array, (x) => { return x.compania + '-' + x.moneda + '-' + x.serie; });
 
-        for (let key in sumArray) {
-
-            let saldosArray = sumArray[key]; 
-
-            let saldo = {
+        for (const key in sumArray) {
+            const saldo = {
                 _id: new Mongo.ObjectID()._str,
                 contratoID: contratoID, 
                 definicionID: definicionSeleccionadaID,
@@ -467,7 +438,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
                 serie: sumArray[key][0].serie, 
                 monto: lodash.sumBy(sumArray[key], 'monto_suParte'),
                 docState: 1, 
-            } as never;         // solo para que la instrucción que sigue compile en ts ... 
+            };         // solo para que la instrucción que sigue compile en ts ... 
             
             saldosPorCompania_array.push(saldo);
         }
@@ -483,8 +454,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-    let contratoProp_retCartSn_distribucion_itemSeleccionado = {};
-
     $scope.contratoProp_retCartSn_distribucion_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
@@ -498,17 +467,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contratoProp_retCartSn_distribucion_itemSeleccionado = {};
-                if (row.isSelected) {
-                    contratoProp_retCartSn_distribucion_itemSeleccionado = row.entity;
-                }
-                else
-                    return;
-            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -700,13 +658,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
 
     $scope.deleteItem_contProp_retCartSn_distribucion = (entity) => {
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_retCartSn_distribucion, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_retCartSn_distribucion, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_retCartSn_distribucion.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_retCartSn_distribucion.find(x => x._id === entity._id); 
+            if (item) { item.docState = 3; }
         }
 
         $scope.contratoProp_retCartSn_distribucion_ui_grid.data = [];
@@ -716,8 +674,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
 
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
-
-    let contratoProp_retCartSn_montosFinales_itemSeleccionado = {};
 
     $scope.contratoProp_retCartSn_montosFinales_ui_grid = {
         enableSorting: true,
@@ -732,17 +688,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contratoProp_retCartSn_montosFinales_itemSeleccionado = {};
-                if (row.isSelected) {
-                    contratoProp_retCartSn_montosFinales_itemSeleccionado = row.entity;
-                }
-                else
-                    return;
-            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -879,13 +824,13 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
 
     $scope.deleteItem_contProp_retCartSn_montosFinales = (entity) => {
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_retCartSn_montosFinales, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_retCartSn_montosFinales, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_retCartSn_montosFinales.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_retCartSn_montosFinales.find(x => x._id === entity._id); 
+            if (item) { item.docState = 3; }
         }
 
         $scope.contratoProp_retCartSn_montosFinales_ui_grid.data = [];
@@ -896,14 +841,14 @@ angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller",
     }
 
     // hacemos el binding entre los arrays en el contrato y los ui-grids 
-    let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+    const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;
 
     $scope.contratoProp_retCartSn_resumen_ui_grid.data = $scope.contratosProp_retCartSn_resumen.filter(x => x.definicionID === definicionSeleccionadaID);
     $scope.contratoProp_retCartSn_distribucion_ui_grid.data = $scope.contratosProp_retCartSn_distribucion.filter(x => x.definicionID === definicionSeleccionadaID);
     $scope.contratoProp_retCartSn_montosFinales_ui_grid.data = $scope.contratosProp_retCartSn_montosFinales.filter(x => x.definicionID === definicionSeleccionadaID);
 }])
 
-function ui_grid_filterBy_nosotros(searchTerm, cellValue, row, column) {
+function ui_grid_filterBy_nosotros(searchTerm, cellValue) {
 
     // para poder filtrar el ui-grid por nosotros una vez aplicado el filtro para el ddl
     if (searchTerm.toLowerCase() === "si" && cellValue) { 

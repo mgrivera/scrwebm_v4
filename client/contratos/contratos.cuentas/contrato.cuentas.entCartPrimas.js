@@ -1,26 +1,17 @@
 
-
-
-import * as moment from 'moment';
-import * as lodash from 'lodash';
-import * as angular from 'angular';
-
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo'; 
+import { Mongo } from 'meteor/mongo';
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import lodash from 'lodash';
+import angular from 'angular';
+
 import { ContratosProp_Configuracion_Tablas } from 'imports/collections/catalogos/ContratosProp_Configuracion';
 
 import { DialogModal } from '../../imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
-['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$q',
-  function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $q) {
+angular.module("scrwebm").controller("Contrato_Cuentas_EntCartPr_Controller", ['$scope', '$modal', 'uiGridConstants', '$q',
+function ($scope, $modal, uiGridConstants, $q) {
 
     $scope.showProgress = false;
 
@@ -29,9 +20,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
     $scope.definicionCuentaTecnicaSeleccionada = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada; 
     $scope.definicionCuentaTecnicaSeleccionada_Info = $scope.$parent.$parent.definicionCuentaTecnicaSeleccionada_Info;
 
-    let contratoProp_entCartSn_resumen_itemSeleccionado = {};
-
-    $scope.contratoProp_entCartSn_resumen_ui_grid = {
+    $scope.contratoProp_entCartPr_resumen_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
         enableFiltering: true,
@@ -45,18 +34,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
 
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contratoProp_entCartSn_resumen_itemSeleccionado = {};
-                if (row.isSelected) {
-                    contratoProp_entCartSn_resumen_itemSeleccionado = row.entity;
-                }
-                else { 
-                    return;
-                }  
-            })
-
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
 
@@ -65,7 +42,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                         rowEntity.docState = 2; 
                         $scope.$parent.$parent.dataHasBeenEdited = true; 
                     }
-                }         
+                }          
             })
         },
         // para reemplazar el field '$$hashKey' con nuestro propio field, que existe para cada row ...
@@ -79,7 +56,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         }
     }
 
-    $scope.contratoProp_entCartSn_resumen_ui_grid.columnDefs = [
+    $scope.contratoProp_entCartPr_resumen_ui_grid.columnDefs = [
         {
             name: 'docState',
             field: 'docState',
@@ -132,8 +109,8 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
             displayName: 'Tipo',
             width: 100,
             cellFilter: 'tipoContratoAbreviaturaFilter',
-            sortCellFiltered: true,
-            filterCellFiltered: true,   
+            sortCellFiltered: true, 
+            filterCellFiltered: true,  
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',
             enableColumnMenu: false,
@@ -176,7 +153,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
             name: 'delButton',
             displayName: '',
             cellClass: 'ui-grid-centerCell',
-            cellTemplate: '<span ng-click="grid.appScope.deleteItem_contProp_entCartSn_resumen(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+            cellTemplate: '<span ng-click="grid.appScope.deleteItem_contProp_entCartPr_resumen(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableSorting: false,
             enableFiltering: false, 
@@ -184,20 +161,20 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         },
     ]
 
-    $scope.deleteItem_contProp_entCartSn_resumen = (entity) => {
+    $scope.deleteItem_contProp_entCartPr_resumen = (entity) => {
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_entCartSn_resumen, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_entCartPr_resumen, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_entCartSn_resumen.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_entCartPr_resumen.find(x => x._id === entity._id);
+            if (item) { item.docState = 3; }
         }
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;
 
-        $scope.contratoProp_entCartSn_resumen_ui_grid.data = [];
-                $scope.contratoProp_entCartSn_resumen_ui_grid.data = 
-                        $scope.contratosProp_entCartSn_resumen.filter(x => x.definicionID === definicionSeleccionadaID); 
+        $scope.contratoProp_entCartPr_resumen_ui_grid.data = [];
+                $scope.contratoProp_entCartPr_resumen_ui_grid.data = 
+                        $scope.contratosProp_entCartPr_resumen.filter(x => x.definicionID === definicionSeleccionadaID); 
         
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
@@ -214,12 +191,12 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
             return;
         }
 
-        let codigo = $scope.contrato.codigo;
-        let contratoID = $scope.contrato._id; 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
-        let moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
-        let ano = $scope.contrato.desde.getFullYear();
-        let ciaSeleccionadaID = $scope.companiaSeleccionada._id;
+        const codigo = $scope.contrato.codigo;
+        const contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
+        const ano = $scope.contrato.desde.getFullYear();
+        const ciaSeleccionadaID = $scope.companiaSeleccionada._id;
 
         Contratos_Methods.contratosProporcionales_leerTablaConfiguracion($q, codigo, moneda, ano, ciaSeleccionadaID).then(
             (result) => {
@@ -233,16 +210,17 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                     return; 
                 }
                 
+
                 // en la lista pueden haber items; agregamos *solo* los que no existen (mon/ram/tipo/serie) y dejamos los que 
                 // existen ... 
                 let yaExistian = 0; 
                 let agregados = 0; 
 
-                yaExistian = $scope.contratosProp_entCartSn_resumen.filter(x => x.definicionID === definicionSeleccionadaID).length;
+                yaExistian = $scope.contratosProp_entCartPr_resumen.filter(x => x.definicionID === definicionSeleccionadaID).length; 
 
                 result.resumenPrimasSiniestros_array.forEach((x) => {
 
-                    let existeEnLaLista = $scope.contratosProp_entCartSn_resumen.find(y => 
+                    const existeEnLaLista = $scope.contratosProp_entCartPr_resumen.find(y => 
                         y.definicionID === definicionSeleccionadaID && 
                         y.moneda === x.moneda && 
                         y.ramo === x.ramo && 
@@ -251,7 +229,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                     )
 
                     if (!existeEnLaLista) { 
-                        let resumenPrimaSiniestros_item = {
+                        const resumenPrimaSiniestros_item = {
                             _id: new Mongo.ObjectID()._str,
                             contratoID: contratoID, 
                             definicionID: definicionSeleccionadaID,
@@ -263,14 +241,14 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                             docState: 1, 
                         }
     
-                        $scope.contratosProp_entCartSn_resumen.push(resumenPrimaSiniestros_item);
+                        $scope.contratosProp_entCartPr_resumen.push(resumenPrimaSiniestros_item);
                         agregados++; 
                     }
                 })
 
-                $scope.contratoProp_entCartSn_resumen_ui_grid.data = [];
-                $scope.contratoProp_entCartSn_resumen_ui_grid.data = 
-                        $scope.contratosProp_entCartSn_resumen.filter(x => x.definicionID === definicionSeleccionadaID); 
+                $scope.contratoProp_entCartPr_resumen_ui_grid.data = [];
+                $scope.contratoProp_entCartPr_resumen_ui_grid.data = 
+                        $scope.contratosProp_entCartPr_resumen.filter(x => x.definicionID === definicionSeleccionadaID); 
 
                 $scope.$parent.$parent.dataHasBeenEdited = true; 
 
@@ -294,17 +272,16 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
     }
 
 
-    $scope.distribuirMontosEntCartSnEnCompanias = () => {
+    $scope.distribuirMontosEntCartPrEnCompanias = () => {
         // suscribimos a la tabla de configuracion y efectuamos la distribucion en las compañías
 
-        let codigo = $scope.contrato.codigo;
-        let contratoID = $scope.contrato._id; 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
-        let moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
-        let ano = $scope.contrato.desde.getFullYear();
-        let ciaSeleccionadaID = $scope.companiaSeleccionada._id;
+        const codigo = $scope.contrato.codigo;
+        const contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const moneda = $scope.definicionCuentaTecnicaSeleccionada.moneda;
+        const ciaSeleccionadaID = $scope.companiaSeleccionada._id;
 
-        let filtro = {
+        const filtro = {
             codigo: codigo,
             moneda: moneda,
             // quitamos el año del filtro para que el código traiga cualquier seríe que el usuario haya incluído en la 
@@ -319,22 +296,22 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         Meteor.subscribe('contratosProp.configuracion.tablas', JSON.stringify(filtro), () => {
 
             // eliminamos primero los registros que puedan existir en el array en el contrato ...
-            $scope.contratosProp_entCartSn_distribucion
+            $scope.contratosProp_entCartPr_distribucion
                     .filter(x => x.definicionID === definicionSeleccionadaID)
                     .forEach((x) => { 
                         if (x.docState && x.docState === 1) { 
-                            lodash.remove($scope.contratosProp_entCartSn_distribucion, (y: any) => { return y._id === x._id; });
+                            lodash.remove($scope.contratosProp_entCartPr_distribucion, (y) => { return y._id === x._id; });
                         } else { 
-                            $scope.contratosProp_entCartSn_distribucion.find(y => y._id === x._id).docState = 3; 
+                            $scope.contratosProp_entCartPr_distribucion.find(y => y._id === x._id).docState = 3; 
                         }
                     })
 
             // leemos en un array los registros en la tabla de configuración del contrato;
             // nótese que usamos el mismo filtro que usamos en el subscribe
-            let tablaConfiguracion = ContratosProp_Configuracion_Tablas.find(filtro).fetch();
+            const tablaConfiguracion = ContratosProp_Configuracion_Tablas.find(filtro).fetch();
 
             // ahora leemos cada linea, con primas y siniestros, y distribuimos en la compañía particular ...
-            $scope.contratosProp_entCartSn_resumen
+            $scope.contratosProp_entCartPr_resumen
                 .filter((x) => { return x.definicionID === definicionSeleccionadaID; })
                 .filter((x) => { return x.monto && x.monto != 0; })
                 .filter((x) => { return !(x.docState && x.docState === 3); })
@@ -342,7 +319,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                       // para cada item de primas y siniestros (para año, mon, ramo y tipo), leemos
                       // los registros que corresponden (1 por cada compañía del contrato) en la tabla
                       // de configuración
-                      let config_array = lodash.filter(tablaConfiguracion, (t) => {
+                      const config_array = lodash.filter(tablaConfiguracion, (t) => {
                           return t.codigo === codigo &&
                           t.moneda === x.moneda &&
                           t.ano === x.serie &&
@@ -352,7 +329,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                       });
 
                       config_array.forEach((config) => {
-                          let distribucion = {
+                          const distribucion = {
                               _id: new Mongo.ObjectID()._str,
                               contratoID: contratoID, 
                               definicionID: definicionSeleccionadaID,
@@ -367,26 +344,27 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                               ordenPorc: config.ordenPorc,
                               docState: 1, 
                           };
-                          $scope.contratosProp_entCartSn_distribucion.push(distribucion);
+
+                          $scope.contratosProp_entCartPr_distribucion.push(distribucion);
                       })
             })
 
             // asignamos signos a los montos principales (primas, siniestros, etc.), de acuerdo al tipo de compañía: 
             // nosotros/reaseguradores 
-            $scope.contratosProp_entCartSn_distribucion
+            $scope.contratosProp_entCartPr_distribucion
                 .filter((x) => { return x.definicionID === definicionSeleccionadaID; })
                 .forEach((x) => {
 
                     let signo = 1; 
-                    if (!x.nosotros) { signo = -1; }; 
+                    if (!x.nosotros) { signo = -1; }
 
                     x.monto = x.monto * signo;
                 })      
 
             // para mostrar las cifras determinadas en el ui-grid
-            $scope.contratoProp_entCartSn_distribucion_ui_grid.data = [];
-            $scope.contratoProp_entCartSn_distribucion_ui_grid.data =
-                    $scope.contratosProp_entCartSn_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
+            $scope.contratoProp_entCartPr_distribucion_ui_grid.data = [];
+            $scope.contratoProp_entCartPr_distribucion_ui_grid.data =
+                    $scope.contratosProp_entCartPr_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
 
 
             $scope.$parent.alerts.length = 0;
@@ -405,12 +383,12 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
     }
 
 
-    $scope.distribuirEntCartSnEnCompanias_calcular = () => {
+    $scope.distribuirEntCartPrEnCompanias_calcular = () => {
 
         // calculamos las cifras para las compañías del contrato. Simplemente, recorremos el array de cifras por
         // compañía y calculamos cada cifra en base al porcentaje correspondiente ...
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;  
-        $scope.contratosProp_entCartSn_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; })
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;  
+        $scope.contratosProp_entCartPr_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; })
                                                  .filter((x) => { return (x.monto || x.monto === 0) && (x.ordenPorc || x.ordenPorc === 0); })
                                                  .forEach((x) => 
                                                  { 
@@ -422,43 +400,40 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
     }
 
 
-    $scope.distribuirEntCartSnEnCompanias_obtenerSaldosFinales = () => {
+    $scope.distribuirEntCartPrEnCompanias_obtenerSaldosFinales = () => {
 
         // finalmente, recorremos el array de cifras y sumarizamos para obtener solo un registro para
         // cada compañía, el cual debe contener una sumarización de las cifras separadas por ramo, serie, etc.
 
-        let contratoID = $scope.contrato._id; 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const contratoID = $scope.contrato._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
-        let cifrasPorCompania_array = $scope.contratosProp_entCartSn_distribucion
+        const cifrasPorCompania_array = $scope.contratosProp_entCartPr_distribucion
                                             .filter((x) => { return x.definicionID === definicionSeleccionadaID; })
                                             .filter((x) => { return !(x.docState && x.docState === 3); })
                                             .filter((x) => { return x.monto_suParte; });
 
         // eliminamos los registros de saldo que ya puedan existir 
-        $scope.contratosProp_entCartSn_montosFinales
+        $scope.contratosProp_entCartPr_montosFinales
                     .filter(x => x.definicionID === definicionSeleccionadaID)
                     .forEach((x) => { 
                         if (x.docState && x.docState === 1) { 
-                            lodash.remove($scope.contratosProp_entCartSn_montosFinales, (y: any) => { return y._id === x._id; });
+                            lodash.remove($scope.contratosProp_entCartPr_montosFinales, (y) => { return y._id === x._id; });
                         } else { 
-                            $scope.contratosProp_entCartSn_montosFinales.find(y => y._id === x._id).docState = 3; 
+                            $scope.contratosProp_entCartPr_montosFinales.find(y => y._id === x._id).docState = 3; 
                         }
                     })
 
 
         // cada vez, inicializamos el array para sustituir siempre los registros anteriores por los nuevos
-        let saldosPorCompania_array = [];
+        const saldosPorCompania_array = [];
 
         // nótese que basta con agrupar por compañía, pues solo existe una moneda en el array
         // agrupamos por compañía y creamos un item para cada una
-        let sumArray = lodash.groupBy(cifrasPorCompania_array, (x) => { return x.compania + '-' + x.moneda + '-' + x.serie; });
+        const sumArray = lodash.groupBy(cifrasPorCompania_array, (x) => { return x.compania + '-' + x.moneda + '-' + x.serie; });
 
-        for (let key in sumArray) {
-
-            let saldosArray = sumArray[key]; 
-
-            let saldo = {
+        for (const key in sumArray) {
+            const saldo = {
                 _id: new Mongo.ObjectID()._str,
                 contratoID: contratoID, 
                 definicionID: definicionSeleccionadaID,
@@ -468,25 +443,23 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
                 serie: sumArray[key][0].serie, 
                 monto: lodash.sumBy(sumArray[key], 'monto_suParte'),
                 docState: 1, 
-            } as never;         // solo para que la instrucción que sigue compile en ts ... 
+            };         // solo para que la instrucción que sigue compile en ts ... 
             
             saldosPorCompania_array.push(saldo);
         }
 
         saldosPorCompania_array.forEach((x) => {
-            $scope.contratosProp_entCartSn_montosFinales.push(x);
+            $scope.contratosProp_entCartPr_montosFinales.push(x);
         })
 
-        $scope.contratoProp_entCartSn_montosFinales_ui_grid.data = [];
-        $scope.contratoProp_entCartSn_montosFinales_ui_grid.data =
-            $scope.contratosProp_entCartSn_montosFinales.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
+        $scope.contratoProp_entCartPr_montosFinales_ui_grid.data = [];
+        $scope.contratoProp_entCartPr_montosFinales_ui_grid.data =
+            $scope.contratosProp_entCartPr_montosFinales.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
 
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-    let contratoProp_entCartSn_distribucion_itemSeleccionado = {};
-
-    $scope.contratoProp_entCartSn_distribucion_ui_grid = {
+    $scope.contratoProp_entCartPr_distribucion_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
         enableFiltering: true,
@@ -499,17 +472,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contratoProp_entCartSn_distribucion_itemSeleccionado = {};
-                if (row.isSelected) {
-                    contratoProp_entCartSn_distribucion_itemSeleccionado = row.entity;
-                }
-                else
-                    return;
-            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -533,7 +495,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         }
     }
 
-    $scope.contratoProp_entCartSn_distribucion_ui_grid.columnDefs = [
+    $scope.contratoProp_entCartPr_distribucion_ui_grid.columnDefs = [
         {
             name: 'docState',
             field: 'docState',
@@ -691,36 +653,34 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
             name: 'delButton',
             displayName: '',
             cellClass: 'ui-grid-centerCell',
-            cellTemplate: '<span ng-click="grid.appScope.deleteItem_contProp_entCartSn_distribucion(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+            cellTemplate: '<span ng-click="grid.appScope.deleteItem_contProp_entCartPr_distribucion(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
             enableCellEdit: false,
-            enableSorting: false,
             enableFiltering: false, 
+            enableSorting: false,
             width: 25
         },
     ]
 
-    $scope.deleteItem_contProp_entCartSn_distribucion = (entity) => {
+    $scope.deleteItem_contProp_entCartPr_distribucion = (entity) => {
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_entCartSn_distribucion, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_entCartPr_distribucion, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_entCartSn_distribucion.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_entCartPr_distribucion.find(x => x._id === entity._id); 
+            if (item) { item.docState = 3; }
         }
 
-        $scope.contratoProp_entCartSn_distribucion_ui_grid.data = [];
-        $scope.contratoProp_entCartSn_distribucion_ui_grid.data =
-            $scope.contratosProp_entCartSn_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
+        $scope.contratoProp_entCartPr_distribucion_ui_grid.data = [];
+        $scope.contratoProp_entCartPr_distribucion_ui_grid.data =
+            $scope.contratosProp_entCartPr_distribucion.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
 
 
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-    let contratoProp_entCartSn_montosFinales_itemSeleccionado = {};
-
-    $scope.contratoProp_entCartSn_montosFinales_ui_grid = {
+    $scope.contratoProp_entCartPr_montosFinales_ui_grid = {
         enableSorting: true,
         showColumnFooter: true,
         enableFiltering: true,
@@ -733,17 +693,6 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-
-            // guardamos el row que el usuario seleccione
-            gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-
-                contratoProp_entCartSn_montosFinales_itemSeleccionado = {};
-                if (row.isSelected) {
-                    contratoProp_entCartSn_montosFinales_itemSeleccionado = row.entity;
-                }
-                else
-                    return;
-            })
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
             gridApi.edit.on.afterCellEdit($scope, function (rowEntity, colDef, newValue, oldValue) {
@@ -767,7 +716,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         }
     }
 
-    $scope.contratoProp_entCartSn_montosFinales_ui_grid.columnDefs = [
+    $scope.contratoProp_entCartPr_montosFinales_ui_grid.columnDefs = [
         {
             name: 'docState',
             field: 'docState',
@@ -869,7 +818,7 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
             name: 'delButton',
             displayName: ' ',
             cellClass: 'ui-grid-centerCell',
-            cellTemplate: '<span ng-click="grid.appScope.deleteItem_contProp_entCartSn_montosFinales(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
+            cellTemplate: '<span ng-click="grid.appScope.deleteItem_contProp_entCartPr_montosFinales(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableSorting: false,
             enableFiltering: false, 
@@ -878,33 +827,33 @@ angular.module("scrwebm").controller("Contrato_Cuentas_EntCartSn_Controller",
         },
     ]
 
-    $scope.deleteItem_contProp_entCartSn_montosFinales = (entity) => {
+    $scope.deleteItem_contProp_entCartPr_montosFinales = (entity) => {
 
-        let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
         if (entity.docState && entity.docState === 1) { 
-            lodash.remove($scope.contratosProp_entCartSn_montosFinales, (x: any) => { return x._id === entity._id; });
+            lodash.remove($scope.contratosProp_entCartPr_montosFinales, (x) => { return x._id === entity._id; });
         } else { 
-            let item: any = $scope.contratosProp_entCartSn_montosFinales.find(x => x._id === entity._id); 
-            if (item) { item.docState = 3; }; 
+            const item = $scope.contratosProp_entCartPr_montosFinales.find(x => x._id === entity._id); 
+            if (item) { item.docState = 3; }
         }
 
-        $scope.contratoProp_entCartSn_montosFinales_ui_grid.data = [];
-        $scope.contratoProp_entCartSn_montosFinales_ui_grid.data =
-            $scope.contratosProp_entCartSn_montosFinales.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
+        $scope.contratoProp_entCartPr_montosFinales_ui_grid.data = [];
+        $scope.contratoProp_entCartPr_montosFinales_ui_grid.data =
+            $scope.contratosProp_entCartPr_montosFinales.filter((x) => { return x.definicionID === definicionSeleccionadaID; });
 
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
     // hacemos el binding entre los arrays en el contrato y los ui-grids 
-    let definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
+    const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id; 
 
-    $scope.contratoProp_entCartSn_resumen_ui_grid.data = $scope.contratosProp_entCartSn_resumen.filter(x => x.definicionID === definicionSeleccionadaID);
-    $scope.contratoProp_entCartSn_distribucion_ui_grid.data = $scope.contratosProp_entCartSn_distribucion.filter(x => x.definicionID === definicionSeleccionadaID);
-    $scope.contratoProp_entCartSn_montosFinales_ui_grid.data = $scope.contratosProp_entCartSn_montosFinales.filter(x => x.definicionID === definicionSeleccionadaID);
+    $scope.contratoProp_entCartPr_resumen_ui_grid.data = $scope.contratosProp_entCartPr_resumen.filter(x => x.definicionID === definicionSeleccionadaID);
+    $scope.contratoProp_entCartPr_distribucion_ui_grid.data = $scope.contratosProp_entCartPr_distribucion.filter(x => x.definicionID === definicionSeleccionadaID);
+    $scope.contratoProp_entCartPr_montosFinales_ui_grid.data = $scope.contratosProp_entCartPr_montosFinales.filter(x => x.definicionID === definicionSeleccionadaID);
 }])
 
-function ui_grid_filterBy_nosotros(searchTerm, cellValue, row, column) {
+function ui_grid_filterBy_nosotros(searchTerm, cellValue) {
 
     // para poder filtrar el ui-grid por nosotros una vez aplicado el filtro para el ddl
     if (searchTerm.toLowerCase() === "si" && cellValue) { 
