@@ -1,16 +1,18 @@
 
 import { Meteor } from 'meteor/meteor'; 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash'; 
+import { Mongo } from 'meteor/mongo';
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
-import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import angular from 'angular'; 
+import lodash from 'lodash'; 
 
-import { ContratosProp_Configuracion_ListaCodigos } from 'imports/collections/catalogos/ContratosProp_Configuracion'; 
-import { ContProp_tablaConf } from '../../lib/forerunnerDB'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controller",
-['$scope', '$state', '$modal', function ($scope, $state, $modal) {
+import { ContratosProp_Configuracion_ListaCodigos } from '/imports/collections/catalogos/ContratosProp_Configuracion'; 
+import { ContProp_tablaConf } from '/client/lib/forerunnerDB'; 
+
+angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controller", ['$scope', '$state', '$modal', 
+function ($scope, $state, $modal) {
 
     $scope.showProgress = true;
 
@@ -22,7 +24,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
     };
 
     // leemos la compañía seleccionada
-    let companiaSeleccionada = $scope.$parent.companiaSeleccionada;
+    const companiaSeleccionada = $scope.$parent.companiaSeleccionada;
 
     // limpiamos la tabla en frDB que nos permite pasar los registros entre states 
     ContProp_tablaConf.remove({ tipo: 'reg conf', user: Meteor.userId(), }); 
@@ -31,7 +33,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
     Meteor.call('contratosProporcionales.configuracion.leerCodigosContrato', companiaSeleccionada._id, (err, result)  => {
 
         if (err) {
-            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -54,7 +56,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
             $scope.showProgress = false;
             $scope.$apply();
         } else {
-            let codigosContato_list = JSON.parse(result);
+            const codigosContato_list = JSON.parse(result);
 
             // ahora que tenemos la lista, la asociamos a la columna en el ui-grid, para que la muestre
             // como lista en el ddl ...
@@ -66,9 +68,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
         }
     })
 
-
-    let itemSeleccionado = {} as any;
-    let uiGridApi = null;
+    let itemSeleccionado = {};
 
     $scope.codigosContrato_ui_grid = {
         enableSorting: false,
@@ -82,7 +82,6 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-            uiGridApi = gridApi;
 
             // guardamos el row que el usuario seleccione
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
@@ -107,7 +106,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
         getRowIdentity: function (row) {
             return row._id;
         },
-    };
+    }
 
     $scope.codigosContrato_ui_grid.columnDefs = [
         {
@@ -148,8 +147,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
             enableSorting: false,
             width: 25
         }
-    ];
-
+    ]
 
     $scope.deleteItem = function (item) {
         item.docState = 3;
@@ -163,16 +161,15 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
         });
     };
 
-
     $scope.save = function () {
             $scope.showProgress = true;
 
-            let editedItems = lodash.filter($scope.contratosProp_configuracion_listaCodigos,
+            const editedItems = lodash.filter($scope.contratosProp_configuracion_listaCodigos,
                                     function (item) { return item.docState; });
 
             // nótese como validamos cada item antes de intentar guardar (en el servidor)
             let isValid = false;
-            let errores = [];
+            const errores = [];
 
             editedItems.forEach((item) => {
                 if (item.docState != 3) {
@@ -180,7 +177,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
 
                     if (!isValid) {
                         ContratosProp_Configuracion_ListaCodigos.simpleSchema().namedContext().validationErrors().forEach(function (error) {
-                            errores.push("El valor '" + error.value + "' no es adecuado para el campo <b><em>" + ContratosProp_Configuracion_ListaCodigos.simpleSchema().label(error.name) + "</b></em>; error de tipo '" + error.type + "." as never);
+                            errores.push("El valor '" + error.value + "' no es adecuado para el campo <b><em>" + ContratosProp_Configuracion_ListaCodigos.simpleSchema().label(error.name) + "</b></em>; error de tipo '" + error.type + ".");
                         });
                     }
                 }
@@ -203,13 +200,13 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
 
                 $scope.showProgress = false;
                 return;
-            };
+            }
 
             Meteor.call('contratosProp_configuracion_listaCodigos_Save', editedItems, function (error, result) {
 
                 if (error) {
 
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(error);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(error);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
@@ -221,7 +218,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
                     $scope.$apply();
 
                     return;
-                };
+                }
 
                 // por alguna razón, que aún no entendemos del todo, si no hacemos el subscribe nuevamente,
                 // se queda el '*' para registros nuevos en el ui-grid ...
@@ -247,11 +244,6 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
 
                         $scope.showProgress = false;
                         $scope.$apply();
-                    },
-                    onStop: function(err) {
-                        if (err) {
-                        } else {
-                        }
                     }
                 })
             })
@@ -270,14 +262,8 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
             $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
 
             $scope.showProgress = false;
-        },
-        onStop: function(err) {
-            if (err) {
-            } else {
-            }
         }
-    });
-
+    })
 
     $scope.leerTablaConfiguracionContrato = () => {
         if (!itemSeleccionado || lodash.isEmpty(itemSeleccionado)) {
@@ -290,10 +276,9 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
 
         if (itemSeleccionado.docState) {
             
-            let message = `Aparentemente, el registro ha recibido modificaciones que no se han guardado aún.<br />
+            const message = `Aparentemente, el registro ha recibido modificaciones que no se han guardado aún.<br />
             Ud. debe guardar los cambios efectuados en la lista antes de continuar con esta función.
             `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
             DialogModal($modal, "<em>Contratos - Configuración de contratos proporcionales</em>", message, false);
             return;
@@ -302,5 +287,4 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controll
         $state.go("catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla",
                 { codigoContrato: itemSeleccionado.codigo });
     }
-  }
-]);
+}]);

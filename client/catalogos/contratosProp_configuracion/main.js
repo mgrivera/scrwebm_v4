@@ -6,7 +6,8 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
-angular.module("scrwebm").controller("ContratosProp_Configuracion_Controller", ['$scope', function ($scope) {
+angular.module("scrwebm").controller("ContratosProp_Configuracion_Controller", ['$scope', 
+function ($scope) {
 
     $scope.showProgress = true;
 
@@ -40,4 +41,4 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Controller", [
         $scope.showProgress = false;
     })
   }
-]);
+])

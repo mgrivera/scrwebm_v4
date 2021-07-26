@@ -554,6 +554,15 @@ function ($scope, $state, $stateParams, $modal) {
         item.docState = 3;
     }
 
+    $scope.eliminarTodosLosRowsEnElGrid = () => { 
+        // marcamos todos los items en la lista para que sean eliminados; nota: el usuario debe hace un click en Grabar ... 
+        $scope.contratosProp_configuracion_tablas.forEach(x => { 
+            if (!x.docState) { 
+                x.docState = 3; 
+            }
+        })
+    }
+
     $scope.nuevo = function () {
         $scope.contratosProp_configuracion_tablas.push({
             _id: new Mongo.ObjectID()._str,

@@ -1,19 +1,22 @@
 
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash';
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { TiposContrato } from 'imports/collections/catalogos/tiposContrato';  
+import angular from 'angular'; 
+import lodash from 'lodash';
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
-import { ContProp_tablaConf } from '../../lib/forerunnerDB'; 
-import { LeerCompaniaNosotros } from 'imports/generales/leerCompaniaNosotros'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
+import { Ramos } from '/imports/collections/catalogos/ramos'; 
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';  
 
-angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construir_Controller",
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { ContProp_tablaConf } from '/client/lib/forerunnerDB'; 
+import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
+
+angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construir_Controller", 
 ['$scope', '$state', '$stateParams', '$modal', '$interval', 
-  function ($scope, $state, $stateParams, $modal, $interval) {
+function ($scope, $state, $stateParams, $modal, $interval) {
 
     $scope.showProgress = false;
 
@@ -32,13 +35,13 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
     $scope.codigoContrato = $stateParams.codigoContrato;
 
     // la compañía seleccionada fue leída en el parent state 
-    let companiaSeleccionada = $scope.$parent.companiaSeleccionada;
+    const companiaSeleccionada = $scope.$parent.companiaSeleccionada;
 
     // construimos una lista con los años que van desde el 2.000 hasta tres años por encima del actual. 
-    let listaAnos = []; 
-    let anoActual = new Date().getFullYear(); 
+    const listaAnos = []; 
+    const anoActual = new Date().getFullYear(); 
     for (let i = (anoActual + 3); i >= 2000; i--) { 
-        listaAnos.push({ ano: i } as never); 
+        listaAnos.push({ ano: i }); 
     }
 
     $scope.helpers({
@@ -62,7 +65,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
     // ------------------------------
     // ui-grid de años 
     // ------------------------------]
-    let anos_ui_grid_api: any = {}; 
+    let anos_ui_grid_api = {}; 
     let anos_selectedRows = []; 
 
     $scope.anos_ui_grid = {
@@ -82,10 +85,10 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             gridApi.selection.on.rowSelectionChanged($scope, function(row) {
 
                 if (row.isSelected) { 
-                    anos_selectedRows.push(row.entity as never); 
+                    anos_selectedRows.push(row.entity); 
                 }
                 else { 
-                    lodash.remove(anos_selectedRows, (x: any) => x.ano === row.entity.ano); 
+                    lodash.remove(anos_selectedRows, (x) => x.ano === row.entity.ano); 
                 }   
             });
 
@@ -97,16 +100,16 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     anos_selectedRows = []; 
                     return; 
                 }
-	 
-                for (let row of rows) { 
+
+                for (const row of rows) {
                     if (row.isSelected) { 
-                        let x = lodash.find(anos_selectedRows, (x: any) => x.ano === row.entity.ano); 
+                        const x = lodash.find(anos_selectedRows, (x) => x.ano === row.entity.ano);
                         if (!x) { 
-                            anos_selectedRows.push(row.entity as never); 
+                            anos_selectedRows.push(row.entity); 
                         }
                     }
                     else { 
-                        lodash.remove(anos_selectedRows, (x: any) => x.ano === row.entity.ano); 
+                        lodash.remove(anos_selectedRows, (x) => x.ano === row.entity.ano); 
                     }
                 }
               });
@@ -139,8 +142,8 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
     // ------------------------------
     // ui-grid de monedas 
     // ------------------------------
-    let monedas_ui_grid_api: any = {}; 
-    let monedas_selectedRows: {}[] = [];
+    let monedas_ui_grid_api = {}; 
+    let monedas_selectedRows = [];
 
     $scope.monedas_ui_grid = {
         enableSorting: true,
@@ -159,10 +162,10 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             gridApi.selection.on.rowSelectionChanged($scope, function(row) {
 
                 if (row.isSelected) { 
-                    monedas_selectedRows.push(row.entity as never); 
+                    monedas_selectedRows.push(row.entity); 
                 }
                 else { 
-                    lodash.remove(monedas_selectedRows, (x: any) => x._id === row.entity._id); 
+                    lodash.remove(monedas_selectedRows, (x) => x._id === row.entity._id); 
                 }   
             });
 
@@ -174,16 +177,16 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     monedas_selectedRows = []; 
                     return; 
                 }
-	 
-                for (let row of rows) { 
+	
+                for (const row of rows) { 
                     if (row.isSelected) { 
-                        let x = lodash.find(monedas_selectedRows, (x: any) => x._id === row.entity._id); 
+                        const x = lodash.find(monedas_selectedRows, (x) => x._id === row.entity._id); 
                         if (!x) { 
-                            monedas_selectedRows.push(row.entity as never); 
+                            monedas_selectedRows.push(row.entity); 
                         }
                     }
                     else { 
-                        lodash.remove(monedas_selectedRows, (x: any) => x._id === row.entity._id); 
+                        lodash.remove(monedas_selectedRows, (x) => x._id === row.entity._id); 
                     }
                 }
               });
@@ -196,7 +199,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         getRowIdentity: function (row) {
             return row._id;
         }
-    };
+    }
 
     $scope.monedas_ui_grid.columnDefs = [
             {
@@ -211,12 +214,12 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                 enableSorting: true,
                 type: 'string'
             },
-    ];
+    ]
 
     // ------------------------------
     // ui-grid de ramos 
     // ------------------------------
-    let ramos_ui_grid_api: any = {}; 
+    let ramos_ui_grid_api = {}; 
     let ramos_selectedRows = []; 
 
     $scope.ramos_ui_grid = {
@@ -236,10 +239,10 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             gridApi.selection.on.rowSelectionChanged($scope, function(row) {
 
                 if (row.isSelected) { 
-                    ramos_selectedRows.push(row.entity as never); 
+                    ramos_selectedRows.push(row.entity); 
                 }
                 else { 
-                    lodash.remove(ramos_selectedRows, (x: any) => x._id === row.entity._id); 
+                    lodash.remove(ramos_selectedRows, (x) => x._id === row.entity._id); 
                 }   
             });
 
@@ -251,16 +254,16 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     ramos_selectedRows = []; 
                     return; 
                 }
-	 
-                for (let row of rows) { 
+	
+                for (const row of rows) { 
                     if (row.isSelected) { 
-                        let x = lodash.find(ramos_selectedRows, (x: any) => x._id === row.entity._id); 
+                        const x = lodash.find(ramos_selectedRows, (x) => x._id === row.entity._id); 
                         if (!x) { 
-                            ramos_selectedRows.push(row.entity as never); 
+                            ramos_selectedRows.push(row.entity); 
                         }
                     }
                     else { 
-                        lodash.remove(ramos_selectedRows, (x: any) => x._id === row.entity._id); 
+                        lodash.remove(ramos_selectedRows, (x) => x._id === row.entity._id); 
                     }
                 }
               });
@@ -273,7 +276,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         getRowIdentity: function (row) {
             return row._id;
         }
-    };
+    }
 
     $scope.ramos_ui_grid.columnDefs = [
             {
@@ -288,13 +291,12 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                 enableSorting: true,
                 type: 'string'
             },
-    ];
-
+    ]
 
     // ------------------------------
     // ui-grid de companias 
     // ------------------------------
-    let companias_ui_grid_api: any = {}; 
+    let companias_ui_grid_api = {}; 
     let companias_selectedRows = []; 
 
     $scope.companias_ui_grid = {
@@ -314,10 +316,10 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             gridApi.selection.on.rowSelectionChanged($scope, function(row) {
 
                 if (row.isSelected) { 
-                    companias_selectedRows.push(row.entity as never); 
+                    companias_selectedRows.push(row.entity); 
                 }
                 else { 
-                    lodash.remove(companias_selectedRows, (x: any) => x._id === row.entity._id); 
+                    lodash.remove(companias_selectedRows, (x) => x._id === row.entity._id); 
                 }   
             });
 
@@ -329,16 +331,16 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     companias_selectedRows = []; 
                     return; 
                 }
-	 
-                for (let row of rows) { 
+	
+                for (const row of rows) {
                     if (row.isSelected) { 
-                        let x = lodash.find(companias_selectedRows, (x: any) => x._id === row.entity._id); 
+                        const x = lodash.find(companias_selectedRows, (x) => x._id === row.entity._id);
                         if (!x) { 
-                            companias_selectedRows.push(row.entity as never); 
+                            companias_selectedRows.push(row.entity); 
                         }
                     }
                     else { 
-                        lodash.remove(companias_selectedRows, (x: any) => x._id === row.entity._id); 
+                        lodash.remove(companias_selectedRows, (x) => x._id === row.entity._id); 
                         return; 
                     }
                 }
@@ -367,13 +369,12 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                 enableSorting: true,
                 type: 'string'
             },
-    ];
-
+    ]
 
     // ------------------------------
     // ui-grid de tipos de contrato 
     // ------------------------------
-    let tipos_ui_grid_api: any = {}; 
+    let tipos_ui_grid_api = {}; 
     let tipos_selectedRows = []; 
 
     $scope.tiposContrato_ui_grid = {
@@ -393,10 +394,10 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             gridApi.selection.on.rowSelectionChanged($scope, function(row) {
 
                 if (row.isSelected) { 
-                    tipos_selectedRows.push(row.entity as never); 
+                    tipos_selectedRows.push(row.entity); 
                 }
                 else { 
-                    lodash.remove(tipos_selectedRows, (x: any) => x._id === row.entity._id); 
+                    lodash.remove(tipos_selectedRows, (x) => x._id === row.entity._id); 
                 }   
             });
 
@@ -408,16 +409,16 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     tipos_selectedRows = []; 
                     return; 
                 }
-	 
-                for (let row of rows) { 
+	
+                for (const row of rows) { 
                     if (row.isSelected) { 
-                        let x = lodash.find(tipos_selectedRows, (x: any) => x._id === row.entity._id); 
+                        const x = lodash.find(tipos_selectedRows, (x) => x._id === row.entity._id); 
                         if (!x) { 
-                            tipos_selectedRows.push(row.entity as never); 
+                            tipos_selectedRows.push(row.entity); 
                         }
                     }
                     else { 
-                        lodash.remove(tipos_selectedRows, (x: any) => x._id === row.entity._id); 
+                        lodash.remove(tipos_selectedRows, (x) => x._id === row.entity._id); 
                     }
                 }
               });
@@ -445,8 +446,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                 enableSorting: true,
                 type: 'string'
             },
-    ];
-
+    ]
 
     $scope.anos_ui_grid.data = $scope.anos; 
     $scope.monedas_ui_grid.data = $scope.monedas; 
@@ -455,24 +455,22 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
     $scope.tiposContrato_ui_grid.data = $scope.tiposContrato; 
 
     // con los valores seleccionados, construimos un array que será mostrado en el ui-gridj
-    let registrosConfiguracionArray: {}[] = [];
-
+    let registrosConfiguracionArray = [];
 
     $scope.construirTablaConfiguracionContrato = function() { 
 
         if (!anos_selectedRows.length || !monedas_selectedRows.length || !ramos_selectedRows.length || 
             !companias_selectedRows.length || !tipos_selectedRows) { 
-                let message = `Error: Ud. debe seleccionar al menos un elemento en cada lista (años, monedas, ramos, compañías, ...).
+                const message = `Error: Ud. debe seleccionar al menos un elemento en cada lista (años, monedas, ramos, compañías, ...).
                `; 
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
                 DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
                 return;
         }
 
         // 1) leemos la compañía 'nosotros' ... 
-        let companiaNosotros = {} as any;
-        let result: any = LeerCompaniaNosotros(Meteor.userId()); 
+        let companiaNosotros = {};
+        const result = LeerCompaniaNosotros(Meteor.userId());
 
         if (result.error) {
             DialogModal($modal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
@@ -482,13 +480,12 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         companiaNosotros = result.companiaNosotros; 
 
         // 2) comprobamos que el usuario haya seleccionado la compañía 'nosotros' 
-        let existe: any = companias_selectedRows.find((x: any) => { return x._id === companiaNosotros._id; });
+        const existe = companias_selectedRows.find((x) => { return x._id === companiaNosotros._id; });
         if (!existe) {
-            let message = `Error: Ud. debe seleccionar, en la lista de compañías, la que corresponde a
+            const message = `Error: Ud. debe seleccionar, en la lista de compañías, la que corresponde a
                            <em><b>nosotros</b></em>. Esa es, justamente, nuestra compañía y debe ser
                            seleccionada para representar nuestra participación en el contrato.
                           `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
             DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
             return;
@@ -496,12 +493,11 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
 
         // 3) comprobamos que la compañía 'nosotros' tenga 'marcado' el campo 'nosotros' (más abajo se ordena por allí) ... 
         if (!existe.nosotros) {
-            let message = `Error: aparentemente, la compañía del tipo <em><b>nosotros</b></em>, aunque fue seleccionada en la lista, 
+            const message = `Error: aparentemente, la compañía del tipo <em><b>nosotros</b></em>, aunque fue seleccionada en la lista, 
                            no está marcada en la maestra (catálogo de Compañías) como <em><b>nosotros</b></em>. <br /><br /> 
                            Por favor abra el catálogo de Compañías y marque la compañía como <em><b>nosotros</b></em>. <br /> 
                            Luego regrese y continúe con este proceso. 
                           `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
             DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
             return;
@@ -514,11 +510,11 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
 
         // ordenamos las compañías por: nosotros y nombre; la idea es que se muestre primero nuestra
         // compañía y luego el resto, ordenadas por su nombre ...
-        lodash.orderBy(companias_selectedRows, ['nosotros', 'abreviatura'], ['desc', 'asc']).forEach((compania: any) => {
-            anos_selectedRows.forEach((ano: any) => { 
-                monedas_selectedRows.forEach((moneda: any) => {
-                    ramos_selectedRows.forEach((ramo: any) => {
-                        tipos_selectedRows.forEach((tipo: any) => {
+        lodash.orderBy(companias_selectedRows, ['nosotros', 'abreviatura'], ['desc', 'asc']).forEach((compania) => {
+            anos_selectedRows.forEach((ano) => { 
+                monedas_selectedRows.forEach((moneda) => {
+                    ramos_selectedRows.forEach((ramo) => {
+                        tipos_selectedRows.forEach((tipo) => {
 
                             let registroConfiguracionItem = {};
 
@@ -553,10 +549,10 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         // leemos la tabla de parametrización de contratos para intentar obtener porcentajes de impuesto y usarlos como default 
         // Nota: el publishing que lee y trae los códigos de contrato trae también esta tabla; ésto, cuando se leen y muestran los 
         // códigos de contrato en el 1er. state de este proceso ... 
-        let contratosParametros = $scope.$parent.contratosParametros; 
+        const contratosParametros = $scope.$parent.contratosParametros; 
 
         if (contratosParametros && Array.isArray(registrosConfiguracionArray) && registrosConfiguracionArray.length) { 
-            let registroConf: any = registrosConfiguracionArray[0]; // asignamos porc default solo al 1er. item ... 
+            const registroConf = registrosConfiguracionArray[0]; // asignamos porc default solo al 1er. item ... 
 
             registroConf.imp1Porc = contratosParametros && contratosParametros.imp1Porc ? contratosParametros.imp1Porc : null; 
             registroConf.imp2Porc = contratosParametros && contratosParametros.imp2Porc ? contratosParametros.imp2Porc : null; 
@@ -567,31 +563,29 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         // actualizamos los items seleccionados en las listas ... 
         itemsSeleccionadosEnListas_grabarEnForerunnerDB(anos_selectedRows, monedas_selectedRows, ramos_selectedRows, 
                                                         companias_selectedRows, tipos_selectedRows). 
-            then((resolve) => { 
+            then(() => { 
 
                 $scope.registrosConfiguracion_ui_grid.data = [];
                 $scope.registrosConfiguracion_ui_grid.data = registrosConfiguracionArray;
 
-                let message =  `Ok, los registros de configuración para el (los) año (s) y el contrato han sido construídos.<br />
+                const message =  `Ok, los registros de configuración para el (los) año (s) y el contrato han sido construídos.<br />
                                 En total, se han agregado <b>${cantidadRegistros.toString()}</b> registros. <br />
                                 Ahora Ud. puede indicar los valores (%com, %imp, %corr, ..) apropiados para cada uno.<br /><br />
                                 Para <em><b>propagar</b></em> los valores indicados a otros registros,
                                 haga un <em>click</em> en <em>Propagar</em>.
                             `
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
-                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false).then((x) => { 
+                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false).then(() => { 
                     $scope.showProgress = false;
                     // nótese como establecemos el tab 'activo' en ui-bootstrap; ver nota arriba acerca de ésto ...
                     $scope.activeTab = { tab1: false, tab2: true, };
                 });
             }). 
             catch((err) => { 
-                let message =  `Error: hemos obtenido un error al intentar grabar los elementos que Ud. ha seleccionado 
+                const message =  `Error: hemos obtenido un error al intentar grabar los elementos que Ud. ha seleccionado 
                                 en las listas. El mensaje específico del error es: <br />
                                 ${err}
                             `
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
                 DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
 
@@ -601,20 +595,17 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
 
 
     $scope.regresarATablaPermanente = function () {
-        if (registrosConfiguracionArray.find((x: any) => { return x.docState; })) {
-            let message =  `Aparentemente, Ud. ha efectuado cambios en la lista de registros de configuración. <br /> 
+        if (registrosConfiguracionArray.find((x) => { return x.docState; })) {
+            const message =  `Aparentemente, Ud. ha efectuado cambios en la lista de registros de configuración. <br /> 
                             Sin embargo, los registros no han sido agregados a la tabla de configuración permanente. <br />  
-                            Aún así, desea <em>regresar</em> y perder estos cambios?
-                            `
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
-
-            var promise = DialogModal($modal,
-                                    "<em>Contratos - Configuración</em>", message, true).then(
-                function (resolve) {
+                            Aún así, desea <em>regresar</em> y perder estos cambios?`
+                            
+            DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(
+                function () {
                     $state.go('catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla', 
                               { codigoContrato: $scope.codigoContrato, });
                 },
-                function (err) {
+                function () {
                     return true;
                 });
             return;
@@ -625,15 +616,13 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         }
     }
 
-
-    let itemSeleccionado: any = {};
-    let uiGridApi = null;
+    let itemSeleccionado = {};
 
     $scope.datosItemSeleccionado = ""; 
 
     // para registrar el sort que el usuario aplica a la lista. Este sort debe ser usado en la function propagar, para que los datos se 
     // propaguen manteniendo este orden que el usuario ha aplicado ... 
-    let gridSort = []; 
+    const gridSort = [];
 
     $scope.registrosConfiguracion_ui_grid = {
         enableSorting: true,
@@ -648,8 +637,6 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         selectionRowHeaderWidth: 25,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-            uiGridApi = gridApi;
-
             // guardamos el row que el usuario seleccione
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                 
@@ -658,12 +645,12 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     itemSeleccionado = row.entity;
 
                     // mostramos los detalles del item seleccionado ... 
-                    let compania = Companias.findOne(itemSeleccionado.compania); 
-                    let moneda = Monedas.findOne(itemSeleccionado.moneda); 
-                    let ramo = Ramos.findOne(itemSeleccionado.ramo); 
-                    let tipo =  TiposContrato.findOne(itemSeleccionado.tipo); 
+                    const compania = Companias.findOne(itemSeleccionado.compania); 
+                    const moneda = Monedas.findOne(itemSeleccionado.moneda); 
+                    const ramo = Ramos.findOne(itemSeleccionado.ramo); 
+                    const tipo =  TiposContrato.findOne(itemSeleccionado.tipo); 
 
-                    let compania2 = compania.nosotros ? (`${compania.abreviatura} (Nosotros)`) : compania.abreviatura; 
+                    const compania2 = compania.nosotros ? (`${compania.abreviatura} (Nosotros)`) : compania.abreviatura; 
 
                     itemSeleccionado = `${compania2} - ${itemSeleccionado.ano.toString()} - ${moneda.simbolo} - ${ramo.abreviatura} - ${tipo.abreviatura}`;
                     $scope.datosItemSeleccionado = itemSeleccionado;  
@@ -682,17 +669,12 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             }) 
 
             gridApi.core.on.sortChanged( $scope, function(grid, sortColumns){
-
-                // sortColumns is an array containing just the column sorted in the grid
-                var name = sortColumns[0].name; // the name of the first column sorted
-                var direction = sortColumns[0].sort.direction // the direction of the first column sorted: "desc" or "asc"
-      
                 // Your logic to do the server sorting
                 gridSort.length = 0; 
 
-                for (let item of sortColumns) { 
-                    let item2 = { name: item.name, direction: item.sort.direction, }; 
-                    gridSort.push(item2 as never); 
+                for (const item of sortColumns) { 
+                    const item2 = { name: item.name, direction: item.sort.direction, }; 
+                    gridSort.push(item2); 
                 }
             })
         },
@@ -702,9 +684,8 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         },
         getRowIdentity: function (row) {
             return row._id;
-        },
-    };
-
+        }
+    }
 
     $scope.registrosConfiguracion_ui_grid.columnDefs = [
         {
@@ -873,14 +854,13 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             enableSorting: false,
             width: 25
         }
-    ];
+    ]
 
     $scope.deleteItem = (entity) => {
         if (entity) {
-            lodash.remove(registrosConfiguracionArray, (x: any) => { return x._id === entity._id; });
+            lodash.remove(registrosConfiguracionArray, (x) => { return x._id === entity._id; });
         }
     }
-
 
     $scope.propagarCifras = () => {
         // recorremos el array de valores de configuración y 'propagamos' sus cifras; ésto es: dado un valor por el
@@ -893,17 +873,17 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
         let corrPorc_anterior = null;
 
         // si el usuario ha aplicado un sort en la lista, lo usamos. La idea es propagar usando el sort que el usuario ha aplicado ... 
-        let itemsOrderedArray: {}[] = []; 
+        let itemsOrderedArray = []; 
 
         if (Array.isArray(gridSort) && gridSort.length) { 
             // para ordenar con lodash, creamos dos arrays, uno con los nombres y otro con la dirección del sort 
-            let names = []; 
-            let directions = []; 
+            const names = []; 
+            const directions = []; 
 
-            let sortItem: any = {}; 
+            let sortItem = {}; 
             for (sortItem of gridSort) { 
-                names.push(sortItem.name as never); 
-                directions.push(sortItem.direction as never); 
+                names.push(sortItem.name); 
+                directions.push(sortItem.direction); 
             }
 
             // usamos lodash para ordenar por el mismo criterio que indicó el usuario en la lista 
@@ -914,7 +894,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             itemsOrderedArray = lodash.clone(registrosConfiguracionArray); 
         }
 
-        itemsOrderedArray.forEach((x: any) => {
+        itemsOrderedArray.forEach((x) => {
 
             if (!lodash.isFinite(x.ordenPorc)) {
                 // lodash.isFinite incluye cualquier número, incluso el cero
@@ -967,49 +947,49 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
     $scope.showProgress = true; 
 
     readPageState()
-        .then((result: any) => {
+        .then(() => {
 
             // sin el $interval dificilmente funciona el ui-grid-api.selection.selectRow(row) ... 
             $interval( () => { 
                 // leemos en forerunnerDB las monedas que el usuario seleccionó en la lista antes ... 
                 
-                let item: any = null; 
+                let item = null; 
 
-                let anosLeidos = ContProp_tablaConf.find({ tipo: 'anos seleccionados', user: Meteor.userId()}); 
+                const anosLeidos = ContProp_tablaConf.find({ tipo: 'anos seleccionados', user: Meteor.userId()}); 
                 for (item of anosLeidos) { 
-                    let ano = $scope.anos_ui_grid.data.find(x => x.ano === item.ano); 
+                    const ano = $scope.anos_ui_grid.data.find(x => x.ano === item.ano); 
                     if (ano) { 
                         anos_ui_grid_api.selection.selectRow(ano); 
                     }
                 }
 
-                let monedasLeidas = ContProp_tablaConf.find({ tipo: 'monedas seleccionadas', user: Meteor.userId()}); 
+                const monedasLeidas = ContProp_tablaConf.find({ tipo: 'monedas seleccionadas', user: Meteor.userId()}); 
                 for (item of monedasLeidas) { 
-                    let moneda = $scope.monedas_ui_grid.data.find(x => x._id === item.monedaID); 
+                    const moneda = $scope.monedas_ui_grid.data.find(x => x._id === item.monedaID); 
                     if (moneda) { 
                         monedas_ui_grid_api.selection.selectRow(moneda); 
                     }
                 }
 
-                let companiasLeidas = ContProp_tablaConf.find({ tipo: 'companias seleccionadas', user: Meteor.userId()}); 
+                const companiasLeidas = ContProp_tablaConf.find({ tipo: 'companias seleccionadas', user: Meteor.userId()}); 
                 for (item of companiasLeidas) { 
-                    let compania = $scope.companias_ui_grid.data.find(x => x._id === item.companiaID); 
+                    const compania = $scope.companias_ui_grid.data.find(x => x._id === item.companiaID); 
                     if (compania) { 
                         companias_ui_grid_api.selection.selectRow(compania); 
                     }
                 }
 
-                let ramosLeidos = ContProp_tablaConf.find({ tipo: 'ramos seleccionados', user: Meteor.userId()}); 
+                const ramosLeidos = ContProp_tablaConf.find({ tipo: 'ramos seleccionados', user: Meteor.userId()}); 
                 for (item of ramosLeidos) { 
-                    let ramo = $scope.ramos_ui_grid.data.find(x => x._id === item.ramoID); 
+                    const ramo = $scope.ramos_ui_grid.data.find(x => x._id === item.ramoID); 
                     if (ramo) { 
                         ramos_ui_grid_api.selection.selectRow(ramo); 
                     }
                 }
 
-                let tiposLeidos = ContProp_tablaConf.find({ tipo: 'tipos seleccionados', user: Meteor.userId()}); 
+                const tiposLeidos = ContProp_tablaConf.find({ tipo: 'tipos seleccionados', user: Meteor.userId()}); 
                 for (item of tiposLeidos) { 
-                    let tipo = $scope.tiposContrato_ui_grid.data.find(x => x._id === item.tipoID); 
+                    const tipo = $scope.tiposContrato_ui_grid.data.find(x => x._id === item.tipoID); 
                     if (tipo) { 
                         tipos_ui_grid_api.selection.selectRow(tipo); 
                     }
@@ -1019,13 +999,12 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                 $scope.showProgress = false;
             }, 500, 1);
         })
-        .catch((err: any) => {
-            let message =  `Error: hemos obtenido un error al intentar grabar los elementos que Ud. ha seleccionado 
+        .catch((err) => {
+            const message =  `Error: hemos obtenido un error al intentar grabar los elementos que Ud. ha seleccionado
                             en las listas. <br />
                             El mensaje específico del error es: <br />
                             ${err}
                             `
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
             DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
 
@@ -1033,29 +1012,26 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
             $scope.$apply();
         })
 
-
     $scope.agregarRegistrosDeConfiguracion = () => {
         // finalmente, cuando el usuario ejecuta esta función, agregamos estos registros a la tabla de configuración
 
-        if (!registrosConfiguracionArray.find((x: any) => { return x.docState; })) {
-            let message =  `Aparentemente, Ud. <b>no ha efectuado</b> cambios en la lista de registros de configuración. <br /> 
+        if (!registrosConfiguracionArray.find((x) => { return x.docState; })) {
+            const message =  `Aparentemente, Ud. <b>no ha efectuado</b> cambios en la lista de registros de configuración. <br />
                         Ud. debe efectuar cambios en estos registros antes de intentar agregarlos a la tabla 
                         <em>permanente</em> de registros de configuración.
                         `
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
-            var promise = DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
             return;
         }
 
-        let message =  `Los registros que Ud. ha construido serán agregados a la
+        const message =  `Los registros que Ud. ha construido serán agregados a la
                         <em><b>tabla de configuración</b></em> definitiva.<br /><br />
                         Estos registros, aunque agregados, no serán permanentes. Ud. deberá hacer un
                         <em>click</em> en <em>Grabar</em> para grabar los registros agregados a la
                         base de datos. <br /><br />
                         Desea continuar y agregar estos registros a la tabla de configuracion?
                         `
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
         DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(() => {
                 // Ok, vamos a agregar los registros a la tabla de configuración ...
@@ -1064,13 +1040,13 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
 
                 // agregaamos los registros que el usuario ha construido a los que antes existían, para que en state 
                 // anterior se graben (bind) y muestren en el grid ... 
-                let itemsPorAgregar = []; 
+                const itemsPorAgregar = []; 
 
                 lodash(registrosConfiguracionArray).
                         sortBy(['ano', 'nosotros', 'compania', 'moneda', 'ramo', 'tipo'], ['asc', 'desc', 'asc', 'asc', 'asc', 'asc']).
-                        forEach((x: any) => {
+                        forEach((x) => {
 
-                    let itemConfiguracion = {
+                    const itemConfiguracion = {
                         _id: new Mongo.ObjectID()._str,
                         codigo: $scope.codigoContrato,
 
@@ -1091,14 +1067,14 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                         docState: 1,
                     };
 
-                    itemsPorAgregar.push(itemConfiguracion as never);
+                    itemsPorAgregar.push(itemConfiguracion);
                 })
 
                 let itemsAgregados = 0; 
                 let itemsEliminados = 0; 
                 let itemsObviados = 0; 
 
-                let item: any; 
+                let item; 
                 for (item of itemsPorAgregar) { 
 
                     // si el item no tiene valores en ningún campo (porcentajes), lo obviamos 
@@ -1111,7 +1087,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     }
 
                     // eliminamos el item si ya existía en la tabla; buscamos el item original y lo marcamos para ser eliminado ... 
-                    let itemExiste_array = ContProp_tablaConf.find({ 
+                    const itemExiste_array = ContProp_tablaConf.find({
                         ano: item.ano,
                         moneda: item.moneda,
                         ramo: item.ramo,
@@ -1120,7 +1096,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     });
 
                     if (itemExiste_array) { 
-                        for (let x of itemExiste_array) { 
+                        for (const x of itemExiste_array) {
                             // frDB: nótese que no usamos '$set'; solo actualizamos el field en forma directa ... 
                             ContProp_tablaConf.updateById(x._id, { docState: 3 });
                             itemsEliminados++; 
@@ -1148,7 +1124,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                     itemsAgregados++; 
                 }
 
-                let message =  `Ok, los registros de configuración han sido agregados a la tabla.<br /><br />
+            const message =  `Ok, los registros de configuración han sido agregados a la tabla.<br /><br />
                                 En total, <b>${itemsAgregados.toString()}</b> registros han sido agregados.<br />
                                 <b>${itemsEliminados.toString()}</b> han sido eliminados pues ya existían y han sido sustituidos.<br />
                                 <b>${itemsObviados.toString()}</b> han sido obviados por no tener valores en ningún campo o no 
@@ -1156,8 +1132,7 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
                                 Recuerde que Ud. debe hacer un <em>click</em> en <em>Grabar</em> para registrar estos registros 
                                 en la base de datos.
                             `
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
-                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false).then((x) => { 
+                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false).then(() => { 
                     $state.go('catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla', 
                               { codigoContrato: $scope.codigoContrato, }); 
                 });
@@ -1168,7 +1143,6 @@ angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construi
     }
 }])
 
-
 // --------------------------------------------------------------------------------------------------------------------------------
 // recuperamos el state de la página desde forerunnerDB ... 
 // en forerunnerDB debemos hacer un load para cargar, desde el storage en el browser, el contenido de cada collection ... 
@@ -1177,10 +1151,10 @@ function readPageState() {
 
     return new Promise((resolve, reject) => {
 
-        ContProp_tablaConf.load(function (err, tableStats, metaStats) {
+        ContProp_tablaConf.load(function (err) {
             if (!err) {
                 // Load was successful
-                let result = `Ok, el 'load' fue exitoso en forerunnerDB ...`; 
+                const result = `Ok, el 'load' fue exitoso en forerunnerDB ...`;
                 resolve(result); 
             } else { 
                 reject(err); 
@@ -1189,7 +1163,6 @@ function readPageState() {
 
     })
 } 
-
 
 // --------------------------------------------------------------------------------------
 // grabamos a forerunnerDB los items seleccionados en las listas ... 
@@ -1208,14 +1181,14 @@ function itemsSeleccionadosEnListas_grabarEnForerunnerDB(anos_selectedRows, mone
         ContProp_tablaConf.remove({ tipo: 'tipos seleccionados', user: Meteor.userId() });
 
         // guardamos los rows seleccionados en forerunnerDB 
-        anos_selectedRows.forEach((ano: any) => {
+        anos_selectedRows.forEach((ano) => {
             ano.tipo = 'anos seleccionados'; 
             ano.user = Meteor.userId(); 
 
             ContProp_tablaConf.insert(ano);
         }); 
 
-        monedas_selectedRows.forEach((moneda: any) => {
+        monedas_selectedRows.forEach((moneda) => {
             moneda.monedaID = moneda._id; 
             delete moneda._id; 
             moneda.tipo = 'monedas seleccionadas'; 
@@ -1224,7 +1197,7 @@ function itemsSeleccionadosEnListas_grabarEnForerunnerDB(anos_selectedRows, mone
             ContProp_tablaConf.insert(moneda);
         }); 
 
-        ramos_selectedRows.forEach((ramo: any) => {
+        ramos_selectedRows.forEach((ramo) => {
             ramo.ramoID = ramo._id; 
             delete ramo._id; 
             ramo.tipo = 'ramos seleccionados'; 
@@ -1233,7 +1206,7 @@ function itemsSeleccionadosEnListas_grabarEnForerunnerDB(anos_selectedRows, mone
             ContProp_tablaConf.insert(ramo);
         }); 
 
-        companias_selectedRows.forEach((compania: any) => {
+        companias_selectedRows.forEach((compania) => {
             compania.companiaID = compania._id; 
             delete compania._id; 
             compania.tipo = 'companias seleccionadas'; 
@@ -1242,7 +1215,7 @@ function itemsSeleccionadosEnListas_grabarEnForerunnerDB(anos_selectedRows, mone
             ContProp_tablaConf.insert(compania);
         }); 
 
-        tipos_selectedRows.forEach((tipo: any) => {
+        tipos_selectedRows.forEach((tipo) => {
             tipo.tipoID = tipo._id; 
             delete tipo._id; 
             tipo.tipo = 'tipos seleccionados'; 
@@ -1254,7 +1227,7 @@ function itemsSeleccionadosEnListas_grabarEnForerunnerDB(anos_selectedRows, mone
         ContProp_tablaConf.save(function (err) {
             if (!err) {
                 // Save was successful
-                let result = `Ok, el 'save' fue exitoso en forerunnerDB ...`; 
+                const result = `Ok, el 'save' fue exitoso en forerunnerDB ...`;
                 resolve(result); 
             } else { 
                 reject(err); 

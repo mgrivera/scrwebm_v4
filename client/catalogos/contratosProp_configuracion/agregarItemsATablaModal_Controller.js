@@ -1,14 +1,15 @@
 
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash';
+import angular from 'angular'; 
+import lodash from 'lodash';
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
-import { Ramos } from 'imports/collections/catalogos/ramos'; 
-import { TiposContrato } from 'imports/collections/catalogos/tiposContrato'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias';
+import { Ramos } from '/imports/collections/catalogos/ramos';
+import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller('AgregarItemsATablaModal_Controller',
 ['$scope', '$modalInstance', '$modal', 'codigoContrato', 'tablaConfiguracion', 'ciaSeleccionada',
@@ -30,10 +31,10 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
     $scope.tiposContrato = TiposContrato.find().fetch();
 
     // construimos una lista con los años que van desde el 2.000 hasta tres años por encima del actual. 
-    let listaAnos = []; 
-    let anoActual = new Date().getFullYear(); 
+    const listaAnos = [];
+    const anoActual = new Date().getFullYear();
     for (let i = (anoActual + 3); i >= 2000; i--) { 
-        listaAnos.push({ ano: i } as never); 
+        listaAnos.push({ ano: i }); 
     }
 
     $scope.listaAnos = listaAnos; 
@@ -46,14 +47,12 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
         $modalInstance.dismiss("Cancel");
     };
 
-    let uiGridApi = null;
-
     $scope.datosItemSeleccionado = ""; 
 
     // para registrar el sort que el usuario aplica a la lista. Este sort debe ser usado en la function propagar, para que los datos se 
     // propaguen manteniendo este orden que el usuario ha aplicado ... 
-    let gridSort = []; 
-    let itemSeleccionado = {} as any; 
+    const gridSort = []; 
+    let itemSeleccionado = {}; 
 
     $scope.registrosConfiguracion_ui_grid = {
         enableSorting: true,
@@ -67,7 +66,6 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
         selectionRowHeaderWidth: 35,
         rowHeight: 25,
         onRegisterApi: function (gridApi) {
-            uiGridApi = gridApi;
 
             // guardamos el row que el usuario seleccione
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
@@ -75,12 +73,12 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
                     itemSeleccionado = row.entity;
 
                     // mostramos los detalles del item seleccionado ... 
-                    let compania = Companias.findOne(itemSeleccionado.compania); 
-                    let moneda = Monedas.findOne(itemSeleccionado.moneda); 
-                    let ramo = Ramos.findOne(itemSeleccionado.ramo); 
-                    let tipo =  TiposContrato.findOne(itemSeleccionado.tipo); 
+                    const compania = Companias.findOne(itemSeleccionado.compania); 
+                    const moneda = Monedas.findOne(itemSeleccionado.moneda); 
+                    const ramo = Ramos.findOne(itemSeleccionado.ramo); 
+                    const tipo =  TiposContrato.findOne(itemSeleccionado.tipo); 
 
-                    let compania2 = compania.nosotros ? (`${compania.abreviatura} (Nosotros)`) : compania.abreviatura; 
+                    const compania2 = compania.nosotros ? (`${compania.abreviatura} (Nosotros)`) : compania.abreviatura; 
 
                     itemSeleccionado = `${compania2} - ${itemSeleccionado.ano.toString()} - ${moneda.simbolo} - ${ramo.abreviatura} - ${tipo.abreviatura}`;
                     $scope.datosItemSeleccionado = itemSeleccionado;  
@@ -97,17 +95,12 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
             }) 
 
             gridApi.core.on.sortChanged( $scope, function(grid, sortColumns){
-
-                // sortColumns is an array containing just the column sorted in the grid
-                var name = sortColumns[0].name; // the name of the first column sorted
-                var direction = sortColumns[0].sort.direction // the direction of the first column sorted: "desc" or "asc"
-      
                 // Your logic to do the server sorting
                 gridSort.length = 0; 
 
-                for (let item of sortColumns) { 
-                    let item2 = { name: item.name, direction: item.sort.direction, }; 
-                    gridSort.push(item2 as never); 
+                for (const item of sortColumns) { 
+                    const item2 = { name: item.name, direction: item.sort.direction, }; 
+                    gridSort.push(item2); 
                 }
             })
         },
@@ -295,7 +288,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
 
     $scope.deleteItem = (entity) => {
         if (entity) {
-            lodash.remove(registrosConfiguracionArray, (x: any) => { return x._id === entity._id; });
+            lodash.remove(registrosConfiguracionArray, (x) => { return x._id === entity._id; });
         }
     }
 
@@ -311,11 +304,9 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
 
         if (!$scope.parametros) {
 
-            let message = `Error: Ud. debe indicar los valores (parámetros) requeridos (año, compañía, moneda, ramo, ...) para la construcción de
+            const message = `Error: Ud. debe indicar los valores (parámetros) requeridos (año, compañía, moneda, ramo, ...) para la construcción de
                            los <em>registros de configuración</em> del año para el contrato.`; 
             
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
-
             DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
             return;
         }
@@ -327,27 +318,26 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
 
             // creamos un array de compañías, para agregar 'nosotros' y 'abreviatura' a cada compañía (_id);
             // la idea es que luego podamos hacer un sort por estos valores
-            let companiasArray = [];
+            const companiasArray = [];
 
             $scope.parametros.companias.forEach((c) => {
-                let companiaItem = lodash.find($scope.companias, (x) => { return x._id === c; });
+                const companiaItem = lodash.find($scope.companias, (x) => { return x._id === c; });
 
                 companiasArray.push({
                     _id: c,
                     nosotros: companiaItem.nosotros,
                     abreviatura: companiaItem.abreviatura,
                     nombre: companiaItem.nombre,
-                } as never);
+                });
             })
 
             // el usuario debió haber seleccionado la compañía 'nosotros'
-            let companiaNosotros = lodash.some(companiasArray, (x: any) => { return x.nosotros; });
+            const companiaNosotros = lodash.some(companiasArray, (x) => { return x.nosotros; });
             if (!companiaNosotros) {
-                let message = `Error: Ud. debe seleccionar, en la lista de compañías, la que corresponde a
+                const message = `Error: Ud. debe seleccionar, en la lista de compañías, la que corresponde a
                 <em><b>nosotros</b></em>. Esa es, justamente, nuestra compañía y debe ser
                 seleccionada para representar nuestra participación en el contrato.
                 `; 
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
                 DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
                 return;
@@ -359,7 +349,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
             // ordenamos las compañías por: nosotros y nombre; la idea es que se muestre primero nuestra
             // compañía y luego el resto, ordenadas por su nombre ...
            
-            lodash.orderBy(companiasArray, ['nosotros', 'abreviatura'], ['desc', 'asc']).forEach((compania: any) => {
+            lodash.orderBy(companiasArray, ['nosotros', 'abreviatura'], ['desc', 'asc']).forEach((compania) => {
                 $scope.parametros.anos.forEach((ano) => { 
                     $scope.parametros.monedas.forEach((moneda) => {
                         $scope.parametros.ramos.forEach((ramo) => {
@@ -383,23 +373,21 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
                                     corretajePorc: null,
                                 };
 
-                                registrosConfiguracionArray.push(registroConfiguracionItem as never);
+                                registrosConfiguracionArray.push(registroConfiguracionItem);
                             })
                         })
                     })
                 })
             })
 
-
             $scope.registrosConfiguracion_ui_grid.data = [];
             $scope.registrosConfiguracion_ui_grid.data = registrosConfiguracionArray;
 
-            let message = `Ok, los registros de configuración para el año y el contrato han sido construídos.<br />
+            const message = `Ok, los registros de configuración para el año y el contrato han sido construídos.<br />
             Ahora Ud. puede indicar los valores apropiados para cada uno.<br /><br />
             Para <em><b>propagar</b></em> los valores indicados a otros registros,
             haga un <em>click</em> en <em>Propagar</em>.
            `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
             DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
         }
@@ -421,13 +409,13 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
 
         if (Array.isArray(gridSort) && gridSort.length) { 
             // para ordenar con lodash, creamos dos arrays, uno con los nombres y otro con la dirección del sort 
-            let names = []; 
-            let directions = []; 
+            const names = []; 
+            const directions = []; 
 
-            let sortItem: any; 
+            let sortItem; 
             for (sortItem of gridSort) { 
-                names.push(sortItem.name as never); 
-                directions.push(sortItem.direction as never); 
+                names.push(sortItem.name); 
+                directions.push(sortItem.direction); 
             }
 
             // usamos lodash para ordenar por el mismo criterio que indicó el usuario en la lista 
@@ -438,7 +426,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
             itemsOrderedArray = lodash.clone(registrosConfiguracionArray); 
         }
 
-        itemsOrderedArray.forEach((x: any) => {
+        itemsOrderedArray.forEach((x) => {
 
             if (!lodash.isFinite(x.ordenPorc)) {
                 // lodash.isFinite incluye cualquier número, incluso el cero
@@ -489,23 +477,22 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
 
     $scope.AgregarRegistrosDeConfiguracion = () => {
         // finalmente, cuando el usuario ejecuta esta función, agregamos estos registros a la tabla de configuración
-        let message = `Los registros que Ud. ha construido serán agregados a la
+        const message = `Los registros que Ud. ha construido serán agregados a la
         <em><b>tabla de configuración</b></em> definitiva.<br /><br />
         Estos registros, aunque agregados, no serán permanentes. Ud. deberá hacer un
         <em>click</em> en <em>Grabar</em> para grabar los registros agregados a la
         base de datos. <br /><br />
         Desea continuar y agregar estos registros a la tabla de configuracion?
         `; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
         DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(
                                 () => {
                                     // Ok, vamos a agregar los registros a la tabla de configuración ...
                                     let cantidadRegistrosAgregados = 0;
 
-                                    lodash(registrosConfiguracionArray).sortBy(['ano', 'nosotros', 'compania', 'moneda', 'ramo', 'tipo'], ['asc', 'desc', 'asc', 'asc', 'asc', 'asc']).forEach((x: any) => {
+                                    lodash(registrosConfiguracionArray).sortBy(['ano', 'nosotros', 'compania', 'moneda', 'ramo', 'tipo'], ['asc', 'desc', 'asc', 'asc', 'asc', 'asc']).forEach((x) => {
 
-                                        let itemConfiguracion = {
+                                        const itemConfiguracion = {
                                             _id: new Mongo.ObjectID()._str,
                                             codigo: codigoContrato,
 
@@ -530,14 +517,13 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
                                         cantidadRegistrosAgregados++;
                                     })
 
-                                    let message = `Ok, los registros de configuración han sido agregados a la tabla.<br />
+                                    const message = `Ok, los registros de configuración han sido agregados a la tabla.<br />
                                     En total, <b>${cantidadRegistrosAgregados.toString()}</b> registros
                                     han sido agregados.<br /><br />
                                     Recuerde que Ud. debe cerrar este diálogo y
                                     hacer un <em>click</em> en <em>Grabar</em> para que los registros sean
                                     efectivamente registrados en la base de datos.
                                     `; 
-                                    message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
                                     DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
                                 },
                                 () => {
@@ -545,5 +531,4 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
                                 }
                             );
     }
-}
-]);
+}])
