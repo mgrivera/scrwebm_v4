@@ -41,6 +41,17 @@
 
                             <li><a href="#" ng-click="leerTablaConfiguracion()" class="navbar_custom_xsmall_node">Leer tabla de configuración</a></li>
                             <li><a href="#" ng-click="distribuirMontosPrSinEnCompanias()" class="navbar_custom_xsmall_node">Distribuir</a></li>
+
+                            <li class="divider-vertical-small"></li>
+                            
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle navbar_custom_xsmall_node" data-toggle="dropdown" role="button"
+                                    aria-expanded="false">Exportar/Importar&nbsp;&nbsp;<span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" ng-click="exportarMontosCSV()" class="navbar_custom_xsmall_node">Exportar&nbsp;&nbsp;<i class="fa fa-upload"></i></a></li>
+                                    <li><a href="#" ng-click="importarMontosCSV()" class="navbar_custom_xsmall_node">Importar &nbsp;&nbsp;<i class="fa fa-download"></i></a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -131,3 +142,12 @@
 </div>
 
 <br /><br />
+
+<!-- con este Input permitimos al usuario indicar el file que será usado para leer el resumen de primas y siniestros 
+     Nota: el file fue previamente creado con la opción Exportar  -->
+<input type="file" 
+       id="fileInput" 
+       accept=".txt" 
+       multiple="false" 
+       onchange="angular.element(this).scope().downloadFile(this.files)" 
+       ng-show="false">

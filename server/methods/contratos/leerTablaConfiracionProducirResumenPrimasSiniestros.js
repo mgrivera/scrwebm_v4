@@ -1,5 +1,4 @@
 
-
 import { Meteor } from 'meteor/meteor';
 import SimpleSchema from 'simpl-schema';
 import lodash from 'lodash'; 
@@ -20,11 +19,10 @@ Meteor.methods(
             ciaSeleccionadaID: { type: String, optional: false },
         }).validate({ codigoContrato, anoContrato, ciaSeleccionadaID, });
 
-        // sumamos un año para leer los registros en la tabla de configuración. La razón es que contratos 
-        // que se inician en un año, ej: 2.019, pueden querer leer y mostrar series del año 2.020 y anteriores; 
-        // es decir, un contrato que se inicia en un año (2019) debe leer series desde el próximo año (2.020) 
-        // y anteriores 
-        const anoContrato2 = anoContrato + 1; 
+        // sumamos varios años, para que el usuario pueda tener en la tabla de configuración registros de años 
+        // muy posteriores. Por ejemplo: un contrato que se inicia en el 2020 puede tener registros en la tabla 
+        // para el año 2.022
+        const anoContrato2 = anoContrato + 4; 
 
         const tablaConfiguracion = ContratosProp_Configuracion_Tablas.find({
                                                     codigo: codigoContrato,
@@ -33,7 +31,6 @@ Meteor.methods(
                                                     cia: ciaSeleccionadaID,
                                                 }).fetch();
 
-        
 
         if (!tablaConfiguracion.length) {
             const message = `Error: no hemos podido leer registros en la <em>tabla de configuración</em> para el código

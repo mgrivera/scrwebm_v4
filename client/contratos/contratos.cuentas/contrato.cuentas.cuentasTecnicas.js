@@ -6,11 +6,13 @@ import lodash from 'lodash';
 import numeral from 'numeral'; 
 import angular from 'angular';
 
-import { ContratosProp_Configuracion_Tablas } from 'imports/collections/catalogos/ContratosProp_Configuracion';
+import Papa from 'papaparse';
+import saveAs from 'save-as'
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalogos/ContratosProp_Configuracion';
+
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
-
 
 angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controller", ['$scope', '$modal', 'uiGridConstants', '$q',
 function ($scope, $modal, uiGridConstants, $q) {
@@ -206,8 +208,6 @@ function ($scope, $modal, uiGridConstants, $q) {
                 $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-
-
     $scope.leerTablaConfiguracion = () => {
         // contratos proporcionales: leemos la tabla de configuración y regresamos un resumen de las combinaciones
         // mon/ramo/tipo/serie, para que el usuario indique primas y siniestros para cada una ...
@@ -275,11 +275,10 @@ function ($scope, $modal, uiGridConstants, $q) {
 
                 $scope.$parent.alerts.length = 0;
 
-                let message = `Resumen de primas y siniestros.<br /><br />
+                const message = `Resumen de primas y siniestros.<br /><br />
                                 <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
                                 <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`; 
-                message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
-                
+
                 DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
             },
             (error) => {
@@ -290,6 +289,127 @@ function ($scope, $modal, uiGridConstants, $q) {
                 });
             }
         )
+    }
+
+    $scope.exportarMontosCSV = () => { 
+
+        const items = $scope.contratosProp_cuentas_resumen.filter(x => x.definicionID === definicionSeleccionadaID);
+        const result = exportarMontosCSV(items); 
+
+        if (result.error) { 
+            const message = `Error: ha ocurrido un error al intentar ejecutar esta función: <br /><br />
+                             ${result.message} 
+                            `; 
+            DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
+        }
+    }
+
+    $scope.importarMontosCSV = function () {
+        // leemos algún riesgo que se haya exportado antes (con un Download) y lo agregamos como un riesgo nuevo ... 
+        const inputFile = angular.element("#fileInput");
+        if (inputFile) {
+            inputFile.click();        // simulamos un click al input (file)
+        }
+    }
+
+    $scope.downloadFile = function (files) {
+
+        const userSelectedFile = files[0];
+
+        if (!userSelectedFile) {
+            DialogModal($modal, "<em>Contratos proporcionales - Importar resumen de primas y siniestros</em>",
+                `Aparentemente, Ud. no ha seleccionado un archivo.<br />
+                                 Ud. debe seleccionar un archivo que haya sido creado antes 
+                                 mediante la opción <em>Exportar</em>, que existe en este mismo menú.`,
+                false).then();
+
+            const inputFile = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) {
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            }
+
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+
+            // esta función importa (merge) el contenido del archivo, que es un json, al riesgo en el $scope ... 
+            const textFileContent = (e.target.result);
+
+            const inputFile = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) {
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            } 
+
+            downloadFile2(textFileContent); 
+        }
+
+        reader.readAsText(userSelectedFile, "ISO-8859-1")
+    }
+
+    const downloadFile2 = (textFileContent) => {
+
+        // usamos papaParse para convertir desde texto a json 
+        const config = {
+            delimiter: "\t",	       
+            skipEmptyLines: 'greedy',
+            header: true
+        };
+
+        const result = Papa.parse(textFileContent, config);
+        const errors = result.errors;
+
+        if (errors.length) {
+            let message = `Se han encontrado errores al intentar leer el archivo con los registros para actualizar. <br /><br /><ul>`;
+
+            errors.map(x => {
+                message += `<li>${JSON.stringify(x)}</li>`;
+            });
+
+            message += `<ul>`
+
+            DialogModal($modal, "<em>Contratos proporcionales - Importar resumen de primas y siniestros</em>", message, false).then();
+            return;
+        }
+
+        const items = result.data.slice();
+        
+        const contratoID = $scope.contrato._id;
+        const definicionSeleccionadaID = $scope.definicionCuentaTecnicaSeleccionada._id;
+        
+        for (const item of items) {
+            const resumenPrimaSiniestros_item = {
+                _id: new Mongo.ObjectID()._str,
+                contratoID: contratoID,
+                definicionID: definicionSeleccionadaID,
+                moneda: item.moneda,
+                ramo: item.ramo,
+                tipoContrato: item.tipoContrato,
+                serie: item.serie ? parseInt(item.serie) : 0,
+                primas: item.primas ? parseFloat(item.primas) : 0,
+                siniestros: item.siniestros ? parseFloat(item.siniestros) : 0,
+                docState: 1,
+            }
+            $scope.contratosProp_cuentas_resumen.push(resumenPrimaSiniestros_item);
+        }
+
+        $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid.data = [];
+        $scope.cuentasTecnicas_resumenPrimasSiniestros_ui_grid.data =
+            $scope.contratosProp_cuentas_resumen.filter(x => x.definicionID === definicionSeleccionadaID);
+
+        $scope.$parent.$parent.dataHasBeenEdited = true;
+
+        $scope.$parent.alerts.length = 0;
+
+        const message = `Resumen de primas y siniestros.<br /><br />
+                         Ok, los registros que existen en el archivo que Ud. ha indicado, se han importado a la lista.
+                        `;
+
+        DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
     }
 
     // --------------------------------------------------------------------------------------
@@ -779,7 +899,6 @@ function ($scope, $modal, uiGridConstants, $q) {
         },
     ]
 
-
     $scope.deleteItem_distribucionPrimasSiniestros = (entity) => {
 
         if (entity.docState && entity.docState === 1) { 
@@ -797,7 +916,6 @@ function ($scope, $modal, uiGridConstants, $q) {
         
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
-
 
     $scope.distribuirMontosPrSinEnCompanias = () => {
 
@@ -958,7 +1076,6 @@ function ($scope, $modal, uiGridConstants, $q) {
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-
     $scope.distribuirMontosPrSinEnCompanias_obtenerSaldosFinales = () => {
 
         // finalmente, recorremos el array de cifras y sumarizamos para obtener solo un registro para
@@ -1034,7 +1151,6 @@ function ($scope, $modal, uiGridConstants, $q) {
         $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
-    
     // --------------------------------------------------------------------------------------
     // ui-grid para el registro de la distribución de primas y siniestros en las compañías
     // del contrato (ie: cifras detalladas *antes* de saldos) ...
@@ -1513,4 +1629,42 @@ function ui_grid_filterBy_nosotros(searchTerm, cellValue) {
     }
 
     return false;
+}
+
+const exportarMontosCSV = (items) => {
+
+    try {
+        // eliminamos algunas propiedades que no queremos en el txt (csv) 
+        items.forEach(x => delete x.cuentaContableId);
+
+        // papaparse: convertimos el array json a un string csv ...
+        const config = {
+            quotes: false,
+            delimiter: "\t",
+            header: true
+        };
+
+        let csvString = Papa.unparse(items, config);
+
+        // cambiamos los headers por textos más apropiados (pareciera que ésto no se puede hacer desde el config)
+        csvString = csvString.replace("cuentaContable", "cuenta contable");
+        csvString = csvString.replace("nombreCuenta", "nombre cuenta contable");
+        csvString = csvString.replace("cc_descripcion", "centro cto desc");
+        csvString = csvString.replace("cc_abreviatura", "centro cto abrev");
+
+        var blob = new Blob([csvString], { type: "text/plain;charset=utf-8" });
+        saveAs(blob, "resumen primas siniestros");
+
+        return { 
+            error: false
+        }
+    }
+    catch (err) {
+        const message = err.message ? err.message : err.toString();
+        return { 
+            error: true, 
+            message
+        }
+    }
+
 }

@@ -5,9 +5,9 @@ import { Mongo } from 'meteor/mongo';
 import lodash from 'lodash';
 import angular from 'angular';
 
-import { ContratosProp_Configuracion_Tablas } from 'imports/collections/catalogos/ContratosProp_Configuracion';
+import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalogos/ContratosProp_Configuracion';
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
 angular.module("scrwebm").controller("Contrato_Cuentas_EntCartPr_Controller", ['$scope', '$modal', 'uiGridConstants', '$q',

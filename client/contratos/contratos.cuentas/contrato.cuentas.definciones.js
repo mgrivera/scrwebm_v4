@@ -5,9 +5,9 @@ import moment from 'moment';
 import lodash from 'lodash';
 import angular from 'angular';
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
 angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller", ['$scope', '$modal', 'uiGridConstants', '$q', '$interval', 
