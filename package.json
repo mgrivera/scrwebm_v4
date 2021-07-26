@@ -34,7 +34,7 @@
     "isomorphic-fetch": "2.2.1",
     "jszip": "2.0.0",
     "length-stream": "^0.1.1",
-    "lodash": "4.6.1",
+    "lodash": "4.17.21",
     "meteor-node-stubs": "0.3.2",
     "moment": "^2.22.1",
     "mustache": "4.2.0",
@@ -57,12 +57,12 @@
     "save-as": "0.1.8",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "0.88.2",
-    "simpl-schema": "0.3.2",
+    "simpl-schema": "1.10.2",
     "stream-buffers": "^2.1.0",
     "sweetalert2": "^9.10.12",
     "tabulator-tables": "^4.0.4",
     "ui-select": "0.19.8",
-    "xlsx": "0.9.13",
+    "xlsx": "0.17.0",
     "xlsx-injector": "0.0.3"
   },
   "devDependencies": {
