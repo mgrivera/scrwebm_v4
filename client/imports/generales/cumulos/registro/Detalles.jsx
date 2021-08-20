@@ -37,7 +37,7 @@ const inicializarZonas = (cumuloId, cumulos) => {
     return zonas;
 }
 
-const Detalles = ({ itemId, cumulos, monedas, ramos, companias, asegurados, empresasUsuarias, ciaSeleccionadaId, modo, setCurrentTab }) => {
+const Detalles = ({ itemId, cumulos, monedas, ramos, companias, asegurados, empresasUsuarias, modo, setCurrentTab }) => {
 
     const { register, handleSubmit, reset, getValues, setValue, watch } = useForm();
 
@@ -78,49 +78,6 @@ const Detalles = ({ itemId, cumulos, monedas, ramos, companias, asegurados, empr
 
     const handleMessageDismiss = () => {
         setShowMessage({ show: false, type: '', message: '' });
-    }
-
-    const inicializarItem = () => {
-
-        // para mostrar un (sub) modal que muestra un spinner y un mensaje final para este proceso 
-        setShowMessageModal(true);
-        setMessageModalShowSpinner(true);
-        setMessageModalTitle("Registro de cúmulos - Inicializando el registro");
-
-        // en defaults están los valores necesarios para leer el entity en mongo: entityId, subEntityId, origen
-        Meteor.call('cumulos_registro.inicialirNewItem', defaults, (err, result) => {
-
-            if (err) {
-                setShowMessage({ show: true, type: 'danger', message: err.message });
-                setSpinner(false);
-
-                return;
-            }
-
-            if (result.error) {
-                setShowMessage({ show: true, type: 'danger', message: result.message });
-                setSpinner(false);
-
-                return;
-            }
-
-            // lamentablemente, aunque algunos Inputs tengan { valueAsDate: true }, no aceptan un date para inicializarlos 
-            // siempre debemos pasar 'yyyy-mm-dd' 
-            const values = Object.assign({}, result.values);
-
-            values.desde = result.values.desde.toISOString().substr(0, 10);
-            values.hasta = result.values.hasta.toISOString().substr(0, 10);
-            values.cumulosAl = result.values.cumulosAl.toISOString().substr(0, 10);
-
-            reset(values); // asynchronously reset your form values
-
-            // ------------------------------------------------------------------------------------------
-            // finalizamos y mostramos el mensaje en el modal 
-            const message = result.message;
-            setMessageModalMessage({ type: 'success', message, show: true });
-            setMessageModalShowSpinner(false);
-            // ------------------------------------------------------------------------------------------
-        })
     }
 
     const calcularCumulo = () => {
@@ -217,14 +174,6 @@ const Detalles = ({ itemId, cumulos, monedas, ramos, companias, asegurados, empr
 
         result = convertFromStringToDate(data.cumulosAl);
         values.cumulosAl = !result?.error ? result.date : values.cumulosAl;
-
-        // asignamos algunos valores al registro 
-        // values._id = new Mongo.ObjectID()._str;
-        // values.entityId = defaults.entityId;
-        // values.subEntityId = defaults.subEntityId;
-        // values.ingreso = new Date();
-        // values.usuario = Meteor.user().emails[0].address;
-
 
         values.ultAct = new Date();
         values.ultUsuario = Meteor.user().emails[0].address;
@@ -359,11 +308,7 @@ const Detalles = ({ itemId, cumulos, monedas, ramos, companias, asegurados, empr
                             <Col sm={7} style={{ textAlign: 'right' }}>
                             </Col>
 
-                            <Col sm={1} style={{ textAlign: 'right' }}>
-                                <Button bsStyle="link" onClick={inicializarItem}>
-                                    <span style={{ fontStyle: 'italic' }}>Inicializar</span>
-                                </Button>
-                            </Col>
+                            <Col sm={1} /> 
 
                             <Col sm={1} style={{ textAlign: 'right' }}>
                                 <Button bsStyle="link" onClick={calcularCumulo}>
@@ -496,8 +441,7 @@ const Detalles = ({ itemId, cumulos, monedas, ramos, companias, asegurados, empr
                         <Row>
                             <Col sm={12}>
                                 <hr style={{ marginBottom: '5px', borderTop: '2px solid #bbb' }} />
-                                <h4 style={{ margin: '0' }}>Tipo de cúmulo y Zona: </h4> <br /> 
-                                <p>Tipo de cúmulo: {tipoCumulo_wacthed}</p>
+                                <h4 style={{ margin: '0' }}>Tipo de cúmulo y Zona: </h4>
                                 <hr style={{ marginTop: '5px', borderTop: '2px solid #bbb' }} />
                             </Col>
                         </Row>
@@ -858,11 +802,13 @@ const Detalles = ({ itemId, cumulos, monedas, ramos, companias, asegurados, empr
                             </Col>
                         </Row>
 
+                        {modo != "consulta" &&
                         <Row>
                             <Col sm={11} smOffset={1} style={{ textAlign: 'right' }}>
                                 <Button bsStyle="primary" bsSize="small" type="submit">Grabar</Button>
                             </Col>
                         </Row>
+                        }
                     </Grid>
                 </form>
             </div>
@@ -879,7 +825,6 @@ Detalles.propTypes = {
     ramos: PropTypes.array.isRequired,
     asegurados: PropTypes.array.isRequired,
     empresasUsuarias: PropTypes.array.isRequired,
-    ciaSeleccionadaId: PropTypes.string.isRequired,
     setCurrentTab: PropTypes.func.isRequired
 };
 

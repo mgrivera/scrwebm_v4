@@ -133,20 +133,6 @@ Meteor.methods(
 
                 case 'prop': {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     const contrato = Contratos.findOne(entityId);
 
                     if (!contrato) {

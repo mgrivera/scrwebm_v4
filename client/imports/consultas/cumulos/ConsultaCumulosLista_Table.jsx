@@ -12,17 +12,19 @@ const TableRow = ({ item }) => {
     return (
         <tr>
             <td>{item.monedas.simbolo}</td>
+            <td>{item.cumulos.abreviatura}</td>
+            <td>{item.zonas.abreviatura}</td>
             <td>{item.companias.abreviatura}</td>
             <td>{item.ramos.abreviatura}</td>
-            <td>{moment(item.cumulos.desde).format('DD-MM-YYYY')}</td>
-            <td>{moment(item.cumulos.hasta).format('DD-MM-YYYY')}</td>
-            <td>{item.cumulos.origen}</td>
-            <td>{item.numero}</td>
-            <td>{item.tiposCumulo.zonas.abreviatura}</td>
-            <td>{numeral(item.cumulos.sumaAsegurada).format("0,0.0")}</td>
-            <td>{numeral(item.cumulos.montoAceptado).format("0,0.0")}</td>
-            <td>{numeral(item.cumulos.montoCedido).format("0,0.0")}</td>
-            <td>{numeral(item.cumulos.cumulo).format("0,0.0")}</td>
+            <td>{moment(item.desde).format('DD-MM-YYYY')}</td>
+            <td>{moment(item.hasta).format('DD-MM-YYYY')}</td>
+            <td>{moment(item.cumulosAl).format('DD-MM-YYYY')}</td>
+            <td>{item.origen}</td>
+            <td>{`${item.numero}-${item.subNumero}`}</td>
+            <td>{numeral(item.valorARiesgo).format("0,0.0")}</td>
+            <td>{numeral(item.sumaAsegurada).format("0,0.0")}</td>
+            <td>{numeral(item.primaCumulo).format("0,0.0")}</td>
+            <td>{numeral(item.cumulo).format("0,0.0")}</td>
         </tr>
     )
 }
@@ -42,16 +44,18 @@ function ConsultaCumulosLista_Table({ items }) {
                 <thead>
                     <tr>
                         <th>Mon</th>
+                        <th>Tipo cúmulo</th>
+                        <th>Zona</th>
                         <th>Compañía</th>
                         <th>Ramo</th>
                         <th>Desde</th>
                         <th>Hasta</th>
+                        <th>Cúmulos al</th>
                         <th>Origen</th>
-                        <th>Número</th>
-                        <th>Zona</th>
-                        <th>Suma aseg</th>
-                        <th>Monto aceptado</th>
-                        <th>Monto cedido</th>
+                        <th>##</th>
+                        <th>Valor a riesgo</th>
+                        <th>Suma asegurada</th>
+                        <th>Prima cúmulo</th>
                         <th>Cúmulo</th>
                     </tr>
                 </thead>

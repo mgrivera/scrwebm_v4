@@ -5,37 +5,21 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { useTracker } from 'meteor/react-meteor-data';
 
-import Tabs from 'react-bootstrap/lib/Tabs';
-import Tab from 'react-bootstrap/lib/Tab';
-import Button from 'react-bootstrap/lib/Button';
-
 import ToolBar from './ToolBar'; 
 import FormGenerales from './FormGenerales'; 
-import FormListas from './FormListas'; 
 import Spinner from '/client/imports/reactComponents/Spinner'; 
 import Alerts from '/client/imports/reactComponents/Alerts'; 
 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada';
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
-import { Cumulos } from '/imports/collections/catalogos/cumulos'; 
+import { Cumulos } from '/imports/collections/catalogos/cumulos';
+import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Filtros } from '/imports/collections/otros/filtros';
 
 function ConsultaCumulosFiltro() { 
 
     const [companiaSeleccionada, setCompaniaSeleccionada] = useState({}); 
-    const [currentTab, setCurrentTab] = useState(1); 
-    const [formValues, setFormValues] = useState({
-        fechaEmision1: '', 
-        fechaEmision2: '', 
-        vigenciaInicial1: '', 
-        vigenciaInicial2: '', 
-        vigenciaFinal1: '', 
-        vigenciaFinal2: '', 
-        periodoVigencia1: '', 
-        periodoVigencia2: '', 
-        tipoCumulo: null, 
-        tipoNegocio: []
-    });
+    const [filtroAnterior, setFiltroAnterior ] = useState({}); 
 
     // style: // danger / warning / success / info
     const [alert, setAlert] = useState({ show: false, style: "", title: "", message: "" }); 
@@ -59,15 +43,11 @@ function ConsultaCumulosFiltro() {
     useEffect(() => { 
         // si hay un filtro anterior, lo usamos
         // los filtros (solo del usuario) se publican en forma automática cuando se inicia la aplicación
-        const filtroAnterior = Filtros.findOne(
-            {
-                nombre: 'consultas.cumulos',
-                userId: Meteor.userId(),
-            });
+        const filtro = Filtros.findOne({ nombre: 'consultas.cumulos', userId: Meteor.userId() });
 
         // solo hacemos el subscribe si no se ha hecho antes; el collection se mantiene a lo largo de la session del usuario
-        if (filtroAnterior && filtroAnterior.filtro) {
-            setFormValues((values) => ({ ...values, ...filtroAnterior.filtro }))
+        if (filtro && filtro.filtro) {
+            setFiltroAnterior(filtro.filtro); 
         }
     }, []); 
 
@@ -83,30 +63,13 @@ function ConsultaCumulosFiltro() {
     }, []);
 
     const cumulos = useTracker(() => Cumulos.find().fetch(), []);
+    const monedas = useTracker(() => Monedas.find().fetch(), []);
 
     // mientras algún subscription handle no sea ready(), mostramos el loading (spinner)... 
     const loadingInitialData = [ catalogosLoading ].some(x => x); 
 
-    const handleTabSelect = (key) => setCurrentTab(key); 
-
-    // para mantener el state con los valores de la forma (2 formas: filtro generales y filtro listas); 
-    // pasamos esta función a las formas para que actualicen el state 
-    const onInputChange = (e) => {
-        const values = { ...formValues };
-        const name = e.target.name;
-        const value = e.target.value;
-
-        setFormValues({ ...values, [name]: value });
-    }
-
-    // para mantener el state en listas (select multiple inputs)
-    const onListChange = (e) => {
-        const values = { ...formValues };
-        const name = e.target.name;
-        const selectedOptions = Array.from(e.target.selectedOptions);
-        const selectedValues = selectedOptions.map(x => x.value); 
-
-        setFormValues({ ...values, [name]: selectedValues });
+    const ejecutarAplicarFiltro = (formValues) => { 
+        aplicarFiltro(formValues, setAlert, setShowSpinner, linkRef, companiaSeleccionada)
     }
 
     return (
@@ -146,97 +109,17 @@ function ConsultaCumulosFiltro() {
                 }
                     
                 <div className="ui-viewBorder-left-aligned">
-                    <Tabs activeKey={currentTab} onSelect={(key) => handleTabSelect(key)} id="controlled-tab-example">
-                        <Tab eventKey={1} title="Generales">
-
-                            {(currentTab === 1) && (
-                                <div>
-                                    <FormGenerales formValues={formValues} 
-                                                   onInputChange={onInputChange} />
-                                </div>
-                            )}
-
-                        </Tab>
-
-                        <Tab eventKey={2} title="Listas">
-
-                            {(currentTab === 2) && (
-                                <div>
-                                    <FormListas formValues={formValues} 
-                                                onInputChange={onInputChange} 
-                                                onListChage={onListChange} 
-                                                cumulos={cumulos} />
-                                </div>
-                            )}
-                        </Tab>
-
-                        <Tab eventKey={3} title="Notas">
-                            {(currentTab === 3) && (
-                                <div style={{ padding: "25px", height: '250px', overflow: 'auto' }}>
-                                    <p>
-                                        El tipo de cúmulo (terremoto, huracan, motín, ...) <b>debe</b> ser indicado en el filtro, pues 
-                                        la consulta se puede obtener <b>solo</b> para un tipo de cúmulo. Los tipos de cúmulo se registran 
-                                        en el menú <em>Catálogos/Generales/Cúmulos</em>. 
-                                    </p>
-                                    <p>
-                                        La consulta puede ser obtenida por tipo de negocio: fac, prop, noProp. Por ejemplo, Ud. puede 
-                                        pedir en la consulta solo cúmulos asociados a riesgos facultativos o solo para contratos. 
-                                    </p>
-                                    <p>
-                                        Usando el filtro, se puede delimitar riesgos (fac) y contratos por: 
-                                        <ul>
-                                            <li>
-                                                Fecha de emisión: se debe indicar un período de emisión.
-                                            </li>
-                                            <li>
-                                                Inicio (inicio de vigencia): se debe indicar un período en el cual se inicia un riesgo o contrato.
-                                            </li>
-                                            <li>
-                                                Final (fin de vigencia): se debe indicar un período en el cual termina un riesgo o contrato.
-                                            </li>
-                                            <li>
-                                                Período de vigencia: para seleccionar riesgos o contratos que están vigentes en un período. 
-                                            </li>
-                                        </ul>
-                                    </p>
-                                </div>
-                            )}
-                        </Tab>
-                    </Tabs>
-
-                    <div style={{ display: 'flex', marginTop: "20px" }}>
-                        <div style={{ flex: '50%', textAlign: 'left' }}>
-                            <Button bsStyle="default" bsSize="small" onClick={() => limpiarFiltro(setFormValues)}>Limpiar filtro</Button>
-                        </div>
-                        <div style={{ flex: '50%', textAlign: 'right' }}>
-                                <Button bsStyle="primary" 
-                                        bsSize="small" 
-                                        onClick={() => aplicarFiltro(formValues, setAlert, setShowSpinner, linkRef, companiaSeleccionada)}>
-                                            Aplicar filtro
-                                </Button>
-                        </div>
-                    </div>
+                    <div>
+                        <FormGenerales filtroAnterior={filtroAnterior} 
+                                       ejecutarAplicarFiltro={ejecutarAplicarFiltro} 
+                                       cumulos={cumulos} 
+                                       monedas={monedas} />
+                    </div> 
                 </div>
 
             </div>
         )
     )
-}
-
-function limpiarFiltro(setFormValues) { 
-
-    setFormValues({
-        fechaEmision1: '',
-        fechaEmision2: '',
-        vigenciaInicial1: '',
-        vigenciaInicial2: '',
-        vigenciaFinal1: '',
-        vigenciaFinal2: '',
-        periodoVigencia1: '',
-        periodoVigencia2: '', 
-        tipoCumulo: null, 
-        tipoNegocio: []
-    }); 
 }
 
 function aplicarFiltro(formValues, setAlert, setShowSpinner, linkRef, companiaSeleccionada) { 

@@ -183,7 +183,6 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
                                             companias={companias}
                                             ramos={ramos}
                                             asegurados={asegurados}
-                                            ciaSeleccionadaId={companiaSeleccionada._id} 
                                             empresasUsuarias={empresasUsuarias}
                                             setCurrentTab={setCurrentTab} />
                                 )}
@@ -199,7 +198,6 @@ const RegistroCumulos = ({ modo, origen, entityId, subEntityId, url }) => {
                                           companias={companias}
                                           ramos={ramos}
                                           asegurados={asegurados}
-                                          ciaSeleccionadaId={companiaSeleccionada._id}
                                           empresasUsuarias={empresasUsuarias}
                                           /> 
                             )}

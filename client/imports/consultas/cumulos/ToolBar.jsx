@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import "./styles.css"; 
 
-const ToolBar = ({ title, url, leerMas, leerTodo, setReportPrintModalShow }) => {
+const ToolBar = ({ title, url, leerMas, leerTodo, exportToTextFile }) => {
 
 
     // nótese que muchas opciones en el toolbar solo se muestran cuando se recibe el prop url (para regresar). 
@@ -21,8 +21,11 @@ const ToolBar = ({ title, url, leerMas, leerTodo, setReportPrintModalShow }) => 
             { url && 
             (<Navbar.Collapse>
                 <Nav>
-                    <NavItem eventKey={1} href="#" onClick={() => setReportPrintModalShow(true)}>
+                    {/* <NavItem eventKey={1} href="#" onClick={() => setReportPrintModalShow(true)}>
                         Reporte&nbsp;&nbsp;<i className="fa fa-print"></i>
+                    </NavItem> */}
+                    <NavItem eventKey={1} href="#" onClick={exportToTextFile}>
+                        Exportar a archivo de texto
                     </NavItem>
                 </Nav>
                 <Nav pullRight>
@@ -45,8 +48,8 @@ ToolBar.propTypes = {
     title: PropTypes.string.isRequired, 
     url: PropTypes.string, 
     leerMas: PropTypes.func,
-    leerTodo: PropTypes.func,
-    setReportPrintModalShow: PropTypes.func
+    leerTodo: PropTypes.func, 
+    exportToTextFile: PropTypes.func 
 };
 
 export default ToolBar; 

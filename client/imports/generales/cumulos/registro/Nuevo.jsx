@@ -33,7 +33,7 @@ const inicializarZonas = (cumuloId, cumulos) => {
     return zonas;
 }
 
-const Nuevo = ({ defaults, cumulos, monedas, ramos, companias, asegurados, empresasUsuarias, ciaSeleccionadaId, setCurrentTab }) => {
+const Nuevo = ({ defaults, cumulos, monedas, ramos, companias, asegurados, empresasUsuarias, setCurrentTab }) => {
 
     const { register, handleSubmit, reset, getValues, setValue, watch } = useForm();
 
@@ -835,7 +835,6 @@ Nuevo.propTypes = {
     ramos: PropTypes.array.isRequired,
     asegurados: PropTypes.array.isRequired,
     empresasUsuarias: PropTypes.array.isRequired,
-    ciaSeleccionadaId: PropTypes.string.isRequired, 
     setCurrentTab: PropTypes.func.isRequired
 };
 

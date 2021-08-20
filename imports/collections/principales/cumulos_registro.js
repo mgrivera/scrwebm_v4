@@ -29,8 +29,8 @@ const Cumulos_Registro_schema = new SimpleSchema({
     cumulosAl: { type: Date, label: 'Cumulos al', optional: false },
     
     // tipo de cúmulo y zona  
-    tipoCumulo: { type: String, label: 'Tipo de cúmulo', optional: false, },        // terremoto, motín, ... 
-    zona: { type: String, label: 'Zona', optional: false, },
+    tipoCumulo: { type: String, label: 'Tipo de cúmulo', min: 1, optional: false, },        // terremoto, motín, ...
+    zona: { type: String, label: 'Zona', min: 1, optional: false, },
 
     // cifras a 100%
     valorARiesgo: { type: Number, label: 'Valor a riesgo', optional: false, },
