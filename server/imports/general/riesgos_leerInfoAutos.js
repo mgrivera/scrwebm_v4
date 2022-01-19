@@ -27,13 +27,27 @@ export const leerInfoAutos = function(riesgoID, movimientoID) {
         const marca = AutosMarcas.findOne(riesgo_infoRamo_movimiento.marca); 
 
         if (!marca || !marca.modelos) { 
-            return {}; 
+            return {
+                error: true, 
+                message: `Error: No se encontró la marca indicada para la <em>información de autos</em>, en el catálogo de marcas. Por favor revise.<br />
+                          También debe revisar que el número de movimiento en la información de auto <em>corresponda</em> al número del movimiento 
+                          seleccionado.<br />
+                          El número del movimiento en el riesgo y en la información de autos, debe ser el mismo. 
+                `
+            }; 
         }
 
         const modelo = marca.modelos.find(x => x._id === riesgo_infoRamo_movimiento.modelo); 
 
         if (!modelo) { 
-            return {}; 
+            return {
+                error: true,
+                message: `Error: No se encontró el modelo indicado para la <em>información de autos</em>, en el catálogo de marcas. Por favor revise.<br />
+                          También debe revisar que el número de movimiento en la información de auto <em>corresponda</em> al número del movimiento 
+                          seleccionado.<br /> 
+                          El número del movimiento en el riesgo y en la información de autos, debe ser el mismo. 
+                `
+            }; 
         }
 
         return { 
@@ -55,9 +69,11 @@ export const leerInfoAutos = function(riesgoID, movimientoID) {
     }
 
     const riesgo_infoRamo_masNumeroMovimiento = riesgo_infoRamo.map((x) => { 
-        // para cada infoRamo debemos leer su número de movimiento ... 
+        // para cada infoRamo debemos leer su número de movimiento; buscamos el movimiento en los movimientos del riesgo ... 
         const movimiento = riesgo.movimientos.find(m => m._id === x.movimientoID); 
-        const numeroMovimiento = movimiento.numero; 
+
+        // el movimiento puede no existir en el riesgo. A veces el movimiento en riesgo_infoRamo es cero y no hay un movimiento con ese número 
+        const numeroMovimiento = movimiento?.numero ? movimiento.numero : 0; 
 
         x.numeroMovimiento = numeroMovimiento; 
         return x; 
@@ -67,9 +83,10 @@ export const leerInfoAutos = function(riesgoID, movimientoID) {
     // si el movimiento pasado es el 5, intentamos regresar el 4 pero no el 6 ... 
     const riesgo_infoRamo_ordenadoPorMovimiento = lodash.sortBy(riesgo_infoRamo_masNumeroMovimiento, 'numeroMovimiento'); 
     let movimientoAnterior = {};        // el justo anterior es el que vamos a regresar ... 
+    const numeroMovimiento_CurrentInfoRamo = riesgo_infoRamo_movimiento?.numero ? riesgo_infoRamo_movimiento.numero : 0; 
 
     for(const infoRamoItem of riesgo_infoRamo_ordenadoPorMovimiento) { 
-        if (infoRamoItem.numeroMovimiento > riesgo_infoRamo_movimiento.numero) { 
+        if (infoRamoItem.numeroMovimiento > numeroMovimiento_CurrentInfoRamo) { 
             break; 
         }
 
@@ -81,13 +98,27 @@ export const leerInfoAutos = function(riesgoID, movimientoID) {
     const marca = AutosMarcas.findOne(movimientoAnterior.marca); 
 
     if (!marca || !marca.modelos) { 
-        return {}; 
+        return {
+            error: true,
+            message: `Error: No se encontró la marca indicada para la <em>información de autos</em>, en el catálogo de marcas. Por favor revise.<br />
+                          También debe revisar que el número de movimiento en la información de auto <em>corresponda</em> al número del movimiento 
+                          seleccionado.<br />
+                          El número del movimiento en el riesgo y en la información de autos, debe ser el mismo. 
+                `
+        }; 
     }
 
     const modelo = marca.modelos.find(x => x._id === movimientoAnterior.modelo); 
 
     if (!modelo) { 
-        return {}; 
+        return {
+            error: true,
+            message: `Error: No se encontró el modelo indicado para la <em>información de autos</em>, en el catálogo de marcas. Por favor revise.<br />
+                          También debe revisar que el número de movimiento en la información de auto <em>corresponda</em> al número del movimiento 
+                          seleccionado.<br /> 
+                          El número del movimiento en el riesgo y en la información de autos, debe ser el mismo. 
+                `
+        }; 
     }
 
     return { 

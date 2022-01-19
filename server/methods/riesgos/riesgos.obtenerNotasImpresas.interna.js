@@ -317,6 +317,13 @@ Meteor.methods(
         let infoAutos = {}; 
         if (ramo.tipoRamo && ramo.tipoRamo === 'automovil') { 
             infoAutos = leerInfoAutos(riesgoID, movimientoID); 
+
+            if (infoAutos.error) {
+                return {
+                    error: true,
+                    message: infoAutos.message,
+                }
+            }
         }
 
         // -----------------------------------------------------------------------------------------------
