@@ -334,3 +334,12 @@ border-right: 0 solid #9D9D9D;
     bottom: 5%;
     width: 100%;
 }
+
+.jumbotron {
+  background: url('/images/thin-crescent-moon-in-the-dark-blue-sky.jpg') no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: #ffffff;
+}

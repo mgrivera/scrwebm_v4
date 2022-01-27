@@ -1,13 +1,14 @@
 
+import { Meteor } from 'meteor/meteor'; 
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash'; 
+import angular from 'angular'; 
+import lodash from 'lodash'; 
 
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
-import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
+import { NotasDebitoCredito } from '/imports/collections/principales/notasDebitoCredito'; 
 
 import NotasDebito_angularComponents from './notasDebito_angularComponents'; 
 
@@ -19,7 +20,7 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
-    $scope.closeAlert = function (index: number) {
+    $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
     };
 
@@ -42,9 +43,8 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
     // el usuario debió seleccionar un movimiento 
     // NOTA: $scope.movimientoSeleccionado fue definido en $parentScope ... 
     if (lodash.isEmpty($scope.movimientoSeleccionado)) {
-        let message = `No hay un movimiento seleccionado.<br /> 
+        const message = `No hay un movimiento seleccionado.<br /> 
                     Ud. debe seleccionar un movimiento si quiere construir sus notas de débito u obtenerlas en Word.`; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
         $scope.alerts.length = 0;
         $scope.alerts.push({
@@ -53,7 +53,7 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
         });
     }
 
-    let movimientoSeleccionado = {} as any; 
+    let movimientoSeleccionado = {}; 
     $scope.numeroMovimientoSeleccinado = 1; 
     
     if ($scope.movimientoSeleccionado) { 
@@ -76,7 +76,7 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
         })
 
         if ($scope.movimientoSeleccionado && $scope.movimientoSeleccionado._id) { 
-            let notasDebito = $scope.notasDebitoCredito.filter((x: any) => { 
+            const notasDebito = $scope.notasDebitoCredito.filter((x) => { 
                 return x.source.entityID == $scope.riesgo._id && x.source.subEntityID == $scope.movimientoSeleccionado._id; }); 
 
             if (!notasDebito.length) { 
@@ -101,7 +101,7 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
         Meteor.call('plantillas.obtenerListaArchivosDesdeDirectorio', "/facultativo/notasDebito", (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -139,14 +139,14 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
         })
     })
 
-    $scope.notasDebito_construir = function(file: any) { 
+    $scope.notasDebito_construir = function() { 
 
         $scope.showProgress = true;
 
-        Meteor.call('notasDebito_construir', $scope.riesgo._id, $scope.movimientoSeleccionado._id, (err: any, result: any) => {
+        Meteor.call('notasDebito_construir', $scope.riesgo._id, $scope.movimientoSeleccionado._id, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -160,7 +160,7 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
             }
 
             if (result.error) {
-                let errorMessage = result.message;
+                const errorMessage = result.message;
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -184,14 +184,13 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
 
     $scope.notasDebito_obtenerEnWord = function() { 
 
-        const template_files: { name: string }[] = $scope.template_files; 
+        const template_files = $scope.template_files; 
 
         if (!template_files || !Array.isArray(template_files) || !template_files.length) { 
 
-            let message = `Error: no existe una plantilla registrada en Dropbox para imprimir las notas de débito.<br />
+            const message = `Error: no existe una plantilla registrada en Dropbox para imprimir las notas de débito.<br />
                            Ud. debe agregar una plantilla para este tipo de documentos, al directorio apropiado en la 
                            cuenta Dropbox del programa.`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -203,9 +202,8 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
 
         if (!$scope.riesgo || !$scope.riesgo._id) { 
 
-            let message = `Error: no se ha seleccionado un riesgo. Ud. debe seleccionar un riesgo antes de ejecutar esta función.`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-
+            const message = `Error: no se ha seleccionado un riesgo. Ud. debe seleccionar un riesgo antes de ejecutar esta función.`; 
+            
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'danger',
@@ -216,9 +214,8 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
 
         if (!$scope.movimientoSeleccionado || !$scope.movimientoSeleccionado._id) { 
 
-            let message = `Error: no se ha seleccionado un movimiento. Ud. debe seleccionar un movimiento antes de ejecutar esta función.`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-
+            const message = `Error: no se ha seleccionado un movimiento. Ud. debe seleccionar un movimiento antes de ejecutar esta función.`; 
+            
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'danger',
@@ -232,10 +229,10 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
 
         Meteor.call('notasDebito.obtenerNotasImpresas',
             "/facultativo/notasDebito", template_files[0].name,
-            $scope.riesgo._id, $scope.movimientoSeleccionado._id, (err: any, result: any) => {
+            $scope.riesgo._id, $scope.movimientoSeleccionado._id, (err, result) => {
 
                 if (err) {
-                    let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({ type: 'danger', msg: errorMessage });
@@ -267,5 +264,4 @@ export default angular.module("scrwebm.riesgos.riesgo.construirNotasDebito", [ N
             }
         )
     }
-}
-]);
+}])

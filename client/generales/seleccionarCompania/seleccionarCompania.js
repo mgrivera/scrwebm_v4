@@ -1,15 +1,15 @@
 ﻿
+import { Meteor } from 'meteor/meteor'; 
 
-import * as angular from 'angular'; 
-import * as lodash from 'lodash';
+import angular from 'angular'; 
+import lodash from 'lodash';
 
-import { EmpresasUsuarias } from 'imports/collections/catalogos/empresasUsuarias'; 
-import { CompaniaSeleccionada } from 'imports/collections/catalogos/companiaSeleccionada'; 
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
-import { DialogModal } from 'client/imports/generales/angularGenericModal'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 // importamos el module generales, pues está en  imports ... 
-import scrwebmGenerales from 'client/imports/generales/generalesAngularModule'; 
+import scrwebmGenerales from '/client/imports/generales/generalesAngularModule'; 
 
 angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController", ['$scope', '$modal',
     function ($scope, $modal) {
@@ -23,7 +23,7 @@ angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController"
             $scope.alerts.splice(index, 1);
         };
 
-        let companiaSeleccionada: any = {};
+        let companiaSeleccionada = {};
 
         $scope.seleccionarCompania_ui_grid = {
             enableSorting: false,
@@ -123,7 +123,7 @@ angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController"
         $scope.showProgress = true;
 
         leerEmpresasUsuarias()
-            .then((result: { error: boolean, message: string, empresasUsuarias: {}}) => {
+            .then((result) => {
 
                 if (result.error) { 
                     $scope.alerts.length = 0;
@@ -146,11 +146,11 @@ angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController"
 
                 $scope.seleccionarCompania_ui_grid.data = $scope.empresasUsuarias;
 
-                let ciaSeleccionadaAntes = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+                const ciaSeleccionadaAntes = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
 
                 if (ciaSeleccionadaAntes && ciaSeleccionadaAntes.companiaID) {
                     // el usuario ya tenía una compañía seleccionada; lo indicamos ...
-                    $scope.empresasUsuarias.forEach(function (compania, index) {
+                    $scope.empresasUsuarias.forEach(function (compania) {
                         if (compania._id == ciaSeleccionadaAntes.companiaID) {
                             //$scope.gridOptions.selectRow(2, true);
 
