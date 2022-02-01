@@ -9,4 +9,4 @@ settings*.json
 
 # a veces el programa registra aquí archivos que tienen un uso solo temporal, etc. 
 .temp/
-package-lock.json
+# package-lock.json     // Nota: el package.json y el package-lock.json deben SIEMPRE estar versionados 
