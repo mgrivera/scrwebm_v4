@@ -52,7 +52,7 @@ function ($rootScope, $scope, $location) {
     // para mantener en $rootScope el current state name. Nótese que lo usamos en bancos, contab, etc., para mostrar el help
     // cuando el usuario hace un click en ?. Este ? está en un state muy arriba en contab, bancos, etc.
     $rootScope.$on('$stateChangeSuccess',
-        function(event, toState, toParams, fromState, fromParams) {
+        function(toState) {
             $rootScope.currentStateName = toState.name;
     });
     // ---------------------------------------------------------------------------------------------------------------------
