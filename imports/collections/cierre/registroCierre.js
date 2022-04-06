@@ -22,7 +22,7 @@ const cierreRegistro_schema = new SimpleSchema({
     moneda: { type: String, label: "Moneda", optional: false, },
     compania: { type: String, label: "Compania", optional: false, },
     cedente: { type: String, label: "Cedente", optional: true, },
-    tipo: { type: String, label: "Tipo (Manual/Automático)", optional: false, },
+    tipo: { type: String, label: "Tipo (Manual/Automático)", optional: false, allowedValues: ["M", "A"] },
     origen: { type: String, label: "Origen", optional: true, },
     referencia: { type: String, label: "Referencia", optional: true, },
     cobroPagoFlag: { type: Boolean, label: "Cobro o pago", optional: false, },

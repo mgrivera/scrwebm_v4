@@ -256,7 +256,7 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
             name: 'referencia',
             field: 'referencia',
             displayName: 'Referencia',
-            width: 160,
+            width: 200,
             enableFiltering: true,
             headerCellClass: 'ui-grid-leftCell',
             cellClass: 'ui-grid-leftCell',

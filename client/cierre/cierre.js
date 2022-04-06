@@ -6,7 +6,8 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 angular.module("scrwebm")
-       .controller("Cierre_Controller", ['$scope', function ($scope) {
+       .controller("Cierre_Controller", ['$scope', 
+function ($scope) {
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
@@ -14,9 +15,8 @@ angular.module("scrwebm")
     let companiaSeleccionadaDoc = { }; 
 
     if (companiaSeleccionada) { 
-        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1, abreviatura: 1 } });
     }
-
 
     $scope.companiaSeleccionada = {};
 

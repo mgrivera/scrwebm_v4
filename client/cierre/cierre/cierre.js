@@ -289,8 +289,8 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
         const message = `Seleccione el período a cerrar en la lista y haga un click en <b><em>Cerrar período seleccionado</em></b><br />
                         Si el período a cerrar no está en la lista, debe agregarlo y regresar luego para cerrarlo.<br />
                         También puede ser que el período fue ya cerrado. Un período cerrado puede ser abierto y cerrado nuevamente.<br /><br />
-                        Nota: para agregar períodos de cierre, o abrir períodos ya cerrados, 
-                        Ud. debe usar la opción <em>Cierre / Períodos de cierre</em>.  
+                        <b>Nota:</b> para agregar períodos de cierre, o abrir períodos ya cerrados, 
+                        Ud. debe usar la opción: <em>Cierre / Períodos de cierre</em>.  
                         `; 
 
         $scope.alerts.length = 0;

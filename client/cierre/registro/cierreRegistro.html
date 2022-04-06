@@ -187,6 +187,19 @@
                                         <li><a href="#" class="navbar_custom_small_header">Cierre - Registro</a></li>
                                         <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li>
                                         <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="grabar()">Grabar <span class="fa fa-save"></span></a></li>
+
+                                        <li class="dropdown">
+                                            <a href="#" class="dropdown-toggle navbar_custom_small_node" data-toggle="dropdown" role="button"
+                                                aria-expanded="false">Otros ...&nbsp;&nbsp;<span class="caret"></span></a>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="#" ng-click="exportarItems()" class="navbar_custom_xsmall_node">
+                                                    Exportar&nbsp;&nbsp;
+                                                </a></li>
+                                                <li><a href="#" ng-click="importarItems1()" class="navbar_custom_xsmall_node">
+                                                    Importar&nbsp;&nbsp;
+                                                </a></li>
+                                            </ul>
+                                        </li>
                                     </ul>
 
                                     <ul class="nav navbar-nav navbar-right">
@@ -249,5 +262,14 @@
 
         </tabset>
     </div>
+
+    <!-- con este input (type file) permitimos al usuario importar los items desde un archivo csv, que se ha exportado en forma previa 
+    con la opción Exportar  -->
+    <input type="file" 
+           id="fileInput" 
+           accept=".txt" 
+           multiple="false"
+           onchange="angular.element(this).scope().importarItems2(this.files)" 
+           ng-show="false" />
 </div>
     

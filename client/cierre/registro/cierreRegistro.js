@@ -7,28 +7,35 @@ import angular from 'angular';
 import numeral from 'numeral';
 import moment from 'moment';
 import lodash from 'lodash';
-import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
+import Papa from 'papaparse';
+import saveAs from 'save-as'
+
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
+import { registroCierre_simpleSchema_validar_import } from './registroCierre_simpleSchema_validar_import'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-import { DialogModal } from '../../imports/generales/angularGenericModal'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { convertFromStringToDate } from '/imports/funciones/DateFunctions'; 
 
 angular.module("scrwebm")
-       .controller("Cierre.Registro.Controller", ['$scope', '$modal', '$interval', function ($scope, $modal, $interval) {
+       .controller("Cierre.Registro.Controller", ['$scope', '$modal', '$interval', 
+function ($scope, $modal, $interval) {
 
-      $scope.showProgress = false;
+    $scope.showProgress = false;
 
-      // ui-bootstrap alerts ...
-      $scope.alerts = [];
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
 
-      $scope.closeAlert = function (index) {
-          $scope.alerts.splice(index, 1);
-      };
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    };
 
-      $scope.processProgress = {
+    $scope.processProgress = {
         current: 0,
         max: 0,
         progress: 0,
@@ -46,7 +53,7 @@ angular.module("scrwebm")
         // if we don't call this method, angular wont refresh the view each time the progress changes ...
         // until, of course, the above process ends ...
         $scope.$apply();
-    });
+    })
     // -------------------------------------------------------------------------------------------------------
 
     $scope.$parent.tituloState = "Cierre - Edición/consulta del registro"; 
@@ -104,6 +111,311 @@ angular.module("scrwebm")
             return Monedas.find({}, { sort: { descripcion: 1 } });
         },
     });
+
+    // -----------------------------------------------------------------------------------------------
+    // para exportar los items en la lista a un archivo de texto 
+    // -----------------------------------------------------------------------------------------------
+    $scope.exportarItems = () => {
+        // permitimos grabar el asiento contable, como un json, a un archivo en la máquina. Luego, este archivo podrá
+        // ser importado como un asiento nuevo ...
+        try {
+            $scope.showProgress = true;
+
+            // para tener un clone del array 
+            const items = [...$scope.registro];
+
+            // eliminamos algunas propiedades que no queremos en el txt (csv) 
+            items.forEach(x => {
+                delete x._id;
+                delete x.docState;
+                delete x.origen_keys; 
+                delete x.usuario; 
+                delete x.ingreso; 
+                delete x.ultAct; 
+
+                const compania = Companias.findOne(x.compania, { fields: { abreviatura: 1 } });
+                const moneda = Monedas.findOne(x.moneda, { fields: { simbolo: 1 } });
+                const cedente = Companias.findOne(x.cedente, { fields: { abreviatura: 1 } });
+                
+                x.fecha = moment(x.fecha).format("YYYY-MM-DD"); 
+                x.compania = compania.abreviatura;
+                x.moneda = moneda.simbolo;
+                x.cedente = cedente.abreviatura;
+                x.cobro_pago = x.cobroPagoFlag ? 'Ok' : ''; 
+                x.cia = $scope.companiaSeleccionada.abreviatura;
+
+                delete x.cobroPagoFlag; 
+            });
+
+            // papaparse: convertimos el array json a un string csv ...
+            const config = {
+                quotes: false,
+                // quoteChar: "'",
+                delimiter: "\t",
+                header: true
+            };
+
+            const csvString = Papa.unparse(items, config);
+
+            // cambiamos los headers por textos más apropiados (pareciera que ésto no se puede hacer desde el config)
+            // csvString = csvString.replace("ano", "lapso");
+            // csvString = csvString.replace("compania", "compañía");
+
+            var blob = new Blob([csvString], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "registro.txt");
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'info',
+                msg: `Ok, la lista ha sido exportada a un archivo de texto en forma exitosa. <br /> 
+                      En total, se han exportado <b>${items.length.toString()}</b> lineas. 
+                     `
+            });
+
+            $scope.showProgress = false;
+        }
+        catch (err) {
+            const message = err.message ? err.message : err.toString();
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'danger',
+                msg: message
+            });
+
+            $scope.showProgress = false;
+        }
+    }
+
+
+
+    // -----------------------------------------------------------------------------------------------
+    // para importar los items en la lista desde un archivo de texto 
+    // -----------------------------------------------------------------------------------------------
+    $scope.importarItems1 = function () {
+
+        const items = [...$scope.registro];
+
+        const editandoAhora = items.some(x => x.docState);
+
+        if (editandoAhora) {
+            DialogModal($modal, "<em>Proceso de cierre - Registro - Importar</em>",
+                `Los registros en la lista han sido editados, pero <b>no</b> han sido guardados a la base de datos.<br /> 
+                 Ud. debe hacer un <em>click</em> en <em>Grabar</em> para grabar las modificaciones a la base de datos, 
+                 antes de intentar ejecutar esta función. 
+                `,
+                false).then();
+
+            return;
+        }
+
+        // leemos algún riesgo que se haya exportado antes (con un Download) y lo agregamos como un riesgo nuevo ... 
+        const inputFile = angular.element("#fileInput");
+        if (inputFile) {
+            inputFile.click();        // simulamos un click al input (file)
+        }
+    }
+
+    $scope.importarItems2 = function (files) {
+
+        const userSelectedFile = files[0];
+
+        if (!userSelectedFile) {
+            DialogModal($modal, "<em>Proceso de cierre - Registro - Importar</em>",
+                                `Aparentemente, Ud. no ha seleccionado un archivo.<br />
+                                 Ud. debe seleccionar un archivo que haya sido creado antes 
+                                 mediante la opción <em>Exportar</em>, que existe en este mismo menú.`,
+                false).then();
+
+            const inputFile = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) {
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            }
+
+            return;
+        }
+
+        $scope.showProgress = true;
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+
+            const content = e.target.result;
+
+            // ya tenemos el contenido del archivo que el usuario ha seleccionado; ahora convertimos a json con papaparse 
+            const config = {
+                // delimiter: "\t",
+                delimiter: "",	            // auto-detect
+                quoteChar: '"',	            // a veces Excel usa comillas para calificar; solo en algunos valores (???)
+                skipEmptyLines: 'greedy',   // super útil; si el usuario deja lineas en blanco en Excel, no las importamos 
+                header: true                // el usuario debe dejar el header 
+            };
+
+            const result = Papa.parse(content, config);
+            const errors = result.errors;   // si papa consigue errores, los deja aquí 
+
+            if (errors.length) {
+                let message = `Se han encontrado errores al intentar leer el archivo con los registros a importar. <br /><br /><ul>`;
+
+                errors.map(x => {
+                    message += `<li>${JSON.stringify(x)}</li>`;
+                });
+
+                message += `<ul>`
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: message
+                });
+
+                return;
+            }
+
+            const meteorUser = Meteor.user().username ? Meteor.user().username : Meteor.user().emails[0].address; 
+            const newItems = [...result.data]; 
+
+            for (const item of newItems) {
+                item._id = new Mongo.ObjectID()._str; 
+
+                item.tipo = item.tipo ? item.tipo : "M";
+                item.cobroPagoFlag = item.cobro_pago ? item.cobro_pago : false; 
+                delete item.cobro_pago; 
+
+                item.usuario = meteorUser; 
+                item.ingreso = new Date(); 
+                item.ultAct = new Date(); 
+                item.cia = $scope.companiaSeleccionada._id; 
+                
+                const compania = Companias.findOne({ abreviatura: item.compania }, { fields: { _id: 1 } });
+                const moneda = Monedas.findOne({ simbolo: item.moneda }, { fields: { _id: 1 } });
+                const cedente = Companias.findOne({ abreviatura: item.cedente }, { fields: { _id: 1 } });
+
+                item.compania = compania?._id ? compania._id : null;
+                item.moneda = moneda?._id ? moneda._id : null;
+                item.cedente = cedente?._id ? cedente._id : null;
+
+                // convertimos a valores numéricos; por alguna razón, Excel pone comillas en valores también numéricos 
+                item.fecha = item.fecha ? convertFromStringToDate(item.fecha).date : null; 
+                item.serie = item.serie ? parseInt(item.serie) : null; 
+                item.monto = item.monto ? parseFloat(item.monto) : 0; 
+
+                item.docState = 1; 
+            }
+
+            // nótese como validamos cada item antes de intentar guardar en el servidor
+            let isValid = false;
+            const errores = [];
+
+            newItems.forEach((item) => {
+                if (item.docState != 3) {
+                    isValid = registroCierre_simpleSchema_validar_import.namedContext().validate(item);
+
+                    if (!isValid) {
+                        registroCierre_simpleSchema_validar_import.namedContext().validationErrors().forEach((error) => {
+                            if (error.type === "custom") {
+                                // cuando pasamos errores del tipo custom es porque el error no corresponde a un field en particular, sino a 
+                                // todo el registro. En un caso tal, mostramos solo el nombre (name), pues allí ponemos la descripción del error 
+                                errores.push(`${error.name}`);
+                            } else {
+                                const id = item.referencia ? item.referencia : ""; 
+                                errores.push(`(<em>${id}</em>) El valor '${error.value}' no es adecuado para el campo '${registroCierre_simpleSchema_validar_import.label(error.name)}'; error de tipo '${error.type}'.`);
+                            }
+                        });
+                    }
+                }
+            })
+
+            if (errores && errores.length) {
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
+                        errores.reduce(function (previous, current) {
+
+                            if (previous == "")
+                                // first value
+                                return current;
+                            else
+                                return previous + "<br />" + current;
+                        }, "")
+                });
+
+                // para que el input type file "limpie" el file indicado por el usuario
+                const inputFile = angular.element("#fileInput");
+                if (inputFile && inputFile[0] && inputFile[0].value) {
+                    inputFile[0].value = null;
+                }
+
+                $scope.showProgress = false;
+                return;
+            }
+
+            // agregamos los items que se han importado al array original que se muestra en la lista 
+            newItems.forEach(item => $scope.registro.push(item));
+            $scope.registro_ui_grid.data = $scope.registro;
+
+            // para que el input type file "limpie" el file indicado por el usuario
+            const inputFile = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) {
+                inputFile[0].value = null;
+            }
+
+            $scope.alerts.length = 0;
+            $scope.alerts.push({
+                type: 'info',
+                msg: `Ok, el proceso ha sido ejecutado en forma satisfactoria. <br /> 
+                      En total, han sido importados <b>${newItems.length.toString()}</b> registros a la lista. <br /> 
+                      Los registros han sido importados a la lista como <b><em>registros nuevos</em></b>. <br />
+                      Ahora Ud. debe revisarlos muy bien y hacer un <em>click</em> en <em>Grabar</em>, 
+                      para grabarlos a la base de datos. <br /><br /> 
+                      También, de ser necesario, puede salir <b>sin</b> grabar, para descartar los cambios.  
+                     `
+            });
+
+            $scope.showProgress = false;
+            $scope.$apply();
+        }
+
+        reader.readAsText(userSelectedFile, 'ISO-8859-1');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // este es el tab 'activo' en angular bootstrap ui ...
@@ -315,7 +627,7 @@ angular.module("scrwebm")
             name: 'referencia',
             field: 'referencia',
             displayName: 'Referencia',
-            width: 160,
+            width: 200,
             enableFiltering: true,
             enableCellEdit: true,
             headerCellClass: 'ui-grid-leftCell',
@@ -608,12 +920,11 @@ angular.module("scrwebm")
         grabar2();
     }
 
-
     function grabar2() {
         $scope.showProgress = true;
 
-        // obtenemos un clone de los datos a guardar ...
-        const editedItems = lodash.filter($scope.registro, (x) => { return x.docState; });
+        // solo los items que el usuario ha editado 
+        const editedItems = $scope.registro.filter(x =>  x.docState);
 
         // nótese como validamos cada item antes de intentar guardar en el servidor
         let isValid = false;
@@ -708,7 +1019,6 @@ angular.module("scrwebm")
             $scope.$apply();
         })
     }
-
 
      // ------------------------------------------------------------------------------------------------------
      // para recibir los eventos desde la tarea en el servidor ...
