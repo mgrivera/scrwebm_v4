@@ -46,7 +46,6 @@ const cierreRegistro_schema = new SimpleSchema({
 export const CierreRegistro = new Mongo.Collection("cierreRegistro");
 CierreRegistro.attachSchema(cierreRegistro_schema);
 
-
 cierreRegistro_schema.addDocValidator(obj => {
     // Must return an array, potentially empty, of objects with `name` and `type` string properties and optional `value` property. 
 

@@ -436,7 +436,6 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
         })
     }
 
-
     // ------------------------------------------------------------------------------------------------------
     // si hay un filtro anterior, lo usamos
     // los filtros (solo del usuario) se publican en forma automática cuando se inicia la aplicación
@@ -480,7 +479,6 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
             $scope.leerRegistrosDesdeServer(limit);
         })
     }
-
 
     let subscriptionHandle = {};
     $scope.leerRegistrosDesdeServer = function (limit) {
@@ -595,9 +593,9 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
              subscriptionHandle.stop();
          }
      })
-}
-])
+}])
 
+// --------------------------------------------------------------------------------------------------------------------------------
 // construimos el filtro en el cliente, pues lo usamos en varias partes en este código y debe estar disponible. 
 // nota: en otras funciones similares, se filtran los registros en el servidor y se graban a un collection 'temporal' 
 // para el usuario. En estos casos, posteriormente no se usa más el filtro, pues solo basta con leer los records para 
