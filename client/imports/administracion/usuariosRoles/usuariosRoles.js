@@ -9,8 +9,8 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 import "./usuariosRoles.html"; 
 
 export default angular.module("scrwebm.administracion.usuariosRoles", [])
-                      .controller("UsuariosRolesController", ['$scope', '$meteor', '$modal', 
-function ($scope, $meteor, $modal) {
+                      .controller("UsuariosRolesController", ['$scope', '$meteor', '$uibModal', 
+function ($scope, $meteor, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -225,7 +225,7 @@ function ($scope, $meteor, $modal) {
 
         // antes que nada, revisamos que haya algo que grabar
         if (!lodash.some($scope.users, u => { return u.docState; })) {
-            DialogModal($modal, "<em>Roles de usuarios</em>", "Aparentemente, <em>no se han efectuado cambios</em> en los datos. " +
+            DialogModal($uibModal, "<em>Roles de usuarios</em>", "Aparentemente, <em>no se han efectuado cambios</em> en los datos. " +
                 "No hay nada que grabar.", false).then();
             return;
         }

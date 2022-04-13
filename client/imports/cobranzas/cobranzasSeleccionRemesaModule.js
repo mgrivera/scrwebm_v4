@@ -6,7 +6,7 @@ import { Remesas } from '/imports/collections/principales/remesas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 export default angular.module("scrwebm.cobranzas.seleccionRemesa", [])
-                      .controller("CobranzasSeleccionRemesaController", ['$scope', '$state', '$modal', function ($scope, $state, $modal) {
+                      .controller("CobranzasSeleccionRemesaController", ['$scope', '$state', '$uibModal', function ($scope, $state, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -22,7 +22,7 @@ export default angular.module("scrwebm.cobranzas.seleccionRemesa", [])
         var remesasSeleccionadas = lodash.filter($scope.remesas, function (r) { return r.selected == true; });
 
         if (remesasSeleccionadas.length == 0) {
-            DialogModal($modal, "<em>Cobranzas</em>",
+            DialogModal($uibModal, "<em>Cobranzas</em>",
                         "Aparentemente, Ud. no ha seleccionado una remesa en la lista.<br />" +
                         "Ud. debe seleccionar una remesa de la lista <em>antes</em> de continuar con el próximo paso de este proceso.",
                         false).then();
@@ -30,7 +30,7 @@ export default angular.module("scrwebm.cobranzas.seleccionRemesa", [])
         }
 
         if (remesasSeleccionadas.length > 1) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Cobranzas</em>",
                         "Aparentemente, Ud. ha seleccionado <em>más de una</em> remesa de la lista.<br />" +
                         "Por favor seleccione <em>solo una</em> remesa en la lista.",

@@ -12,8 +12,8 @@ import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller('AgregarItemsATablaModal_Controller',
-['$scope', '$modalInstance', '$modal', 'codigoContrato', 'tablaConfiguracion', 'ciaSeleccionada',
-function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ciaSeleccionada) {
+['$scope', '$uibModalInstance', '$uibModal', 'codigoContrato', 'tablaConfiguracion', 'ciaSeleccionada',
+function ($scope, $uibModalInstance, $uibModal, codigoContrato, tablaConfiguracion, ciaSeleccionada) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -40,11 +40,11 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
     $scope.listaAnos = listaAnos; 
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
     $scope.datosItemSeleccionado = ""; 
@@ -307,7 +307,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
             const message = `Error: Ud. debe indicar los valores (parámetros) requeridos (año, compañía, moneda, ramo, ...) para la construcción de
                            los <em>registros de configuración</em> del año para el contrato.`; 
             
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
             return;
         }
 
@@ -339,7 +339,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
                 seleccionada para representar nuestra participación en el contrato.
                 `; 
 
-                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+                DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
                 return;
             }
 
@@ -389,7 +389,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
             haga un <em>click</em> en <em>Propagar</em>.
            `; 
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
         }
     }
 
@@ -485,7 +485,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
         Desea continuar y agregar estos registros a la tabla de configuracion?
         `; 
 
-        DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(
+        DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, true).then(
                                 () => {
                                     // Ok, vamos a agregar los registros a la tabla de configuración ...
                                     let cantidadRegistrosAgregados = 0;
@@ -524,7 +524,7 @@ function ($scope, $modalInstance, $modal, codigoContrato, tablaConfiguracion, ci
                                     hacer un <em>click</em> en <em>Grabar</em> para que los registros sean
                                     efectivamente registrados en la base de datos.
                                     `; 
-                                    DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+                                    DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
                                 },
                                 () => {
                                     return;

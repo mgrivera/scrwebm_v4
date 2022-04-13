@@ -15,7 +15,7 @@ import { DialogModal } from '../../imports/generales/angularGenericModal';
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebm")
-       .controller("Cierre.periodosDeCierre.Controller", ['$scope', '$modal', function ($scope, $modal) {
+       .controller("Cierre.periodosDeCierre.Controller", ['$scope', '$uibModal', function ($scope, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -325,7 +325,7 @@ angular.module("scrwebm")
         const hayEdiciones = $scope.cierre.find(x => x.docState); 
 
         if (!hayEdiciones) {
-            DialogModal($modal, "<em>Cierre - Períodos cerrados</em>",
+            DialogModal($uibModal, "<em>Cierre - Períodos cerrados</em>",
                                 `Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.`,
                                 false).then();
             return;
@@ -435,14 +435,14 @@ angular.module("scrwebm")
     $scope.mostrarEjecucion = function() { 
 
         if (!itemSeleccionado || lodash.isEmpty(itemSeleccionado)) { 
-            DialogModal($modal, "<em>Cierre - Períodos cerrados</em>",
+            DialogModal($uibModal, "<em>Cierre - Períodos cerrados</em>",
                                 `Ud. debe seleccionar un reigstro en la lista.<br /> 
                                 Solo entonces, podrá consultar su <em>historia de ejecuciones</em> mediante esta función.`,
                                 false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/cierre/periodosDeCierre/mostrarEjecucionesCierre_Modal.html',
             controller: 'Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller',
             size: 'lg',

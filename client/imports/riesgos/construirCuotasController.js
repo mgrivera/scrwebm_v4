@@ -13,8 +13,8 @@ import construirCuotasInfoText from './construirCuotas.infoText';
 
 export default angular.module("scrwebm.riesgos.movimientos.contruirCuotas", [ InfoModal.name ]).
                        controller('Riesgos_ConstruirCuotasController',
-['$scope', '$modalInstance', '$timeout', 'riesgo', 'movimiento', 'cuotas', 
-function ($scope, $modalInstance, $timeout, riesgo, movimiento, cuotas) {
+['$scope', '$uibModalInstance', '$timeout', 'riesgo', 'movimiento', 'cuotas', 
+function ($scope, $uibModalInstance, $timeout, riesgo, movimiento, cuotas) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -24,11 +24,11 @@ function ($scope, $modalInstance, $timeout, riesgo, movimiento, cuotas) {
     };
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
     // ----------------------------------------------------------------------------------------------------------------------

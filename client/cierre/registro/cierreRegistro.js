@@ -23,13 +23,15 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 import { convertFromStringToDate } from '/imports/funciones/DateFunctions'; 
 
 angular.module("scrwebm")
-       .controller("Cierre.Registro.Controller", ['$scope', '$modal', '$interval', 
-function ($scope, $modal, $interval) {
+       .controller("Cierre.Registro.Controller", ['$scope', '$uibModal', '$interval', 
+function ($scope, $uibModal, $interval) {
 
     $scope.showProgress = false;
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
+
+    $scope.currentTab = 0;               // para establecer / cambiar el 'active' tab 
 
     $scope.closeAlert = function (index) {
         $scope.alerts.splice(index, 1);
@@ -187,8 +189,6 @@ function ($scope, $modal, $interval) {
         }
     }
 
-
-
     // -----------------------------------------------------------------------------------------------
     // para importar los items en la lista desde un archivo de texto 
     // -----------------------------------------------------------------------------------------------
@@ -199,7 +199,7 @@ function ($scope, $modal, $interval) {
         const editandoAhora = items.some(x => x.docState);
 
         if (editandoAhora) {
-            DialogModal($modal, "<em>Proceso de cierre - Registro - Importar</em>",
+            DialogModal($uibModal, "<em>Proceso de cierre - Registro - Importar</em>",
                 `Los registros en la lista han sido editados, pero <b>no</b> han sido guardados a la base de datos.<br /> 
                  Ud. debe hacer un <em>click</em> en <em>Grabar</em> para grabar las modificaciones a la base de datos, 
                  antes de intentar ejecutar esta función. 
@@ -221,7 +221,7 @@ function ($scope, $modal, $interval) {
         const userSelectedFile = files[0];
 
         if (!userSelectedFile) {
-            DialogModal($modal, "<em>Proceso de cierre - Registro - Importar</em>",
+            DialogModal($uibModal, "<em>Proceso de cierre - Registro - Importar</em>",
                                 `Aparentemente, Ud. no ha seleccionado un archivo.<br />
                                  Ud. debe seleccionar un archivo que haya sido creado antes 
                                  mediante la opción <em>Exportar</em>, que existe en este mismo menú.`,
@@ -381,50 +381,6 @@ function ($scope, $modal, $interval) {
 
         reader.readAsText(userSelectedFile, 'ISO-8859-1');
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // este es el tab 'activo' en angular bootstrap ui ...
-    // NOTA IMPORTANTE: esta propiedad cambio a partir de 1.2.1 en angular-ui-bootstrap. Sin embargo, parece que
-    // atmosphere no tiene esta nueva versión (se quedó en 0.13.0) y no pudimos instalarla desde NPM. La verdad,
-    // cuando podamos actualizar angular-ui-bootstrap a una nueve vesión, la propiedad 'active' va en el tabSet
-    // y se actualiza con el index de la página (0, 1, 2, ...). Así resulta mucho más intuitivo y fácil
-    // establecer el tab 'activo' en ui-bootstrap ...
-    $scope.activeTab = { tab1: true, tab2: false, tab3: false, };
 
     let registro_ui_grid_api = {};
 
@@ -789,8 +745,7 @@ function ($scope, $modal, $interval) {
         // limit es la cantidad de items en la lista; inicialmente es 50; luego avanza de 50 en 50 ...
         leerPrimerosRegistrosDesdeServidor(50, filtroConstruido);
 
-        // nótese como establecemos el tab 'activo' en ui-bootstrap; ver nota arriba acerca de ésto ...
-        $scope.activeTab = { tab1: false, tab2: true, tab3: true };
+        $scope.currentTab = 1;               // para establecer / cambiar el 'active' tab 
     }
 
     // ------------------------------------------------------------------------------------------------------
@@ -901,7 +856,7 @@ function ($scope, $modal, $interval) {
         if (!hayEdiciones) {
             const message = `Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.`; 
             
-            DialogModal($modal, "<em>Cierre - Registro</em>", message, false).then();
+            DialogModal($uibModal, "<em>Cierre - Registro</em>", message, false).then();
             return;
         }
 
@@ -913,7 +868,7 @@ function ($scope, $modal, $interval) {
                              nunca deben ser editados en forma directa por el usuario. 
                             `; 
             
-            DialogModal($modal, "<em>Cierre - Registro</em>", message, false).then();
+            DialogModal($uibModal, "<em>Cierre - Registro</em>", message, false).then();
             return;
         }
 

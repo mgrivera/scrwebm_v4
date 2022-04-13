@@ -5,7 +5,7 @@ import * as angular from 'angular';
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 
 export default angular.module("scrwebm.riesgos.generales", []).controller("RiesgoGenerales_Controller",
-['$scope', '$modal', function ($scope, $modal) {
+['$scope', '$uibModal', function ($scope, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -49,13 +49,13 @@ export default angular.module("scrwebm.riesgos.generales", []).controller("Riesg
         $scope.riesgo.docState = 2;
     }
 
-    aseguradoSetSelectize($modal, $scope); 
+    aseguradoSetSelectize($uibModal, $scope); 
 }])
 
 
 // para establecer las opciones del select asegurado; nótese como usamos selectize, debemos usar un $apply ... 
 // el setTimeout es para que angular reconozca el control 
-function aseguradoSetSelectize($modal, $scope) {
+function aseguradoSetSelectize($uibModal, $scope) {
     setTimeout(function () {
         $scope.$apply(function () {
 
@@ -96,7 +96,7 @@ function aseguradoSetSelectize($modal, $scope) {
 
                 create: function (input, callback) {
 
-                    agregarAsegurado_desdeInput($modal, input).then((result) => {
+                    agregarAsegurado_desdeInput($uibModal, input).then((result) => {
 
                         // Ok, el usuario agregó el asegurado desde el modal; regresamos el item para que selectize lo 
                         // agregue a sus choices 
@@ -129,10 +129,10 @@ function aseguradoSetSelectize($modal, $scope) {
   }
 
 
-  const agregarAsegurado_desdeInput = ($modal, nombre) => {
+  const agregarAsegurado_desdeInput = ($uibModal, nombre) => {
     return new Promise((resolve) => {
       
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/generales/agregarNuevoAsegurado.html',
             controller: 'AgregarNuevoAsegurado_ModalController',
             size: 'md',

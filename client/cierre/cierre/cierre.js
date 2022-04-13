@@ -13,7 +13,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$modal', function ($scope, $modal) {
+angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$uibModal', function ($scope, $uibModal) {
 
     $scope.processProgress = {
         current: 0,
@@ -140,7 +140,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
         const periodoACerrar = itemSeleccionado; 
 
         if (!periodoACerrar || lodash.isEmpty(periodoACerrar)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                 `<em>scrwebm - cierre de un período</em>`,
                 `Aparentemente, Ud. no ha seleccionado un período a cerrar.`, 
                 false).then();
@@ -157,12 +157,12 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
                              Por favor seleccione el período más reciente en la lista. 
                             `;  
 
-            DialogModal($modal, `<em>scrwebm - cierre de un período</em>`, message, false).then();
+            DialogModal($uibModal, `<em>scrwebm - cierre de un período</em>`, message, false).then();
             return;
         }
 
         if (!periodoACerrar.desde || !periodoACerrar.hasta) {
-            DialogModal($modal, `<em>scrwebm - cierre de un período</em>`,
+            DialogModal($uibModal, `<em>scrwebm - cierre de un período</em>`,
                 "Aparentemente, el período que Ud. ha seleccionado no está completo Por favor revise.",
                 false).then();
             return;
@@ -172,7 +172,7 @@ angular.module("scrwebm").controller("Cierre.Cierre.Controller", ['$scope', '$mo
                          <b>${moment(periodoACerrar.hasta).format("DD-MMM-YYYY")}</b>.<br /><br />
                          Desea continuar con este proceso y cerrar el período?`; 
 
-        DialogModal($modal, `<em>scrwebm - cierre de un período</em>`, message, true).then(
+        DialogModal($uibModal, `<em>scrwebm - cierre de un período</em>`, message, true).then(
             function () { cerrarPeriodo2(periodoACerrar); },
             function () { return; });
     }

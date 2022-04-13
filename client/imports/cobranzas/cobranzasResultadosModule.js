@@ -8,8 +8,8 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 export default angular.module("scrwebm.cobranzas.resultados", [])
-                      .controller("CobranzasResultadosController", ['$scope', '$stateParams', '$modal', 
-    function ($scope, $stateParams, $modal) {
+                      .controller("CobranzasResultadosController", ['$scope', '$stateParams', '$uibModal', 
+    function ($scope, $stateParams, $uibModal) {
 
         $scope.showProgress = false;
 
@@ -54,7 +54,7 @@ export default angular.module("scrwebm.cobranzas.resultados", [])
                     });
                 });
 
-                DialogModal($modal, "<em>Cobranzas</em>",
+                DialogModal($uibModal, "<em>Cobranzas</em>",
                                     "Ok, el proceso fue ejecutado en forma satisfactoria.<br />" +
                                     "En total fueron aplicados <b>" + cantidadPagosAplicados.toString() + "</b> cobros/pagos a " + 
                                     "la remesa seleccionada.<br /><br />" +

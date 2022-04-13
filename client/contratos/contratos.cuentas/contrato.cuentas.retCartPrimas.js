@@ -10,8 +10,8 @@ import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalog
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_RetCartPr_Controller", ['$scope', '$modal', 'uiGridConstants', '$q',
-function ($scope, $modal, uiGridConstants, $q) {
+angular.module("scrwebm").controller("Contrato_Cuentas_RetCartPr_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$q',
+function ($scope, $uibModal, uiGridConstants, $q) {
 
     $scope.showProgress = false;
 
@@ -184,7 +184,7 @@ function ($scope, $modal, uiGridConstants, $q) {
         // mon/ramo/tipo/serie, para que el usuario indique un monto para cada una ...
 
         if (!$scope.contrato.codigo) {
-            DialogModal($modal, "<em>Contratos - Cuotas</em>",
+            DialogModal($uibModal, "<em>Contratos - Cuotas</em>",
                         `El contrato debe tener un <em>código</em> asignado. Por favor asigne un código al contrato.<br />
                          El <em>código del contrato</em> permite, justamente, relacionar el contrato a una <em>tabla de configuración</em>.`,
                         false).then();
@@ -258,7 +258,7 @@ function ($scope, $modal, uiGridConstants, $q) {
                                 <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`; 
                 message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
                 
-                DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
+                DialogModal($uibModal, "<em>Contratos proporcionales</em>", message, false).then();
             },
             (error) => {
                 $scope.$parent.alerts.length = 0;

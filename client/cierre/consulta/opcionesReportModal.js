@@ -9,8 +9,8 @@ import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensaj
 
 angular.module("scrwebm")
        .controller('Cierre_opcionesReportController',
-['$scope', '$modalInstance', 'companiaSeleccionada', 'fechaInicialPeriodo', 'fechaFinalPeriodo', 'cuentasCorrientes', 
-function ($scope, $modalInstance, companiaSeleccionada, fechaInicialPeriodo, fechaFinalPeriodo, cuentasCorrientes) {
+['$scope', '$uibModalInstance', 'companiaSeleccionada', 'fechaInicialPeriodo', 'fechaFinalPeriodo', 'cuentasCorrientes', 
+function ($scope, $uibModalInstance, companiaSeleccionada, fechaInicialPeriodo, fechaFinalPeriodo, cuentasCorrientes) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -19,11 +19,11 @@ function ($scope, $modalInstance, companiaSeleccionada, fechaInicialPeriodo, fec
     };
 
     $scope.ok = function () {
-        // $modalInstance.close("Ok");
+        // $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
     // notas: aquí viene la compañía seleccionada 

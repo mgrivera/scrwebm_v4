@@ -24,8 +24,8 @@ import './emailsCobranzaModal.html';
 
 export default angular.module("scrwebm.consultas.pendientesCobro_vencimientos.emails", [])
        .controller('Consulta_MontosPorCobrar_Vencimientos_EmailsCobranza_Controller',
-['$scope', '$modalInstance', '$meteor', '$modal', 'cuotasSeleccionadas',
-function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
+['$scope', '$uibModalInstance', '$meteor', '$uibModal', 'cuotasSeleccionadas',
+function ($scope, $uibModalInstance, $meteor, $uibModal, cuotasSeleccionadas) {
 
     $scope.processProgress = {
         current: 0,
@@ -57,11 +57,11 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
     };
 
     $scope.ok = function () {
-        $modalInstance.close($scope.parametros);
+        $uibModalInstance.close($scope.parametros);
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
     // ------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
             $scope.emailsCobranzaForm.$setPristine();    // para que la clase 'ng-submitted deje de aplicarse a la forma ... button
 
             if (!$scope.emailCobranza.docState) {
-                DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+                DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                                     "Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.",
                                    false).then();
                 return;
@@ -178,14 +178,14 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
     $scope.asignarTiposDeCorreo = () => {
 
         if ($scope.emailCobranza && $scope.emailCobranza.docState) {
-            DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+            DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                                 `Ud. debe guardar los cambios efectuados antes de intentar ejecutar esta función.`,
                                false).then();
             return;
         }
 
         if (!cuotasSeleccionadas.length) {
-            DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+            DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                                 `Ud. no ha seleccionado las cuotas a las cuales desea enviar e-mails.<br />
                                 Ud. debe cerrar esta diálogo y seleccionar las cuotas, a las cuales desea
                                 enviar correos, en la lista.<br />
@@ -196,7 +196,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
         }
 
         if ($scope.emailCobranza.reglas.length === lodash.filter($scope.emailCobranza.reglas, (x) => { return x.suspendido; }).length) {
-            DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+            DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                                 `Todas las reglas están suspendidas.<br />
                                  No hay reglas que aplicar.
                                 `,
@@ -274,7 +274,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
 
          $meteor.call('consultas_MontosPendientesCobro_GrabarTiposEmail', cuotasConEmailAsignado_array).then(
            function (result) {
-               DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+               DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                        `Ok, el proceso de <em>asignación de tipos de e-mail</em> ha concluído
                         en forma satisfactoria.<br />
                         En total, este proceso ha leído <b>${cuotasLeidas.toString()}</b> cuotas
@@ -303,14 +303,14 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
     $scope.enviarCorreos = () => {
 
         if ($scope.emailCobranza && $scope.emailCobranza.docState) {
-            DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+            DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                                 `Ud. debe guardar los cambios efectuados antes de intentar ejecutar esta función.`,
                                false).then();
             return;
         }
 
         if (!cuotasSeleccionadas.length) {
-            DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+            DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                                 `Ud. no ha seleccionado las cuotas a las cuales desea enviar e-mails.<br />
                                 Ud. debe cerrar esta diálogo y seleccionar las cuotas, a las cuales desea
                                 enviar correos, en la lista.<br />
@@ -321,7 +321,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
         }
 
         if ($scope.emailCobranza.reglas.length === lodash.filter($scope.emailCobranza.reglas, (x) => { return x.suspendido; }).length) {
-            DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+            DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                                 `Todas las reglas están suspendidas.<br />
                                  No hay reglas que aplicar.
                                 `,
@@ -329,7 +329,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
             return;
         }
 
-        DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+        DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                 `Este proceso envía un e-mail a cada cuota a la cual se ha asignado un tipo de e-mail.<br /><br />
                  Desea continuar y ejecutar este proceso?
                 `,
@@ -375,7 +375,7 @@ function ($scope, $modalInstance, $meteor, $modal, cuotasSeleccionadas) {
                   `<br /><br />El envío de los e-mails <b>ha sido registrado</b> en las cuotas de prima.`;
               }
 
-              DialogModal($modal, "<em>Generación de e-mails de cobranza</em>",
+              DialogModal($uibModal, "<em>Generación de e-mails de cobranza</em>",
                      modalMessage,
                      false).then();
 

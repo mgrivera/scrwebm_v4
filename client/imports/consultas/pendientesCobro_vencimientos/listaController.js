@@ -15,8 +15,8 @@ import PendientesCobro_vencimientos_Report from './reportes/opcionesReportModal'
 import Emails from './emailsCobranzaController';
 
 export default angular.module("scrwebm.consultas.pendientesCobro_vencimientos.lista", [ PendientesCobro_vencimientos_Report.name, Emails.name ])
-                      .controller("ConsultasMontosPendientesCobroVencimientos_Lista_Controller", ['$scope', '$state', '$timeout', '$modal', 'uiGridConstants',
-function ($scope, $state, $timeout, $modal, uiGridConstants) {
+                      .controller("ConsultasMontosPendientesCobroVencimientos_Lista_Controller", ['$scope', '$state', '$timeout', '$uibModal', 'uiGridConstants',
+function ($scope, $state, $timeout, $uibModal, uiGridConstants) {
 
       $scope.showProgress = false;
 
@@ -100,7 +100,7 @@ function ($scope, $state, $timeout, $modal, uiGridConstants) {
               "</ol>"
 
             // para mostrar al usuario un diálogo y permitir guardar el archivo (file) al disco duro ...
-            Global_Methods.PermitirUsuarioDownloadFiles($modal, files, mensajeAlUsuario);
+            Global_Methods.PermitirUsuarioDownloadFiles($uibModal, files, mensajeAlUsuario);
 
             $scope.showProgress = false;
       }
@@ -116,13 +116,13 @@ function ($scope, $state, $timeout, $modal, uiGridConstants) {
     //       Error al intentar crear el archivo: <em>${message}</em>; del tipo: ${type}; cuyo código es: ${code}; en la linea: ${row}.
     //                           Por favor intente corregir esta situación, y luego intente ejecutar esta función nuevamente.`;
 
-    //       DialogModal($modal, "<em>Consultas</em>", errorMessage, false).then();
+    //       DialogModal($uibModal, "<em>Consultas</em>", errorMessage, false).then();
     //       return;
     //   }
 
     $scope.reporteOpcionesModal = function () {
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/imports/consultas/pendientesCobro_vencimientos/reportes/opcionesReportModal.html',
             controller: 'Consultas_montosPendientesCobro_vencimientos_opcionesReportController',
             size: 'md',
@@ -503,7 +503,7 @@ function ($scope, $state, $timeout, $modal, uiGridConstants) {
         // Nota: déjamos de usar este código y ahora abrimos un modal mucho más simple que éste, desde el cual permitimos al 
         // usuario generar Emails para cobrar los montos pendientes 
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/imports/consultas/pendientesCobro_vencimientos/emailsCobranzaModal.html',
             controller: 'Consulta_MontosPorCobrar_Vencimientos_EmailsCobranza_Controller',
             size: 'lg',

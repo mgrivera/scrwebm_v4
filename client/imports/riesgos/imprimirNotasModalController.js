@@ -14,8 +14,8 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 
 export default angular.module("scrwebm.riesgos.riesgo.imprimirNotasCobertura", []).
 controller('ImprimirNotasRiesgosModalController',
-['$scope', '$modalInstance', '$modal', 'riesgo', 'tiposMovimiento',
-function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
+['$scope', '$uibModalInstance', '$uibModal', 'riesgo', 'tiposMovimiento',
+function ($scope, $uibModalInstance, $uibModal, riesgo, tiposMovimiento) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -24,11 +24,11 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
     }
 
     $scope.ok = function () {
-        // $modalInstance.close("Ok");
+        // $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -150,14 +150,14 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
     $scope.obtenerDocumentoWord = function (file) {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de notas de cobertura</em>",
                         "Ud. debe seleccionar un movimiento en la lista.",
                         false).then();
             return;
         }
 
         if (!$scope.parametros.fecha || lodash.isEmpty($scope.parametros.fecha)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de notas de cobertura</em>",
                         `Ud. debe indicar la fecha que se mostrará en el documento.<br />
                          Ejemplo: Caracas, 25 de Abril del 2.015.
                         `,
@@ -166,7 +166,7 @@ function ($scope, $modalInstance, $modal, riesgo, tiposMovimiento) {
         }
 
         if (!$scope.tipoPlantillaWord) {
-            DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de notas de cobertura</em>",
                         `Ud. debe indicar el <em>tipo</em> de plantilla que será usada para construir el documento.<br /><br />
                          Los tipos de plantilla que pueden ser usados para obtener las notas de cobertura son: 
                          <em>Cedentes</em>, <em>Reaseguradores</em>, <em>Interna</em>. <br /><br />

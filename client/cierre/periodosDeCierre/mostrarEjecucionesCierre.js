@@ -3,8 +3,8 @@ import lodash from 'lodash';
 import angular from 'angular'; 
 
 angular.module("scrwebm")
-       .controller('Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller', ['$scope', '$modalInstance', 'periodoCierre', 'companiaSeleccionada',
-function ($scope, $modalInstance, periodoCierre, companiaSeleccionada) {
+       .controller('Cierre_RegistrosCierre_MostrarEjecuciones_Modal_Controller', ['$scope', '$uibModalInstance', 'periodoCierre', 'companiaSeleccionada',
+function ($scope, $uibModalInstance, periodoCierre, companiaSeleccionada) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -16,11 +16,11 @@ function ($scope, $modalInstance, periodoCierre, companiaSeleccionada) {
     $scope.companiaSeleccionada = companiaSeleccionada;
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     $scope.list_ui_grid = {

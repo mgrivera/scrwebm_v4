@@ -70,8 +70,8 @@ export default angular.module("scrwebm.riesgos.riesgo", [ 'angular-meteor',
                                                            RiesgoImprimirNotasCobertura.name, RenovarRiesgo.name, 
                                                            ConstruirNotasDebito.name, DownloadRiesgoToDisk.name
 ])
-                       .controller("Riesgo_Controller", ['$scope', '$state', '$stateParams', '$modal', '$location', 
-function ($scope, $state, $stateParams, $modal, $location) {
+                       .controller("Riesgo_Controller", ['$scope', '$state', '$stateParams', '$uibModal', '$location', 
+function ($scope, $state, $stateParams, $uibModal, $location) {
 
     $scope.showProgress = true;
 
@@ -123,7 +123,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
                         break; 
                     }
                     default: { 
-                        DialogModal($modal,
+                        DialogModal($uibModal,
                             "<em>Riesgos - Información propia para el ramo del riesgo</em>",
                             `Error: no hay un <em>registro específico de información</em> para el ramo indicado para el riesgo. <br /><br />  
                              Ud. debe usar esta opción <b>solo</b> para riesgos cuyo ramo posea un registro propio de información. <br />
@@ -185,7 +185,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.nuevo0 = function () {
 
         if ($scope.riesgo.docState && $scope.origen == 'edicion') {
-            const promise = DialogModal($modal,
+            const promise = DialogModal($uibModal,
                                     "<em>Riesgos</em>",
                                     "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa para agregar un nuevo registro, " +
                                     "los cambios se perderán.<br /><br />Desea continuar y perder los cambios efectuados al registro actual?",
@@ -216,14 +216,14 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.DownloadToDisk = function () {
 
         if ($scope.riesgo.docState && $scope.origen == 'edicion') {
-            DialogModal($modal, "<em>Riesgos - Download</em>",
+            DialogModal($uibModal, "<em>Riesgos - Download</em>",
                 "Aparentemente, <em>se han efectuado cambios</em> en el registro.<br /><br />" +
                 "Por favor guarde estos cambios antes de intentar ejecutar esta función.",
                 false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: downloadToDisk_htmlTemplate,
             controller: 'DownloadRiesgoToDisk_ModalController',
             size: 'md',
@@ -247,14 +247,14 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.renovarRiesgo = function() { 
 
         if ($scope.riesgo.docState && $scope.origen == 'edicion') {
-            DialogModal($modal, "<em>Riesgos - Renovar riesgo</em>",
+            DialogModal($uibModal, "<em>Riesgos - Renovar riesgo</em>",
                                 "Aparentemente, <em>se han efectuado cambios</em> en el registro.<br /><br />" +
                                 "Por favor guarde estos cambios antes de intentar ejecutar esta función.",
                                 false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: renovarRiesgo_htmlTemplate,
             controller: 'RenovarRiesgo_ModalController',
             size: 'md',
@@ -283,7 +283,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
 
         // lo primero que hacemos es intentar validar el item ...
         if (!$scope.riesgo || !$scope.riesgo.docState) {
-            DialogModal($modal, "<em>Riesgos</em>",
+            DialogModal($uibModal, "<em>Riesgos</em>",
                                 "Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.",
                                 false).then();
             return;
@@ -463,7 +463,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.regresarALista = function () {
 
         if ($scope.riesgo && $scope.riesgo.docState && $scope.origen == 'edicion') {
-            DialogModal($modal,
+            DialogModal($uibModal,
                                     "<em>Riesgos</em>",
                                     "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
                                     true).then(
@@ -483,7 +483,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.eliminar = function () {
         if ($scope.riesgo.docState && $scope.riesgo.docState == 1) {
             if ($scope.riesgo.docState) {
-                const promise = DialogModal($modal,
+                const promise = DialogModal($uibModal,
                                         "<em>Riesgos</em>",
                                         "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
                                         false);
@@ -506,7 +506,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
 
     $scope.refresh = function () {
         if ($scope.riesgo.docState) {
-            const promise = DialogModal($modal,
+            const promise = DialogModal($uibModal,
                                     "<em>Riesgos</em>",
                                     "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa y refresca el registro, " +
                                     "los cambios se perderán.<br /><br />Desea continuar y perder los cambios?",
@@ -530,13 +530,13 @@ function ($scope, $state, $stateParams, $modal, $location) {
 
     $scope.imprimir = function() {
         if (!$scope.riesgo || !$scope.riesgo.movimientos || lodash.isEmpty($scope.riesgo.movimientos)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de notas de cobertura</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de notas de cobertura</em>",
                         "Aparentemente, el riesgo para el cual Ud. desea construir las notas de cobertura, no tiene movimientos registrados.",
                         false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/riesgos/imprimirNotasModal.html',
             controller: 'ImprimirNotasRiesgosModalController',
             size: 'lg',
@@ -561,13 +561,13 @@ function ($scope, $state, $stateParams, $modal, $location) {
 
     $scope.notasDebito = function() {
         if (!$scope.riesgo || !$scope.riesgo.movimientos || lodash.isEmpty($scope.riesgo.movimientos)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de notas de débito</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de notas de débito</em>",
                         "Aparentemente, el riesgo para el cual Ud. desea construir las notas de débito, no tiene movimientos registrados.",
                         false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/riesgos/notasDebito/imprimirNotasDebitoModal.html',
             controller: 'ImprimirNotasDebitoModalController',
             size: 'lg',
@@ -594,7 +594,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.registrarPersonasCompanias = function() {
 
         if (!$scope.riesgo || !$scope.riesgo.compania) {
-            DialogModal($modal, "<em>Riesgos</em>",
+            DialogModal($uibModal, "<em>Riesgos</em>",
                                 "Aparentemente, Ud. no ha seleccionado una compañía como cedente para este riesgo.<br />" +
                                 "El riesgo debe tener una compañía cedente antes de intentar registrar sus personas.",
                                 false).then();
@@ -602,7 +602,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
@@ -663,7 +663,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
     // ---------------------------------------------------------------------
     $scope.registroDocumentos = function() {
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/generales/registroDocumentos.html',
             controller: 'RegistroDocumentosController',
             size: 'md',
@@ -694,7 +694,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.registroCumulos = function() {
 
         if ($scope?.riesgo?.docState) {
-            DialogModal($modal, "<em>Riesgos - Cúmulos - Registro</em>",
+            DialogModal($uibModal, "<em>Riesgos - Cúmulos - Registro</em>",
                 `Aparentemente, el riesgo ha recibido modificaciones que no han sido grabadas. <br />
                  Ud. debe hacer un <em>click</em> en <em>Grabar</em> para guardar las modificaciones efectuadas,
                  antes de intentar ejecutar esta función. 
@@ -704,7 +704,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
         }
 
         if (!$scope.riesgo || !$scope.riesgo.movimientos || !Array.isArray($scope.riesgo.movimientos) || !$scope.riesgo.movimientos.length) {
-            DialogModal($modal, "<em>Riesgos - Cúmulos - Registro</em>",
+            DialogModal($uibModal, "<em>Riesgos - Cúmulos - Registro</em>",
                 `Aparentemente, el riesgo no tiene movimientos registrados. <br />
                  El riesgo debe tener movimientos registrados para que la opción al registro de cúmulos esté disponible. 
                 `,
@@ -961,7 +961,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
     $scope.uploadFile = function(files) {
 
         if (!$scope.riesgo || !$scope.riesgo.docState || $scope.riesgo.docState != 1) {
-            DialogModal($modal, "<em>Riesgos - Download</em>",
+            DialogModal($uibModal, "<em>Riesgos - Download</em>",
                                 `Aparentemente, el riesgo que <em>recibirá la copia</em> <b>no es nuevo</b> (ya existía).<br /> 
                                  Ud. debe importar un riesgo siempre en un riesgo <b>nuevo</b>; es decir, 
                                  <b>no</b> en uno que ya exista.<br />
@@ -982,7 +982,7 @@ function ($scope, $state, $stateParams, $modal, $location) {
         const userSelectedFile = files[0];
 
         if (!userSelectedFile) {
-            DialogModal($modal, "<em>Riesgos - Download</em>",
+            DialogModal($uibModal, "<em>Riesgos - Download</em>",
                                 `Aparentemente, Ud. no ha seleccionado un archivo.<br />
                                  Ud. debe seleccionar un archivo que haya sido creado antes 
                                  mediante la opción <em>Download</em>, que existe en este mismo menú.`,

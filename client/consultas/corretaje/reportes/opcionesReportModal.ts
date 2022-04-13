@@ -6,7 +6,7 @@ import { Filtros } from 'imports/collections/otros/filtros';
 import { mensajeErrorDesdeMethod_preparar } from '../../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebm").controller('Consultas_corretaje_opcionesReportController',
-['$scope', '$modalInstance', 'companiaSeleccionada', function ($scope, $modalInstance, companiaSeleccionada) {
+['$scope', '$uibModalInstance', 'companiaSeleccionada', function ($scope, $uibModalInstance, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -15,11 +15,11 @@ angular.module("scrwebm").controller('Consultas_corretaje_opcionesReportControll
     }
 
     $scope.ok = function () {
-        // $modalInstance.close("Ok");
+        // $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // notas: aquí viene la compañía seleccionada 

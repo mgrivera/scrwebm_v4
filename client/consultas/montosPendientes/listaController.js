@@ -17,8 +17,8 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosAplicadosACuotaController'; 
 
 angular.module("scrwebm").controller("ConsultaMontosPendientesListaController",
-['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',
-function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
+['$scope', '$stateParams', '$state', '$meteor', '$uibModal', 'uiGridConstants',
+function ($scope, $stateParams, $state, $meteor, $uibModal, uiGridConstants) {
 
       $scope.showProgress = false;
 
@@ -71,7 +71,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
           // el parámetro cuotaID es opcional en la función; lo pasamos aquí pues no tenemos la cuota como tal;
           // la función lee la cuota si recibe su _id en vez de la cuota como tal ...
           let cuota = null;
-          MostrarPagosEnCuotas($modal, cuota, 'consulta', monto.cuota.cuotaID);
+          MostrarPagosEnCuotas($uibModal, cuota, 'consulta', monto.cuota.cuotaID);
       }
 
       $scope.exportarDatosConsulta = () => {
@@ -159,7 +159,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
               "</ol>"
 
             // para mostrar al usuario un diálogo y permitir guardar el archivo (file) al disco duro ...
-            Global_Methods.PermitirUsuarioDownloadFiles($modal, files, mensajeAlUsuario);
+            Global_Methods.PermitirUsuarioDownloadFiles($uibModal, files, mensajeAlUsuario);
 
             $scope.showProgress = false;
       }
@@ -175,13 +175,13 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
           Error al intentar crear el archivo: <em>${message}</em>; del tipo: ${type}; cuyo código es: ${code}; en la linea: ${row}.
                               Por favor intente corregir esta situación, y luego intente ejecutar esta función nuevamente.`;
 
-          DialogModal($modal, "<em>Consultas</em>", errorMessage, false).then();
+          DialogModal($uibModal, "<em>Consultas</em>", errorMessage, false).then();
           return;
       }
 
     $scope.reporteOpcionesModal = function () {
 
-        var modalInstance = $modal.open({
+        var modalInstance = $uibModal.open({
             templateUrl: 'client/consultas/montosPendientes/reportes/opcionesReportModal.html',
             controller: 'Consultas_montosPendientes_opcionesReportController',
             size: 'md',

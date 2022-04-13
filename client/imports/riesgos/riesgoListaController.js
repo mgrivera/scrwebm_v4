@@ -16,8 +16,8 @@ import Riesgos_opcionesReportController from '/client/imports/riesgos/reportes/o
 import "./lista.html";
 
 export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportController.name ])
-                      .controller("RiesgosLista_Controller", ['$scope', '$state', '$stateParams', '$modal', 
-    function ($scope, $state, $stateParams, $modal) {
+                      .controller("RiesgosLista_Controller", ['$scope', '$state', '$stateParams', '$uibModal', 
+    function ($scope, $state, $stateParams, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -59,7 +59,7 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
     }
 
     $scope.exportarExcel = () => {
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/riesgos/listaExportarExcelModal.html',
             controller: 'RiesgosListaExportarExcelModal_Controller',
             size: 'md',
@@ -361,7 +361,7 @@ export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportC
     }
 
     $scope.reporteOpcionesModal = function() { 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/riesgos/reportes/opcionesReportModal.html',
             controller: 'Riesgos_opcionesReportController',
             size: 'md',

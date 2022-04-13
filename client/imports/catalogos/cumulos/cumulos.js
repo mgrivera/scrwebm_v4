@@ -12,8 +12,8 @@ import { Cumulos } from '/imports/collections/catalogos/cumulos';
 import './cumulos.html'; 
 
 export default angular.module("scrwebm.catalogos.cumulos", [])
-                      .controller("CumulosController", ['$scope', '$modal', 
-function ($scope, $modal) {
+                      .controller("CumulosController", ['$scope', '$uibModal', 
+function ($scope, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -241,7 +241,7 @@ function ($scope, $modal) {
     $scope.eliminarZona = (item) => {
 
         if (!cumuloSeleccionado) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                 "<em>Cúmulos - Eliminar una zona</em>",
                 "Ud. debe seleccionar un cúmulo en la lista, antes de intentar eliminar una de sus zonas.",
                 false).then();
@@ -258,7 +258,7 @@ function ($scope, $modal) {
     $scope.agregarZona = () => {
 
         if (!cumuloSeleccionado || lodash.isEmpty(cumuloSeleccionado)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                 "<em>Cúmulos - Agregar una zona</em>",
                 "Ud. debe seleccionar un cúmulo en la lista, antes de intentar agregar una zona.",
                 false).then();

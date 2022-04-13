@@ -9,7 +9,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 export default angular.module("scrwebm.riesgos.lista.reportModal", []); 
 
 angular.module("scrwebm.riesgos.lista.reportModal").controller('Riesgos_opcionesReportController',
-['$scope', '$modalInstance', '$meteor', 'companiaSeleccionada', function ($scope, $modalInstance, $meteor, companiaSeleccionada) {
+['$scope', '$uibModalInstance', '$meteor', 'companiaSeleccionada', function ($scope, $uibModalInstance, $meteor, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -18,11 +18,11 @@ angular.module("scrwebm.riesgos.lista.reportModal").controller('Riesgos_opciones
     }
 
     $scope.ok = function () {
-        // $modalInstance.close("Ok");
+        // $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // notas: aquí viene la compañía seleccionada 

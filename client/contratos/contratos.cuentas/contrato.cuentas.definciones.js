@@ -10,8 +10,8 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller", ['$scope', '$modal', 'uiGridConstants', '$q', '$interval', 
-function ($scope, $modal, uiGridConstants, $q, $interval) {
+angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$q', '$interval', 
+function ($scope, $uibModal, uiGridConstants, $q, $interval) {
 
     $scope.showProgress = false;
 
@@ -252,14 +252,14 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
 
     $scope.generarCuentas_definiciones = function () {
         // pasamos el ui-grid para que se haga el binding para ésta cuando el usuario cierra el modal ...
-        Contratos_Methods.construirDefinicionCuentas($scope, $scope.contrato, $scope.monedas, $scope.cuentasTecnicas_definiciones_ui_grid, $modal, $scope.$parent.$parent);
+        Contratos_Methods.construirDefinicionCuentas($scope, $scope.contrato, $scope.monedas, $scope.cuentasTecnicas_definiciones_ui_grid, $uibModal, $scope.$parent.$parent);
     }
 
     $scope.generarCuotasCuentaTecnica = () => {
 
         // debe haber una definicion seleccionada
         if (!definicionCuentaTecnicaSeleccionada || lodash.isEmpty(definicionCuentaTecnicaSeleccionada)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Proporcionales - Registro de cuotas de cuentas técnicas</em>",
                         `Error: Ud. debe seleccionar una <em>definición de cuenta técnica</em> en la lista.
                             `,
@@ -268,7 +268,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
         }
 
         if ($scope.dataHasBeenEdited) { 
-            DialogModal($modal,
+            DialogModal($uibModal,
                 "<em>Contratos - Proporcionales - Registro de cuotas de cuentas técnicas</em>",
                 `Se han efectuado cambios en el registro. Por favor grabe los cambios antes de intentar ejecutar esta función.
                 `,
@@ -289,7 +289,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
         if (!existenSaldos) { existenSaldos = $scope.contratosProp_partBeneficios_montosFinales.find(x => x.definicionID === definicionID); }
 
         if (!existenSaldos) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Proporcionales - Registro de cuotas de cuentas técnicas</em>",
                         `Error: aparentemente, la <em>definición de cuenta técnica</em> seleccionada no tiene
                         saldos de cuentas técnicas, ni tampoco de complementarios registrados.<br /><br />
@@ -303,7 +303,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
         const existenCuotasParaLaDefinicionSeleccionada = $scope.cuotas.find(c => c.source.subEntityID === definicionID);
 
         if (existenCuotasParaLaDefinicionSeleccionada) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         `<em>Contratos</em> - Registro de cuotas para la definición seleccionada`,
                          `Ya existen <em>cuotas registradas</em> para la
                          <em>definición de cuenta técnica</em> seleccionada.<br /><br />
@@ -315,7 +315,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
                     generarCuotasCuentaTecnica2();
                 },
                 function () {
-                    DialogModal($modal, "<em>Contratos</em> - Cuentas técnicas - Generación de cuotas",
+                    DialogModal($uibModal, "<em>Contratos</em> - Cuentas técnicas - Generación de cuotas",
                                         "Ok, el proceso ha sido cancelado.", true).then();
                 });
             return;
@@ -339,7 +339,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
         const partBeneficios_montosFinales = $scope.contratosProp_partBeneficios_montosFinales.filter(x => x.definicionID === definicionID); 
 
 
-        $modal.open({
+        $uibModal.open({
                templateUrl: 'client/contratos/methods/generarCuotasCuentasTecnicas/cuentasGenerarCuotas.html',
                controller: 'CuentasGenerarCuotasController',
                size: 'md',
@@ -677,7 +677,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
     $scope.agregarCuentaCuota = function () {
 
         if (!definicionCuentaTecnicaSeleccionada || lodash.isEmpty(definicionCuentaTecnicaSeleccionada)) {
-            DialogModal($modal, "<em>Contratos - Cuotas</em>",
+            DialogModal($uibModal, "<em>Contratos - Cuotas</em>",
                 `Ud. debe seleccionar una <em>definición de cuenta técnica</em>
                 <b>antes</b> de intentar ejecutar esta función.`,
                 false).then();
@@ -715,7 +715,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
     $scope.eliminarCuentaCuota = function () {
 
         if (!definicionCuentaTecnicaSeleccionada || lodash.isEmpty(definicionCuentaTecnicaSeleccionada)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Cuotas</em>",
                         `Ud. debe seleccionar la capa a la cual corresponde la cuota que desea eliminar.`,
                         false).then();
@@ -723,7 +723,7 @@ function ($scope, $modal, uiGridConstants, $q, $interval) {
         }
 
         if (!definicionCuentaCuotaSeleccionada || lodash.isEmpty(definicionCuentaCuotaSeleccionada)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         `<em>Contratos - Cuotas</em>", "Ud. debe seleccionar la cuota que desea eliminar.`,
                         false, true).then();
             return;

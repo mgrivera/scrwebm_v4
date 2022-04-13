@@ -18,8 +18,8 @@ import RemesaCuadreAsientoObtenerOpciones from "./opcionesObtenerAsiento_Modal_C
 
 export default angular.module("scrwebm.remesas.remesa.cuadre.asientoContable", [ RemesaCuadreAsientoObtenerOpciones.name ])
             .controller('RemesaCuadreAsientoContable_Modal_Controller',
-['$scope', '$modalInstance', '$modal', 'remesa', 'tiposCuentaContable', 'cuentasContablesLista', 'cuentasContables', 'ciaSeleccionada', 'uiGridConstants',
-function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasContablesLista, cuentasContables, ciaSeleccionada, uiGridConstants) {
+['$scope', '$uibModalInstance', '$uibModal', 'remesa', 'tiposCuentaContable', 'cuentasContablesLista', 'cuentasContables', 'ciaSeleccionada', 'uiGridConstants',
+function ($scope, $uibModalInstance, $uibModal, remesa, tiposCuentaContable, cuentasContablesLista, cuentasContables, ciaSeleccionada, uiGridConstants) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -31,11 +31,11 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
     $scope.companiaSeleccionada = ciaSeleccionada;
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     $scope.helpers({
@@ -47,7 +47,7 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
     $scope.cuentasContablesLista = cuentasContablesLista; 
 
     $scope.obtenerAsientoContable = () => {
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/remesas/asientoContable/opcionesObtenerAsiento_Modal.html',
             controller: 'RemesaCuadreAsientoContable_Opciones_Modal_Controller',
             size: 'md',
@@ -393,7 +393,7 @@ function ($scope, $modalInstance, $modal, remesa, tiposCuentaContable, cuentasCo
         }
         finally {
             if (message) {
-                DialogModal($modal, "<em>Asientos contables - Exportar asientos contables</em>",
+                DialogModal($uibModal, "<em>Asientos contables - Exportar asientos contables</em>",
                                     "Ha ocurrido un error al intentar ejecutar esta función:<br />" +
                                     message,
                                     false).then();

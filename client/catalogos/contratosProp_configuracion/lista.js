@@ -11,8 +11,8 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import { ContratosProp_Configuracion_ListaCodigos } from '/imports/collections/catalogos/ContratosProp_Configuracion'; 
 import { ContProp_tablaConf } from '/client/lib/forerunnerDB'; 
 
-angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controller", ['$scope', '$state', '$modal', 
-function ($scope, $state, $modal) {
+angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controller", ['$scope', '$state', '$uibModal', 
+function ($scope, $state, $uibModal) {
 
     $scope.showProgress = true;
 
@@ -267,7 +267,7 @@ function ($scope, $state, $modal) {
 
     $scope.leerTablaConfiguracionContrato = () => {
         if (!itemSeleccionado || lodash.isEmpty(itemSeleccionado)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                     "<em>Contratos - Configuración de contratos proporcionales</em>",
                     `Ud. debe seleccionar un código de contrato en la lista.`,
                     false);
@@ -280,7 +280,7 @@ function ($scope, $state, $modal) {
             Ud. debe guardar los cambios efectuados en la lista antes de continuar con esta función.
             `; 
 
-            DialogModal($modal, "<em>Contratos - Configuración de contratos proporcionales</em>", message, false);
+            DialogModal($uibModal, "<em>Contratos - Configuración de contratos proporcionales</em>", message, false);
             return;
         }
 

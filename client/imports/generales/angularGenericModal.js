@@ -4,9 +4,9 @@ import angular from 'angular';
 // -----------------------------------------------------------------------------
 // modal (popup) para pedir confirmación al usuario
 // -----------------------------------------------------------------------------
-export const DialogModal = function ($modal, titulo, message, showCancelButton) {
+export const DialogModal = function ($uibModal, titulo, message, showCancelButton) {
 
-    const modalInstance = $modal.open({
+    const modalInstance = $uibModal.open({
         templateUrl: 'client/generales/genericUIBootstrapModal.html',
         controller: 'DialogModalController',
         size: 'md',
@@ -27,8 +27,8 @@ export const DialogModal = function ($modal, titulo, message, showCancelButton) 
 }
 
 angular.module("scrwebm.generales")
-       .controller('DialogModalController', ['$scope', '$modalInstance', 'titulo', 'mensaje', 'showCancelButton',
-function ($scope, $modalInstance, titulo, mensaje, showCancelButton) {
+       .controller('DialogModalController', ['$scope', '$uibModalInstance', 'titulo', 'mensaje', 'showCancelButton',
+function ($scope, $uibModalInstance, titulo, mensaje, showCancelButton) {
 
     $scope.dialogData = {};
     $scope.dialogData.titulo = titulo;
@@ -36,11 +36,11 @@ function ($scope, $modalInstance, titulo, mensaje, showCancelButton) {
     $scope.dialogData.showCancelButton = showCancelButton;
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 }
 ])

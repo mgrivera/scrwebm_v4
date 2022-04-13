@@ -3,8 +3,8 @@ import angular from 'angular';
 import lodash from 'lodash';
 
 export default angular.module("scrwebm.riesgos.movimientos.prorratearPrimasBrutas", []).
-                       controller('Riesgos_ProrratearPrimasController', ['$scope', '$modalInstance', 'riesgo', 'movimiento',
-function ($scope, $modalInstance, riesgo, movimiento) {
+                       controller('Riesgos_ProrratearPrimasController', ['$scope', '$uibModalInstance', 'riesgo', 'movimiento',
+function ($scope, $uibModalInstance, riesgo, movimiento) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -14,11 +14,11 @@ function ($scope, $modalInstance, riesgo, movimiento) {
     }
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     var coberturaCompaniaSeleccionada = {};

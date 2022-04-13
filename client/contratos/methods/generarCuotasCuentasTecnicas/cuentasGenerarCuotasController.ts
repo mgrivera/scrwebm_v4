@@ -8,10 +8,10 @@ import { determinarSiExistenCuotasConCobrosAplicados } from '../../../imports/ge
 import { DialogModal } from '../../../imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller('CuentasGenerarCuotasController',
-['$scope', '$modal', '$modalInstance', 'contrato', 'definicionCuentaTecnicaSeleccionada', 'cuotas', 'definicionCuentaTecnicaSeleccionada_Info',
+['$scope', '$uibModal', '$uibModalInstance', 'contrato', 'definicionCuentaTecnicaSeleccionada', 'cuotas', 'definicionCuentaTecnicaSeleccionada_Info',
  'cuentas_saldos', 'comAdic_montosFinales', 'entCartPr_montosFinales', 'entCartSn_montosFinales', 
  'retCartPr_montosFinales', 'retCartSn_montosFinales', 'partBeneficios_montosFinales', 
-function ($scope, $modal, $modalInstance, contrato, definicionCuentaTecnicaSeleccionada, cuotas, definicionCuentaTecnicaSeleccionada_Info, 
+function ($scope, $uibModal, $uibModalInstance, contrato, definicionCuentaTecnicaSeleccionada, cuotas, definicionCuentaTecnicaSeleccionada_Info, 
           cuentas_saldos, comAdic_montosFinales, entCartPr_montosFinales, entCartSn_montosFinales, 
           retCartPr_montosFinales, retCartSn_montosFinales, partBeneficios_montosFinales) {
 
@@ -26,11 +26,11 @@ function ($scope, $modal, $modalInstance, contrato, definicionCuentaTecnicaSelec
     $scope.definicionCuentaTecnicaSeleccionada_Info = definicionCuentaTecnicaSeleccionada_Info;
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     $scope.parametros = {
@@ -55,7 +55,7 @@ function ($scope, $modal, $modalInstance, contrato, definicionCuentaTecnicaSelec
 
     let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasCuentaTecnica); 
     if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
-        DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then( 
+        DialogModal($uibModal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then( 
             (resolve) => { 
                 $scope.cancel();        // para cerrar el modal de cuotas justo cuando el usuario cierra este modal con el error ... 
             }

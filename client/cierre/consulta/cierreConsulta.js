@@ -13,7 +13,7 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$modal', '$interval', function ($scope, $modal, $interval) {
+angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$uibModal', '$interval', function ($scope, $uibModal, $interval) {
 
       $scope.showProgress = false;
 
@@ -98,7 +98,7 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
     // cuando podamos actualizar angular-ui-bootstrap a una nueve vesión, la propiedad 'active' va en el tabSet
     // y se actualiza con el index de la página (0, 1, 2, ...). Así resulta mucho más intuitivo y fácil
     // establecer el tab 'activo' en ui-bootstrap ...
-    $scope.activeTab = { tab1: true, tab2: false, tab3: false, };
+    $scope.currentTab = 0;
 
     let consulta_ui_grid_api = {};
 
@@ -432,7 +432,7 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
             leerPrimerosRegistrosDesdeServidor(50);
         
             // nótese como establecemos el tab 'activo' en ui-bootstrap; ver nota arriba acerca de ésto ...
-            $scope.activeTab = { tab1: false, tab2: true, tab3: true };
+            $scope.currentTab = 1
         })
     }
 
@@ -558,7 +558,7 @@ angular.module("scrwebm").controller("Cierre.Consulta.Controller", ['$scope', '$
 
      $scope.reporteOpcionesModal = function() { 
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/cierre/consulta/opcionesReportModal.html',
             controller: 'Cierre_opcionesReportController',
             size: 'md',

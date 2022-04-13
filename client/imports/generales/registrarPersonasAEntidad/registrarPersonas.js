@@ -6,8 +6,8 @@ import { Companias } from '/imports/collections/catalogos/companias';
 import './registrarPersonas.html'; 
 
 export default angular.module("scrwebm.generales.registrarPersonasAEntidad", [])
-                      .controller('RegistrarPersonasController', ['$scope', '$modalInstance', 'companias', 'personas',
-function ($scope, $modalInstance, companias, personas) {
+                      .controller('RegistrarPersonasController', ['$scope', '$uibModalInstance', 'companias', 'personas',
+function ($scope, $uibModalInstance, companias, personas) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -17,11 +17,11 @@ function ($scope, $modalInstance, companias, personas) {
     };
 
     $scope.ok = function () {
-        $modalInstance.close({ personas: personasRegistradasEnLaEntidad });
+        $uibModalInstance.close({ personas: personasRegistradasEnLaEntidad });
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
     };
 
     // para usarlas en el filtro de compañías en el grid ...

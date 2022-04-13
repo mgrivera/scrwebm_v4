@@ -6,7 +6,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 
 export default angular.module("scrwebm.remesas.remesa.cuadre.exportarExcel", [])
                       .controller('RemesaCuadreExportarExcel_Modal_Controller',
-['$scope', '$modalInstance', 'remesa', 'ciaSeleccionada', function ($scope, $modalInstance, remesa, ciaSeleccionada) {
+['$scope', '$uibModalInstance', 'remesa', 'ciaSeleccionada', function ($scope, $uibModalInstance, remesa, ciaSeleccionada) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -18,11 +18,11 @@ export default angular.module("scrwebm.remesas.remesa.cuadre.exportarExcel", [])
     $scope.companiaSeleccionada = ciaSeleccionada;
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     $scope.downloadDocument = false;

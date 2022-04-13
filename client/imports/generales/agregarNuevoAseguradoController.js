@@ -9,7 +9,7 @@ import { Asegurados } from '/imports/collections/catalogos/asegurados';
 import { mensajeErrorDesdeMethod_preparar } from './mensajeDeErrorDesdeMethodPreparar'; 
 
 export default angular.module("scrwebm.agregarNuevoAsegurado", []).controller('AgregarNuevoAsegurado_ModalController',
-['$scope', '$modalInstance', 'nombre', function ($scope, $modalInstance, nombre) {
+['$scope', '$uibModalInstance', 'nombre', function ($scope, $uibModalInstance, nombre) {
     $scope.alerts = [];
 
     $scope.closeAlert = function (index) {
@@ -17,11 +17,11 @@ export default angular.module("scrwebm.agregarNuevoAsegurado", []).controller('A
     }
 
     $scope.ok = function () {
-        $modalInstance.close($scope.asegurado);
+        $uibModalInstance.close($scope.asegurado);
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     $scope.asegurado = { 

@@ -4,8 +4,8 @@
 import { Consulta_Corretaje } from '/imports/collections/consultas/consulta_corretaje'; 
 
 angular.module("scrwebm").controller("CConsultasCorretaje_Lista_Controller",
-['$scope', '$stateParams', '$state', '$meteor', '$modal', 'uiGridConstants',
-function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
+['$scope', '$stateParams', '$state', '$meteor', '$uibModal', 'uiGridConstants',
+function ($scope, $stateParams, $state, $meteor, $uibModal, uiGridConstants) {
 
     $scope.showProgress = false;
 
@@ -316,7 +316,7 @@ function ($scope, $stateParams, $state, $meteor, $modal, uiGridConstants) {
 
     $scope.reporteOpcionesModal = function () {
 
-        var modalInstance = $modal.open({
+        var modalInstance = $uibModal.open({
             templateUrl: 'client/consultas/corretaje/reportes/opcionesReportModal.html',
             controller: 'Consultas_corretaje_opcionesReportController',
             size: 'md',

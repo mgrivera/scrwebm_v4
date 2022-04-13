@@ -14,8 +14,8 @@ import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalog
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controller", ['$scope', '$modal', 'uiGridConstants', '$q',
-function ($scope, $modal, uiGridConstants, $q) {
+angular.module("scrwebm").controller("Contrato_Cuentas_CuentasTecnicas_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$q',
+function ($scope, $uibModal, uiGridConstants, $q) {
 
     $scope.showProgress = false;
 
@@ -279,7 +279,7 @@ function ($scope, $modal, uiGridConstants, $q) {
                                 <b>${yaExistian.toString()}</b> registros ya existían. Fueron mantenidos.<br />
                                 <b>${agregados.toString()}</b> registros faltaban. Fueron agregados.`; 
 
-                DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
+                DialogModal($uibModal, "<em>Contratos proporcionales</em>", message, false).then();
             },
             (error) => {
                 $scope.alerts.length = 0;
@@ -300,7 +300,7 @@ function ($scope, $modal, uiGridConstants, $q) {
             const message = `Error: ha ocurrido un error al intentar ejecutar esta función: <br /><br />
                              ${result.message} 
                             `; 
-            DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
+            DialogModal($uibModal, "<em>Contratos proporcionales</em>", message, false).then();
         }
     }
 
@@ -317,7 +317,7 @@ function ($scope, $modal, uiGridConstants, $q) {
         const userSelectedFile = files[0];
 
         if (!userSelectedFile) {
-            DialogModal($modal, "<em>Contratos proporcionales - Importar resumen de primas y siniestros</em>",
+            DialogModal($uibModal, "<em>Contratos proporcionales - Importar resumen de primas y siniestros</em>",
                 `Aparentemente, Ud. no ha seleccionado un archivo.<br />
                                  Ud. debe seleccionar un archivo que haya sido creado antes 
                                  mediante la opción <em>Exportar</em>, que existe en este mismo menú.`,
@@ -372,7 +372,7 @@ function ($scope, $modal, uiGridConstants, $q) {
 
             message += `<ul>`
 
-            DialogModal($modal, "<em>Contratos proporcionales - Importar resumen de primas y siniestros</em>", message, false).then();
+            DialogModal($uibModal, "<em>Contratos proporcionales - Importar resumen de primas y siniestros</em>", message, false).then();
             return;
         }
 
@@ -409,7 +409,7 @@ function ($scope, $modal, uiGridConstants, $q) {
                          Ok, los registros que existen en el archivo que Ud. ha indicado, se han importado a la lista.
                         `;
 
-        DialogModal($modal, "<em>Contratos proporcionales</em>", message, false).then();
+        DialogModal($uibModal, "<em>Contratos proporcionales</em>", message, false).then();
     }
 
     // --------------------------------------------------------------------------------------

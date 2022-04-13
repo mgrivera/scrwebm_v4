@@ -10,8 +10,8 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-angular.module("scrwebm").controller('ImprimirNotasModalController', ['$scope', '$modalInstance', '$modal', 'siniestro',
-function ($scope, $modalInstance, $modal, siniestro) {
+angular.module("scrwebm").controller('ImprimirNotasModalController', ['$scope', '$uibModalInstance', '$uibModal', 'siniestro',
+function ($scope, $uibModalInstance, $uibModal, siniestro) {
 
     $scope.siniestro = siniestro;
 
@@ -23,11 +23,11 @@ function ($scope, $modalInstance, $modal, siniestro) {
     }
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ function ($scope, $modalInstance, $modal, siniestro) {
 
         if ((!registroReservaSeleccionado || lodash.isEmpty(registroReservaSeleccionado)) &&
             (!registroLiquidacionesSeleccionado || lodash.isEmpty(registroLiquidacionesSeleccionado))) {
-            DialogModal($modal, "<em>Siniestros - Construcción de notas de siniestro</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de notas de siniestro</em>",
                         "Ud. debe seleccionar un registro de reservas o de liquidaciones, para construir su nota de siniestro.",
                         false).then();
             return;
@@ -259,21 +259,21 @@ function ($scope, $modalInstance, $modal, siniestro) {
 
         if ((registroReservaSeleccionado && !lodash.isEmpty(registroReservaSeleccionado)) &&
             (registroLiquidacionesSeleccionado && !lodash.isEmpty(registroLiquidacionesSeleccionado))) {
-            DialogModal($modal, "<em>Siniestros - Construcción de notas de siniestro</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de notas de siniestro</em>",
                         "Ud. debe seleccionar un registro de reservas o uno de liquidaciones, pero no ambos en forma simultanea.",
                         false).then();
             return;
         }
 
         if (!$scope.parametros.fecha || _.isEmpty($scope.parametros.fecha)) {
-            DialogModal($modal, "<em>Siniestros - Construcción de notas de siniestro</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de notas de siniestro</em>",
                         `Ud. debe indicar la fecha que se mostrará en el documento.<br /> Ejemplo: Caracas, 25 de Abril del 2.015.`,
                         false).then();
             return;
         }
 
         if (!$scope.tipoPlantillaWord) {
-            DialogModal($modal, "<em>Siniestros - Construcción de notas de siniestro</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de notas de siniestro</em>",
                         `Ud. debe indicar el <em>tipo</em> de plantilla que será usada para construir el documento.<br /><br />
                          Los tipos de plantilla que pueden ser usados para obtener las notas de siniestro son: 
                          <em>Reservas</em>, <em>Liquidaciones</em>. <br /><br />

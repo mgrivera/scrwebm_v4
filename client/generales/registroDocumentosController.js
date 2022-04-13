@@ -4,19 +4,19 @@ import lodash from 'lodash';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller('RegistroDocumentosController',
-['$scope', '$modalInstance', '$modal', 'entidad', 'documentos', 'tiposDocumentoLista',
-function ($scope, $modalInstance, $modal, entidad, documentos, tiposDocumentoLista) {
+['$scope', '$uibModalInstance', '$uibModal', 'entidad', 'documentos', 'tiposDocumentoLista',
+function ($scope, $uibModalInstance, $uibModal, entidad, documentos, tiposDocumentoLista) {
 
     $scope.documentos = documentos;
     $scope.tiposDocumento = tiposDocumentoLista;
 
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // --------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ function ($scope, $modalInstance, $modal, entidad, documentos, tiposDocumentoLis
             }
         }
         else {
-            DialogModal($modal, "<em>Registro de documentos</em>",
+            DialogModal($uibModal, "<em>Registro de documentos</em>",
                         "Ud. debe seleccionar un documento antes de intentar eliminarlo.",
                         false).then();
             return;

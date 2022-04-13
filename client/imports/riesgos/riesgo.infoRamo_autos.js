@@ -12,7 +12,7 @@ import EditarInfoRamo from './infoRamo/editarInfoRamo';
 // import '/client/imports/riesgos/infoRamo/editarInfoRamoModal.html'; 
 
 export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name ]).controller("RiesgoInfoRamo_autos_Controller",
-['$scope', '$modal', function ($scope, $modal) {
+['$scope', '$uibModal', function ($scope, $uibModal) {
 
     $scope.showProgress = true; 
 
@@ -182,7 +182,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
     $scope.agregarInfoRamo = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Info ramo</em>",
+            DialogModal($uibModal, "<em>Riesgos - Info ramo</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar agregar la información que corresponde al ramo.",
                                 false).then();
@@ -190,7 +190,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/riesgos/infoRamo/editarInfoRamoModal.html',
             controller: 'InfoRamo_editarItem_ModalController',
             size: 'md',
@@ -228,7 +228,7 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
     $scope.editarInfoRamo = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Info ramo</em>",
+            DialogModal($uibModal, "<em>Riesgos - Info ramo</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar agregar la información que corresponde al ramo.",
                                 false).then();
@@ -237,14 +237,14 @@ export default angular.module("scrwebm.riesgos.infoRamo", [ EditarInfoRamo.name 
         }
 
         if (!infoRamoSeleccionado || lodash.isEmpty(infoRamoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Info ramo</em>",
+            DialogModal($uibModal, "<em>Riesgos - Info ramo</em>",
                                 "Ud. no ha seleccionado un registro en la lista.<br />" +
                                 "Seleccione el registro en la lista que desea editar.",
                                 false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/riesgos/infoRamo/editarInfoRamoModal.html',
             controller: 'InfoRamo_editarItem_ModalController',
             size: 'md',

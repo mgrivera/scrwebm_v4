@@ -24,8 +24,8 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros';
 
 angular.module("scrwebm").controller("SiniestroController",
-['$scope', '$stateParams', '$state', '$modal', 'uiGridConstants',
-function ($scope, $stateParams, $state, $modal, uiGridConstants) {
+['$scope', '$stateParams', '$state', '$uibModal', 'uiGridConstants',
+function ($scope, $stateParams, $state, $uibModal, uiGridConstants) {
 
     $scope.showProgress = false;
 
@@ -129,7 +129,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
     $scope.regresarALista = function () {
 
         if ($scope.siniestro.docState && $scope.origen == 'edicion') {
-            DialogModal($modal,
+            DialogModal($uibModal,
                                     "<em>Siniestros</em>",
                                     "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
                                     true).then(
@@ -150,7 +150,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
         if ($scope.siniestro.docState && $scope.siniestro.docState == 1) {
             if ($scope.siniestro.docState) {
-                DialogModal($modal,
+                DialogModal($uibModal,
                                         "<em>Siniestros</em>",
                                         "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
                                         false).then(
@@ -172,13 +172,13 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
     $scope.imprimir = () => {
 
         if (!$scope.siniestro || lodash.isEmpty($scope.siniestro)) {
-            DialogModal($modal, "<em>Siniestros - Construcción de notas de siniestro</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de notas de siniestro</em>",
             "Aparentemente, el siniestro para el cual Ud. desea construir las notas, no ha sido completado y registrado aún.",
             false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/siniestros/imprimirNotasModal.html',
             controller: 'ImprimirNotasModalController',
             size: 'lg',
@@ -198,7 +198,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
     $scope.registroDocumentos = function() {
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/generales/registroDocumentos.html',
             controller: 'RegistroDocumentosController',
             size: 'md',
@@ -228,7 +228,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
     $scope.registrarPersonasCompanias = function () {
 
         if (!$scope.siniestro || !$scope.siniestro.compania) {
-            DialogModal($modal, "<em>Siniestros</em>",
+            DialogModal($uibModal, "<em>Siniestros</em>",
                 "Aparentemente, Ud. no ha seleccionado una compañía cedente para este siniestro.<br />" +
                 "El siniestro debe tener una compañía cedente antes de intentar registrar sus personas.",
                 false).then();
@@ -236,7 +236,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
@@ -415,7 +415,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
     $scope.eliminarCompania = function () {
 
         if (!companiaSeleccionada || lodash.isEmpty(companiaSeleccionada)) {
-            DialogModal($modal, "<em>Siniestros - Eliminar compañías</em>",
+            DialogModal($uibModal, "<em>Siniestros - Eliminar compañías</em>",
                                 "Ud. debe seleccionar en la lista, la compañía que desea eliminar.",
                                 false).then();
             return;
@@ -837,7 +837,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
     $scope.construirCuotasMovimiento = function() {
         if (!liquidacionSeleccionada || lodash.isEmpty(liquidacionSeleccionada)) {
-            DialogModal($modal, "<em>Siniestros - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de cuotas</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un registro de liquidación.<br />" +
                                 "Debe seleccionar uno antes de intentar ejecutar esta función.",
                                 false).then();
@@ -847,7 +847,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
         // debe haber una compañía tipo 'nosotros'
         if (!$scope.siniestro.companias || !$scope.siniestro.companias.length) {
-            DialogModal($modal, "<em>Siniestros - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de cuotas</em>",
                                 "Aparentemente, no hay compañías definidas en la lista de compañías.<br />" +
                                 "Ud. debe registrar, en la lista de compañías, las compañías que participan " +
                                 "en el siniestro.",
@@ -859,7 +859,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
         const existeNosotros = lodash.some($scope.siniestro.companias, function(c) { return c.nosotros; });
 
         if (!existeNosotros) {
-            DialogModal($modal, "<em>Siniestros - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de cuotas</em>",
                                 "No existe una compañía del tipo 'nosotros' en la lista de compañías.<br />" +
                                 "Debe haber una compañía del tipo 'nosotros' que represente nuestra orden en el siniestro.",
                                 false).then();
@@ -879,7 +879,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
             
         const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSiniestro); 
         if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
-            DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
+            DialogModal($uibModal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
             return; 
         }
         // ------------------------------------------------------------------------------------------------------------------------
@@ -889,7 +889,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
         }).size();
 
         if (cantidadCuotasLiquidacionSeleccionada) {
-            DialogModal($modal, "<em>Siniestros - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Siniestros - Construcción de cuotas</em>",
                                 "Ya existen cuotas registradas para la liquidación seleccionada.<br />" +
                                 "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden a la liquidación seleccionada <em>serán eliminadas</em> antes de " +
                                 "construirlas y agregarlas nuevamente.<br /><br />" +
@@ -909,7 +909,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
     }
 
     function construirCuotasLiquidacionSeleccionada() {
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/generales/construirCuotas.html',
             controller: 'Siniestros_ConstruirCuotasController',
             size: 'md',
@@ -1220,7 +1220,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
     $scope.agregarCuota = function () {
         if (!liquidacionSeleccionada || lodash.isEmpty(liquidacionSeleccionada)) {
-            DialogModal($modal, "<em>Siniestros - Cuotas</em>",
+            DialogModal($uibModal, "<em>Siniestros - Cuotas</em>",
                 "Ud. debe seleccionar un registro de liquidación <em>antes</em> de intentar ejecutar esta función.",
                 false).then();
             return;
@@ -1287,13 +1287,13 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
         // mostramos los pagos aplicados a la cuota, en un modal ...
         // es una función que está en client/generales y que es llamada desde varios
         // 'registros' de cuotas (fac, contratos, sntros, etc.)
-        MostrarPagosEnCuotas($modal, cuota, $stateParams.origen);
+        MostrarPagosEnCuotas($uibModal, cuota, $stateParams.origen);
     }
 
     $scope.nuevo0 = function () {
 
         if ($scope.siniestro.docState && $scope.origen == 'edicion') {
-            DialogModal($modal,
+            DialogModal($uibModal,
                                     "<em>Siniestros</em>",
                                     "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa para agregar un nuevo registro, " +
                                     "los cambios se perderán.<br /><br />Desea continuar y perder los cambios efectuados al registro actual?",
@@ -1326,7 +1326,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
 
     $scope.refresh0 = function () {
         if ($scope.siniestro.docState && $scope.origen == 'edicion') {
-            DialogModal($modal,
+            DialogModal($uibModal,
                                     "<em>Siniestros</em>",
                                     "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa " +
                                     "los cambios se perderán.<br /><br />Desea continuar y perder los cambios efectuados al registro actual?",
@@ -1363,7 +1363,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
     $scope.grabar = function () {
 
         if (!$scope.siniestro.docState) {
-            DialogModal($modal, "<em>Siniestros</em>",
+            DialogModal($uibModal, "<em>Siniestros</em>",
                                 "Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.",
                                 false).then();
             return;
@@ -1641,7 +1641,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
         if ($scope.id == "0") {
 
             // permitimos al usuario agregar el siniestro desde una 'entidad original' (por ahora solo riesgos)
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'client/siniestros/nuevoDesdeOrigenModal.html',
                 controller: 'NuevoSiniestroDesdeOrigenController',
                 size: 'lg',
@@ -1707,7 +1707,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
                     // el siniestro en forma 'directa'
 
                     if (cancel != 'Cancel') {
-                        DialogModal($modal, "<em>Siniestros</em> - Agregar en forma <em>directa</em>",
+                        DialogModal($uibModal, "<em>Siniestros</em> - Agregar en forma <em>directa</em>",
                             "Ok, Ud. puede ahora agregar un nuevo siniestro en forma 'directa'; es decir, " +
                             "sin asociarlo a un riesgo antes y tomar muchos datos del mismo (cedente, asegurado, " +
                             "reaseguradores y sus ordenes, etc).<br /><br />" +
@@ -1715,7 +1715,7 @@ function ($scope, $stateParams, $state, $modal, uiGridConstants) {
                             false).then();
                     }
                     else {
-                        DialogModal($modal, "<em>Siniestros</em>",
+                        DialogModal($uibModal, "<em>Siniestros</em>",
                             "Para <em>cancelar</em> el registro del nuevo siniestro, simplemente haga un click en <em>Regresar</em>, " +
                             "o en alguna de las opciones del menú principal del programa.<br />" +
                             "Al hacerlo, el registro será, simplemente, descartado y la acción será cancelada.",

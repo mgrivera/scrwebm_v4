@@ -11,8 +11,8 @@ import { DialogModal } from '../generales/angularGenericModal';
 import { MostrarPagosEnCuotas, MostrarPagosAplicados } from '../generales/mostrarPagosAplicadosACuotaController'; 
 
 export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.name ]).controller("RiesgoCuotas_Controller",
-['$scope', '$stateParams', '$modal', 'uiGridConstants', 
-  function ($scope, $stateParams, $modal, uiGridConstants) {
+['$scope', '$stateParams', '$uibModal', 'uiGridConstants', 
+  function ($scope, $stateParams, $uibModal, uiGridConstants) {
 
     $scope.showProgress = true; 
 
@@ -322,7 +322,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
     $scope.cuotas_nuevo = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Cuotas</em>",
                 "Ud. debe seleccionar un movimiento <em>antes</em> de intentar ejecutar esta función.",
                 false).then();
             return;
@@ -373,7 +373,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
     $scope.cuotas_copiarUnaCuota = function () {
 
         if (!cuotaSeleccionada || lodash.isEmpty(cuotaSeleccionada)) {
-            DialogModal($modal, "<em>Riesgos - Cuotas - Copiar una cuota</em>",
+            DialogModal($uibModal, "<em>Riesgos - Cuotas - Copiar una cuota</em>",
                 `Ud. debe seleccionar una cuota <em>antes</em> de intentar ejecutar esta función.<br />
                  Seleccione la cuota que desea copiar. 
                 `,
@@ -382,7 +382,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
         }
 
         if (!lodash.isArray($scope.cuotas)) { 
-            DialogModal($modal, "<em>Riesgos - Cuotas - Copiar una cuota</em>",
+            DialogModal($uibModal, "<em>Riesgos - Cuotas - Copiar una cuota</em>",
                 `Error inesperado: no se han encontrado cuotas asociadas al riesgo.<br /> 
                  Para copiar una cuota en otra, deben existir cuotas; al menos una cuota debe existir en la lista.
                 `,
@@ -407,7 +407,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
     $scope.cuotas_calcular = function() { 
 
         if (!cuotaSeleccionada || lodash.isEmpty(cuotaSeleccionada)) {
-            DialogModal($modal, "<em>Riesgos - Cuotas - Calcular</em>",
+            DialogModal($uibModal, "<em>Riesgos - Cuotas - Calcular</em>",
                 `Ud. debe seleccionar una cuota <em>antes</em> de intentar ejecutar esta función.<br />
                  Seleccione la cuota que desea calcular. 
                 `,
@@ -484,7 +484,7 @@ export default angular.module("scrwebm.riesgos.cuotas", [ MostrarPagosAplicados.
 
         // es una función que está en client/generales y que es llamada desde varios 'registros' (ui-grids) de cuotas 
         // (fac, contratos, sntros, etc.)
-        MostrarPagosEnCuotas($modal, cuota, $stateParams.origen);
+        MostrarPagosEnCuotas($uibModal, cuota, $stateParams.origen);
     }
 
     $scope.cuotas_ui_grid.data = [];

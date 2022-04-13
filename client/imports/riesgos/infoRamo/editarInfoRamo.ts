@@ -4,7 +4,7 @@ import * as angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 export default angular.module("scrwebm.riesgos.infoRamo.editarInfoRamo", []).controller('InfoRamo_editarItem_ModalController',
-['$scope', '$modalInstance', 'infoRamo', 'autosMarcas', function ($scope, $modalInstance, infoRamo, autosMarcas) {
+['$scope', '$uibModalInstance', 'infoRamo', 'autosMarcas', function ($scope, $uibModalInstance, infoRamo, autosMarcas) {
     $scope.alerts = [];
 
     $scope.closeAlert = function (index) {
@@ -12,11 +12,11 @@ export default angular.module("scrwebm.riesgos.infoRamo.editarInfoRamo", []).con
     }
 
     $scope.ok = function (infoRamo) {
-        $modalInstance.close(infoRamo);
+        $uibModalInstance.close(infoRamo);
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // TODO: aquí debemos tener el item específico que corresponde al movimiento pasado; 

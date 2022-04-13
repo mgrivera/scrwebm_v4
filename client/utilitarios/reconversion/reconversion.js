@@ -11,7 +11,7 @@ import { ReconversionMonetaria_log } from '/imports/collections/otros/reconversi
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller("Utilitarios_Reconversion_Controller", ['$scope', '$modal', function ($scope, $modal) {
+angular.module("scrwebm").controller("Utilitarios_Reconversion_Controller", ['$scope', '$uibModal', function ($scope, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -86,7 +86,7 @@ angular.module("scrwebm").controller("Utilitarios_Reconversion_Controller", ['$s
                 if (row.isSelected) {
                     reconversionItem_seleccionado = row.entity;
 
-                    DialogModal($modal, "<em>Reconversión monetaria</em>", reconversionItem_seleccionado.descripcion, false);
+                    DialogModal($uibModal, "<em>Reconversión monetaria</em>", reconversionItem_seleccionado.descripcion, false);
                 }
                 else { 
                     return;

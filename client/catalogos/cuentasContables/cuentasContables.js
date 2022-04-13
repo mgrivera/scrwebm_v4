@@ -13,8 +13,8 @@ import { replaceAllInstances } from '/imports/funciones/texto/replaceAllInstance
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 angular.module("scrwebm")
-       .controller("CuentasContablesController", ['$scope', '$modal', 
-    function ($scope, $modal) {
+       .controller("CuentasContablesController", ['$scope', '$uibModal', 
+    function ($scope, $uibModal) {
 
         $scope.showProgress = false;
 
@@ -294,7 +294,7 @@ angular.module("scrwebm")
 
             // para abrir un modal que permita al usuario leer un doc excel desde el cliente e importar cada row
             // como una cuenta contable
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'client/catalogos/cuentasContables/importarDesdeExcelModal.html',
                 controller: 'CuentasContablesImportarDesdeExcel_Controller',
                 size: 'lg',
@@ -320,7 +320,7 @@ angular.module("scrwebm")
 
         $scope.exportarExcel = function () {
 
-            $modal.open({
+            $uibModal.open({
                 templateUrl: 'client/catalogos/cuentasContables/exportarExcelModal.html',
                 controller: 'CuentasContablesExportarExcel_Controller',
                 size: 'md',

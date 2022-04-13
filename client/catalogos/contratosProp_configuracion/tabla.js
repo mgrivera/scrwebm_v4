@@ -21,8 +21,8 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 angular.module("scrwebm")
-       .controller("ContratosProp_Configuracion_Tabla_Controller", ['$scope', '$state', '$stateParams', '$modal', 
-function ($scope, $state, $stateParams, $modal) {
+       .controller("ContratosProp_Configuracion_Tabla_Controller", ['$scope', '$state', '$stateParams', '$uibModal', 
+function ($scope, $state, $stateParams, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -50,7 +50,7 @@ function ($scope, $state, $stateParams, $modal) {
             y perder los cambios?`; 
             message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, true).then(
                 function () {
                     $state.go('catalogos.contrProp_configuracion.contrProp_configuracion_lista');
                 },
@@ -141,7 +141,7 @@ function ($scope, $state, $stateParams, $modal) {
         const editandoAhora = items.some(x => x.docState); 
 
         if (editandoAhora) {
-            DialogModal($modal, "<em>Contratos proporcionales - Tabla de configuración - Importar</em>",
+            DialogModal($uibModal, "<em>Contratos proporcionales - Tabla de configuración - Importar</em>",
                 `Los registros en la tabla han sido editados, pero no han sido guardados a la base de datos.<br /> 
                  Ud. debe hacer un <em>click</em> en <em>Grabar</em> para grabar las modificaciones a la base de datos, 
                  antes de intentar ejecutar esta función. 
@@ -163,7 +163,7 @@ function ($scope, $state, $stateParams, $modal) {
         const userSelectedFile = files[0];
 
         if (!userSelectedFile) {
-            DialogModal($modal, "<em>Contratos proporcionales - Tabla de configuración - Importar</em>",
+            DialogModal($uibModal, "<em>Contratos proporcionales - Tabla de configuración - Importar</em>",
                 `Aparentemente, Ud. no ha seleccionado un archivo.<br />
                                  Ud. debe seleccionar un archivo que haya sido creado antes 
                                  mediante la opción <em>Exportar</em>, que existe en este mismo menú.`,
@@ -182,7 +182,7 @@ function ($scope, $state, $stateParams, $modal) {
         const result = LeerCompaniaNosotros(Meteor.userId());
 
         if (result.error) {
-            DialogModal($modal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
+            DialogModal($uibModal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
 
             const inputFile = angular.element("#fileInput");
             if (inputFile && inputFile[0] && inputFile[0].value) {

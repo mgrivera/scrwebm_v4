@@ -15,8 +15,8 @@ import { ContProp_tablaConf } from '/client/lib/forerunnerDB';
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
 angular.module("scrwebm").controller("ContratosProp_Configuracion_Tabla_Construir_Controller", 
-['$scope', '$state', '$stateParams', '$modal', '$interval', 
-function ($scope, $state, $stateParams, $modal, $interval) {
+['$scope', '$state', '$stateParams', '$uibModal', '$interval', 
+function ($scope, $state, $stateParams, $uibModal, $interval) {
 
     $scope.showProgress = false;
 
@@ -29,7 +29,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
     // cuando podamos actualizar angular-ui-bootstrap a una nueve vesión, la propiedad 'active' va en el tabSet
     // y se actualiza con el index de la página (0, 1, 2, ...). Así resulta mucho más intuitivo y fácil
     // establecer el tab 'activo' en ui-bootstrap ...
-    $scope.activeTab = { tab1: true, tab2: false, };
+    $scope.currentTab = 0;
 
     // el código del contrato viene como un parámetro a este state 
     $scope.codigoContrato = $stateParams.codigoContrato;
@@ -464,7 +464,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                 const message = `Error: Ud. debe seleccionar al menos un elemento en cada lista (años, monedas, ramos, compañías, ...).
                `; 
 
-                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+                DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
                 return;
         }
 
@@ -473,7 +473,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
         const result = LeerCompaniaNosotros(Meteor.userId());
 
         if (result.error) {
-            DialogModal($modal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
+            DialogModal($uibModal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
             return;
         }
 
@@ -487,7 +487,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                            seleccionada para representar nuestra participación en el contrato.
                           `; 
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
             return;
         }
 
@@ -499,7 +499,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                            Luego regrese y continúe con este proceso. 
                           `; 
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
             return;
         }
 
@@ -575,10 +575,10 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                                 haga un <em>click</em> en <em>Propagar</em>.
                             `
 
-                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false).then(() => { 
+                DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false).then(() => { 
                     $scope.showProgress = false;
                     // nótese como establecemos el tab 'activo' en ui-bootstrap; ver nota arriba acerca de ésto ...
-                    $scope.activeTab = { tab1: false, tab2: true, };
+                    $scope.currentTab = 1;
                 });
             }). 
             catch((err) => { 
@@ -587,7 +587,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                                 ${err}
                             `
 
-                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+                DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
 
                 $scope.showProgress = false;
             })
@@ -600,7 +600,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                             Sin embargo, los registros no han sido agregados a la tabla de configuración permanente. <br />  
                             Aún así, desea <em>regresar</em> y perder estos cambios?`
                             
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, true).then(
                 function () {
                     $state.go('catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla', 
                               { codigoContrato: $scope.codigoContrato, });
@@ -1006,7 +1006,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                             ${err}
                             `
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
 
             $scope.showProgress = false;
             $scope.$apply();
@@ -1021,7 +1021,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                         <em>permanente</em> de registros de configuración.
                         `
 
-            DialogModal($modal, "<em>Contratos - Configuración</em>", message, false);
+            DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false);
             return;
         }
 
@@ -1033,7 +1033,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                         Desea continuar y agregar estos registros a la tabla de configuracion?
                         `
 
-        DialogModal($modal, "<em>Contratos - Configuración</em>", message, true).then(() => {
+        DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, true).then(() => {
                 // Ok, vamos a agregar los registros a la tabla de configuración ...
 
                 $scope.showProgress = true;
@@ -1132,7 +1132,7 @@ function ($scope, $state, $stateParams, $modal, $interval) {
                                 Recuerde que Ud. debe hacer un <em>click</em> en <em>Grabar</em> para registrar estos registros 
                                 en la base de datos.
                             `
-                DialogModal($modal, "<em>Contratos - Configuración</em>", message, false).then(() => { 
+                DialogModal($uibModal, "<em>Contratos - Configuración</em>", message, false).then(() => { 
                     $state.go('catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla', 
                               { codigoContrato: $scope.codigoContrato, }); 
                 });

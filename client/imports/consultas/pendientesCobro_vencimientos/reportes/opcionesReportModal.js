@@ -10,7 +10,7 @@ import './opcionesReportModal.html';
 
 export default angular.module("scrwebm.consultas.pendientesCobro_vencimientos.report", [])
        .controller('Consultas_montosPendientesCobro_vencimientos_opcionesReportController',
-['$scope', '$modalInstance', 'companiaSeleccionada', function ($scope, $modalInstance, companiaSeleccionada) {
+['$scope', '$uibModalInstance', 'companiaSeleccionada', function ($scope, $uibModalInstance, companiaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -19,11 +19,11 @@ export default angular.module("scrwebm.consultas.pendientesCobro_vencimientos.re
     }
 
     $scope.ok = function () {
-        // $modalInstance.close("Ok");
+        // $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // notas: aquí viene la compañía seleccionada 

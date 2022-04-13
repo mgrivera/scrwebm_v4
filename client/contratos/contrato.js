@@ -31,8 +31,8 @@ import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, 
 import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
 import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
 
-angular.module("scrwebm").controller("ContratoController", ['$scope', '$state', '$stateParams', '$meteor', '$modal', 'uiGridConstants', '$location', 
-function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $location) {
+angular.module("scrwebm").controller("ContratoController", ['$scope', '$state', '$stateParams', '$meteor', '$uibModal', 'uiGridConstants', '$location', 
+function ($scope, $state, $stateParams, $meteor, $uibModal, uiGridConstants, $location) {
 
     $scope.showProgress = false;
     $scope.dataHasBeenEdited = false; 
@@ -97,7 +97,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     $scope.nuevo0 = function () {
 
         if ($scope.dataHasBeenEdited && $scope.origen == 'edicion') {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos</em>",
                         `Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa
                         para agregar un nuevo registro, los cambios se perderán.<br /><br />
@@ -173,7 +173,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     })
 
     $scope.exportarExcel_Capas = () => {
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/contratos/contratosCapasExportarExcel_Modal.html',
             controller: 'ContratosCapasExportarExcel_Controller',
             size: 'md',
@@ -204,13 +204,13 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         $scope.processProgress.progress = 0;
         $scope.processProgress.message = "";
 
-        Contratos_Methods.grabar($state, $scope, $modal, uiGridConstants);
+        Contratos_Methods.grabar($state, $scope, $uibModal, uiGridConstants);
     }
 
     $scope.regresarALista = function () {
 
         if ($scope.dataHasBeenEdited && $scope.origen && $scope.origen == 'edicion') {
-            const promise = DialogModal($modal,
+            const promise = DialogModal($uibModal,
                                     "<em>Contratos</em>",
                                     "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
                                     true);
@@ -233,7 +233,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     $scope.eliminar = function () {
         if ($scope.contrato.docState && $scope.contrato.docState == 1) {
             if ($scope.contrato.docState) {
-                const promise = DialogModal($modal,
+                const promise = DialogModal($uibModal,
                                         "<em>Contratos</em>",
                                         "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
                                         false);
@@ -257,7 +257,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
 
     $scope.refresh = function () {
         if (!$scope.contrato) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos</em>",
                         `Aparentemente, <em>no se ha cargado un contrato</em> en esta página.<br />
                         Esta función refresca la información en la página ... pero no hay nada que refrescar.`,
@@ -266,7 +266,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         }
 
         if ($scope.dataHasBeenEdited) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos</em>",
                         `Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa y
                         refresca el registro, los cambios se perderán.<br /><br />Desea continuar y
@@ -319,13 +319,13 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
 
     $scope.imprimir = function() {
         if (!$scope.contrato || !$scope.contrato.capas || lodash.isEmpty($scope.contrato.capas)) {
-            DialogModal($modal, "<em>Contratos - Construcción de notas</em>",
+            DialogModal($uibModal, "<em>Contratos - Construcción de notas</em>",
                         "Aparentemente, el contrato para el cual Ud. desea construir las notas, no tiene capas registradas.",
                         false).then();
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/contratos/imprimirNotasContratos_Modal.html',
             controller: 'ImprimirNotasContratosModalController',
             size: 'lg',
@@ -350,7 +350,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     $scope.registrarPersonasCompanias = () => {
 
         if (!$scope.contrato || !$scope.contrato.compania) {
-            DialogModal($modal, "<em>Contratos</em>",
+            DialogModal($uibModal, "<em>Contratos</em>",
             "Aparentemente, Ud. no ha seleccionado una compañía como cedente para el contrato.<br />" +
             "El contrato debe tener una compañía (cedente) antes de intentar registrar sus personas.",
             false).then();
@@ -358,7 +358,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
@@ -687,7 +687,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     }
 
     $scope.capasDeterminarRegistrosPrimaCompanias = () => {
-        Contratos_Methods.capasDeterminarRegistrosPrimaCompanias($scope, $modal);
+        Contratos_Methods.capasDeterminarRegistrosPrimaCompanias($scope, $uibModal);
     }
 
     // --------------------------------------------------------------------------------------
@@ -851,7 +851,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     $scope.agregarCapaReasegurador = function () {
         // aquí está la capa seleccionada por el usuario ...
         if (!$scope.capaSeleccionada || lodash.isEmpty($scope.capaSeleccionada)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Registro de nuevo reasegurador</em>",
                         `Ud. debe seleccionar una capa.<br />
                         Antes de intentar agregar un reasegurador a la lista, Ud. debe seleccionar
@@ -923,13 +923,13 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     // para copiar reaseguradores entre capas ...
     $scope.copiarReaseguradoresEntreCapas = function () {
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/contratos/copiarReaseguradoresEntreCapas.html',
             controller: 'CopiarReaseguradoresEntreCapasController',
             size: 'lg',
             resolve: {
-                $modal: function() {
-                    return $modal;
+                $uibModal: function() {
+                    return $uibModal;
                 },
                 contrato: function () {
                     return $scope.contrato;
@@ -1387,7 +1387,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     }
 
     $scope.generarCuotasCapaSeleccionada = function () {
-        Contratos_Methods.generarCuotasCapaSeleccionada($scope, $modal);
+        Contratos_Methods.generarCuotasCapaSeleccionada($scope, $uibModal);
     }
 
 
@@ -1696,7 +1696,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
 
         // la cuota que el usuario agrega es, siempre, una copia de alguna cuota que ya exista ...
         if (!capasCuotaSeleccionada || lodash.isEmpty(capasCuotaSeleccionada)) {
-            DialogModal($modal, "<em>Contratos - Capas - Cuotas</em>",
+            DialogModal($uibModal, "<em>Contratos - Capas - Cuotas</em>",
                 `Ud. debe seleccionar una cuota en la lista <em>antes</em> de intentar ejecutar esta función.<br />
                 La cuota que Ud. agregue mediante esta función será una copia de la cuota seleccionada en la lista.<br />
                 Luego, por supuesto, Ud. podrá modificar los valores en la cuota para agregar la cuota que Ud. desea.
@@ -1827,7 +1827,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         })
 
         if (!cuotaActualizada) { 
-            DialogModal($modal, "<em>Contratos - Cuotas",
+            DialogModal($uibModal, "<em>Contratos - Cuotas",
                 `Aparentemente, <b>ninguna</b> cuota ha sido <em>recalculada</em>.<br /><br />
                  Por favor recuerde que Ud. debe <em>dejar en blanco</em>, el (los) campo (s) en cada cuota que desea que sea recalculado.
                 `,
@@ -1843,7 +1843,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
 
     $scope.mostrarPagosEnCuota = function (cuota) {
         // mostramos los pagos aplicados a la cuota, en un modal ...
-        MostrarPagosEnCuotas($modal, cuota, $stateParams.origen);
+        MostrarPagosEnCuotas($uibModal, cuota, $stateParams.origen);
     }
 
 
@@ -1852,7 +1852,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
     $scope.gotoContratoProporcional_State = function (stateName) {
 
         if (!$scope.definicionCuentaTecnicaSeleccionada || lodash.isEmpty($scope.definicionCuentaTecnicaSeleccionada)) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Proporcionales",
                         `Ud. debe seleccionar una <em>definición de cuenta técnica</em>.<br /><br />
                          Seleccione la <em>definción de cuenta técnica</em> a la cual
@@ -1863,7 +1863,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         }
 
         if (!$scope.contrato.codigo) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Proporcionales - Registro de cuentas técnicas</em>",
                         `El contrato debe tener un valor para el campo <em>Código</em>.<br /><br />
                         Por favor asigne un <em>código</em> a este contrato, el cual debe corresponder a la <em>tabla de
@@ -1913,7 +1913,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
 
         // debe haber una definicion seleccionada
         if (!($scope.definicionCuentaTecnicaSeleccionada || lodash.isEmpty($scope.definicionCuentaTecnicaSeleccionada))) {
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Proporcionales - Cuentas - Exportar a Excel</em>",
                         `Error: Ud. debe seleccionar una <em>definición de cuenta técnica</em> en la lista.<br /><br />
                          Muestre la lista de <em>definiciones de cuentas técnicas</em> para el contrato proporcional y seleccione alguna 
@@ -1924,7 +1924,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         }
 
         if ($scope.dataHasBeenEdited) { 
-            DialogModal($modal,
+            DialogModal($uibModal,
                         "<em>Contratos - Proporcionales - Cuentas - Exportar a Excel</em>",
                         `Error: Ud. ha efectuado cambios en el registro. Por favor guarde los cambios antes de continuar.
                         `,
@@ -1932,7 +1932,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/contratos/exportarExcel/exportarExcel_Cuentas_Modal.html',
             controller: 'ContratosCuentasExportarExcel_Controller',
             size: 'md',
@@ -2253,7 +2253,7 @@ function ($scope, $state, $stateParams, $meteor, $modal, uiGridConstants, $locat
         }
 
         if (!tipoContrato) {
-            DialogModal($modal, "<em>Contratos - Cúmulos - Registro</em>",
+            DialogModal($uibModal, "<em>Contratos - Cúmulos - Registro</em>",
                                 "Aparentemente, Ud. <em>no ha determinado</em> aún el tipo del contrato: proporcional / no prooporcional.<br />" +
                                 "Por favor continúe efectuando el registro del contrato. Agregue capas o períodos (de cuentas técnicas) según corresponda.",
                                 false).then();

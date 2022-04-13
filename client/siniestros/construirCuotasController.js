@@ -5,8 +5,8 @@ import lodash from 'lodash';
 import moment from 'moment';
 
 angular.module("scrwebm").controller('Siniestros_ConstruirCuotasController',
-['$scope', '$modalInstance', 'siniestro', 'liquidacion', 'cuotas',
-function ($scope, $modalInstance, siniestro, liquidacion, cuotas) {
+['$scope', '$uibModalInstance', 'siniestro', 'liquidacion', 'cuotas',
+function ($scope, $uibModalInstance, siniestro, liquidacion, cuotas) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -16,11 +16,11 @@ function ($scope, $modalInstance, siniestro, liquidacion, cuotas) {
     };
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
 

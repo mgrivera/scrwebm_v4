@@ -73,8 +73,8 @@ function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecn
 }
 
 angular.module("scrwebm").controller('CuentasConstruirDefinicionCuentasController',
-['$scope', '$modalInstance', 'contrato', 'monedas', 'parentScope', 
-function ($scope, $modalInstance, contrato, monedas, parentScope) {
+['$scope', '$uibModalInstance', 'contrato', 'monedas', 'parentScope', 
+function ($scope, $uibModalInstance, contrato, monedas, parentScope) {
 
     $scope.contrato = contrato;
     $scope.monedas = monedas;
@@ -93,11 +93,11 @@ function ($scope, $modalInstance, contrato, monedas, parentScope) {
     };
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
 

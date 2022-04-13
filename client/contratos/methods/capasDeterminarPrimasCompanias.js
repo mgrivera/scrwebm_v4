@@ -7,20 +7,20 @@ import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods';
 
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
-const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
+const capasDeterminarRegistrosPrimaCompanias = function ($scope, $uibModal) {
 
     const contrato = $scope.contrato;
 
     // pueden existir registros construidos antes por esta función
     if (contrato.capasPrimasCompanias && contrato.capasPrimasCompanias.length) {
-        DialogModal($modal, "<em>Contratos - Capas</em>",
+        DialogModal($uibModal, "<em>Contratos - Capas</em>",
                             "Ya existen registros de primas para las compañías en el contrato.<br /><br />" +
                             "Probablemente Ud. generó estos registros antes usando esta misma función.<br /><br />" +
                             "Desea continuar y sustituir estos registros por unos nuevos?",
                             true).
             then(
                 function () {
-                    capasDeterminarRegistrosPrimaCompanias1($scope, $modal);
+                    capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal);
                     return;
                 },
                 function () {
@@ -28,16 +28,16 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $modal) {
                 });
     }
 
-    capasDeterminarRegistrosPrimaCompanias1($scope, $modal);
+    capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal);
 }
 
-function capasDeterminarRegistrosPrimaCompanias1($scope, $modal) {
+function capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal) {
     // la compañía 'nosotros' es nuestra empresa ... es la que, inicialmente, recibe la orden de reaseguraro 
     let companiaNosotros = {};
     const result = LeerCompaniaNosotros(Meteor.userId()); 
 
     if (result.error) {
-        DialogModal($modal, "<em>Contratos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
+        DialogModal($uibModal, "<em>Contratos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
         return;
     }
 
@@ -48,7 +48,7 @@ function capasDeterminarRegistrosPrimaCompanias1($scope, $modal) {
     const contrato = $scope.contrato;
 
     if (!contrato.capas || !Array.isArray(contrato.capas) || !contrato.capas.length) {
-        DialogModal($modal, "<em>Contratos - Capas</em>",
+        DialogModal($uibModal, "<em>Contratos - Capas</em>",
                             `El contrato debe tener capas registradas; <br />
                             Cada capa puede o no tener reaseguradores registrados.`, false).then();
         return;

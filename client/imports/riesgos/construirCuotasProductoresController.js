@@ -4,8 +4,8 @@ import moment from 'moment';
 
 export default angular.module("scrwebm.riesgos.movimientos.construirCuotasProductor", []).
                        controller('Riesgos_ConstruirCuotasProductorController',
-['$scope', '$modalInstance', 'riesgo', 'movimiento', 'productor', 'cuotas', 
-function ($scope, $modalInstance, riesgo, movimiento, productor, cuotas) {
+['$scope', '$uibModalInstance', 'riesgo', 'movimiento', 'productor', 'cuotas', 
+function ($scope, $uibModalInstance, riesgo, movimiento, productor, cuotas) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -16,11 +16,11 @@ function ($scope, $modalInstance, riesgo, movimiento, productor, cuotas) {
 
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
 

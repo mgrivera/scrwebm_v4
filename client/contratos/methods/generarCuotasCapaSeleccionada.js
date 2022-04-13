@@ -9,10 +9,10 @@ import { determinarSiExistenCuotasConCobrosAplicados } from '/client/imports/gen
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
-const generarCuotasCapaSeleccionada = ($scope, $modal) => {
+const generarCuotasCapaSeleccionada = ($scope, $uibModal) => {
 
     if (!$scope.contrato.capasPrimasCompanias || !lodash.isArray($scope.contrato.capasPrimasCompanias) || !$scope.contrato.capasPrimasCompanias.length) {
-        DialogModal($modal,
+        DialogModal($uibModal,
                     "<em>Contratos - Capas - Generación de cuotas</em>",
                     "Aparentemente, el contrato y sus capas no tienen un registro de <em>primas para las compañías</em>.<br /><br />" +
                     "Ud. debe generar estos registros (primas para compañías) antes de intentar generar las cuotas " +
@@ -32,7 +32,7 @@ const generarCuotasCapaSeleccionada = ($scope, $modal) => {
 
     const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasCapas); 
     if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
-        DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
+        DialogModal($uibModal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
         return;
     }
 
@@ -43,25 +43,25 @@ const generarCuotasCapaSeleccionada = ($scope, $modal) => {
                                         "Si Ud. continúa, éstas serán eliminadas y unas nuevas serán calculadas y registradas en su lugar.<br /><br />" +
                                         "Desea continuar y sustituir las cuotas registradas por unas nuevas?";
 
-        DialogModal($modal, mensajeAlUsuarioModel.titulo, mensajeAlUsuarioModel.mensaje, true).then(
+        DialogModal($uibModal, mensajeAlUsuarioModel.titulo, mensajeAlUsuarioModel.mensaje, true).then(
             function () {
-                generarCuotas($scope, $modal);
+                generarCuotas($scope, $uibModal);
                 return;
             },
             function () {
-                DialogModal($modal, "<em>Contratos - Capas</em>", "Ok, el proceso ha sido cancelado.", false).then();
+                DialogModal($uibModal, "<em>Contratos - Capas</em>", "Ok, el proceso ha sido cancelado.", false).then();
                 return;
             });
         return;
     }
     else
-        generarCuotas($scope, $modal);
+        generarCuotas($scope, $uibModal);
 }
 
 
-function generarCuotas($scope, $modal) {
+function generarCuotas($scope, $uibModal) {
 
-    $modal.open({
+    $uibModal.open({
         templateUrl: 'client/contratos/capasGenerarCuotas.html',
         controller: 'CapasGenerarCuotasController',
         size: 'md',
@@ -95,8 +95,8 @@ function generarCuotas($scope, $modal) {
 
 
 angular.module("scrwebm").controller('CapasGenerarCuotasController',
-['$scope', '$modalInstance', 'contrato', 'cuotas', 
-function ($scope, $modalInstance, contrato, cuotas) {
+['$scope', '$uibModalInstance', 'contrato', 'cuotas', 
+function ($scope, $uibModalInstance, contrato, cuotas) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -106,11 +106,11 @@ function ($scope, $modalInstance, contrato, cuotas) {
     }
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     // el usuario hace un submit, cuando quiere 'salir' de edición ...

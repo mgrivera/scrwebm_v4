@@ -3,8 +3,8 @@ import angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebm").controller('ContratosCapasExportarExcel_Controller',
-['$scope', '$modalInstance', '$modal', '$meteor', 'contratoID', 'ciaSeleccionada',
-function ($scope, $modalInstance, $modal, $meteor, contratoID, ciaSeleccionada) {
+['$scope', '$uibModalInstance', '$uibModal', '$meteor', 'contratoID', 'ciaSeleccionada',
+function ($scope, $uibModalInstance, $uibModal, $meteor, contratoID, ciaSeleccionada) {
 
     // debugger;
     // ui-bootstrap alerts ...
@@ -17,11 +17,11 @@ function ($scope, $modalInstance, $modal, $meteor, contratoID, ciaSeleccionada) 
     $scope.companiaSeleccionada = ciaSeleccionada;
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
     $scope.downloadDocument = false;

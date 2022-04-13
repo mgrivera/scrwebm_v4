@@ -8,8 +8,8 @@ import { DialogModal } from '../generales/angularGenericModal';
 import { determinarSiExistenCuotasConCobrosAplicados } from '../generales/determinarSiExistenCuotasCobradas'; 
 
 export default angular.module("scrwebm.riesgos.productores", []).controller("RiesgoProductores_Controller",
-['$scope', '$modal', 'uiGridConstants', 
-  function ($scope, $modal, uiGridConstants) {
+['$scope', '$uibModal', 'uiGridConstants', 
+  function ($scope, $uibModal, uiGridConstants) {
 
     $scope.showProgress = true; 
 
@@ -165,7 +165,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
     $scope.agregarProductor = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Productores</em>",
+            DialogModal($uibModal, "<em>Riesgos - Productores</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar agregar un productor al mismo.",
                                 false).then();
@@ -211,7 +211,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
         // determinamos el corretaje sumarizando, en las primas, las primas netas ...
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Productores</em>",
+            DialogModal($uibModal, "<em>Riesgos - Productores</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
@@ -220,7 +220,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
         }
 
         if (!movimientoSeleccionado.productores || movimientoSeleccionado.productores.length == 0) {
-            DialogModal($modal, "<em>Riesgos - Productores</em>",
+            DialogModal($uibModal, "<em>Riesgos - Productores</em>",
                                 "Aparentemente, Ud. no ha agregado un productor a la lista.<br />" +
                                 "Agregue un productor a la lista antes de intentar determinar el corretaje.",
                                 false).then();
@@ -230,7 +230,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
 
 
         if (!movimientoSeleccionado.primas || movimientoSeleccionado.primas.length == 0) {
-            DialogModal($modal, "<em>Riesgos - Productores</em>",
+            DialogModal($uibModal, "<em>Riesgos - Productores</em>",
                                 "Aparentemente, no se han determinado los registros de prima para el movimiento seleccionado.<br />" +
                                 "Para determinar el monto de corretaje del movimiento seleccionado, las primas (netas) " +
                                 "de sus compañías han debido ser determinadas antes.",
@@ -270,7 +270,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
     $scope.determinarYRegistrarCuotasProductor = function() {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
@@ -279,7 +279,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
         }
 
         if (!movimientoSeleccionado.productores || !movimientoSeleccionado.productores.length) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "El movimiento seleccionado no tiene productores registrados; debe tenerlos.<br />" +
                                 "Las cuotas se construyen en base a los registros de productores del movimiento. " +
                                 "El movimiento debe tener registros de productores registrados.",
@@ -289,7 +289,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
         }
 
         if (!productorSeleccionado || lodash.isEmpty(productorSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "Ud. no ha seleccionado un productor para calcular y registrar sus cuotas.<br />" +
                                 "Por favor seleccione el productor para el cual desea registrar cuotas.",
                                 false).then();
@@ -298,7 +298,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
         }
 
         if (!productorSeleccionado.monto) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "No se ha indicado un monto de comisión para el productor.<br />" +
                                 "Ud. debe indicar un monto de comisión para el productor antes de intentar calcular y registrar sus cuotas.",
                                 false).then();
@@ -317,7 +317,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
 
         const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasProductor); 
         if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
-            DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
+            DialogModal($uibModal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
             return;
         }
 
@@ -326,7 +326,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
             .size();
 
         if (cantidadCuotasMovimientoSeleccionado) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "Ya existen cuotas registradas para el movimiento y productor seleccionados.<br />" +
                                 "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden al movimiento y productor seleccionados <em>serán eliminadas</em> antes de " +
                                 "construirlas y agregarlas nuevamente.<br /><br />" +
@@ -346,7 +346,7 @@ export default angular.module("scrwebm.riesgos.productores", []).controller("Rie
     }
 
     function construirCuotasProductor() {
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/generales/construirCuotas.html',
             controller: 'Riesgos_ConstruirCuotasProductorController',
             size: 'md',

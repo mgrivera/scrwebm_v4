@@ -4,7 +4,7 @@ import lodash from 'lodash';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
-['$scope', '$modalInstance', '$modal', 'contrato', function ($scope, $modalInstance, $modal, contrato) {
+['$scope', '$uibModalInstance', '$uibModal', 'contrato', function ($scope, $uibModalInstance, $uibModal, contrato) {
 
     $scope.alerts = [];
 
@@ -203,7 +203,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
         if (capasTargetTienenReaseguradores) {
             // nótese que pasamos true al último parameter, pues queremos mostrar los botones Ok/Cancel; solo continuamos si el
             // usuario hace click en Ok ...
-            DialogModal($modal,
+            DialogModal($uibModal,
                 `Copiar reaseguradores entre capas`,
                 `Al menos una de las capas seleccionadas en la <b>2da. lista</b>
                 <em>tiene ahora</em> reaseguradores registrados.<br /><br />
@@ -213,7 +213,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
                 Ud. puede continuar (<em>Ok</em>) o cancelar (<em>Cancelar</em>) esta operación.`,
                 true).then(
                 function () {
-                    let message = copiarReaseguradoresEntreCapas($modal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
+                    let message = copiarReaseguradoresEntreCapas($uibModal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
@@ -231,7 +231,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
             return;
         }
         else {
-            let message = copiarReaseguradoresEntreCapas($modal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
+            let message = copiarReaseguradoresEntreCapas($uibModal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -246,7 +246,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     let message = `Este proceso le permite copiar los reaseguradores registrados para una capa del contrato, a otras capas.
@@ -263,7 +263,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
 ])
 
 
-function copiarReaseguradoresEntreCapas($modal, capaSource, capasTarget) {
+function copiarReaseguradoresEntreCapas($uibModal, capaSource, capasTarget) {
     // finalmente, copiamos los reaseguradores desde source a target y notificamos al usuario ...
     // primero eliminamos los probables reaseguradores en las capas 'target'
     capasTarget.forEach(function (capa) {

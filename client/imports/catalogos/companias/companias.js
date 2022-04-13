@@ -50,8 +50,8 @@ const exportToCsv_convertItems = (x) => {
 };
 
 export default angular.module("scrwebm.catalogos.companias", [ PersonasRegistro.name ])
-                      .controller("CompaniasController", ['$scope', '$modal', '$timeout', 
-function ($scope, $modal, $timeout) {
+                      .controller("CompaniasController", ['$scope', '$uibModal', '$timeout', 
+function ($scope, $uibModal, $timeout) {
 
     $scope.showProgress = false;
 
@@ -88,7 +88,7 @@ function ($scope, $modal, $timeout) {
     $scope.toogleOpenPersonasModal = function () {
 
         if (!$scope.companiaSeleccionada || Object.keys($scope.companiaSeleccionada).length === 0) {    // el object no debe ser empty   
-            DialogModal($modal, "<em>Compañías - Personas</em>",
+            DialogModal($uibModal, "<em>Compañías - Personas</em>",
                 `Aparentemente, no se ha seleccionado una compañía en la lista. <br />
                 Ud. debe seleccionar una compañía en la lista antes de intentar consultar/editar sus personas.`,
                 false).then();

@@ -39,8 +39,8 @@ export default angular.module("scrwebm.remesas.remesa",
                         RemesasRemesaObtenerCuadreRemesa.name, 
                         RemesaCuadreAsientoContable.name, 
                       ])
-                      .controller("RemesaController", ['$scope', '$state', '$stateParams', '$modal', 'uiGridGroupingConstants',
-  function ($scope, $state, $stateParams, $modal, uiGridGroupingConstants) {
+                      .controller("RemesaController", ['$scope', '$state', '$stateParams', '$uibModal', 'uiGridGroupingConstants',
+  function ($scope, $state, $stateParams, $uibModal, uiGridGroupingConstants) {
 
     $scope.showProgress = false;
 
@@ -174,7 +174,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
         // antes que nada, revisamos que haya algo que grabar
         if (!$scope.remesa.docState) {
-            DialogModal($modal, "<em>Remesas</em>", "Aparentemente, <em>no se han efectuado cambios</em> en el registro. " +
+            DialogModal($uibModal, "<em>Remesas</em>", "Aparentemente, <em>no se han efectuado cambios</em> en el registro. " +
                                 "No hay nada que grabar.", false).then();
             return;
         }
@@ -184,7 +184,7 @@ export default angular.module("scrwebm.remesas.remesa",
             const asientoContableModificado = lodash.some($scope.remesa.asientoContable, (p) => { return p.docState; }); 
 
             if (asientoContableModificado && $scope.remesa.docState != 3) { 
-                DialogModal($modal, "<em>Remesas</em>",
+                DialogModal($uibModal, "<em>Remesas</em>",
                                     "La remesa está cerrada - lo único que se puede modificar es su asiento contable.<br />" +
                                     "Nota: solo cambios efectuados al asiento contable serán grabados.",
                                     false).then(
@@ -192,7 +192,7 @@ export default angular.module("scrwebm.remesas.remesa",
                                             grabar2(); 
                                         });
             } else { 
-                DialogModal($modal, "<em>Remesas</em>",
+                DialogModal($uibModal, "<em>Remesas</em>",
                                     "La remesa está cerrada.<br />" +
                                     "Una remesa cerrada no puede ser modificada.<br /><br />" +
                                     "Ud. puede, sin embargo, <em>revertir</em> la remesa para eliminar sus pagos; " +
@@ -310,7 +310,7 @@ export default angular.module("scrwebm.remesas.remesa",
     $scope.regresarALista = function () {
 
         if ($scope.remesa.docState && $scope.origen == 'edicion') {
-            var promise = DialogModal($modal,
+            var promise = DialogModal($uibModal,
                                     "<em>Remesas</em>",
                                     "Aparentemente, Ud. ha efectuado cambios; aún así, desea <em>regresar</em> y perder los cambios?",
                                     true);
@@ -334,7 +334,7 @@ export default angular.module("scrwebm.remesas.remesa",
     $scope.eliminar = function () {
         if ($scope.remesa.docState && $scope.remesa.docState == 1) {
             if ($scope.remesa.docState) {
-                DialogModal($modal,
+                DialogModal($uibModal,
                             "<em>Remesas</em>",
                             "El registro es nuevo; para eliminar, simplemente haga un <em>Refresh</em> o <em>Regrese</em> a la lista.",
                             false).then();
@@ -349,7 +349,7 @@ export default angular.module("scrwebm.remesas.remesa",
     $scope.refresh = function () {
 
         if ($scope.remesa.docState) {
-            var promise = DialogModal($modal,
+            var promise = DialogModal($uibModal,
                                     "<em>Remesas</em>",
                                     "Aparentemente, <em>se han efectuado cambios</em> en el registro. Si Ud. continúa y refresca el registro, " +
                                     "los cambios se perderán.<br /><br />Desea continuar y perder los cambios?",
@@ -487,7 +487,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
 
     $scope.exportarCuadreRemesaMicrosoftExcel = () => {
-    $modal.open({
+    $uibModal.open({
         templateUrl: 'client/html/remesas/exportarExcelModal/remesaCuadreExportarExcel_Modal.html',
         controller: 'RemesaCuadreExportarExcel_Modal_Controller',
         size: 'md',
@@ -509,7 +509,7 @@ export default angular.module("scrwebm.remesas.remesa",
     }
 
     $scope.remesaCuadreAsientoContable = () => {
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/remesas/asientoContable/asientoContable_Modal.html',
             controller: 'RemesaCuadreAsientoContable_Modal_Controller',
             size: 'lg',
@@ -1006,7 +1006,7 @@ export default angular.module("scrwebm.remesas.remesa",
         // para permitir al usuario revertir la remesa ...
         if ($scope.remesa.docState) {
 
-            DialogModal($modal, "<em>Remesas</em>",
+            DialogModal($uibModal, "<em>Remesas</em>",
                                 "Aparentemente, el registro ha recibido modificaciones.<br />." +
                                 "Ud. debe guardar los cambios antes de intentar ejecutar esta función.",
                                 false).then();
@@ -1018,7 +1018,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
             const razonProteccion = $scope.remesa.protegida.razon ? $scope.remesa.protegida.razon : "Razón invalida - Por favor revise."; 
         
-            DialogModal($modal, "<em>Remesas</em>",
+            DialogModal($uibModal, "<em>Remesas</em>",
                                 `La remesa está <em><b>protegida</b></em>. No puede ser alterada.<br />
                                 La razón de la protección es: <em>${razonProteccion}</em>`,
                                 false).then();
@@ -1026,7 +1026,7 @@ export default angular.module("scrwebm.remesas.remesa",
             return;
         }
 
-        DialogModal($modal, "<em>Remesas</em>",
+        DialogModal($uibModal, "<em>Remesas</em>",
                             "Esta operación <em>revertirá la remesa</em>; es decir, eliminará cada cobro/pago asociado a la remesa y dejará la remesa en estado <b><em>'abierta'</em></b><br /><br />." +
                             "Desea continuar con este proceso y revertir los cobros/pagos aplicados con esta remesa?",
                             true).then(
@@ -1064,7 +1064,7 @@ export default angular.module("scrwebm.remesas.remesa",
             $scope.remesaCuadreSimpleArray = [];
             $scope.cuadreRemesas_ui_grid.data = [];
 
-            DialogModal($modal, "<em>Remesas</em>",
+            DialogModal($uibModal, "<em>Remesas</em>",
                                 `Ok, la remesa ha sido <em>revertida</em>; su estado ahora es
                                 <b><em>'abierta'</em></b><br /><br />.`,
                                 false).then();
@@ -1076,7 +1076,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
     $scope.obtenerCuadreRemesa = () => {
         if ($scope.remesa.docState && $scope.origen == 'edicion') {
-            DialogModal($modal, "<em>Remesas</em>",
+            DialogModal($uibModal, "<em>Remesas</em>",
                                 "Aparentemente, la remesa ha recibido cambios; por favor " +
                                 "guarde los cambios antes de intentar ejecutar esta función.",
                                 false);
@@ -1084,7 +1084,7 @@ export default angular.module("scrwebm.remesas.remesa",
         }
 
         if (!$scope.remesa.fechaCerrada) {
-            DialogModal($modal, "<em>Remesas</em>",
+            DialogModal($uibModal, "<em>Remesas</em>",
                                 `Aparentemente, a la remesa no se le han asociado cobros/pagos aún, y su estado no
                                 es <em>cerrada</em>.<br /><br />
                                 Por esa razón, Ud. no debe intentar obtener un <em>cuadre</em> para la misma.<br /><br />
@@ -1097,7 +1097,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
 
         if ($scope.remesa.cuadre && $scope.remesa.cuadre.length) {
-            DialogModal($modal, "<em>Remesas</em>",
+            DialogModal($uibModal, "<em>Remesas</em>",
                                 `Esta remesa <b>ya contiene</b> un <em>cuadre</em> registrado. Seguramente,
                                 el mismo fue construido usando esta misma función.<br /><br />
                                 Si Ud. continúa, el mismo será eliminado y un nuevo <em>cuadre</em>
@@ -1122,7 +1122,7 @@ export default angular.module("scrwebm.remesas.remesa",
 
     function obtenerCuadreRemesa(remesaID) {
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/remesas/obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html',
             controller: 'RemesaCuadreObtener_Modal_Controller',
             size: 'md',
@@ -1194,7 +1194,7 @@ export default angular.module("scrwebm.remesas.remesa",
                     // refrescar el state, pero iendo a uno y luego regresando. No es la forma más elegante, pero seguro funciona, 
                     // hasta que logremos agregar el código adecuado que refresque el ui-grid sin cambiar el state ... 
                     $scope.goToState('detalle'); 
-                    DialogModal($modal,
+                    DialogModal($uibModal,
                         "<em>Remesas</em>",
                         `Ok, el <em>cuadre de la remesa</em> ha sido construido.<br /><br />
                         `, false).then(
@@ -1246,7 +1246,7 @@ export default angular.module("scrwebm.remesas.remesa",
     $scope.importarRemesa = function() {
         // siempre debemos importar desde un registro nuevo 
         if (!$scope.remesa.docState || $scope.remesa.docState != 1) {
-            DialogModal($modal, "<em>Remesas</em>",
+            DialogModal($uibModal, "<em>Remesas</em>",
                 "Ud. debe usar esta función sobre un movimiento <em>nuevo</em>; es decir, que se está agregando ahora.<br />" +
                 "Antes de ejecutar esta función, Ud. debe hacer siempre un <em>click</em> en <em>Nuevo</em>.",
                 false).then();

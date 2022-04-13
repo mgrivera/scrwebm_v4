@@ -8,7 +8,7 @@ import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros';
 
 export default angular.module("scrwebm.remesas.remesa.remesasCuadreObtener", [])
                       .controller('RemesaCuadreObtener_Modal_Controller',
-['$scope', '$modalInstance', 'remesaID', 'ciaSeleccionada', function ($scope, $modalInstance, remesaID, ciaSeleccionada) {
+['$scope', '$uibModalInstance', 'remesaID', 'ciaSeleccionada', function ($scope, $uibModalInstance, remesaID, ciaSeleccionada) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -20,11 +20,11 @@ export default angular.module("scrwebm.remesas.remesa.remesasCuadreObtener", [])
     $scope.companiaSeleccionada = ciaSeleccionada;
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
 

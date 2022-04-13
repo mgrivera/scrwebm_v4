@@ -11,8 +11,8 @@ import { DialogModal } from '/client/imports/generales/angularGenericModal';
 // importamos el module generales, pues está en  imports ... 
 import scrwebmGenerales from '/client/imports/generales/generalesAngularModule'; 
 
-angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController", ['$scope', '$modal',
-    function ($scope, $modal) {
+angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController", ['$scope', '$uibModal',
+    function ($scope, $uibModal) {
 
         $scope.showProgress = false;
 
@@ -111,7 +111,7 @@ angular.module(scrwebmGenerales.name).controller("SeleccionarCompaniaController"
                     msg: "Ok, la compañía <b><em>" + companiaSeleccionada.nombre + "</em></b> ha sido seleccionada."
                 });
 
-                DialogModal($modal,
+                DialogModal($uibModal,
                     "<em>Selección de compañías</em>",
                     "Ok, la compañía <b><em>" + companiaSeleccionada.nombre + "</em></b> ha sido seleccionada.",
                     false).then();

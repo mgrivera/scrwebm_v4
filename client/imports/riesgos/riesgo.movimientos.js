@@ -22,8 +22,8 @@ import construirCuotasMovimiento_htmlTemplate from '/client/imports/riesgos/cons
 export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasBrutas.name, 
                                                                ConstruirCuotas.name, 
                                                                ConstruirCuotasProductor.name ])
-                      .controller("RiesgoMovimientos_Controller", ['$scope', '$modal', 'uiGridConstants', '$interval', 
-  function ($scope, $modal, uiGridConstants, $interval) {
+                      .controller("RiesgoMovimientos_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$interval', 
+  function ($scope, $uibModal, uiGridConstants, $interval) {
 
     $scope.showProgress = true;
 
@@ -216,7 +216,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         const result = LeerCompaniaNosotros(Meteor.userId()); 
 
         if (result.error) {
-            DialogModal($modal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
+            DialogModal($uibModal, "<em>Riesgos - Error al intentar leer la compañía 'nosotros'</em>", result.message, false).then();
             return;
         }
 
@@ -262,7 +262,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
                 nuevoMovimiento = {};
 
-                DialogModal($modal,
+                DialogModal($uibModal,
                             "<em>Riesgos - Nuevo movimiento</em>",
                             "Ok, un nuevo movimiento ha sido agregado al riesgo. " +
                             "Nóte que el nuevo movimiento es, simplemente, una copia del movimiento anterior.<br /><br />" +
@@ -337,7 +337,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
                 $scope.riesgo.docState = 2;
         }
         else {
-            DialogModal($modal, "<em>Riesgos</em>",
+            DialogModal($uibModal, "<em>Riesgos</em>",
                         "Ud. debe seleccionar un movimiento antes de intentar eliminarlo.",
                         false).then();
             return;
@@ -347,7 +347,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.movimientosCalcular = function() {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos</em>",
+            DialogModal($uibModal, "<em>Riesgos</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar calcular sus valores.",
                                 false).then();
@@ -383,14 +383,14 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.registroDocumentosMovimiento = function() {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Documentos</em>",
+            DialogModal($uibModal, "<em>Riesgos - Documentos</em>",
                         "Ud. debe seleccionar un movimiento antes de intentar registrar sus documentos.",
                         false).then();
 
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/generales/registroDocumentos.html',
             controller: 'RegistroDocumentosController',
             size: 'md',
@@ -574,7 +574,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.agregarCompania = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos</em>",
+            DialogModal($uibModal, "<em>Riesgos</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar agregar una compañía.",
                                 false).then();
@@ -653,7 +653,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.registrarPersonasCompanias = function() {
 
         if (!$scope.riesgo || !$scope.riesgo.compania) {
-            DialogModal($modal, "<em>Riesgos</em>",
+            DialogModal($uibModal, "<em>Riesgos</em>",
                                 "Aparentemente, Ud. no ha seleccionado una compañía como cedente para este riesgo.<br />" +
                                 "El riesgo debe tener una compañía cedente antes de intentar registrar sus personas.",
                                 false).then();
@@ -662,7 +662,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         }
 
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/imports/generales/registrarPersonasAEntidad/registrarPersonas.html',
             controller: 'RegistrarPersonasController',
             size: 'lg',
@@ -912,7 +912,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.agregarCobertura = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos</em>",
+            DialogModal($uibModal, "<em>Riesgos</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar agregar una cobertura.",
                                 false).then();
@@ -987,7 +987,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.construirCifrasCoberturasParaCompanias = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
+            DialogModal($uibModal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
@@ -996,7 +996,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         }
 
         if (movimientoSeleccionado.coberturasCompanias && movimientoSeleccionado.coberturasCompanias.length > 0) {
-            DialogModal($modal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
+            DialogModal($uibModal, "<em>Riesgos - Determinación de cifras de coberturas para cada compañía</em>",
                                 "Ya existen cifras de coberturas para el movimiento seleccionado.<br />" +
                                 "Si Ud. continúa y ejecuta esta función, estos registros <em>serán eliminados</em> antes de " +
                                 "determinar y agregar unos nuevos.<br /><br />" +
@@ -1326,7 +1326,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.construirPrimasParaCompanias = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
@@ -1335,7 +1335,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         }
 
         if (movimientoSeleccionado.primas && movimientoSeleccionado.primas.length > 0) {
-            DialogModal($modal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de registros de primas para cada compañía</em>",
                                 "Ya existen registros de prima para cada compañía en el movimiento seleccionado.<br />" +
                                 "Si Ud. continúa y ejecuta esta función, estos registros <em>serán eliminados</em> antes de " +
                                 "ser construidos y agregados nuevamente.<br /><br />" +
@@ -1416,7 +1416,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.prorratearPrimasBrutas = function() {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Prorratear primas brutas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Prorratear primas brutas</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
@@ -1424,7 +1424,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
             return;
         }
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/riesgos/prorratearPrimasModal.html',
             controller: 'Riesgos_ProrratearPrimasController',
             size: 'lg',
@@ -1799,7 +1799,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     $scope.construirCuotasMovimiento = function () {
 
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un movimiento.<br />" +
                                 "Debe seleccionar un movimiento antes de intentar ejecutar esta función.",
                                 false).then();
@@ -1808,7 +1808,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         }
 
         if (!movimientoSeleccionado.primas || !movimientoSeleccionado.primas.length) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "El movimiento seleccionado no tiene registros de prima registrados; debe tenerlos.<br />" +
                                 "Las cuotas se construyen en base a los registros de prima del movimiento. " +
                                 "El movimiento debe tener registros de prima registrados.",
@@ -1828,14 +1828,14 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
         const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasMovimientoSeleccionado); 
         if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
-            DialogModal($modal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
+            DialogModal($uibModal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then(); 
             return;
         }
 
         var cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { return c.source.subEntityID === movimientoSeleccionado._id; }).size();
 
         if (cantidadCuotasMovimientoSeleccionado) {
-            DialogModal($modal, "<em>Riesgos - Construcción de cuotas</em>",
+            DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
                                 "Ya existen cuotas registradas para el movimiento seleccionado.<br />" +
                                 "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden al movimiento seleccionado <em>serán eliminadas</em> antes de " +
                                 "construirlas y agregarlas nuevamente.<br /><br />" +
@@ -1871,7 +1871,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
     function construirCuotasMovimiento() {
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: construirCuotasMovimiento_htmlTemplate,
             controller: 'Riesgos_ConstruirCuotasController',
             size: 'md',

@@ -10,8 +10,8 @@ import saveAs from 'save-as'
 import { Consulta_MontosPendientesPago_Vencimientos } from '/imports/collections/consultas/consultas_MontosPendientesPago_Vencimientos'; 
 
 angular.module("scrwebm")
-       .controller("ConsultasMontosPendientesPagoVencimientos_Lista_Controller", ['$scope', '$state', '$modal', 'uiGridConstants',
-function ($scope, $state, $modal, uiGridConstants) {
+       .controller("ConsultasMontosPendientesPagoVencimientos_Lista_Controller", ['$scope', '$state', '$uibModal', 'uiGridConstants',
+function ($scope, $state, $uibModal, uiGridConstants) {
 
     $scope.showProgress = false;
 
@@ -107,7 +107,7 @@ function ($scope, $state, $modal, uiGridConstants) {
 
     $scope.reporteOpcionesModal = function () {
 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/consultas/pendientesPago_vencimientos/reportes/opcionesReportModal.html',
             controller: 'Consultas_montosPendientesPago_vencimientos_opcionesReportController',
             size: 'md',

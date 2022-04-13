@@ -20,10 +20,10 @@ import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, 
 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 
-const grabar = ($state, $scope, $modal, uiGridConstants) => {
+const grabar = ($state, $scope, $uibModal, uiGridConstants) => {
 
     if (!$scope.dataHasBeenEdited) {
-        DialogModal($modal,
+        DialogModal($uibModal,
                     "<em>Contratos</em>",
                     "Aparentemente, <em>no se han efectuado cambios</em> en el registro. No hay nada que grabar.",
                     false).then();

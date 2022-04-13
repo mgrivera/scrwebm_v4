@@ -10,8 +10,8 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 import "./usuarios.html"; 
 
 export default angular.module("scrwebm.administracion.usuarios", [])
-                      .controller("UsuariosDatosPersonalesController", ['$scope', '$meteor', '$modal', 
-function ($scope, $meteor, $modal) {
+                      .controller("UsuariosDatosPersonalesController", ['$scope', '$meteor', '$uibModal', 
+function ($scope, $meteor, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -143,7 +143,7 @@ function ($scope, $meteor, $modal) {
     $scope.grabar = function () {
         // antes que nada, revisamos que haya algo que grabar
         if (!lodash.some($scope.users, u => { return u.docState; })) {
-            DialogModal($modal, "<em>Usuarios</em>",
+            DialogModal($uibModal, "<em>Usuarios</em>",
                 `Aparentemente, <em>no se han efectuado cambios</em> en los datos.
                                      No hay nada que grabar.`, false).then();
             return;

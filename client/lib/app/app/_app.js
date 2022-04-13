@@ -10,6 +10,7 @@ import angularMeteor from 'angular-meteor';
 import uiRouter from 'angular-ui-router';
 
 import 'angular-ui-grid';
+import 'angular-ui-bootstrap'; 
 
 // nótese que importamos los assets de npm packages ...
 import "/node_modules/angular-ui-grid/ui-grid.css";  
@@ -86,7 +87,8 @@ import Utilitarios from '/client/imports/utilitarios/angular.module';
 import MeteorLogin from '/client/imports/generales/meteor.login/angular.module'; 
 
 angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
-                            'angularUtils.directives.dirPagination', 'accounts.ui',
+                            'angularUtils.directives.dirPagination', 
+                            // 'accounts.ui',
                             'ui.grid', 'ui.grid.edit', 'ui.grid.cellNav',
                             'ui.grid.resizeColumns', 'ui.grid.selection',
                             'ui.grid.pinning', 'ui.grid.grouping', 

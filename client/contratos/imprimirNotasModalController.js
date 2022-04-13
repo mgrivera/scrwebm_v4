@@ -12,8 +12,8 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller('ImprimirNotasContratosModalController',
-['$scope', '$modalInstance', '$modal', 'contrato',
-function ($scope, $modalInstance, $modal, contrato) {
+['$scope', '$uibModalInstance', '$uibModal', 'contrato',
+function ($scope, $uibModalInstance, $uibModal, contrato) {
 
     // este modal intenta construir un pdf para cada tipo de nota de cobertura: cedente, reasegurador, interna
     // ui-bootstrap alerts ...
@@ -24,11 +24,11 @@ function ($scope, $modalInstance, $modal, contrato) {
     };
 
     $scope.ok = function () {
-        // $modalInstance.close("Ok");
+        // $uibModalInstance.close("Ok");
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     };
 
     // ------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ function ($scope, $modalInstance, $modal, contrato) {
     $scope.obtenerDocumentoWord = function (file) {
 
         if (!$scope.parametros.fecha || lodash.isEmpty($scope.parametros.fecha)) {
-            DialogModal($modal, "<em>Contratos - Construcción de notas de contratos</em>",
+            DialogModal($uibModal, "<em>Contratos - Construcción de notas de contratos</em>",
                         `Ud. debe indicar la fecha que se mostrará en el documento.<br />
                          Ejemplo: Caracas, 25 de Abril del 2.015.
                         `,

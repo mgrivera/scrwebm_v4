@@ -12,8 +12,8 @@ import { Suscriptores } from '/imports/collections/catalogos/suscriptores';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 angular.module("scrwebm").controller('NuevoSiniestroDesdeOrigenController',
-['$scope', '$modalInstance', '$modal', '$meteor', 'cia',
-function ($scope, $modalInstance, $modal, $meteor, cia) {
+['$scope', '$uibModalInstance', '$uibModal', '$meteor', 'cia',
+function ($scope, $uibModalInstance, $uibModal, $meteor, cia) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];
@@ -24,7 +24,7 @@ function ($scope, $modalInstance, $modal, $meteor, cia) {
 
     $scope.ok = function () {
         if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) {
-            DialogModal($modal, "<em>Siniestros - Registrar un nuevo siniestro</em>",
+            DialogModal($uibModal, "<em>Siniestros - Registrar un nuevo siniestro</em>",
                                 "Ud. debe seleccionar un movimiento en la lista.<br /><br />" +
                                 "El movimiento que Ud. seleccione en la lista, será el que <em>dará cobertura</em> al " +
                                 " siniestro que intenta registrar",
@@ -58,14 +58,14 @@ function ($scope, $modalInstance, $modal, $meteor, cia) {
 
         movimientoSeleccionado.fechaOcurrencia = $scope.filtro.fechaOcurrencia;
 
-        $modalInstance.close(movimientoSeleccionado);
+        $uibModalInstance.close(movimientoSeleccionado);
     };
 
     $scope.cancel = function (cancel) {
         if (cancel === 'cancel')
-            $modalInstance.dismiss("Cancel");
+            $uibModalInstance.dismiss("Cancel");
         else
-            $modalInstance.dismiss();
+            $uibModalInstance.dismiss();
     };
 
     $scope.companias = $scope.$meteorCollection(Companias, false);

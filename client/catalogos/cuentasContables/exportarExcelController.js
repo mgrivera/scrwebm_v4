@@ -5,8 +5,8 @@ import angular from 'angular';
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebm")
-       .controller('CuentasContablesExportarExcel_Controller', ['$scope', '$modalInstance', 'ciaSeleccionada', 
-    function ($scope, $modalInstance, ciaSeleccionada) {
+       .controller('CuentasContablesExportarExcel_Controller', ['$scope', '$uibModalInstance', 'ciaSeleccionada', 
+    function ($scope, $uibModalInstance, ciaSeleccionada) {
 
         // ui-bootstrap alerts ...
         $scope.alerts = [];
@@ -18,11 +18,11 @@ angular.module("scrwebm")
         $scope.companiaSeleccionada = ciaSeleccionada;
 
         $scope.ok = function () {
-            $modalInstance.close("Ok");
+            $uibModalInstance.close("Ok");
         }
 
         $scope.cancel = function () {
-            $modalInstance.dismiss("Cancel");
+            $uibModalInstance.dismiss("Cancel");
         }
 
         $scope.downloadDocument = false;

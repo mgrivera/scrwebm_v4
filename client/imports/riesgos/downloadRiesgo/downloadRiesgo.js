@@ -7,8 +7,8 @@ import downloadRiesgoInfoText from './downloadRiesgo.infoText';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 export default angular.module("scrwebm.riesgos.riesgo.downloadToDisk", [ InfoModal.name ])
-    .controller('DownloadRiesgoToDisk_ModalController', ['$scope', '$modalInstance', '$timeout', '$modal', 'riesgoOriginal', 'riesgos_infoRamo', 
-    function ($scope, $modalInstance, $timeout, $modal, riesgoOriginal, riesgos_infoRamo) {
+    .controller('DownloadRiesgoToDisk_ModalController', ['$scope', '$uibModalInstance', '$timeout', '$uibModal', 'riesgoOriginal', 'riesgos_infoRamo', 
+    function ($scope, $uibModalInstance, $timeout, $uibModal, riesgoOriginal, riesgos_infoRamo) {
         $scope.alerts = [];
 
         $scope.closeAlert = function (index) {
@@ -16,11 +16,11 @@ export default angular.module("scrwebm.riesgos.riesgo.downloadToDisk", [ InfoMod
         }
 
         $scope.ok = function () {
-            $modalInstance.close("Ok");
+            $uibModalInstance.close("Ok");
         }
 
         $scope.cancel = function () {
-            $modalInstance.dismiss("Cancel");
+            $uibModalInstance.dismiss("Cancel");
         }
 
         // ----------------------------------------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ export default angular.module("scrwebm.riesgos.riesgo.downloadToDisk", [ InfoMod
                 }
                 finally {
                     if (message) {
-                        DialogModal($modal, "<em>Riesgos - Download</em>",
+                        DialogModal($uibModal, "<em>Riesgos - Download</em>",
                             "Ha ocurrido un error al intentar ejecutar esta función:<br />" +
                             message, false).then();
                     }

@@ -3,9 +3,9 @@
 
 import saveAs from 'save-as'
 
-let permitirUsuarioDownloadFiles = function($modal, files, mensajeAlUsuario) {
+let permitirUsuarioDownloadFiles = function($uibModal, files, mensajeAlUsuario) {
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
         templateUrl: 'client/generales/downloadFilesModal.html',
         controller: 'DownloadFilesController',
         size: 'lg',
@@ -30,8 +30,8 @@ Global_Methods.PermitirUsuarioDownloadFiles = permitirUsuarioDownloadFiles;
 
 
 angular.module("scrwebm").controller('DownloadFilesController',
-['$scope', '$modalInstance', '$modal', 'files', 'mensaje',
-function ($scope, $modalInstance, $modal, files, mensaje) {
+['$scope', '$uibModalInstance', '$uibModal', 'files', 'mensaje',
+function ($scope, $uibModalInstance, $uibModal, files, mensaje) {
 
     // este modal recibe un array con información de files (content y name) y genera links para cada uno de ellos;
     // la idea es que el usuario pueda copiar (download) cada archivo al disco duro local ...
@@ -46,11 +46,11 @@ function ($scope, $modalInstance, $modal, files, mensaje) {
     };
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
 
     $scope.downloadFile = (file) => {

@@ -5,8 +5,8 @@ import saveAs from 'save-as';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
 export default angular.module("scrwebm.cobranzas.aplicarPagos.guardarEstado", [])
-       .controller('CobranzaGuardarEstado_Controller', ['$scope', '$modalInstance', '$modal', 'temp_cobranzas', 'companiaSeleccionada', 
-    function ($scope, $modalInstance, $modal, temp_cobranzas, companiaSeleccionada) {
+       .controller('CobranzaGuardarEstado_Controller', ['$scope', '$uibModalInstance', '$uibModal', 'temp_cobranzas', 'companiaSeleccionada', 
+    function ($scope, $uibModalInstance, $uibModal, temp_cobranzas, companiaSeleccionada) {
 
         // ui-bootstrap alerts ...
         $scope.alerts = [];
@@ -18,11 +18,11 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos.guardarEstado", []
         $scope.companiaSeleccionada = companiaSeleccionada;
 
         $scope.ok = function () {
-            $modalInstance.close("Ok");
+            $uibModalInstance.close("Ok");
         };
 
         $scope.cancel = function () {
-            $modalInstance.dismiss("Cancel");
+            $uibModalInstance.dismiss("Cancel");
         };
 
         $scope.cobranza_guardarEstado = function () {
@@ -36,7 +36,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos.guardarEstado", []
                             No hay nada que grabar. 
                         `;
 
-                DialogModal($modal, "<em>Cobranzas</em>", message, false).then();
+                DialogModal($uibModal, "<em>Cobranzas</em>", message, false).then();
 
                 return;
             }
@@ -53,7 +53,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos.guardarEstado", []
             }
             finally {
                 if (message) {
-                    DialogModal($modal, "<em>Cobranzas - Guardar estado parcial del proceso</em>",
+                    DialogModal($uibModal, "<em>Cobranzas - Guardar estado parcial del proceso</em>",
                         "Ha ocurrido un error al intentar ejecutar esta función:<br />" +
                         message,
                         false).then();
@@ -82,7 +82,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos.guardarEstado", []
                                  Por favor cierre este diálogo y revise. No existen cuotas asociadas a la remesa.
                                 `;
 
-                DialogModal($modal, "<em>Cobranzas - Recuperar el estado parcial del proceso</em>", message, false).then();
+                DialogModal($uibModal, "<em>Cobranzas - Recuperar el estado parcial del proceso</em>", message, false).then();
 
                 return;
             }
@@ -99,7 +99,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos.guardarEstado", []
             const userSelectedFile = files[0];
 
             if (!userSelectedFile) {
-                DialogModal($modal, "<em>Cobranzas - Recuperar el estado parcial del proceso</em",
+                DialogModal($uibModal, "<em>Cobranzas - Recuperar el estado parcial del proceso</em",
                                     "Aparentemente, Ud. no ha seleccionado un archivo.<br />" +
                                     `Por favor seleccione un archivo que corresponda al <em>estado de este 
                                      proceso</em> que Ud. haya exportado antes.`,
@@ -143,7 +143,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos.guardarEstado", []
                 }
                 finally {
                     if (message) {
-                        DialogModal($modal, "<em>Cobranzas - Recuperar estado parcial del proceso</em>",
+                        DialogModal($uibModal, "<em>Cobranzas - Recuperar estado parcial del proceso</em>",
                             "Ha ocurrido un error al intentar ejecutar esta función:<br />" +
                             message,
                             false).then();

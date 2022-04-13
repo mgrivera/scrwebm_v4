@@ -10,8 +10,8 @@ import { DialogModal } from '../../imports/generales/angularGenericModal';
 
 angular.module("scrwebm")
        .controller('CuentasContablesImportarDesdeExcel_Controller',
-    ['$scope', '$modalInstance', '$modal', 'cuentasContables', 'cuentasContables_ui_grid', 'ciaSeleccionada',
-    function ($scope, $modalInstance, $modal, cuentasContables, cuentasContables_ui_grid, ciaSeleccionada) {
+    ['$scope', '$uibModalInstance', '$uibModal', 'cuentasContables', 'cuentasContables_ui_grid', 'ciaSeleccionada',
+    function ($scope, $uibModalInstance, $uibModal, cuentasContables, cuentasContables_ui_grid, ciaSeleccionada) {
 
         // ui-bootstrap alerts ...
         $scope.alerts = [];
@@ -23,11 +23,11 @@ angular.module("scrwebm")
         $scope.companiaSeleccionada = ciaSeleccionada;
 
         $scope.ok = function () {
-            $modalInstance.close("Ok");
+            $uibModalInstance.close("Ok");
         }
 
         $scope.cancel = function () {
-            $modalInstance.dismiss("Cancel");
+            $uibModalInstance.dismiss("Cancel");
         }
 
         // para leer el archivo seleccionado mediante el Input ...
@@ -113,7 +113,7 @@ angular.module("scrwebm")
                         cuentasContables_ui_grid.data = cuentasContables;
                     }
 
-                    DialogModal($modal,
+                    DialogModal($uibModal,
                         `<em>Cuentas contables - Importar desde Excel</em>`,
                         `Ok, este proceso ha agregado <b>${cuentasContablesAgregadas.toString()}</b>
                     cuentas contables a la lista.<br />
@@ -128,7 +128,7 @@ angular.module("scrwebm")
             }
         }
 
-        $modalInstance.rendered.then(function () {
+        $uibModalInstance.rendered.then(function () {
             // para mejorar el style al input-file ...
             // nótese que, en caso de bootstrap modals, ponemos en 'rendered'; de otra forma, los estilos no se aplican
             // correctamente al input ...

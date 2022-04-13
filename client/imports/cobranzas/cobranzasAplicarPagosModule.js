@@ -21,7 +21,7 @@ import CobranzaGuardarEstado from './cobranzaGuardarEstado';
 
 export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaGuardarEstado.name, CobranzaResumenCobranzaModal.name ])
                       .controller("CobranzasAplicarPagosController",
-['$scope', '$state', '$stateParams', '$modal', function ($scope, $state, $stateParams, $modal) {
+['$scope', '$state', '$stateParams', '$uibModal', function ($scope, $state, $stateParams, $uibModal) {
 
     $scope.showProgress = false;
 
@@ -112,7 +112,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaGuarda
     $scope.aplicarPagos = function () {
 
         if (!$scope.temp_cobranzas) {
-            DialogModal($modal, "<em>Cobranzas</em>",
+            DialogModal($uibModal, "<em>Cobranzas</em>",
                                 `Aparentemente, Ud. no ha seleccionado pagos a ser aplicados.<br />
                                     Ud. debe seleccionar al menos un pago a ser aplicado por este proceso,
                                     para la remesa seleccionada.`,
@@ -124,7 +124,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaGuarda
         const pagosAAplicar = lodash.filter($scope.temp_cobranzas, function (cuota) { return cuota.pagar; });
 
         if (pagosAAplicar.length == 0) {
-            DialogModal($modal, "<em>Cobranzas</em>",
+            DialogModal($uibModal, "<em>Cobranzas</em>",
                                 `Aparentemente, Ud. no ha seleccionado pagos a ser aplicados.<br />
                                     Ud. debe seleccionar al menos un pago a ser aplicado por este proceso, para
                                     la remesa seleccionada.`,
@@ -267,7 +267,7 @@ export default angular.module("scrwebm.cobranzas.aplicarPagos", [ CobranzaGuarda
         
         // para permitir al usuario guardar el estado de la cobranza y recuperarlo luego. Esto permite que el usuario 'marque' muchos cobros; 
         // los guarda en un file y luego regrese, los cargue y continúe el proceso ... 
-        $modal.open({
+        $uibModal.open({
             templateUrl: 'client/html/cobranzas/cobranzaGuardarEstado_Modal.html',
             controller: 'CobranzaGuardarEstado_Controller',
             size: 'md',

@@ -8,8 +8,8 @@ import InfoModal from '/client/imports/genericReactComponents/infoModal/angular.
 import renovarRiesgoInfoText from './renovarRiesgo.infoText'; 
 
 export default angular.module("scrwebm.riesgos.riesgo.renovarRiesgo", [ InfoModal.name ])
-                      .controller('RenovarRiesgo_ModalController', ['$scope', '$modalInstance', '$timeout', 'riesgoOriginal',
-    function ($scope, $modalInstance, $timeout, riesgoOriginal) {
+                      .controller('RenovarRiesgo_ModalController', ['$scope', '$uibModalInstance', '$timeout', 'riesgoOriginal',
+    function ($scope, $uibModalInstance, $timeout, riesgoOriginal) {
         $scope.alerts = [];
 
         $scope.closeAlert = function (index) {
@@ -17,11 +17,11 @@ export default angular.module("scrwebm.riesgos.riesgo.renovarRiesgo", [ InfoModa
         }
 
         $scope.ok = function () {
-            $modalInstance.close("Ok");
+            $uibModalInstance.close("Ok");
         }
 
         $scope.cancel = function () {
-            $modalInstance.dismiss("Cancel");
+            $uibModalInstance.dismiss("Cancel");
         }
 
         // ----------------------------------------------------------------------------------------------------------------------

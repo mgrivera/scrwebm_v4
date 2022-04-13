@@ -13,7 +13,7 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 // -----------------------------------------------------------------------------
 // para mostrar los pagos aplicados a una cuota en particular
 // -----------------------------------------------------------------------------
-export function MostrarPagosEnCuotas($modal, cuota, origen, cuotaID = null) {
+export function MostrarPagosEnCuotas($uibModal, cuota, origen, cuotaID = null) {
 
     // si esta función no recibe una cuota, pero si una cuotaID, la idea es leer la cuota y
     // continuar con el proceso ...
@@ -21,21 +21,21 @@ export function MostrarPagosEnCuotas($modal, cuota, origen, cuotaID = null) {
     // el origen indica si la función se abre desde una entidad en modo: edición o consulta; como desde aquí se puede abrir la remesa, 
     // esta debe ser abierta en el modo en el que se abrió la entidad (riesgo, contrato, siniestro, etc.)
     if (cuota) {
-        mostrarPagosEnCuotas2($modal, cuota, origen);
+        mostrarPagosEnCuotas2($uibModal, cuota, origen);
     }
     else {
         Meteor.subscribe('cuotas', JSON.stringify({ "_id": cuotaID }),
           function() {
               cuota = Cuotas.findOne(cuotaID);
-              mostrarPagosEnCuotas2($modal, cuota, origen);
+              mostrarPagosEnCuotas2($uibModal, cuota, origen);
           })
     }
 }
 
 
-function mostrarPagosEnCuotas2($modal, cuota, origen) {
+function mostrarPagosEnCuotas2($uibModal, cuota, origen) {
 
-    $modal.open({
+    $uibModal.open({
         templateUrl: 'client/html/generales/mostrarPagosCuotaModal.html',
         controller: 'MostrarPagosAplicadosACuotaController',
         size: 'md',
@@ -54,8 +54,8 @@ function mostrarPagosEnCuotas2($modal, cuota, origen) {
 
 export const MostrarPagosAplicados = angular.module("scrwebm.cuotas.mostrarPagosAplicados", []).
                                         controller('MostrarPagosAplicadosACuotaController',
-    ['$state', '$scope', '$modalInstance', 'cuota', 'origen', 
-    function ($state, $scope, $modalInstance, cuota, origen) {
+    ['$state', '$scope', '$uibModalInstance', 'cuota', 'origen', 
+    function ($state, $scope, $uibModalInstance, cuota, origen) {
 
     $scope.cuota = cuota;
 
@@ -63,11 +63,11 @@ export const MostrarPagosAplicados = angular.module("scrwebm.cuotas.mostrarPagos
     $scope.montoTotalCobrosPagos = lodash.sumBy(cuota.pagos, "monto"); 
 
     $scope.ok = function () {
-        $modalInstance.close("Ok");
+        $uibModalInstance.close("Ok");
     }
 
     $scope.cancel = function () {
-        $modalInstance.dismiss("Cancel");
+        $uibModalInstance.dismiss("Cancel");
     }
     
     $scope.abrirPaginaRemesa = function(remesaID) {
