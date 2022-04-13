@@ -2,29 +2,29 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo'; 
 
-import * as numeral from 'numeral';
-import * as moment from 'moment';
+import numeral from 'numeral';
+import moment from 'moment';
 import SimpleSchema from 'simpl-schema';
 
-import { Monedas } from 'imports/collections/catalogos/monedas'; 
-import { Companias } from 'imports/collections/catalogos/companias'; 
+import { Monedas } from '/imports/collections/catalogos/monedas'; 
+import { Companias } from '/imports/collections/catalogos/companias'; 
 
-import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
-import { Temp_Consulta_NotasDebitoCredito } from 'imports/collections/consultas/tempConsultaNotasDebitoCredito'; 
-import { CuentasBancarias } from 'imports/collections/catalogos/cuentasBancarias';
+import { NotasDebitoCredito } from '/imports/collections/principales/notasDebitoCredito'; 
+import { Temp_Consulta_NotasDebitoCredito } from '/imports/collections/consultas/tempConsultaNotasDebitoCredito'; 
+import { CuentasBancarias } from '/imports/collections/catalogos/cuentasBancarias';
 
 Meteor.methods(
 {
     'notasDebitoCredito.leerDesdeMongo': function (filtro, ciaSeleccionadaID) {
 
-        let filtro2 = JSON.parse(filtro);
+        const filtro2 = JSON.parse(filtro);
 
         new SimpleSchema({
             filtro2: { type: Object, blackbox: true, optional: false, },
             ciaSeleccionadaID: { type: String, optional: false, },
         }).validate({ filtro2, ciaSeleccionadaID, });
 
-        let where = {} as any;
+        const where = {};
             
         if (filtro2.numero1) { 
             if (filtro2.numero2) { 
@@ -53,7 +53,7 @@ Meteor.methods(
         if (filtro2.compania) {
             const search = new RegExp(filtro2.compania, 'i');
             const companias = Companias.find({ nombre: search }, { fields: { _id: true, }}); 
-            const array = companias.map((x: any) => x._id ); 
+            const array = companias.map((x) => x._id ); 
 
             where.compania = { $in: array };
         }
@@ -61,7 +61,7 @@ Meteor.methods(
         if (filtro2.moneda) {
             const search = new RegExp(filtro2.moneda, 'i');
             const monedas = Monedas.find({ descripcion: search }, { fields: { _id: true, }}); 
-            const array = monedas.map((x: any) => x._id ); 
+            const array = monedas.map((x) => x._id ); 
 
             where.moneda = { $in: array };
         }
@@ -69,13 +69,13 @@ Meteor.methods(
         if (filtro2.cuentaBancaria) {
             const search = new RegExp(filtro2.cuentaBancaria, 'i');
             const cuentasBancarias = CuentasBancarias.find({ descripcion: search }, { fields: { _id: true, }}); 
-            const array = cuentasBancarias.map((x: any) => x._id ); 
+            const array = cuentasBancarias.map((x) => x._id ); 
 
             where.cuentaBancaria = { $in: array };
         }
 
         if (filtro2.observaciones) {
-            var search = new RegExp(filtro2.observaciones, 'i');
+            const search = new RegExp(filtro2.observaciones, 'i');
             where.observaciones = search;
         }
 
@@ -84,20 +84,20 @@ Meteor.methods(
         // eliminamos los asientos que el usuario pueda haber registrado antes ...
         Temp_Consulta_NotasDebitoCredito.remove({ user: this.userId });
 
-        let notasDebitoCredito = NotasDebitoCredito.find(where).fetch();
+        const notasDebitoCredito = NotasDebitoCredito.find(where).fetch();
 
         if (notasDebitoCredito.length == 0) {
             return "Cero registros han sido leídos desde la base de datos, para el criterio de selección indicado.";
         }
 
-        let monedas = Monedas.find({}, { fields: { _id: 1, simbolo: 1, }}).fetch();
-        let companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
-        let cuentasBancarias = CuentasBancarias.find({}, { fields: { _id: 1, tipo: 1, numero: 1, }}).fetch();
+        const monedas = Monedas.find({}, { fields: { _id: 1, simbolo: 1, }}).fetch();
+        const companias = Companias.find({}, { fields: { _id: 1, abreviatura: 1, }}).fetch();
+        const cuentasBancarias = CuentasBancarias.find({}, { fields: { _id: 1, tipo: 1, numero: 1, }}).fetch();
 
         // -------------------------------------------------------------------------------------------------------------
         // para reportar progreso solo 30 veces; si hay menos de 20 registros, reportamos siempre ...
-        let numberOfItems = notasDebitoCredito.length;
-        let reportarCada = Math.floor(numberOfItems / 30);
+        const numberOfItems = notasDebitoCredito.length;
+        const reportarCada = Math.floor(numberOfItems / 30);
         let reportar = 0;
         let cantidadRecs = 0;
         EventDDP.matchEmit('notasDebitoCredito_leerDesdeMongo_reportProgress',
@@ -105,11 +105,11 @@ Meteor.methods(
                             { current: 1, max: 1, progress: '0 %' });
         // -------------------------------------------------------------------------------------------------------------
 
-        notasDebitoCredito.forEach((item: any) => {
+        notasDebitoCredito.forEach((item) => {
 
-            const moneda = monedas.find((x: any) => { return x._id === item.moneda; }).simbolo;
-            const compania = companias.find((x: any) => { return x._id === item.compania; }).abreviatura;
-            const cuentaBancariaItem = cuentasBancarias.find((x: any) => { return x._id === item.cuentaBancaria; });
+            const moneda = monedas.find((x) => { return x._id === item.moneda; }).simbolo;
+            const compania = companias.find((x) => { return x._id === item.compania; }).abreviatura;
+            const cuentaBancariaItem = cuentasBancarias.find((x) => { return x._id === item.cuentaBancaria; });
             const cuentaBancaria = `${cuentaBancariaItem.numero} (${cuentaBancariaItem.tipo})`; 
 
             // "_id" : "7df2549b6c2b32c9c63561d3",
@@ -134,7 +134,7 @@ Meteor.methods(
             // "cia" : "5b2de1753b96e06e25712bac",
             // "observaciones" : "Observaciones para la nota de débito  ..."
 
-            let notaDbCr = {} as any;
+            const notaDbCr = {};
 
             notaDbCr._id = new Mongo.ObjectID()._str;
             notaDbCr.user = Meteor.userId();

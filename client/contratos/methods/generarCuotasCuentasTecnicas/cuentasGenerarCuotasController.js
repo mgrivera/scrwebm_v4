@@ -1,8 +1,9 @@
 ﻿
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
-import * as moment from 'moment'; 
-import * as lodash from 'lodash'; 
+import angular from 'angular'; 
+import moment from 'moment'; 
+import lodash from 'lodash'; 
 
 import { determinarSiExistenCuotasConCobrosAplicados } from '../../../imports/generales/determinarSiExistenCuotasCobradas'; 
 import { DialogModal } from '../../../imports/generales/angularGenericModal'; 
@@ -46,17 +47,16 @@ function ($scope, $uibModal, $uibModalInstance, contrato, definicionCuentaTecnic
     // leemos solo las cuotas que corresponden al 'sub' entity; por ejemplo, solo al movimiento, capa, cuenta, etc., que el 
     // usuario está tratando en ese momento ...  
     // ------------------------------------------------------------------------------------------------------------------------
-    let cuotasCuentaTecnica = [] as any; 
+    let cuotasCuentaTecnica = []; 
 
     if (cuotas.length) { 
         cuotasCuentaTecnica = lodash.filter(cuotas, (c) => { return c.source.subEntityID === definicionCuentaTecnicaSeleccionada._id; });
     }
         
-
-    let existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasCuentaTecnica); 
+    const existenCuotasConCobrosAplicados = determinarSiExistenCuotasConCobrosAplicados(cuotasCuentaTecnica); 
     if (existenCuotasConCobrosAplicados.existenCobrosAplicados) { 
         DialogModal($uibModal, "<em>Cuotas - Existen cobros/pagos asociados</em>", existenCuotasConCobrosAplicados.message, false).then( 
-            (resolve) => { 
+            () => { 
                 $scope.cancel();        // para cerrar el modal de cuotas justo cuando el usuario cierra este modal con el error ... 
             }
         ); 
@@ -103,7 +103,6 @@ function ($scope, $uibModal, $uibModalInstance, contrato, definicionCuentaTecnic
             }
         }
 
-
         if ($scope.construirCuotasCuentaTecnicaForm.$valid) {
             $scope.submitted = false;
             // para que la clase 'ng-submitted deje de aplicarse a la forma
@@ -120,9 +119,7 @@ function ($scope, $uibModal, $uibModalInstance, contrato, definicionCuentaTecnic
             });
         }
     };
-}
-])
-
+}])
 
 function calcularCuotasCuentaTecnica(contrato, definicionCuentaTecnicaSeleccionada, cuotas, parametros, 
                                      cuentas_saldos, comAdic_montosFinales, entCartPr_montosFinales, entCartSn_montosFinales, 
@@ -140,129 +137,128 @@ function calcularCuotasCuentaTecnica(contrato, definicionCuentaTecnicaSelecciona
     // siempre generamos las cuotas para los saldos de la definición seleccionada
     var factor = 1 / parametros.cantidadCuotas;
 
-    let montosCompanias_array = []; 
+    const montosCompanias_array = []; 
 
     // nótese que, en adelante, los arrays con saldos y montos de cuentas y complementarios, corresponden solo a la definición seleccionada 
 
     // 1) montos en saldos de cuentas técnicas 
     if (Array.isArray(cuentas_saldos)) { 
         cuentas_saldos.forEach((x) => { 
-            let montoCompania = {
+            const montoCompania = {
                 compania: x.compania, 
                 nosotros: x.nosotros, 
                 moneda: x.moneda, 
                 monto: x.saldo,             // en este array, el monto se llama saldo; en el resto, se llama, simplemente, monto ... 
             }; 
-            montosCompanias_array.push(montoCompania as never); 
+            montosCompanias_array.push(montoCompania); 
         })
     }
 
     // 2) montos en comisión adicional  
     if (Array.isArray(comAdic_montosFinales)) { 
         comAdic_montosFinales.forEach((x) => { 
-            let montoCompania = {
+            const montoCompania = {
                 compania: x.compania, 
                 nosotros: x.nosotros, 
                 moneda: x.moneda, 
                 monto: x.monto,            
             }; 
-            montosCompanias_array.push(montoCompania as never); 
+            montosCompanias_array.push(montoCompania); 
         })
     }
 
     // 3) montos en participación de beneficios
     if (Array.isArray(partBeneficios_montosFinales)) { 
         partBeneficios_montosFinales.forEach((x) => { 
-            let montoCompania = {
+            const montoCompania = {
                 compania: x.compania, 
                 nosotros: x.nosotros, 
                 moneda: x.moneda, 
                 monto: x.monto,            
             }; 
-            montosCompanias_array.push(montoCompania as never); 
+            montosCompanias_array.push(montoCompania); 
         })
     }
 
     // 4) montos en entrada cartera primas 
     if (Array.isArray(entCartPr_montosFinales)) { 
         entCartPr_montosFinales.forEach((x) => { 
-            let montoCompania = {
+            const montoCompania = {
                 compania: x.compania, 
                 nosotros: x.nosotros, 
                 moneda: x.moneda, 
                 monto: x.monto,            
             }; 
-            montosCompanias_array.push(montoCompania as never); 
+            montosCompanias_array.push(montoCompania); 
         })
     }
 
     // 5) montos en retirada cartera primas 
     if (Array.isArray(retCartPr_montosFinales)) { 
         retCartPr_montosFinales.forEach((x) => { 
-            let montoCompania = {
+            const montoCompania = {
                 compania: x.compania, 
                 nosotros: x.nosotros, 
                 moneda: x.moneda, 
                 monto: x.monto,            
             }; 
-            montosCompanias_array.push(montoCompania as never); 
+            montosCompanias_array.push(montoCompania); 
         })
     }
 
     // 6) montos en entrada cartera siniestros 
     if (Array.isArray(entCartSn_montosFinales)) { 
         entCartSn_montosFinales.forEach((x) => { 
-            let montoCompania = {
+            const montoCompania = {
                 compania: x.compania, 
                 nosotros: x.nosotros, 
                 moneda: x.moneda,  
                 monto: x.monto,        
             }; 
-            montosCompanias_array.push(montoCompania as never); 
+            montosCompanias_array.push(montoCompania); 
         })
     }
 
     // 7) montos en retirada cartera siniestros 
     if (Array.isArray(retCartSn_montosFinales)) { 
         retCartSn_montosFinales.forEach((x) => { 
-            let montoCompania = {
+            const montoCompania = {
                 compania: x.compania, 
                 nosotros: x.nosotros, 
                 moneda: x.moneda, 
                 monto: x.monto,        
             }; 
-            montosCompanias_array.push(montoCompania as never); 
+            montosCompanias_array.push(montoCompania); 
         })
     }
 
-    let montosCompanias_final = []; 
+    const montosCompanias_final = []; 
 
     // finalmente, debemos producir un array donde haya un solo registro por compañía, con su monto final (saldo a pagar/cobrar) 
     // para hacerlo, debemos agrupar por compañía y sumarizar los montos ... 
-    let montosCompanias_groupBy_compania = lodash.groupBy(montosCompanias_array, "compania"); 
+    const montosCompanias_groupBy_compania = lodash.groupBy(montosCompanias_array, "compania"); 
 
-    for (let compania in montosCompanias_groupBy_compania) { 
+    for (const compania in montosCompanias_groupBy_compania) { 
 
-        let firstItemInArray: any = montosCompanias_groupBy_compania[compania][0]; 
+        const firstItemInArray = montosCompanias_groupBy_compania[compania][0]; 
 
-        let itemCompania = { 
+        const itemCompania = { 
             compania: firstItemInArray.compania, 
             nosotros: firstItemInArray.nosotros, 
             moneda: firstItemInArray.moneda, 
             monto: lodash.sumBy(montosCompanias_groupBy_compania[compania], "monto"),        
         }; 
 
-        montosCompanias_final.push(itemCompania as never); 
+        montosCompanias_final.push(itemCompania); 
     }
-    
 
-    montosCompanias_final.forEach( function(saldo: any) {
+    montosCompanias_final.forEach( function(saldo) {
 
         var fechaProximaCuota = parametros.fecha1raCuota;
 
         for (var i = 1; i <= parametros.cantidadCuotas; i++) {
 
-            var cuota = {} as any;
+            var cuota = {};
 
             cuota._id = new Mongo.ObjectID()._str;
 

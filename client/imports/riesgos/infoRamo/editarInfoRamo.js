@@ -1,7 +1,9 @@
 
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular';
-import { mensajeErrorDesdeMethod_preparar } from 'client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import angular from 'angular';
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 export default angular.module("scrwebm.riesgos.infoRamo.editarInfoRamo", []).controller('InfoRamo_editarItem_ModalController',
 ['$scope', '$uibModalInstance', 'infoRamo', 'autosMarcas', function ($scope, $uibModalInstance, infoRamo, autosMarcas) {
@@ -50,21 +52,21 @@ export default angular.module("scrwebm.riesgos.infoRamo.editarInfoRamo", []).con
     modeloSetSelectize($scope, autosMarcas); 
 }])
 
-
 // el Input Marca usa un Selectize. Lo configuramos aquí ... 
 function marcaSetSelectize($scope, autosMarcas) {
     setTimeout(function () {
         $scope.$apply(function () {
 
             // estos son los valores que el usuario ha seleccionado en la lista; en nuestro caso, nunca más de uno ... 
-            let items = [];         
+            const items = [];         
 
             if ($scope.infoRamo && $scope.infoRamo.marca) { 
                 // si viene un valor en el item, lo seleccionamos en la lista 
-                items.push($scope.infoRamo.marca as never); 
+                items.push($scope.infoRamo.marca); 
             }
             
-            let marcaInput = $("#marca");           // usamos jQuery para obtener el Input ... 
+            // const marcaInput = $("#marca");           // usamos jQuery para obtener el Input ... 
+            const marcaInput = angular.element("#marca");
             marcaInput.selectize({
                 options: autosMarcas,        // esta es la lista de opciones que muestra la lista 
                 valueField: '_id',
@@ -89,10 +91,12 @@ function marcaSetSelectize($scope, autosMarcas) {
                         $scope.infoRamo.marca = value;
 
                         // cuando el usuario selecciona una marca, agregamos los items a la lista del selectize modelo ... 
-                        let marcaSeleccionada = autosMarcas.find(x => x._id === value); 
-                        let modeloItems = marcaSeleccionada.modelos ? marcaSeleccionada.modelos : []; 
+                        const marcaSeleccionada = autosMarcas.find(x => x._id === value); 
+                        const modeloItems = marcaSeleccionada.modelos ? marcaSeleccionada.modelos : []; 
 
-                        let selectizeModelo = $("#modelo")[0].selectize;
+                        // const selectizeModelo = $("#modelo")[0].selectize;
+                        const selectizeModelo = angular.element("#modelo")[0].selectize;
+
                         selectizeModelo.clearOptions();
                         selectizeModelo.load(function(callback) {
                             callback(modeloItems);
@@ -105,7 +109,7 @@ function marcaSetSelectize($scope, autosMarcas) {
                     // en este method agregamos la nueva marca al collection y la regresamos en result 
 
                     // el method espera un array 
-                    let items = [ 
+                    const items = [ 
                         { 
                             _id: new Mongo.ObjectID()._str, 
                             marca: input,
@@ -114,10 +118,10 @@ function marcaSetSelectize($scope, autosMarcas) {
                         }
                     ]; 
 
-                    Meteor.call('autosMarcas.save', items, (err, result) => {
+                    Meteor.call('autosMarcas.save', items, (err) => {
 
                         if (err) {
-                            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
             
                             $scope.alerts.length = 0;
                             $scope.alerts.push({
@@ -148,8 +152,7 @@ function marcaSetSelectize($scope, autosMarcas) {
             });
         });
     }, 0);
-  }
-
+}
 
   // el Input Marca usa un Selectize. Lo configuramos aquí ... 
 function modeloSetSelectize($scope, autosMarcas) {
@@ -157,8 +160,8 @@ function modeloSetSelectize($scope, autosMarcas) {
         $scope.$apply(function () {
 
             // los modelos mostrados en la lista deben corresponder a la marca seleccionada 
-            let marca = $scope.infoRamo.marca ? $scope.infoRamo.marca : null; 
-            let marcaSeleccionada = autosMarcas.find(x => x._id === marca); 
+            const marca = $scope.infoRamo.marca ? $scope.infoRamo.marca : null; 
+            const marcaSeleccionada = autosMarcas.find(x => x._id === marca); 
             let modelos = []; 
 
             if (marcaSeleccionada) { 
@@ -166,14 +169,16 @@ function modeloSetSelectize($scope, autosMarcas) {
             }
 
             // estos son los valores que el usuario ha seleccionado en la lista; en nuestro caso, nunca más de uno ... 
-            let items = [];         
+            const items = [];         
 
             if ($scope.infoRamo && $scope.infoRamo.modelo) { 
                 // si viene un valor en el item, lo seleccionamos en la lista 
-                items.push($scope.infoRamo.modelo as never); 
+                items.push($scope.infoRamo.modelo); 
             }
 
-            let modeloInput = $("#modelo");           // usamos jQuery para obtener el Input ... 
+            // const modeloInput = $("#modelo");           // usamos jQuery para obtener el Input ... 
+            const modeloInput = angular.element("#modelo"); 
+
             modeloInput.selectize({
                 options: modelos,                   // esta es la lista de opciones que muestra la lista 
                 valueField: '_id',
@@ -201,21 +206,21 @@ function modeloSetSelectize($scope, autosMarcas) {
                 create: function (input, callback) {
 
                     // en este method agregamos el nuevo modelo al collection 
-                    let marca = $scope.infoRamo.marca ? $scope.infoRamo.marca : null; 
-                    let marcaSeleccionada = autosMarcas.find(x => x._id === marca); 
+                    const marca = $scope.infoRamo.marca ? $scope.infoRamo.marca : null; 
+                    const marcaSeleccionada = autosMarcas.find(x => x._id === marca); 
 
-                    let nuevoModelo = { _id: new Mongo.ObjectID()._str, modelo: input }; 
+                    const nuevoModelo = { _id: new Mongo.ObjectID()._str, modelo: input }; 
 
                     marcaSeleccionada.modelos.push(nuevoModelo); 
                     marcaSeleccionada.docState = 2; 
 
                     // el method espera un array 
-                    let items = [ marcaSeleccionada ]; 
+                    const items = [ marcaSeleccionada ]; 
 
-                    Meteor.call('autosMarcas.save', items, (err, result) => {
+                    Meteor.call('autosMarcas.save', items, (err) => {
 
                         if (err) {
-                            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
             
                             $scope.alerts.length = 0;
                             $scope.alerts.push({

@@ -1,17 +1,18 @@
 
+import { Mongo } from 'meteor/mongo';
 
-import * as angular from 'angular'; 
-import * as moment from 'moment'; 
-import * as lodash from 'lodash'; 
+import angular from 'angular'; 
+import moment from 'moment'; 
+import lodash from 'lodash'; 
 
-import { DialogModal } from '../../../imports/generales/angularGenericModal'; 
-import { Contratos_Methods } from '../_methods/_methods'; 
+import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
-let construirDefinicionCuentas = function ($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal, parentScope) {
+const construirDefinicionCuentas = function ($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal, parentScope) {
 
     if (contrato && contrato.cuentasTecnicas_definicion && contrato.cuentasTecnicas_definicion.length > 0) {
 
-        var mensajeAlUsuarioModel = {} as any; 
+        var mensajeAlUsuarioModel = {}; 
 
         mensajeAlUsuarioModel.titulo = "Existen definiciones de cuentas para el contrato";
         mensajeAlUsuarioModel.mensaje = `Ya existen <em>definiciones de cuentas</em> registradas para el contrato.<br />
@@ -41,7 +42,7 @@ let construirDefinicionCuentas = function ($scope, contrato, monedas, cuentasTec
 
 function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecnicas_definiciones_ui_grid, modal, parentScope) {
 
-    var modalInstance = modal.open({
+    modal.open({
         templateUrl: 'client/contratos/methods/construirDefinicionesDeCuentasTecnicas/cuentasConstruirDefinicionCuentas.html',
         controller: 'CuentasConstruirDefinicionCuentasController',
         size: 'md',
@@ -57,10 +58,10 @@ function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecn
             }
         }
     }).result.then(
-        function (resolve) {
+        function () {
             return true;
         },
-        function (cancel) {
+        function () {
             // al regresar, asociamos las cuentas recién agregadas al ui-grid
             if (contrato.cuentasTecnicas_definicion) {
                 // nótese que el ui-grid es pasado a esta función como un parámetro desde el código principal que
@@ -72,8 +73,8 @@ function generarDefinicionCuentasTecnicas($scope, contrato, monedas, cuentasTecn
       })
 }
 
-angular.module("scrwebm").controller('CuentasConstruirDefinicionCuentasController',
-['$scope', '$uibModalInstance', 'contrato', 'monedas', 'parentScope', 
+angular.module("scrwebm")
+       .controller('CuentasConstruirDefinicionCuentasController', ['$scope', '$uibModalInstance', 'contrato', 'monedas', 'parentScope', 
 function ($scope, $uibModalInstance, contrato, monedas, parentScope) {
 
     $scope.contrato = contrato;
@@ -99,7 +100,6 @@ function ($scope, $uibModalInstance, contrato, monedas, parentScope) {
     $scope.cancel = function () {
         $uibModalInstance.dismiss("Cancel");
     };
-
 
     // el usuario hace un submit, cuando quiere 'salir' de edición ...
     $scope.submitted = false;
@@ -144,9 +144,7 @@ function ($scope, $uibModalInstance, contrato, monedas, parentScope) {
             });
         }
     }
-}
-])
-
+}])
 
 function construirDefinicionCuentas2(contrato, parametros) {
 
@@ -157,9 +155,9 @@ function construirDefinicionCuentas2(contrato, parametros) {
     var fechaProximaCuenta = parametros.fecha;
     var cantidad = contrato.cuentasTecnicas_definicion.length;
 
-    for (var i: number, i = 1; i <= parametros.cantidad; i++) {
+    for (let i = 1; i <= parametros.cantidad; i++) {
 
-        var cuenta = {} as any;
+        var cuenta = {};
 
         cuenta._id = new Mongo.ObjectID()._str;
         cuenta.numero = i + cantidad;

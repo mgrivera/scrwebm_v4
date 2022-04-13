@@ -1,17 +1,17 @@
 
 import { Meteor } from 'meteor/meteor'; 
-import { NotasDebitoCredito } from 'imports/collections/principales/notasDebitoCredito'; 
+import { NotasDebitoCredito } from '/imports/collections/principales/notasDebitoCredito'; 
 
 Meteor.methods(
 {
-    'notasDebito_grabar': function (notasDebito: object[]) {
+    'notasDebito_grabar': function (notasDebito) {
 
         let cantidadItemsGrabados = 0; 
 
         // al menos por ahora, el usuario no agrega ni elimina notas de débito. Solo las edita y graba desde Riesgos. 
         // las construye también desde Riesgos 
-        notasDebito.forEach((item: any) => { 
-            NotasDebitoCredito.update({ _id: item._id }, { $set: item }, {}, function (error: any, result: any) {
+        notasDebito.forEach((item) => { 
+            NotasDebitoCredito.update({ _id: item._id }, { $set: item }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error) { 
                     let message = `Error inesperado: ha ocurrido un error al intentar grabar los cambios en una nota de débito.<br /><br />
