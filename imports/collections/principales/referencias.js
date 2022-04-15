@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
 // usamos este collection para manterner los números de referencia asignados (a riesgos, contratos, siniestros, ...).
-let mySimpleSchema = new SimpleSchema({
+const mySimpleSchema = new SimpleSchema({
     _id: { type: String, optional: false, },
     origen: { type: String, optional: false, },             // fac, cont, sin, ...
     prefijoReferencia: { type: String, optional: false, },               // _id en tablas de tipos (fac, cont, etc.)
@@ -13,5 +13,5 @@ let mySimpleSchema = new SimpleSchema({
     docState: { type: Number, optional: true, },
 })
 
-export const Referencias: any = new Mongo.Collection("referencias");
+export const Referencias = new Mongo.Collection("referencias");
 Referencias.attachSchema(mySimpleSchema);

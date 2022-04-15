@@ -1,13 +1,11 @@
 
-
-
 import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema'; 
 
 // el origen permite asociar la cuota al riesgo/contrato, etc. Además, al movimiento, capa, etc. 
 // Es para poder ubicar un nota de débito para un riesgo y movimiento, por ejemplo, en forma muy 
 // fácil y rápida 
-var source_SimpleSchema = new SimpleSchema({
+const source_SimpleSchema = new SimpleSchema({
     entityID: { type: String, optional: false },                  // ej: _id del riesgo; _id del contrato
     subEntityID: { type: String, optional: false },               // ej: _id del movimiento; _id de la capa o cuenta
     origen: { type: String, optional: false },                    // 'capa', 'cuenta', 'fac', 'sntro', 'nc', 'nd', etc.
@@ -17,7 +15,7 @@ var source_SimpleSchema = new SimpleSchema({
 // -----------------------------------------------------------------------
 //  notas de débito y crédito 
 // -----------------------------------------------------------------------
-let simpleSchema: any = new SimpleSchema({
+const simpleSchema = new SimpleSchema({
     _id: { type: String, optional: false },
 
     source: { type: source_SimpleSchema, optional: false, minCount: 1 },
@@ -45,5 +43,5 @@ let simpleSchema: any = new SimpleSchema({
     docState: { type: SimpleSchema.Integer, optional: true }
 })
 
-export const NotasDebitoCredito: any = new Mongo.Collection("notasDebitoCredito");
+export const NotasDebitoCredito = new Mongo.Collection("notasDebitoCredito");
 NotasDebitoCredito.attachSchema(simpleSchema);
