@@ -1,5 +1,4 @@
 
-
 import React, { Component } from "react";
 import lodash from 'lodash'; 
 import { Grid } from 'semantic-ui-react'; 
@@ -246,20 +245,23 @@ export default class Filtro extends React.Component {
                         <Grid.Column>
                             <div style={formStyle}>
                                 <Form schema={json_schema}
-                                        uiSchema={ui_schema}
-                                        formData={this.state.formData} 
-                                        fields={fields}
-                                        onSubmit={this.reactForm_onSubmit} ref={(form) => { this.myForm = form; }}
-                                        onChange={args => this.reactForm_onChange(args)}
-                                        noHtml5Validate={false} />
+                                    uiSchema={ui_schema}
+                                    formData={this.state.formData}
+                                    fields={fields}
+                                    onSubmit={this.reactForm_onSubmit} ref={(form) => { this.myForm = form; }}
+                                    onChange={args => this.reactForm_onChange(args)}
+                                    noHtml5Validate={false} />
                             </div>
                         </Grid.Column>
-
                     </Grid.Row>
 
-                    <FilterPageButtons limpiarFiltro={this.limpiarFiltro} 
-                                        nuevo={this.nuevo} 
-                                        aplicarFiltro={this.aplicarFiltro}  />
+                    <Grid.Row columns={1}>
+                        <Grid.Column>
+                            <FilterPageButtons limpiarFiltro={this.limpiarFiltro}
+                                               nuevo={this.nuevo}
+                                               aplicarFiltro={this.aplicarFiltro} />
+                        </Grid.Column>
+                    </Grid.Row>
                 </Grid>
             </div>
         );

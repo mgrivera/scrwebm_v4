@@ -1,44 +1,47 @@
 
-import React from 'react';
-
-import { Tab } from 'semantic-ui-react';
-import 'semantic-ui-css/semantic.min.css';
+import React, { useState } from 'react'
+import { Tab } from 'semantic-ui-react'
 
 import Filtro from './filtro';
 import Lista from './lista';
 import Detalles from './detalles';
 
-class Tabs extends React.Component {
-   
-    constructor() {
-        super();
-        // siempre mostramos primero el primer tab (filtro) 
-        this.state = { activeIndex: 0 };
-    }
+const Tabs = () => {
+    
+    const [activeIndex, setActiveIndex ] = useState(0); 
 
-    changeTabIndex (idx) { 
-        this.setState({ activeIndex: idx }); 
-    }
-
-    handleTabChange (e, { activeIndex }) {
-        this.setState({ activeIndex });
-    }
-
-    panes = [
-        { menuItem: 'Filtro', render: () => <Tab.Pane attached={false}><Filtro changeTabIndex={this.changeTabIndex} /></Tab.Pane> },
-        { menuItem: 'Lista', render: () => <Tab.Pane attached={false}><Lista /></Tab.Pane> },
-        { menuItem: 'Detalles', render: () => <Tab.Pane attached={false}><Detalles /></Tab.Pane> },
+    const panes = [
+        {
+            menuItem: 'Filtro',
+            render: function tab1() {
+                return (<Tab.Pane ><Filtro changeTabIndex={changeTabIndex} /></Tab.Pane>)
+            },
+        },
+        {
+            menuItem: 'Lista',
+            render: function tab2() {
+                return (<Tab.Pane ><Lista /></Tab.Pane>)
+            },
+        },
+        {
+            menuItem: 'Detalles',
+            render: function tab3() {
+                return (<Tab.Pane ><Detalles /></Tab.Pane>)
+            },
+        },
     ]
 
-    render() {
-        const { activeIndex } = this.state; 
-
-        return (
-            <div>
-                <Tab menu={{ pointing: true }} panes={this.panes} activeIndex={activeIndex} onTabChange={this.handleTabChange} />
-            </div>
-        )
+    const changeTabIndex = (idx) => { 
+        setActiveIndex(idx);
     }
+
+    const handleTabChange = (e, { activeIndex }) => {
+        setActiveIndex(activeIndex);
+    }
+
+    return (
+        <Tab panes={panes} activeIndex={activeIndex} onTabChange={handleTabChange} />
+    )
 }
 
 export default Tabs; 

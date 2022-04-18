@@ -16,16 +16,14 @@ export default class NotasDebitoCreditoMainReactComponent extends React.Componen
   render() {
 
     return (
-      <Grid>
-        <PageHeader pageTitle="Notas de débito/crédito" /> 
+    //   <Grid>
+    //     <PageHeader pageTitle="Notas de débito/crédito" /> 
 
-        <Grid.Row columns={1}>
-          <Grid.Column>
+    //       <Grid.Column>
             <Tabs />
-          </Grid.Column> 
-        </Grid.Row> 
+    //       </Grid.Column> 
 
-      </Grid>
+    //   </Grid>
     );
   }
 }
