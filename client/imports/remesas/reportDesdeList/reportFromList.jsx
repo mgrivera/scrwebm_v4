@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -28,7 +27,6 @@ const reactModalCustomStyles = {
     transform             : 'translate(-50%, -50%)', 
   }
 }
-
 
 // definimos el schema para el filtro y luego la forma 
 const json_schema = {
@@ -317,7 +315,6 @@ const ReportFromList = class extends React.Component {
         )
     }
 }
-
 
 ReportFromList.propTypes = {
     companiaSeleccionadaId: PropTypes.string, 
