@@ -45,10 +45,10 @@ Meteor.methods({
         }
 
         // la fecha final del período debe ser el último momento del día, para que incluya cualquier fecha de ese día 
-        periodoCierre.hasta = periodoCierre.hasta ? 
-                              new Date(periodoCierre.hasta.getFullYear(), periodoCierre.hasta.getMonth(), periodoCierre.hasta.getDate(), 23, 59, 59) : 
-                              null; 
+        const { desde, hasta } = periodoCierre; 
 
+        periodoCierre.desde = desde ? new Date(desde.getFullYear(), desde.getMonth(), desde.getDate()) : null; 
+        periodoCierre.hasta = hasta ? new Date(hasta.getFullYear(), hasta.getMonth(), hasta.getDate(), 23, 59, 59) : null; 
 
         // eliminamos los registros *automáticos* (los manuales se quedan) que puedan existir para el período de cierre 
         CierreRegistro.remove({ fecha: { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, tipo: "A", cia: periodoCierre.cia }); 
@@ -241,10 +241,12 @@ Meteor.methods({
         // ahora leemos registros, cuentas y complementarios, de contratos proporcionales. Para hacerlo, debemos leer los contratos de 
         // la compañía seleccionada que tengan una definición para la fecha del cierre. Entonces, con el _id del contrato y de la 
         // definición, leeremos sus registros (cuentas y complementarios) 
-        const contratosProporcionales = Contratos.find({ 
-            'cuentasTecnicas_definicion.desde': { $gte: periodoCierre.desde, $lte: periodoCierre.hasta }, 
-            cia: periodoCierre.cia, 
-        }, { fields: { _id: 1, numero: 1, codigo: 1, cuentasTecnicas_definicion: 1, compania: 1, }}).fetch(); 
+        const contratosProporcionales = Contratos.find({ 'cuentasTecnicas_definicion.desde': { $gte: periodoCierre.desde, 
+                                                                                               $lte: periodoCierre.hasta }, 
+                                                                                               cia: periodoCierre.cia }, 
+                                                       { fields: { 
+                                                           _id: 1, numero: 1, codigo: 1, cuentasTecnicas_definicion: 1, compania: 1, 
+                                                        }}).fetch(); 
 
         cantidadRecs = contratosProporcionales.length;
 
@@ -253,10 +255,11 @@ Meteor.methods({
         for (const contrato of contratosProporcionales) { 
 
             // el contrato tiene varias definiciones; obtenemos la que corresponden al período del cierre 
-            const definiciones = contrato.cuentasTecnicas_definicion.filter((d) => { return d.desde >= periodoCierre.desde && d.desde <= periodoCierre.hasta }); 
+            const definiciones = contrato.cuentasTecnicas_definicion.filter(d => d.desde >= periodoCierre.desde && 
+                                                                                 d.desde <= periodoCierre.hasta); 
 
             for (const definicion of definiciones) { 
-                
+
                 // ahora leemos las cuentas y complementarios para el contrato y definición ... 
                 const contratosProp_cuentas_saldos = ContratosProp_cuentas_saldos
                     .find({ contratoID: contrato._id, definicionID: definicion._id }, 
@@ -324,7 +327,6 @@ Meteor.methods({
                 cantidadCuentasYComp_contProp += cantComplementarios_contProp; 
             }
 
-
             // -------------------------------------------------------------------------------------------------------
             // vamos a reportar progreso al cliente; solo 20 veces ...
             cantidadRecs++;
@@ -353,7 +355,6 @@ Meteor.methods({
             }
             // -------------------------------------------------------------------------------------------------------
         }
-
 
         // NOTA IMPORTANTE: aquí vamos a leer pagos, en cuotas, en vez de remesas. La idea es que podamos separarlas de acuerdo a su 
         // tipo de negocio: Prop, NoProp, Fac, 
@@ -624,12 +625,12 @@ Meteor.methods({
     }
 })
 
-
+// ===============================================================================================================================
+// en esta función leemos registros de un complementario en particular, comAdic, partBenef, entCartPr, etc., y los grabamos a
+// la tabla de registros del cierre. Como son hasta seis tipos de complementario diferentes, centralizamos este código en esta
+// función para no repetirlo por cada tipo de complementario 
 function grabarAlCierreRegistrosComplementario(tipoComplementario, contrato, definicion, ciaSeleccionada, mongoCollection) { 
-
-    // en esta función leemos registros de un complementario en particular, comAdic, partBenef, entCartPr, etc., y los grabamos a 
-    // la tabla de registros del cierre. Como son hasta seis tipos de complementario diferentes, centralizamos este código en esta
-    // función para no repetirlo por cada tipo de complementario 
+    
     const userEmail = Meteor.user().emails[0].address;
     let descripcion = ""; 
     let categoria = ""; 

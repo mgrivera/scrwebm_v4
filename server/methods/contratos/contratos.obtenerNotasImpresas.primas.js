@@ -4,8 +4,10 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import numeral from 'numeral';
 import lodash from 'lodash';
-import JSZip from 'jszip';
+
+import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
+
 import fs from 'fs';
 
 import SimpleSchema from 'simpl-schema';
@@ -83,7 +85,7 @@ Meteor.methods(
         // leemos el contenido del archivo (plantilla) en el server ...
         const content = fs.readFileSync(fileNameWithPath, "binary");
 
-        const zip = new JSZip(content);
+        const zip = new PizZip(content);
         const doc = new Docxtemplater();
         doc.loadZip(zip);
 
@@ -238,7 +240,7 @@ Meteor.methods(
         userID2 = userID2.replace(/\@/g, "_");
         const nombreArchivo2 = nombreArchivo.replace('.docx', `_${userID2}.docx`);
 
-        const removedFiles = CollectionFS_tempFiles.remove({ 'original.name': nombreArchivo2 });
+        CollectionFS_tempFiles.remove({ 'original.name': nombreArchivo2 });
 
         // el tipo del archivo debe estar guardado con el 'template'
         const tipoArchivo = template.metadata.tipo;

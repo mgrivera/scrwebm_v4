@@ -1,11 +1,12 @@
 
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo';
+
 import moment from 'moment';
 import numeral from 'numeral';
 import lodash from 'lodash';
 
-import JSZip from 'jszip';
+import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 
 import { Promise } from 'meteor/promise'; 
@@ -380,7 +381,7 @@ Meteor.methods(
             }
         } 
 
-        const zip = new JSZip(content);
+        const zip = new PizZip(content);
         const doc = new Docxtemplater();
         doc.loadZip(zip);
 

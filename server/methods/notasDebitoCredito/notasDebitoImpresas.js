@@ -5,7 +5,7 @@ import moment from 'moment';
 import numeral from 'numeral';
 import lodash from 'lodash';
 
-import JSZip from 'jszip';
+import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 
 import { Promise } from 'meteor/promise'; 
@@ -238,7 +238,7 @@ Meteor.methods(
             }
         } 
         
-        const zip = new JSZip(content);
+        const zip = new PizZip(content);
         const doc = new Docxtemplater();
         doc.loadZip(zip);
 
@@ -271,7 +271,7 @@ Meteor.methods(
         const nombreUsuario = usuario.personales.nombre;
 
         let nombreUsuario2 = nombreUsuario.replace(/\./g, "_");           // nombre del usuario: reemplazamos un posible '.' por un '_' 
-        nombreUsuario2 = nombreUsuario2.replace(/\@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
+        nombreUsuario2 = nombreUsuario2.replace(/@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
         
         // construimos un id único para el archivo, para que el usuario pueda tener más de un resultado para la misma 
         // plantilla. La fecha está en Dropbox ... 

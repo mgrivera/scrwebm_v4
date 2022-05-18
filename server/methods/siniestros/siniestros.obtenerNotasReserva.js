@@ -6,7 +6,7 @@ import moment from 'moment';
 import numeral from 'numeral';
 import lodash from 'lodash';
 
-import JSZip from 'jszip';
+import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 
 import { Promise } from 'meteor/promise'; 
@@ -66,7 +66,7 @@ Meteor.methods(
             }
         } 
 
-        let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
+        const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: this.userId });
 
         if (!companiaSeleccionada) {
             message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
@@ -80,7 +80,7 @@ Meteor.methods(
         }
 
         // antes que nada, leemos el siniestro
-        let siniestro = Siniestros.findOne(siniestroId);
+        const siniestro = Siniestros.findOne(siniestroId);
 
         if (!siniestro) {
             message = `Error inesperado: no pudimos leer el siniestro indicado en la base de datos.`;
@@ -92,7 +92,7 @@ Meteor.methods(
             }
         }
 
-        let reserva = lodash.find(siniestro.reservas, (x) => { return x._id === reservaId; });
+        const reserva = lodash.find(siniestro.reservas, (x) => { return x._id === reservaId; });
 
         if (!reserva) {
             message = `Error inesperado: aunque pudimos leer el siniestro en la base de datos, no pudimos obtener la reserva que se ha seleccionado.`;
@@ -104,12 +104,12 @@ Meteor.methods(
             }
         }
 
-         let compania = Companias.findOne(siniestro.compania);
-         let asegurado = Asegurados.findOne(siniestro.asegurado);
-         let ramo = Ramos.findOne(siniestro.ramo);
-         let ajustador = Companias.findOne(siniestro.ajustador);
-         let suscriptor = Suscriptores.findOne(siniestro.suscriptor);
-         let moneda = Monedas.findOne(reserva.moneda);
+         const compania = Companias.findOne(siniestro.compania);
+         const asegurado = Asegurados.findOne(siniestro.asegurado);
+         const ramo = Ramos.findOne(siniestro.ramo);
+         const ajustador = Companias.findOne(siniestro.ajustador);
+         const suscriptor = Suscriptores.findOne(siniestro.suscriptor);
+         const moneda = Monedas.findOne(reserva.moneda);
 
          // intentamos leer el riesgo (el usuario pudo o no asociar uno)
          let riesgo = {};
@@ -118,14 +118,14 @@ Meteor.methods(
          let movimientoDocumentos = [];
 
          // buscamos una descripción para el tipo de reserva
-         let tiposReserva = [
+         const tiposReserva = [
              { tipo: 'NOT', descripcion: 'Notificación' },
              { tipo: 'AUM', descripcion: 'Aumento' },
              { tipo: 'DIS', descripcion: 'Disminución' },
              { tipo: 'ANU', descripcion: 'Anulada' }
          ];
 
-         let tipoReservaDescripcion = lodash.find(tiposReserva, (x) => { return x.tipo === reserva.tipo; });
+         const tipoReservaDescripcion = lodash.find(tiposReserva, (x) => { return x.tipo === reserva.tipo; });
 
          if (siniestro.source && siniestro.source.origen == 'fac' && siniestro.source.entityID && siniestro.source.subEntityID) {
              riesgo = Riesgos.findOne(siniestro.source.entityID);
@@ -142,17 +142,17 @@ Meteor.methods(
          }
 
         // leemos los reaseguradores y creamos un documento para cada uno
-        let reaseguradores = siniestro && siniestro.companias && lodash.isArray(siniestro.companias) ?
+        const reaseguradores = siniestro && siniestro.companias && lodash.isArray(siniestro.companias) ?
                              lodash.filter(siniestro.companias, (x) => { return !x.nosotros; }) :
                              [];
 
-        let reaseguradoresArray = [];
+        const reaseguradoresArray = [];
         let reaseguradorItem = {};
 
         reaseguradores.forEach((reasegurador) => {
 
-            let datosReasegurador = Companias.findOne(reasegurador.compania);
-            let persona = lodash.find(siniestro.personas, (x) => { return x.compania === reasegurador.compania; });
+            const datosReasegurador = Companias.findOne(reasegurador.compania);
+            const persona = lodash.find(siniestro.personas, (x) => { return x.compania === reasegurador.compania; });
 
             reaseguradorItem = {
                 fecha: fecha,
@@ -189,7 +189,6 @@ Meteor.methods(
                 siniestroCedente: lodash.find(siniestro.documentos, (x) => { return x.tipo === 'SINCED'; }) ?
                                   lodash.find(siniestro.documentos, (x) => { return x.tipo === 'SINCED'; }).numero : '',
 
-                  numeroReserva: reserva.numero,
                   moneda: moneda.descripcion,
                   fechaReserva: moment(reserva.fecha).format('DD-MMM-YYYY'),
                   montoReserva: numeral(reserva.monto).format('0,0.0'),
@@ -245,8 +244,8 @@ Meteor.methods(
             }
         } 
 
-        let zip = new JSZip(content);
-        let doc = new Docxtemplater();
+        const zip = new PizZip(content);
+        const doc = new Docxtemplater();
         doc.loadZip(zip);
 
         //set the templateVariables
@@ -272,22 +271,22 @@ Meteor.methods(
                 `);
         }
 
-        let buf = doc.getZip().generate({ type:"nodebuffer" });
+        const buf = doc.getZip().generate({ type:"nodebuffer" });
 
         // -----------------------------------------------------------------------------------------------
-        let nombreUsuario = usuario.personales.nombre;
+        const nombreUsuario = usuario.personales.nombre;
 
         let nombreUsuario2 = nombreUsuario.replace(/\./g, "_");           // nombre del usuario: reemplazamos un posible '.' por un '_' 
-        nombreUsuario2 = nombreUsuario2.replace(/\@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
+        nombreUsuario2 = nombreUsuario2.replace(/@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
         
         // construimos un id único para el archivo, para que el usuario pueda tener más de un resultado para la misma 
         // plantilla. La fecha está en Dropbox ... 
-        let fileId = new Mongo.ObjectID()._str.substring(0, 6); 
+        const fileId = new Mongo.ObjectID()._str.substring(0, 6); 
 
-        let fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
+        const fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
 
         // finalmente, escribimos el archivo resultado, al directorio tmp 
-        filePath2 = path.join(folderPath, "tmp", fileName2); 
+        let filePath2 = path.join(folderPath, "tmp", fileName2); 
 
         // en windows, path regresa back en vez de forward slashes ... 
         filePath2 = filePath2.replace(/\\/g,"/");
