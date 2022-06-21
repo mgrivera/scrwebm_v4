@@ -1,5 +1,7 @@
 
+import { Meteor } from 'meteor/meteor';
 import angular from 'angular';
+
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebm").controller('ContratosCapasExportarExcel_Controller',
@@ -28,16 +30,31 @@ function ($scope, $uibModalInstance, $uibModal, $meteor, contratoID, ciaSeleccio
     $scope.selectedFile = "contratos - capas - consulta.xlsx";
     $scope.downLoadLink = "";
 
-    $scope.exportarAExcel = (file) => {
+    $scope.exportarAExcel = () => {
         $scope.showProgress = true;
 
-        Meteor.call('contratos.capas.exportar.Excel', contratoID, ciaSeleccionada, (err, result) => {
+        const fileName = "contratoCapas.xlsx";              // este es el nombre de la plantilla 
+        const dropBoxPath = "/contratos/excel";             // este es el directorio donde la plantilla está en DropBox  
+
+        Meteor.call('contratos.capas.exportar.Excel', contratoID, ciaSeleccionada, fileName, dropBoxPath, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const msg = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
-                $scope.alerts.push({ type: 'danger', msg: errorMessage });
+                $scope.alerts.push({ type: 'danger', msg });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
+
+            if (result.error) {
+                const msg = mensajeErrorDesdeMethod_preparar(result.message);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({ type: 'danger', msg });
 
                 $scope.showProgress = false;
                 $scope.$apply();
@@ -52,13 +69,11 @@ function ($scope, $uibModalInstance, $uibModal, $meteor, contratoID, ciaSeleccio
                       Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
             });
 
-            // $scope.selectedFile = file;
-            $scope.downLoadLink = result;
+            $scope.downLoadLink = result.sharedLink;
             $scope.downloadDocument = true;
 
             $scope.showProgress = false;
             $scope.$apply();
         })
     }
-}
-]);
+}]);

@@ -289,31 +289,31 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         // ----------------------------------------------------------------
         .state('remesasFiltro', {
             url: '/remesas/filtro?origen',
-            templateUrl: 'client/html/remesas/filtro.html',
+            templateUrl: 'client/imports/remesas/filtro.html',
             controller: 'RemesasFiltroController'
         })
         .state('remesasLista', {
             url: '/remesas/lista?origen&pageNumber',
-            templateUrl: 'client/html/remesas/lista.html',
+            templateUrl: 'client/imports/remesas/lista.html',
             controller: 'RemesasListaController',
             params: { 'origen': null, 'pageNumber': null }
         })
         .state('remesa', {
             url: '/remesas/remesa?origen&id&pageNumber&vieneDeAfuera',
-            templateUrl: 'client/html/remesas/remesa.html',
+            templateUrl: 'client/imports/remesas/remesa.html',
             controller: 'RemesaController',
             params: { 'origen': null, 'id': null, 'pageNumber': null, 'vieneDeAfuera': null }
         })
         .state('remesa.generales', {
-            templateUrl: 'client/html/remesas/remesa.generales.html',
+            templateUrl: 'client/imports/remesas/remesa.generales.html',
             parent: 'remesa'
         })
         .state('remesa.detalle', {
-            templateUrl: 'client/html/remesas/remesa.detalle.html',
+            templateUrl: 'client/imports/remesas/remesa.detalle.html',
             parent: 'remesa'
         })
         .state('remesa.cuadre', {
-            templateUrl: 'client/html/remesas/remesa.cuadre.html',
+            templateUrl: 'client/imports/remesas/remesa.cuadre.html',
             parent: 'remesa'
         })
 

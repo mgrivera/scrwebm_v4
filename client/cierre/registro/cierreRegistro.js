@@ -860,7 +860,7 @@ function ($scope, $uibModal, $interval) {
             return;
         }
 
-        const hayEdicionesRegTipoAuto = lodash.some($scope.registro, (x) => x.docState && x.tipo === "A"); 
+        const hayEdicionesRegTipoAuto = $scope.registro.find(x => x.docState && x.tipo === "A"); 
 
         if (hayEdicionesRegTipoAuto) {
             const message = `Aparentemente, Ud. ha editado o eliminado registros de tipo <em>Auto</em>.<br /> 
@@ -908,7 +908,7 @@ function ($scope, $uibModal, $interval) {
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'danger',
-                msg: "Se han encontrado errores al intentar guardar las modificaciones efectuadas en la base de datos:<br /><br />" +
+                msg: "Se han encontrado errores al intentar grabar las modificaciones efectuadas en la base de datos:<br /><br />" +
                     errores.reduce(function (previous, current) {
 
                         if (previous == "")
@@ -922,9 +922,6 @@ function ($scope, $uibModal, $interval) {
             $scope.showProgress = false;
             return;
         }
-
-        $scope.registro_ui_grid.data = [];
-        $scope.registro = [];
 
         Meteor.call('cierreRegistro.save', editedItems, (err, result) => {
 
@@ -964,7 +961,7 @@ function ($scope, $uibModal, $interval) {
             // refrescamos el helper 
             $scope.helpers({
                 registro: () => {
-                    return CierreRegistro.find(filtroConstruido, { sort: { fecha: 1, moneda: 1, compania: 1, }});
+                    return CierreRegistro.find(filtroConstruidoMasPeriodo, { sort: { fecha: 1, moneda: 1, compania: 1, }});
                 }
             });
 

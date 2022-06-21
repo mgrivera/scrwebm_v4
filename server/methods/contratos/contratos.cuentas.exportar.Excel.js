@@ -7,12 +7,9 @@ import lodash from 'lodash';
 import XlsxInjector from 'xlsx-injector';
 import fs from 'fs';
 import path from 'path';
+import { promisify } from 'util'; 
 
 import SimpleSchema from 'simpl-schema';
-
-// para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
-// para poder hacer un download (usando el url) desde el client ...
-import { grabarDatosACollectionFS_regresarUrl } from '/server/imports/general/grabarDatosACollectionFS_regresarUrl';
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
@@ -22,9 +19,13 @@ import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
 import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos'; 
 
+// import { myMkdirSync } from '/server/generalFunctions/myMkdirSync'; 
+import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink';
+import { readFromDropBox_writeToFS, readFileFromDisk_writeToDropBox } from '/server/imports/general/dropbox/exportToExcel'; 
+
 Meteor.methods(
 {
-    'contratos.cuentas.exportar.Excel': function (contratoID, definicionCuentaTecnicaID, ciaSeleccionada) {
+    'contratos.cuentas.exportar.Excel': async function (contratoID, definicionCuentaTecnicaID, ciaSeleccionada, fileName, dropBoxPath) {
 
         new SimpleSchema({
             contratoID: { type: String, optional: false },
@@ -32,23 +33,8 @@ Meteor.methods(
             ciaSeleccionada: { type: Object, blackbox: true, optional: false },
         }).validate({ contratoID, definicionCuentaTecnicaID, ciaSeleccionada, });
 
-        // ----------------------------------------------------------------------------------------------------
-        // obtenemos el directorio en el server donde están las plantillas (guardadas por el usuario mediante collectionFS)
-        // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
-        // nótese que la plantilla (doc excel) no es agregada por el usuario; debe existir siempre con el
-        // mismo nombre ...
-        const templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
-        const temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
-
-        const templatePath = path.join(templates_DirPath, 'consultas', 'contratoCuentas.xlsx');
-
-        // ----------------------------------------------------------------------------------------------------
-        // nombre del archivo que contendrá los resultados ...
-        let userID2 = Meteor.user().emails[0].address.replace(/\./g, "_");
-        userID2 = userID2.replace(/\@/g, "_");
-        const outputFileName = 'contratoCuentas.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
-        const outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
-
+        // ---------------------------------------------------------------------------------------------
+        // aquí comienza el proceso de obtención de datos para la consulta 
         const companias = Companias.find({}, { fields: { _id: true, abreviatura: true, }}).fetch();
         const monedas = Monedas.find({}, { fields: { _id: true, descripcion: true, simbolo: true, }}).fetch();
 
@@ -153,8 +139,8 @@ Meteor.methods(
         for (const monedaKey in distribucion_groupByMoneda) {
 
             // ahora agrupamos por compañía
-            distribucion_groupByMoneda_array = distribucion_groupByMoneda[monedaKey];
-            let firstItemInArray = distribucion_groupByMoneda_array[0];
+            const distribucion_groupByMoneda_array = lodash.cloneDeep(distribucion_groupByMoneda[monedaKey]);    
+            const firstItemInArray = lodash.cloneDeep(distribucion_groupByMoneda_array[0]);                    
 
             const moneda = monedas.find((x) => { return x._id === firstItemInArray.moneda; });
 
@@ -206,7 +192,7 @@ Meteor.methods(
                 })
 
                 // agregamos total para la compañía
-                const sumByMonCom_primas = lodash.sumBy(distribucion_groupByMonComp_array, 'prima');
+                // const sumByMonCom_primas = lodash.sumBy(distribucion_groupByMonComp_array, 'prima');
                 const sumByMonCom_primaBruta = lodash.sumBy(distribucion_groupByMonComp_array, 'primaBruta');
                 const sumByMonCom_comision = lodash.sumBy(distribucion_groupByMonComp_array, 'comision');
                 const sumByMonCom_imp1 = lodash.sumBy(distribucion_groupByMonComp_array, 'imp1');
@@ -215,7 +201,7 @@ Meteor.methods(
                 const sumByMonCom_primaNetaAntesCorretaje = lodash.sumBy(distribucion_groupByMonComp_array, 'primaNetaAntesCorretaje');
                 const sumByMonCom_corretaje = lodash.sumBy(distribucion_groupByMonComp_array, 'corretaje');
                 const sumByMonCom_primaNeta = lodash.sumBy(distribucion_groupByMonComp_array, 'primaNeta');
-                const sumByMonCom_siniestros = lodash.sumBy(distribucion_groupByMonComp_array, 'siniestros');
+                // const sumByMonCom_siniestros = lodash.sumBy(distribucion_groupByMonComp_array, 'siniestros');
                 const sumByMonCom_siniestros_suParte = lodash.sumBy(distribucion_groupByMonComp_array, 'siniestros_suParte');
                 const sumByMonCom_saldo = lodash.sumBy(distribucion_groupByMonComp_array, 'saldo');
 
@@ -251,9 +237,8 @@ Meteor.methods(
                 distribucionArray.push(distribucion);
             }
 
-
             // agregamos total para la moneda
-            const sumByMon_primas = lodash.sumBy(distribucion_groupByMoneda_array, 'prima');
+            // const sumByMon_primas = lodash.sumBy(distribucion_groupByMoneda_array, 'prima');
             const sumByMon_primaBruta = lodash.sumBy(distribucion_groupByMoneda_array, 'primaBruta');
             const sumByMon_comision = lodash.sumBy(distribucion_groupByMoneda_array, 'comision');
             const sumByMon_imp1 = lodash.sumBy(distribucion_groupByMoneda_array, 'imp1');
@@ -262,7 +247,7 @@ Meteor.methods(
             const sumByMon_primaNetaAntesCorretaje = lodash.sumBy(distribucion_groupByMoneda_array, 'primaNetaAntesCorretaje');
             const sumByMon_corretaje = lodash.sumBy(distribucion_groupByMoneda_array, 'corretaje');
             const sumByMon_primaNeta = lodash.sumBy(distribucion_groupByMoneda_array, 'primaNeta');
-            const sumByMon_siniestros = lodash.sumBy(distribucion_groupByMoneda_array, 'siniestros');
+            // const sumByMon_siniestros = lodash.sumBy(distribucion_groupByMoneda_array, 'siniestros');
             const sumByMon_siniestros_suParte = lodash.sumBy(distribucion_groupByMoneda_array, 'siniestros_suParte');
             const sumByMon_saldo = lodash.sumBy(distribucion_groupByMoneda_array, 'saldo');
 
@@ -308,7 +293,7 @@ Meteor.methods(
 
         for (const monedaKey in saldos_GroupByMoneda) {
 
-            const saldos_GroupByMoneda_array = saldos_GroupByMoneda[monedaKey];
+            const saldos_GroupByMoneda_array = [ ...saldos_GroupByMoneda[monedaKey] ];
             const firstMonedaItem = saldos_GroupByMoneda_array[0];
             const moneda = monedas.find((x) => { return x._id === firstMonedaItem.moneda; });
 
@@ -337,7 +322,7 @@ Meteor.methods(
             })
 
             // agregamos un total para la moneda
-            const sumByMon_primas = lodash.sumBy(saldos_GroupByMoneda_array, 'prima');
+            // const sumByMon_primas = lodash.sumBy(saldos_GroupByMoneda_array, 'prima');
             const sumByMon_primaBruta = lodash.sumBy(saldos_GroupByMoneda_array, 'primaBruta');
             const sumByMon_comision = lodash.sumBy(saldos_GroupByMoneda_array, 'comision');
             const sumByMon_imp1 = lodash.sumBy(saldos_GroupByMoneda_array, 'imp1');
@@ -346,7 +331,7 @@ Meteor.methods(
             const sumByMon_primaNetaAntesCorretaje = lodash.sumBy(saldos_GroupByMoneda_array, 'primaNetaAntesCorretaje');
             const sumByMon_corretaje = lodash.sumBy(saldos_GroupByMoneda_array, 'corretaje');
             const sumByMon_primaNeta = lodash.sumBy(saldos_GroupByMoneda_array, 'primaNeta');
-            const sumByMon_siniestros = lodash.sumBy(saldos_GroupByMoneda_array, 'siniestros');
+            // const sumByMon_siniestros = lodash.sumBy(saldos_GroupByMoneda_array, 'siniestros');
             const sumByMon_siniestros_suParte = lodash.sumBy(saldos_GroupByMoneda_array, 'siniestros_suParte');
             const sumByMon_saldo = lodash.sumBy(saldos_GroupByMoneda_array, 'saldo');
 
@@ -380,9 +365,9 @@ Meteor.methods(
                          }).fetch();
 
         const cuotasArray = [];
-        const cuota = {};
+        // const cuota = {};
 
-        let cuotas_GroupByMoneda = lodash.groupBy(cuotas, 'moneda');
+        const cuotas_GroupByMoneda = lodash.groupBy(cuotas, 'moneda');
 
         for (const monedaKey in cuotas_GroupByMoneda) {
 
@@ -451,24 +436,130 @@ Meteor.methods(
         };
 
 
+        // // Open a workbook
+        // const workbook = new XlsxInjector(templatePath);
+        // const sheetNumber = 1;
+        // workbook.substitute(sheetNumber, values);
+        // // Save the workbook
+        // workbook.writeFile(outputPath);
+
+
+        // // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
+        // // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
+        // const buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
+
+        // // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
+        // // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...
+
+        // // nótese que en el tipo de plantilla ponemos 'no aplica'; la razón es que esta plantilla no es 'cargada' por el usuario y de las
+        // // cuales hay diferentes tipos (islr, iva, facturas, cheques, ...). Este tipo de plantilla es para obtener algún tipo de reporte
+        // // en excel y no tiene un tipo definido ...
+        // return grabarDatosACollectionFS_regresarUrl(buf, outputFileName, 'no aplica', 'scrwebm', ciaSeleccionada, Meteor.user(), 'xlsx');
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // ---------------------------------------------------------------------------------------------------------------
+        // leemos la plantilla (excel) desde el DropBox y la escribimos a un archivo en el fs
+        // xlsx-injector espera el nombre de la plantilla (con su path completo)
+        const dropBoxAccessToken = Meteor.settings.public.dropBox_appToken;
+
+        const usuario = Meteor.user();
+        const userNameOrEmail = usuario?.username ? usuario.username : usuario.emails[0].address;
+
+        // para leer el template (excel) desde DropBox y grabarlo al fs (node) 
+        // XlsxInjector solo necesita el nombre de este archivo para leerlo desde el fs y usarlo como plantilla (excel) 
+        const result1 = await readFromDropBox_writeToFS(fileName, dropBoxPath, dropBoxAccessToken, userNameOrEmail).then();
+
+        if (result1.error) {
+            return {
+                error: true,
+                message: result1.message
+            }
+        }
+
+        const templateName_fs = result1.fileNameWithPath;
+
         // Open a workbook
-        const workbook = new XlsxInjector(templatePath);
+        const workbook = new XlsxInjector(templateName_fs);
         const sheetNumber = 1;
         workbook.substitute(sheetNumber, values);
+
+        // ----------------------------------------------------------------------------------------------------
+        // nombre del archivo (fs en node) que contendrá los resultados ...
+        const resultsFileName_withUserInfo = fileName.replace('.xlsx', `_${userNameOrEmail}_result.xlsx`);
+        let resultsName_fs = path.join(process.env.PWD, '.temp', dropBoxPath, resultsFileName_withUserInfo);
+
+        // en windows, path regresa back en vez de forward slashes ... 
+        resultsName_fs = resultsName_fs.replace(/\\/g, "/");
+
         // Save the workbook
-        workbook.writeFile(outputPath);
+        workbook.writeFile(resultsName_fs);
 
+        // resultsFileName_withUserInfo: si el nombre es contratoCapas.xlsx, este valor es: contratoCapas_admin_result.xlsx
+        // la idea es personalizar el nombre que se usará para grabar los resultados, pues esta función la pueden ejecutar 
+        // *varios* usuarios en forma simultanea 
+        const result2 = await readFileFromDisk_writeToDropBox(resultsName_fs, resultsFileName_withUserInfo, dropBoxPath, dropBoxAccessToken).then();
 
-        // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
-        // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
-        const buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
+        if (result2.error) {
+            return {
+                error: true,
+                message: result2.message
+            }
+        }
 
-        // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
-        // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...
+        const resultsName_db = result2.dropBoxFileNameMasPath;
 
-        // nótese que en el tipo de plantilla ponemos 'no aplica'; la razón es que esta plantilla no es 'cargada' por el usuario y de las
-        // cuales hay diferentes tipos (islr, iva, facturas, cheques, ...). Este tipo de plantilla es para obtener algún tipo de reporte
-        // en excel y no tiene un tipo definido ...
-        return grabarDatosACollectionFS_regresarUrl(buf, outputFileName, 'no aplica', 'scrwebm', ciaSeleccionada, Meteor.user(), 'xlsx');
-    }
-})
+        // 4) eliminamos *ambos* files desde el fs 
+        // ahora eliminamos el file del disco, pues solo lo hacemos, *mientras tanto*, pues no sabemos como grabar al 
+        // Dropbox sin hacer ésto antes !!!!?????
+        const unlinkFileAsync = promisify(fs.unlink);
+        try {
+            await unlinkFileAsync(templateName_fs);             // aquí eliminamos la plantilla (excel) qye leímos desde el dropbox 
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar eliminar el archivo en el fs (node): <em>${templateName_fs}</em>. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
+
+        try {
+            await unlinkFileAsync(resultsName_fs);                      // aquí eliminamos el resultado de aplicar la plantilla 
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar eliminar el archivo en el fs (node): <em>${resultsName_fs}</em>. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
+
+        // ------------------------------------------------------------------------------------------------
+        // 5) con esta función creamos un (sharable) download link para que el usuario pueda tener
+        //    el archivo en su pc 
+        const result3 = await dropBoxCreateSharedLink(resultsName_db);
+
+        if (result3.error) {
+            return {
+                error: true,
+                message: result3.message
+            }
+        } else {
+            // regresamos el link 
+            return {
+                error: false,
+                sharedLink: result3.sharedLink,
+            }
+        }
+}})

@@ -11,7 +11,7 @@ export function mensajeErrorDesdeMethod_preparar(errorFromMeteorMethod) {
     if (err.error) {
         errorMessage += `${err.error}`;
         algo = true;
-    }
+    } else 
 
     if (err.errorType) {
         if (algo) errorMessage += ` - `;
@@ -43,5 +43,8 @@ export function mensajeErrorDesdeMethod_preparar(errorFromMeteorMethod) {
         algo = true;
     }
 
+    if (!algo) { 
+        errorMessage += `${JSON.stringify(err, null, 3)}`;
+    }
     return errorMessage;
 }

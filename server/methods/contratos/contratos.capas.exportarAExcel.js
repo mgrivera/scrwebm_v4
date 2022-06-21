@@ -7,12 +7,9 @@ import lodash from 'lodash';
 import XlsxInjector from 'xlsx-injector';
 import fs from 'fs';
 import path from 'path';
+import { promisify } from 'util'; 
 
 import SimpleSchema from 'simpl-schema';
-
-// para grabar el contenido (doc word creado en base al template) a un file (collectionFS) y regresar el url
-// para poder hacer un download (usando el url) desde el client ...
-import { grabarDatosACollectionFS_regresarUrl } from '/server/imports/general/grabarDatosACollectionFS_regresarUrl';
 
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
@@ -21,32 +18,21 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { Ramos } from '/imports/collections/catalogos/ramos'; 
 import { TiposContrato } from '/imports/collections/catalogos/tiposContrato'; 
 
+// import { myMkdirSync } from '/server/generalFunctions/myMkdirSync'; 
+import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink'; 
+import { readFromDropBox_writeToFS, readFileFromDisk_writeToDropBox } from '/server/imports/general/dropbox/exportToExcel'; 
+
 Meteor.methods(
 {
-    'contratos.capas.exportar.Excel': function (contratoID, ciaSeleccionada) {
+    'contratos.capas.exportar.Excel': async function (contratoID, ciaSeleccionada, fileName, dropBoxPath) {
 
         new SimpleSchema({
             contratoID: { type: String, optional: false },
             ciaSeleccionada: { type: Object, blackbox: true, optional: false },
         }).validate({ contratoID, ciaSeleccionada, });
 
-        // ----------------------------------------------------------------------------------------------------
-        // obtenemos el directorio en el server donde están las plantillas (guardadas por el usuario mediante collectionFS)
-        // nótese que usamos un 'setting' en setting.json (que apunta al path donde están las plantillas)
-        // nótese que la plantilla (doc excel) no es agregada por el usuario; debe existir siempre con el
-        // mismo nombre ...
-        const templates_DirPath = Meteor.settings.public.collectionFS_path_templates;
-        const temp_DirPath = Meteor.settings.public.collectionFS_path_tempFiles;
-
-        const templatePath = path.join(templates_DirPath, 'consultas', 'contratoCapas.xlsx');
-
-        // ----------------------------------------------------------------------------------------------------
-        // nombre del archivo que contendrá los resultados ...
-        let userID2 = Meteor.user().emails[0].address.replace(/\./g, "_");
-        userID2 = userID2.replace(/\@/g, "_");
-        const outputFileName = 'contratoCapas.xlsx'.replace('.xlsx', `_${userID2}.xlsx`);
-        const outputPath  = path.join(temp_DirPath, 'consultas', outputFileName);
-
+        // ---------------------------------------------------------------------------------------------
+        // aquí comienza el proceso de obtención de datos para la consulta 
         const contrato = Contratos.findOne(contratoID);
 
         const cedente = Companias.findOne(contrato.compania);
@@ -159,6 +145,17 @@ Meteor.methods(
             });
         }
 
+        if (!Array.isArray(infoCapasArray) || !infoCapasArray.length) { 
+            const message = `<b>*)</b> Error al intentar leer el contrato que Ud. ha consultado. Aparentemente, no hay información de capas 
+                          registradas para el mismo. <br /><br />
+                          Esta función, en particular, corresponde a contratos que tienen información de capas registrada. 
+                          Por favor revise. 
+                         `
+            return {
+                error: true,
+                message
+            }
+        }
 
         // --------------------------------------------------------------------------------------------
         // al igual que hicimos arriba para las primas, leemos las cuotas y agrupamos para construir un
@@ -167,6 +164,19 @@ Meteor.methods(
             'source.entityID': contrato._id,
             'source.origen': 'capa',
         }).fetch();
+
+        if (!Array.isArray(cuotas) || !cuotas.length) {
+            const message = `<b>*)</b> Error al intentar leer el contrato que Ud. ha consultado. Aparentemente, no hay información de cuotas 
+                          registradas para el mismo. <br /><br />
+                          Esta función, en particular, corresponde a contratos que tienen capas y cuotas registrada. 
+                          Por favor revise. 
+                         `
+            return {
+                error: true,
+                message
+            }
+        }
+
         const infoCuotasGroupByCompania = lodash.groupBy(cuotas, 'compania');
 
         const cuotasArray = [];
@@ -221,7 +231,12 @@ Meteor.methods(
             });
         }
 
-
+        // -----------------------------------------------------------------------------------------------
+        // Ok, aquí termina el proceso propio de la consulta;
+        // comienza:
+        // 1) conversión a Excel.
+        // 2) grabar a DropBox.
+        // 3) regresar download link
 
         // Object containing attributes that match the placeholder tokens in the template
         const values = {
@@ -249,25 +264,99 @@ Meteor.methods(
             sumOfMontoCuota: sumOfMontoCuota,
         };
 
+        // ---------------------------------------------------------------------------------------------------------------
+        // leemos la plantilla (excel) desde el DropBox y la escribimos a un archivo en el fs
+        // xlsx-injector espera el nombre de la plantilla (con su path completo)
+        const dropBoxAccessToken = Meteor.settings.public.dropBox_appToken;
+
+        const usuario = Meteor.user();
+        const userNameOrEmail = usuario?.username ? usuario.username : usuario.emails[0].address;
+
+        // para leer el template (excel) desde DropBox y grabarlo al fs (node) 
+        // XlsxInjector solo necesita el nombre de este archivo para leerlo desde el fs y usarlo como plantilla (excel) 
+        const result1 = await readFromDropBox_writeToFS(fileName, dropBoxPath, dropBoxAccessToken, userNameOrEmail).then(); 
+
+        if (result1.error) { 
+            return {
+                error: true,
+                message: result1.message
+            }
+        }
+
+        const templateName_fs = result1.fileNameWithPath; 
 
         // Open a workbook
-        const workbook = new XlsxInjector(templatePath);
+        const workbook = new XlsxInjector(templateName_fs);
         const sheetNumber = 1;
         workbook.substitute(sheetNumber, values);
+
+        // ----------------------------------------------------------------------------------------------------
+        // nombre del archivo (fs en node) que contendrá los resultados ...
+        const resultsFileName_withUserInfo = fileName.replace('.xlsx', `_${userNameOrEmail}_result.xlsx`);
+        let resultsName_fs = path.join(process.env.PWD, '.temp', dropBoxPath, resultsFileName_withUserInfo);
+
+        // en windows, path regresa back en vez de forward slashes ... 
+        resultsName_fs = resultsName_fs.replace(/\\/g, "/");
+
         // Save the workbook
-        workbook.writeFile(outputPath);
+        workbook.writeFile(resultsName_fs);
 
+        // resultsFileName_withUserInfo: si el nombre es contratoCapas.xlsx, este valor es: contratoCapas_admin_result.xlsx
+        // la idea es personalizar el nombre que se usará para grabar los resultados, pues esta función la pueden ejecutar 
+        // *varios* usuarios en forma simultanea 
+        const result2 = await readFileFromDisk_writeToDropBox(resultsName_fs, resultsFileName_withUserInfo, dropBoxPath, dropBoxAccessToken).then();  
 
-        // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
-        // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
-        const buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
+        if (result2.error) {
+            return {
+                error: true,
+                message: result2.message
+            }
+        }
 
-        // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
-        // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...
+        const resultsName_db = result2.dropBoxFileNameMasPath; 
 
-        // nótese que en el tipo de plantilla ponemos 'no aplica'; la razón es que esta plantilla no es 'cargada' por el usuario y de las
-        // cuales hay diferentes tipos (islr, iva, facturas, cheques, ...). Este tipo de plantilla es para obtener algún tipo de reporte
-        // en excel y no tiene un tipo definido ...
-        return grabarDatosACollectionFS_regresarUrl(buf, outputFileName, 'no aplica', 'scrwebm', ciaSeleccionada, Meteor.user(), 'xlsx');
+        // 4) eliminamos *ambos* files desde el fs 
+        // ahora eliminamos el file del disco, pues solo lo hacemos, *mientras tanto*, pues no sabemos como grabar al 
+        // Dropbox sin hacer ésto antes !!!!?????
+        const unlinkFileAsync = promisify(fs.unlink);
+        try {
+            await unlinkFileAsync(templateName_fs);             // aquí eliminamos la plantilla (excel) qye leímos desde el dropbox 
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar eliminar el archivo en el fs (node): <em>${templateName_fs}</em>. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
+
+        try {
+            await unlinkFileAsync(resultsName_fs);                      // aquí eliminamos el resultado de aplicar la plantilla 
+        } catch (err) {
+            return {
+                error: true,
+                message: `<b>*)</b> Error al intentar eliminar el archivo en el fs (node): <em>${resultsName_fs}</em>. <br /> 
+                          El mensaje obtenido para el error es: ${err.message} 
+                         `
+            }
+        }
+
+        // ------------------------------------------------------------------------------------------------
+        // 5) con esta función creamos un (sharable) download link para que el usuario pueda tener
+        //    el archivo en su pc 
+        const result3 = await dropBoxCreateSharedLink(resultsName_db);
+
+        if (result3.error) {
+            return {
+                error: true,
+                message: result3.message
+            }
+        } else {
+            // regresamos el link 
+            return {
+                error: false,
+                sharedLink: result3.sharedLink,
+            }
+        }
     }
 })

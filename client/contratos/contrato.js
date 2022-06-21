@@ -1911,11 +1911,21 @@ function ($scope, $state, $stateParams, $meteor, $uibModal, uiGridConstants, $lo
 
     $scope.exportarExcel_Cuentas = () => { 
 
+        if (!$scope?.contrato?._id) {
+            DialogModal($uibModal,
+                "<em>Contratos - Proporcionales - Cuentas - Exportar a Excel</em>",
+                `Error: Ud. debe consultar un <em>contrato proporcional</em> en la lista (luego de indicar y aplicar un <em>filtro</em>).<br /><br />
+                 Regrese y aplique un filtro. Seleccione un contrato (proporcional) en la lista y luego intente ejecutar esta función. 
+                `,
+                false);
+            return;
+        }
+
         // debe haber una definicion seleccionada
-        if (!($scope.definicionCuentaTecnicaSeleccionada || lodash.isEmpty($scope.definicionCuentaTecnicaSeleccionada))) {
+        if (!$scope?.definicionCuentaTecnicaSeleccionada?._id) {
             DialogModal($uibModal,
                         "<em>Contratos - Proporcionales - Cuentas - Exportar a Excel</em>",
-                        `Error: Ud. debe seleccionar una <em>definición de cuenta técnica</em> en la lista.<br /><br />
+                        `Error: Ud. <b>debe</b> seleccionar una <em>definición de cuenta técnica (período)</em> en la lista.<br /><br />
                          Muestre la lista de <em>definiciones de cuentas técnicas</em> para el contrato proporcional y seleccione alguna 
                          de ellas en la lista. 
                              `,

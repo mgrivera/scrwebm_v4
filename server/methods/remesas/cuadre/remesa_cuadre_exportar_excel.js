@@ -35,6 +35,7 @@ Meteor.methods(
             ciaSeleccionada: { type: Object, blackbox: true, optional: false },
         }).validate({ remesaID, ciaSeleccionada, });
 
+        // con las instrucciones que siguen, leemos la plantilla desde el DropBox y la grabamos al fyle system (node) 
         const usuario = Meteor.user();
         const nombrePlantillaExcel = 'remesasCuadre.xlsx';
 
@@ -312,7 +313,10 @@ Meteor.methods(
 
         // -----------------------------------------------------------------------------------------------
         // Ok, aquí termina el proceso propio de la consulta; 
-        // comienza: 1) conversión a Excel. 2) grabar a DropBox. 3) regresar download link 
+        // comienza: 
+        // 1) conversión a Excel. 
+        // 2) grabar a DropBox. 
+        // 3) regresar download link 
 
         // Object containing attributes that match the placeholder tokens in the template
         const values = {

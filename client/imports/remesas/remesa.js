@@ -20,9 +20,9 @@ import { Cuotas } from '/imports/collections/principales/cuotas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-// import '/client/imports/remesas/remesa.generales.html'; 
-// import '/client/imports/remesas/remesa.detalle.html'; 
-// import '/client/imports/remesas/remesa.cuadre.html'; 
+import './remesa.generales.html'; 
+import './remesa.detalle.html'; 
+import './remesa.cuadre.html'; 
 
 import RemesasRemesaCuadreExportarExcel from './exportarExcelModal/remesaCuadreExportarExcel_Modal_Controller'; 
 // import './exportarExcelModal/remesaCuadreExportarExcel_Modal.html'; 
@@ -30,8 +30,8 @@ import RemesasRemesaCuadreExportarExcel from './exportarExcelModal/remesaCuadreE
 import RemesasRemesaObtenerCuadreRemesa from './obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal'; 
 // import './obtenerCuadreRemesaModal/obtenerCuadreRemesa_Modal.html';
 
-// import './asientoContable/asientoContable_Modal.html';
 import RemesaCuadreAsientoContable from './asientoContable/asientoContable'; 
+// import './asientoContable/asientoContable_Modal.html';
 
 export default angular.module("scrwebm.remesas.remesa", 
                       [ 

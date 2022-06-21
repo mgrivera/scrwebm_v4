@@ -1,10 +1,12 @@
 
+import { Meteor } from 'meteor/meteor';
+import angular from 'angular';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 angular.module("scrwebm").controller('ContratosCuentasExportarExcel_Controller',
-['$scope', '$uibModalInstance', '$uibModal', '$meteor', 'contratoID', 'definicionCuentaTecnicaSeleccionada', 'ciaSeleccionada',
-function ($scope, $uibModalInstance, $uibModal, $meteor, contratoID, definicionCuentaTecnicaSeleccionada, ciaSeleccionada) {
+['$scope', '$uibModalInstance', 'contratoID', 'definicionCuentaTecnicaSeleccionada', 'ciaSeleccionada',
+function ($scope, $uibModalInstance, contratoID, definicionCuentaTecnicaSeleccionada, ciaSeleccionada) {
     // ui-bootstrap alerts ...
     $scope.alerts = [];
 
@@ -26,16 +28,32 @@ function ($scope, $uibModalInstance, $uibModal, $meteor, contratoID, definicionC
     $scope.selectedFile = "contratos - cuentas - consulta.xlsx";
     $scope.downLoadLink = "";
 
-    $scope.exportarAExcel = (file) => {
+    $scope.exportarAExcel = () => {
         $scope.showProgress = true;
 
-        Meteor.call('contratos.cuentas.exportar.Excel', contratoID, definicionCuentaTecnicaSeleccionada._id, ciaSeleccionada, (err, result) => {
+        const fileName = "contratoCuentas.xlsx";              // este es el nombre de la plantilla 
+        const dropBoxPath = "/contratos/excel";             // este es el directorio donde la plantilla está en DropBox  
+
+        Meteor.call('contratos.cuentas.exportar.Excel', contratoID, definicionCuentaTecnicaSeleccionada._id, ciaSeleccionada, 
+        fileName, dropBoxPath, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const msg = mensajeErrorDesdeMethod_preparar(err);
 
                 $scope.alerts.length = 0;
-                $scope.alerts.push({ type: 'danger', msg: errorMessage });
+                $scope.alerts.push({ type: 'danger', msg });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
+
+            if (result.error) {
+                const msg = mensajeErrorDesdeMethod_preparar(result.message);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({ type: 'danger', msg });
 
                 $scope.showProgress = false;
                 $scope.$apply();
@@ -50,8 +68,7 @@ function ($scope, $uibModalInstance, $uibModal, $meteor, contratoID, definicionC
                       Haga un <em>click</em> en el <em>link</em> que se muestra para obtenerlo.`,
             });
 
-            // $scope.selectedFile = file;
-            $scope.downLoadLink = result;
+            $scope.downLoadLink = result.sharedLink;
             $scope.downloadDocument = true;
 
             $scope.showProgress = false;
