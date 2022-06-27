@@ -13,10 +13,13 @@ import VerifyUserEmail_Modal from "./VerifyUserEmail_Modal";
 import ResetUserPassword_Modal from "./ResetUserPassword_Modal"; 
 import ForgotUserPassword_Modal from "./ForgotUserPassword_Modal"; 
 
+import Spinner from '/client/imports/genericReactComponents/Spinner';
+
 const MeteorLogin = () => { 
 
     const [user, setUser] = useState({}); 
     const [showModal, setShowModal] = useState(false); 
+    const [showSpinner, setShowSpinner] = useState(true);
 
     // para saber cuando el usuario quiere: cambiar nombre del usuario; agregar cuenta; reset password; ect. 
     const [specialAction, setSpecialAction] = useState(null); 
@@ -26,11 +29,17 @@ const MeteorLogin = () => {
 
         if (currUser && currUser._id) {
             setUser(() => currUser);
+            setShowSpinner(false); 
         } else {
             setUser(() => { });
+            // solo cuando Meteor.user() regresa Null es que se ha determinado que no hay un usuario autenticado
+            // si el valor es undefined, es que aún está trabajando para obtener el usuario (o ninguno)
+            if (currUser === null) {
+                setShowSpinner(false);
+            }
         }
     }, []);
-    
+
     useEffect(() => {
         if (specialAction) { 
             // cuando el usuario quiere un special action, como cambiar user name o create account, 
@@ -119,12 +128,20 @@ const MeteorLogin = () => {
                                                                                             setSpecialAction={setSpecialAction} />}
 
             <a href="#" onClick={() => setShowModal(true)}>
-                <span style={{ textDecoration: 'underline' }}>
-                    {userName}
-                    &nbsp;&nbsp;
-                    <span style={{ fontSize: 'xx-small' }} 
-                          className="glyphicon glyphicon-triangle-bottom" />
-                </span></a>
+                {
+                    showSpinner 
+                        ? 
+                            <Spinner /> 
+                        : 
+                            <span style={{ textDecoration: 'underline' }}>
+                                {userName}
+                                &nbsp;&nbsp;
+                                <span style={{ fontSize: 'xx-small' }}
+                                    className="glyphicon glyphicon-triangle-bottom" />
+                            </span>
+                }
+                
+            </a>
         </>
     )
 }
