@@ -6,11 +6,19 @@ import angular from 'angular';
 import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
+
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 
 angular.module("scrwebm")
        .controller("MonedasController", ['$scope', 
 function ($scope) {
+
+    // para permitir editar la tabla en base a los roles asignados al usuario 
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                            userHasRole('catalogos_riesgos') ||
+                            userHasRole('catalogos_contratos') ||
+                            userHasRole('catalogos_siniestros') ? true : false; 
 
     $scope.showProgress = false;
 

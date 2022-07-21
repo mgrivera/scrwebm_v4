@@ -19,10 +19,15 @@ import { TiposContrato } from '/imports/collections/catalogos/tiposContrato';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
 
 angular.module("scrwebm")
        .controller("ContratosProp_Configuracion_Tabla_Controller", ['$scope', '$state', '$stateParams', '$uibModal', 
 function ($scope, $state, $stateParams, $uibModal) {
+
+    // para permitir editar la tabla en base a los roles asignados al usuario 
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_contratos') ? true : false;
 
     $scope.showProgress = false;
 

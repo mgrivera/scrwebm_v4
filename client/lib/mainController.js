@@ -1,7 +1,6 @@
 
 import { Meteor } from 'meteor/meteor'
 import angular from 'angular'; 
-import lodash from 'lodash'; 
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
@@ -63,6 +62,14 @@ function ($rootScope, $scope, $location) {
         userAuthenticated: () => { return Meteor.userId(); },
 
         userHasRole_catalogos: () => { return userHasRole('catalogos'); },
+        userHasRole_catalogos_riesgos: () => { return userHasRole('catalogos_riesgos'); },
+        userHasRole_catalogos_contratos: () => { return userHasRole('catalogos_contratos'); },
+        userHasRole_catalogos_siniestros: () => { return userHasRole('catalogos_siniestros'); },
+        userHasRole_catalogos_cobranzas: () => { return userHasRole('catalogos_cobranzas'); },
+        userHasRole_catalogos_generales: () => { return userHasRole('catalogos_generales'); },
+        userHasRole_catalogos_administracion: () => { return userHasRole('catalogos_administracion'); },
+        userHasRole_catalogos_consulta: () => { return userHasRole('catalogos_consulta'); },
+
         userHasRole_riesgos: () => { return userHasRole('riesgos'); },
         userHasRole_riesgos_consulta: () => { return userHasRole('riesgos_consulta'); },
         userHasRole_contratos: () => { return userHasRole('contratos'); },
@@ -82,23 +89,23 @@ function ($rootScope, $scope, $location) {
         userHasRole_admin: () => { return userHasRole('admin'); },
     })
 
+    // ===========================================================================================================================
     // esta funcion es llamada desde la página principal (home - index.html) para saber si el usuario tiene roles en particular
     // y mostrar las opciones del menú en relación a estos roles; nótese que para 'admin', se muestran todas las opciones del menú
     function userHasRole(rol) {
 
+        const user = Meteor.user(); 
+
         // mostramos todas las opciones al usuario (cuyo mail es) 'admin@admin.com'
-        if (Meteor.user() &&
-            Meteor.user().emails &&
-            Meteor.user().emails.length > 0 &&
-            lodash.some(Meteor.user().emails, function (email) { return email.address == "admin@admin.com"; })) {
+        if (user && user?.emails && Array.isArray(user.emails) && user.emails.length &&
+            user.emails.some(email => email.address === "admin@admin.com")) {
                 return true;
         }
 
-
         // mostramos todas las opciones a usuarios en el rol 'admin'
-        const roles = Meteor.user() && Meteor.user().roles ? Meteor.user().roles : [];
+        const roles = user && user?.roles ? user.roles : [];
 
-        if (lodash.find(roles, function (r) { return r === "admin"; })) { 
+        if (roles.find(r => r === "admin")) { 
             return true;
         }
 
@@ -106,7 +113,7 @@ function ($rootScope, $scope, $location) {
             return false;
         }
             
-        var found = lodash.find(roles, function (r) { return r === rol; });
+        const found = roles.find(r => r === rol);
         if (found) { 
             return true;
         }
@@ -117,7 +124,6 @@ function ($rootScope, $scope, $location) {
 
     // nótese como ahora los catálogos se cargan siempre en forma automática, pues el publisheer tiene su 'name' en nulls
     // cargarCatalogos();
-
     function leerCompaniaSeleccionada() {
 
         // ------------------------------------------------------------------------------------------------
@@ -127,7 +133,6 @@ function ($rootScope, $scope, $location) {
             var companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1 } });
         }
             
-
         $scope.companiaSeleccionada = {};
 
         if (companiaSeleccionadaDoc) { 

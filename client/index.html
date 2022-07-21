@@ -29,7 +29,10 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
 
                 <div class="navbar-collapse collapse" ng-show="userAuthenticated">
                     <ul class="nav navbar-nav">
-                        <li><a href="/catalogos" ng-if="userHasRole_catalogos">Catálogos</a></li>
+                        <li><a href="/catalogos" 
+                               ng-if="userHasRole_catalogos || userHasRole_catalogos_riesgos || userHasRole_catalogos_contratos || userHasRole_catalogos_siniestros || userHasRole_catalogos_cobranzas || userHasRole_catalogos_generales || userHasRole_catalogos_administracion || userHasRole_catalogos_consulta">
+                                    Catálogos</a>
+                        </li>
 
                         <li class="dropdown"
                             ng-show="userHasRole_riesgos || userHasRole_riesgos_consulta || userHasRole_contratos || userHasRole_contratos_consulta || userHasRole_notasdbcr || userHasRole_notasdbcr_consulta || userHasRole_siniestros || userHasRole_siniestros_consulta">

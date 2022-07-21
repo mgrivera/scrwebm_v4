@@ -5,10 +5,18 @@ import { Mongo } from 'meteor/mongo';
 import angular from 'angular';
 import lodash from 'lodash'; 
 
-import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 
-angular.module("scrwebm").controller("AseguradosController", ['$scope', function ($scope) {
+import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar';
+import { userHasRole } from '/client/imports/generales/userHasRole';
+
+angular.module("scrwebm")
+       .controller("AseguradosController", ['$scope', 
+function ($scope) {
+    
+    // para permitir editar la tabla en base a los roles asignados al usuario 
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_riesgos') ? true : false; 
 
     $scope.showProgress = false;
 

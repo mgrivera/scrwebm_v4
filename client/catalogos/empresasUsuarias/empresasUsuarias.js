@@ -6,6 +6,7 @@ import angular from 'angular';
 import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar';
+import { userHasRole } from '/client/imports/generales/userHasRole';
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
 import { Companias } from '/imports/collections/catalogos/companias';
@@ -13,6 +14,9 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 
 angular.module("scrwebm").controller("EmpresasUsuarias_Controller", ['$scope', 
 function ($scope) {
+
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_generales') ? true : false; 
 
     $scope.showProgress = false;
 

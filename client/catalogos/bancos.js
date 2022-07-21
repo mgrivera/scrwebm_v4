@@ -5,20 +5,25 @@ import { Mongo } from 'meteor/mongo';
 import angular from 'angular';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
+
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
 
 angular.module("scrwebm")
        .controller("BancosController", ['$scope', 
 function ($scope) {
 
-      $scope.showProgress = false;
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_cobranzas') ? true : false; 
 
-      // ui-bootstrap alerts ...
-      $scope.alerts = [];
+    $scope.showProgress = false;
 
-      $scope.closeAlert = function (index) {
-          $scope.alerts.splice(index, 1);
-      }
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
+
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    }
 
     $scope.bancos_ui_grid = {
         enableSorting: true,

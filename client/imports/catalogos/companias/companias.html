@@ -24,7 +24,9 @@
     <!-- el siguiente component (react2angular: angular comp >> react comp) abre un modal que le permite al usuario 
     registrar personas para la compañia seleccionada en la lista  -->
     <div ng-if='openPersonasModal'>
-        <personas-registro-modal compania-seleccionada='companiaSeleccionada' toogle-open-personas-modal='toogleOpenPersonasModal'>
+        <personas-registro-modal compania-seleccionada='companiaSeleccionada' 
+                                 toogle-open-personas-modal='toogleOpenPersonasModal'
+                                 catalogos-editar='catalogosEditar'>
         </personas-registro-modal>
     </div>
 
@@ -36,8 +38,8 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a href="#" class="navbar_custom_small_header">Compañías</a></li>
-                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li>
-                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
+                            <li  ng-if="catalogosEditar"><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li>
+                            <li  ng-if="catalogosEditar"><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
                             <li class="divider-vertical-small"></li>
                             <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="toogleOpenPersonasModal([])">Personas <span class="fa fa-user"></span></a></li>
                             

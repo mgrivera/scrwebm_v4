@@ -25,7 +25,7 @@ FieldGroup.propTypes = {
     help: PropTypes.string,
 };
 
-export default function Detalles({ clickedRow, items, setItems, setMessage, setCurrentTab }) {
+export default function Detalles({ clickedRow, items, setItems, setMessage, setCurrentTab, catalogosEditar }) {
 
     const item = Object.assign({}, items[clickedRow]);     // get a clone of object 
 
@@ -167,14 +167,16 @@ export default function Detalles({ clickedRow, items, setItems, setMessage, setC
 
                     <br />
 
-                    <Row>
-                        <Col sm={4} >
-                            <Button bsStyle="danger" bsSize="small" onClick={handleDeleteItem}>Eliminar</Button>
-                        </Col>
-                        <Col sm={3} smOffset={4} style={{ textAlign: 'right' }} >
-                            <Button bsStyle="primary" bsSize="small" type="submit">Registrar cambios</Button>
-                        </Col>
-                    </Row>
+                    { catalogosEditar && 
+                        <Row>
+                            <Col sm={4} >
+                                <Button bsStyle="danger" bsSize="small" onClick={handleDeleteItem}>Eliminar</Button>
+                            </Col>
+                            <Col sm={3} smOffset={4} style={{ textAlign: 'right' }} >
+                                <Button bsStyle="primary" bsSize="small" type="submit">Registrar cambios</Button>
+                            </Col>
+                        </Row>
+                    }
                 </Grid>
             </form>
         </div>
@@ -186,5 +188,6 @@ Detalles.propTypes = {
     setItems: PropTypes.func.isRequired, 
     clickedRow: PropTypes.number.isRequired,
     setMessage: PropTypes.func.isRequired,
-    setCurrentTab: PropTypes.func.isRequired
+    setCurrentTab: PropTypes.func.isRequired, 
+    catalogosEditar: PropTypes.bool.isRequired
 };    

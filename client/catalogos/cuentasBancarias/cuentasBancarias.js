@@ -6,6 +6,7 @@ import angular from 'angular';
 import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
 
 import { Monedas } from '/imports/collections/catalogos/monedas';
 import { Bancos } from '/imports/collections/catalogos/bancos';
@@ -15,8 +16,12 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CuentasContables } from '/imports/collections/catalogos/cuentasContables';
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada';
 
-angular.module("scrwebm").controller("CuentasBancariasController", ['$scope', 
+angular.module("scrwebm")
+       .controller("CuentasBancariasController", ['$scope', 
 function ($scope) {
+
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_cobranzas') ? true : false; 
 
     $scope.showProgress = false;
 

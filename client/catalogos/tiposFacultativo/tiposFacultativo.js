@@ -6,10 +6,16 @@ import angular from 'angular';
 import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '../../imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
+
 import { TiposFacultativo } from '/imports/collections/catalogos/tiposFacultativo'; 
 
 angular.module("scrwebm").controller("TiposFacultativoController", ['$scope', 
 function ($scope) {
+
+    // para permitir editar la tabla en base a los roles asignados al usuario 
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_riesgos') ? true : false; 
 
     $scope.showProgress = false;
 

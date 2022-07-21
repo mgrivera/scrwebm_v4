@@ -6,7 +6,9 @@ import Papa from 'papaparse';
 import saveAs from 'save-as'
 
 import angular from 'angular'; 
+
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
 
 import PersonasRegistro from './personasRegistroModal/angular.module'; 
 
@@ -52,6 +54,16 @@ const exportToCsv_convertItems = (x) => {
 export default angular.module("scrwebm.catalogos.companias", [ PersonasRegistro.name ])
                       .controller("CompaniasController", ['$scope', '$uibModal', '$timeout', 
 function ($scope, $uibModal, $timeout) {
+
+    // para permitir editar la tabla en base a los roles asignados al usuario 
+    $scope.catalogosEditar = userHasRole('catalogos') || 
+                             userHasRole('catalogos_riesgos') || 
+                             userHasRole('catalogos_contratos') ? true : false; 
+
+    // para pasar al react-component PersonasRegistroModal. La idea es que este react component *solo* muestre ciertos 
+    // links, que permiten grabar modificaciones (editar), si el usuario *no tiene* el rol catalogos-consulta asignado. 
+    const catalogosConsulta = userHasRole('catalogos_consulta');
+    $scope.catalogosConsulta = catalogosConsulta;  
 
     $scope.showProgress = false;
 

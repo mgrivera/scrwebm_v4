@@ -12,7 +12,7 @@ import Lista from './Lista';
 import Detalles from './Detalles';
 import Nuevo from './Nuevo'; 
 
-const PersonasRegistro =  ({ companiaSeleccionada, toogleOpenPersonasModal}) => { 
+const PersonasRegistro = ({ companiaSeleccionada, toogleOpenPersonasModal, catalogosEditar }) => { 
 
     const [showModal, setShowModal] = useState(true);
     const [currentTab, setCurrentTab] = useState(1);
@@ -78,7 +78,8 @@ const PersonasRegistro =  ({ companiaSeleccionada, toogleOpenPersonasModal}) => 
                             <Lista items={items}
                                    setCurrentTab={setCurrentTab}
                                    setMessage={setMessage}
-                                   setClickedRow={setClickedRow} />
+                                   setClickedRow={setClickedRow} 
+                                   catalogosEditar={catalogosEditar} />
                         </Tab>
 
                         <Tab eventKey={2} title="Detalles" style={{ padding: '10px' }}>
@@ -87,24 +88,34 @@ const PersonasRegistro =  ({ companiaSeleccionada, toogleOpenPersonasModal}) => 
                                           setItems={setItems}
                                           clickedRow={clickedRow}
                                           setMessage={setMessage}
-                                          setCurrentTab={setCurrentTab} />}
+                                          setCurrentTab={setCurrentTab} 
+                                          catalogosEditar={catalogosEditar} />}
                         </Tab>
 
-                        <Tab eventKey={3} title="Nuevo" style={{ padding: '10px' }}>
-                            {(currentTab === 3) &&
-                                <Nuevo items={items}
-                                    setItems={setItems}
-                                    setMessage={setMessage}
-                                    setCurrentTab={setCurrentTab} />}
-                        </Tab>
+                        { 
+                            // mostramos un tab Nuevo *solo* si el usuario no tiene asignado el rol catalogos_consulta 
+                            catalogosEditar && 
+                            <Tab eventKey={3} title="Nuevo" style={{ padding: '10px' }}>
+                                {(currentTab === 3) &&
+                                    <Nuevo items={items}
+                                        setItems={setItems}
+                                        setMessage={setMessage}
+                                        setCurrentTab={setCurrentTab} />}
+                            </Tab>
+                        }
                     </Tabs>
                 </Modal.Body>
 
                 <Modal.Footer>
                     <>
-                        <Button bsStyle="primary" bsSize="small" onClick={() => handleModalClose_keepChanges()} disabled={!items.some(x => x.docState)}>
-                            Cerrar - mantener cambios
-                        </Button>
+                        {   
+                            // si el usuario tiene el rol catalogos_consulta no mostramos los links que permiten Editar 
+                            catalogosEditar && 
+                        
+                            <Button bsStyle="primary" bsSize="small" onClick={() => handleModalClose_keepChanges()} disabled={!items.some(x => x.docState)}>
+                                Cerrar - mantener cambios
+                            </Button>
+                        }
                         <Button bsStyle="warning" bsSize="small" onClick={() => handleModalClose()}>Cerrar</Button>
                     </>
                 </Modal.Footer>
@@ -115,7 +126,10 @@ const PersonasRegistro =  ({ companiaSeleccionada, toogleOpenPersonasModal}) => 
 
 PersonasRegistro.propTypes = {
     companiaSeleccionada: PropTypes.object.isRequired,
-    toogleOpenPersonasModal: PropTypes.func.isRequired
+    toogleOpenPersonasModal: PropTypes.func.isRequired, 
+    // si el usuario tiene este rol asignado, puede consultar las personas por aquí, pero los links que permiten guardar los 
+    // cambios no se muestran 
+    catalogosEditar: PropTypes.bool.isRequired
 };
 
 export default PersonasRegistro; 

@@ -7,6 +7,7 @@ import lodash from 'lodash';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
 
 import { Cumulos } from '/imports/collections/catalogos/cumulos'; 
 import './cumulos.html'; 
@@ -14,6 +15,9 @@ import './cumulos.html';
 export default angular.module("scrwebm.catalogos.cumulos", [])
                       .controller("CumulosController", ['$scope', '$uibModal', 
 function ($scope, $uibModal) {
+
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_generales') ? true : false; 
 
     $scope.showProgress = false;
 

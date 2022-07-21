@@ -6,6 +6,8 @@ import angular from 'angular';
 import lodash from 'lodash'; 
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar';
+import { userHasRole } from '/client/imports/generales/userHasRole';
+
 import { TiposObjetoAsegurado } from '/imports/collections/catalogos/tiposObjetoAsegurado'; 
 
 import './tiposObjetoAsegurado.html'; 
@@ -14,14 +16,18 @@ export default angular.module("scrwebm.catalogos.tiposObjetoAsegurado", [])
                       .controller("TiposObjetoAseguradoController", ['$scope', 
 function ($scope) {
 
-      $scope.showProgress = false;
+    // para permitir editar la tabla en base a los roles asignados al usuario 
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_riesgos') ? true : false; 
 
-      // ui-bootstrap alerts ...
-      $scope.alerts = [];
+    $scope.showProgress = false;
 
-      $scope.closeAlert = function (index) {
-          $scope.alerts.splice(index, 1);
-      }
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
+
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    }
 
     $scope.list_ui_grid = {
         enableSorting: true,

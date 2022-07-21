@@ -8,7 +8,7 @@ import './toolBar.css';
 import ReactDataGrid from 'react-data-grid';
 import './react_data_grid.css'; 
 
-const TableToolBar = ({ data, setCurrentTab, setMessage }) => {
+const TableToolBar = ({ data, setCurrentTab, setMessage, catalogosEditar }) => {
 
     const pagingText = `(${data.length} registros)`;
 
@@ -25,11 +25,15 @@ const TableToolBar = ({ data, setCurrentTab, setMessage }) => {
         <>
             <Navbar collapseOnSelect fluid className="toolBar">
                 <Navbar.Collapse>
-                    <Nav onSelect={handleSelect}>
-                        <NavItem eventKey={1} className="navBar_button">
-                            Nuevo
-                        </NavItem>
-                    </Nav>
+                    {
+                        catalogosEditar && 
+                    
+                        <Nav onSelect={handleSelect}>
+                            <NavItem eventKey={1} className="navBar_button">
+                                Nuevo
+                            </NavItem>
+                        </Nav>
+                    }
 
                     <Nav pullRight>
                         <Navbar.Text>
@@ -45,7 +49,8 @@ const TableToolBar = ({ data, setCurrentTab, setMessage }) => {
 TableToolBar.propTypes = {
     data: PropTypes.array.isRequired, 
     setCurrentTab: PropTypes.func.isRequired, 
-    setMessage: PropTypes.func.isRequired
+    setMessage: PropTypes.func.isRequired, 
+    catalogosEditar: PropTypes.bool.isRequired
 };
 
 const reactDataGridDocStateFormatter = ({ value }) => {
@@ -67,7 +72,7 @@ const columns = [
     { key: 'email', name: 'Email', sortable: true, sortDescendingFirst: false, resizable: true, width: 260 }
 ];
 
-const Lista = ({ items, setCurrentTab, setClickedRow, setMessage }) => {
+const Lista = ({ items, setCurrentTab, setClickedRow, setMessage, catalogosEditar }) => {
 
     const handleRowClick = (index) => {
         // mostramos el item en el tab 2
@@ -79,7 +84,11 @@ const Lista = ({ items, setCurrentTab, setClickedRow, setMessage }) => {
 
     return (
         <>
-            <TableToolBar data={items} setCurrentTab={setCurrentTab} setMessage={setMessage} />
+            <TableToolBar data={items} 
+                          setCurrentTab={setCurrentTab} 
+                          setMessage={setMessage} 
+                          catalogosEditar={catalogosEditar} />
+
             <div className="div-react-data-grid">
                 <ReactDataGrid
                     columns={columns}
@@ -97,7 +106,8 @@ Lista.propTypes = {
     items: PropTypes.array.isRequired, 
     setCurrentTab: PropTypes.func.isRequired,
     setClickedRow: PropTypes.func.isRequired, 
-    setMessage: PropTypes.func.isRequired
+    setMessage: PropTypes.func.isRequired, 
+    catalogosEditar: PropTypes.bool.isRequired
 };
 
 export default Lista; 

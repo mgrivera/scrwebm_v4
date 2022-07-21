@@ -7,13 +7,19 @@ import lodash from 'lodash';
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+import { userHasRole } from '/client/imports/generales/userHasRole';
 
 import { ContratosProp_Configuracion_ListaCodigos } from '/imports/collections/catalogos/ContratosProp_Configuracion'; 
 import { ContProp_tablaConf } from '/client/lib/forerunnerDB'; 
 
-angular.module("scrwebm").controller("ContratosProp_Configuracion_Lista_Controller", ['$scope', '$state', '$uibModal', 
+angular.module("scrwebm")
+       .controller("ContratosProp_Configuracion_Lista_Controller", ['$scope', '$state', '$uibModal', 
 function ($scope, $state, $uibModal) {
 
+    // para permitir editar la tabla en base a los roles asignados al usuario 
+    $scope.catalogosEditar = userHasRole('catalogos') ||
+                             userHasRole('catalogos_contratos') ? true : false;
+    
     $scope.showProgress = true;
 
     // ui-bootstrap alerts ...

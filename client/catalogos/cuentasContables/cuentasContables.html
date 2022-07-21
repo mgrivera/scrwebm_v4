@@ -28,13 +28,13 @@
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a href="#" class="navbar_custom_small_header">Cuentas contables</a></li>
-                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li>
-                            <li><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
+                            <li ng-if="catalogosEditar"><a href="#" class="navbar_custom_small_node_withBackground" ng-click="nuevo()">Nuevo <span class="fa fa-file-o"></span></a></li>
+                            <li ng-if="catalogosEditar"><a href="#" class="navbar_custom_small_node_withBackground" ng-click="save()">Grabar <span class="fa fa-save"></span></a></li>
                         
                         
-                            <li class="divider-vertical-small"></li>
+                            <li ng-if="catalogosEditar" class="divider-vertical-small"></li>
                             
-                            <li class="dropdown">
+                            <li ng-if="catalogosEditar" class="dropdown">
                                 <a href="#" class="dropdown-toggle navbar_custom_small_node_withBackground" data-toggle="dropdown" role="button" aria-expanded="false">Otros <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#" ng-click="importarDesdeExcel()" class="navbar_custom_small_node_withBackground">Importar (desde Excel)&nbsp;&nbsp;<span class="fa fa-file-excel-o"></span></a></li>
