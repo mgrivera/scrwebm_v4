@@ -1,4 +1,7 @@
 
+import { Meteor } from 'meteor/meteor'
+
+import angular from 'angular';
 
 import numeral from 'numeral';
 import moment from 'moment';
@@ -140,8 +143,7 @@ function ($scope, $uibModalInstance, $uibModal, siniestro) {
         }
     ]
 
-
-    var registroLiquidacionesSeleccionado = {};
+    let registroLiquidacionesSeleccionado = {};
 
     $scope.liquidaciones_ui_grid = {
       enableSorting: false,
@@ -233,7 +235,6 @@ function ($scope, $uibModalInstance, $uibModal, siniestro) {
         }
     ]
 
-
     $scope.reservas_ui_grid.data = [];
     $scope.liquidaciones_ui_grid.data = [];
 
@@ -265,7 +266,7 @@ function ($scope, $uibModalInstance, $uibModal, siniestro) {
             return;
         }
 
-        if (!$scope.parametros.fecha || _.isEmpty($scope.parametros.fecha)) {
+        if (!$scope.parametros.fecha || lodash.isEmpty($scope.parametros.fecha)) {
             DialogModal($uibModal, "<em>Siniestros - Construcción de notas de siniestro</em>",
                         `Ud. debe indicar la fecha que se mostrará en el documento.<br /> Ejemplo: Caracas, 25 de Abril del 2.015.`,
                         false).then();
@@ -294,41 +295,45 @@ function ($scope, $uibModalInstance, $uibModal, siniestro) {
                          file.name,
                          siniestro._id,
                          registroReservaSeleccionado._id,
-                         $scope.parametros.fecha, 
-                         (err, result) => {
+                         $scope.parametros.fecha, (err, result) => {
 
-                    if (err) {
-                        let errorMessage = mensajeErrorDesdeMethod_preparar(err);
-
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({ type: 'danger', msg: errorMessage });
-
-                        $scope.showProgress = false;
-                        $scope.$apply();
-
-                        return;
-                    }
-
-                    if (result.error) {
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({ type: 'danger', msg: result.message });
-
-                        $scope.showProgress = false;
-                        $scope.$apply();
-
-                        return;
-                    }
+                if (err) {
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
-                    $scope.alerts.push({
-                        type: 'info',
-                        msg: result.message,
-                    });
-
-                    $scope.tipoPlantillaWord = null;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
                     $scope.showProgress = false;
                     $scope.$apply();
+
+                    return;
+                }
+
+                if (result.error) {
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: result.message });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+
+                    return;
+                }
+
+                // agregamos un link para que el usuario pueda hacer un download del documento (desde Dropbox)
+                const downloadLink = document.createElement('a');
+                downloadLink.setAttribute('href', result.sharedLink);
+                downloadLink.setAttribute('download', "nota de reserva de siniestro");
+                downloadLink.innerText = 'Download: ' + "nota de reserva de siniestro";
+                downloadLink.target = '_blank'
+
+                const listItem = document.createElement('li');
+                listItem.appendChild(downloadLink);
+                document.getElementById('results').appendChild(listItem);
+
+                $scope.tipoPlantillaWord = null;
+
+                $scope.showProgress = false;
+                $scope.$apply();
             })
         }
 
@@ -342,38 +347,43 @@ function ($scope, $uibModalInstance, $uibModal, siniestro) {
                          $scope.parametros.fecha, 
                          (err, result) => {
 
-                     if (err) {
-                         let errorMessage = mensajeErrorDesdeMethod_preparar(err);
-
-                         $scope.alerts.length = 0;
-                         $scope.alerts.push({ type: 'danger', msg: errorMessage });
-
-                         $scope.showProgress = false;
-                         $scope.$apply();
-
-                         return;
-                     }
-
-                     if (result.error) {
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({ type: 'danger', msg: result.message });
-
-                        $scope.showProgress = false;
-                        $scope.$apply();
-
-                        return;
-                    }
+                if (err) {
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
                     $scope.alerts.length = 0;
-                    $scope.alerts.push({
-                        type: 'info',
-                        msg: result.message,
-                    });
-
-                    $scope.tipoPlantillaWord = null;
+                    $scope.alerts.push({ type: 'danger', msg: errorMessage });
 
                     $scope.showProgress = false;
                     $scope.$apply();
+
+                    return;
+                }
+
+                if (result.error) {
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({ type: 'danger', msg: result.message });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+
+                    return;
+                }
+
+                // agregamos un link para que el usuario pueda hacer un download del documento (desde Dropbox)
+                const downloadLink = document.createElement('a');
+                downloadLink.setAttribute('href', result.sharedLink);
+                downloadLink.setAttribute('download', "nota de liquidación de siniestro");
+                downloadLink.innerText = 'Download: ' + "nota de liquidación de siniestro";
+                downloadLink.target = '_blank'
+
+                const listItem = document.createElement('li');
+                listItem.appendChild(downloadLink);
+                document.getElementById('results').appendChild(listItem);
+
+                $scope.tipoPlantillaWord = null;
+
+                $scope.showProgress = false;
+                $scope.$apply();
             })
         }
     }
@@ -385,7 +395,7 @@ function ($scope, $uibModalInstance, $uibModal, siniestro) {
     Meteor.call('plantillas.obtenerListaArchivosDesdeDirectorio', "/siniestros/notas", (err, result) => {
 
         if (err) {
-            let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({ type: 'danger', msg: errorMessage });

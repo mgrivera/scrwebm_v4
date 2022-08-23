@@ -1,5 +1,4 @@
 
-
 <div class="modal-header">
     <h5 class="modal-title">
         Siniestros - Construir notas de siniestro
@@ -129,17 +128,23 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-4" style="font-size: small; ">
+            <!-- <div class="col-sm-4" style="font-size: small; ">
                 <li ng-if="downLoadWordDocument_reservas">
                     <a href="{{downLoadLink_reservas}}" target="_self" download>{{ selectedFile_reservas.original.name }}</a>
                 </li>
+            </div> -->
+
+            <div class="col-sm-6" style="font-size: small; ">
+                <label class="control-label myinput-sm">Click para obtener (download) el documento construido:</label>
+                <ol name="results" id="results">
+                </ol>
             </div>
 
-            <div class="col-sm-4" style="font-size: small; ">
+            <!-- <div class="col-sm-4" style="font-size: small; ">
                 <li ng-if="downLoadWordDocument_liquidaciones">
                     <a href="{{downLoadLink_liquidaciones}}" target="_self" download>{{ selectedFile_liquidaciones.original.name }}</a>
                 </li>
-            </div>
+            </div> -->
         </div>
 
     </div>

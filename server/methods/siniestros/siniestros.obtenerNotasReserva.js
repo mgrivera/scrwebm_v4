@@ -27,9 +27,11 @@ import { Ramos } from '/imports/collections/catalogos/ramos';
 import { Asegurados } from '/imports/collections/catalogos/asegurados'; 
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 
+import { dropBoxCreateSharedLink } from '/server/imports/general/dropbox/createSharedLink'; 
+
 Meteor.methods(
 {
-    'siniestros.obtenerNotasReserva': function (folderPath, fileName, siniestroId, reservaId, fecha) {
+    'siniestros.obtenerNotasReserva': async function (folderPath, fileName, siniestroId, reservaId, fecha) {
 
         new SimpleSchema({
             fileName: { type: String, optional: false, },
@@ -47,8 +49,6 @@ Meteor.methods(
             message = `Error: el usuario no tiene un nombre asociado en la tabla de usuarios. <br /> 
                         Para resolver este error, abra la opción: <em>Administración / Usuarios</em> y asocie un nombre al usuario.
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-
             return { 
                 error: true, 
                 message: message, 
@@ -58,8 +58,7 @@ Meteor.methods(
         // el template debe ser siempre un documento word ...
         if (!fileName || !fileName.endsWith('.docx')) {
             message = `El archivo debe ser un documento Word (.docx).`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-
+            
             return { 
                 error: true, 
                 message: message, 
@@ -71,8 +70,7 @@ Meteor.methods(
         if (!companiaSeleccionada) {
             message = `Error inesperado: no pudimos leer la compañía seleccionada por el usuario.<br />
                        Se ha seleccionado una compañía antes de ejecutar este proceso?`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-
+            
             return { 
                 error: true, 
                 message: message, 
@@ -84,8 +82,7 @@ Meteor.methods(
 
         if (!siniestro) {
             message = `Error inesperado: no pudimos leer el siniestro indicado en la base de datos.`;
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-
+            
             return {
                 error: true,
                 message: message,
@@ -96,50 +93,49 @@ Meteor.methods(
 
         if (!reserva) {
             message = `Error inesperado: aunque pudimos leer el siniestro en la base de datos, no pudimos obtener la reserva que se ha seleccionado.`;
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
-
+            
             return {
                 error: true,
                 message: message,
             }
         }
 
-         const compania = Companias.findOne(siniestro.compania);
-         const asegurado = Asegurados.findOne(siniestro.asegurado);
-         const ramo = Ramos.findOne(siniestro.ramo);
-         const ajustador = Companias.findOne(siniestro.ajustador);
-         const suscriptor = Suscriptores.findOne(siniestro.suscriptor);
-         const moneda = Monedas.findOne(reserva.moneda);
+        const compania = Companias.findOne(siniestro.compania);
+        const asegurado = Asegurados.findOne(siniestro.asegurado);
+        const ramo = Ramos.findOne(siniestro.ramo);
+        const ajustador = Companias.findOne(siniestro.ajustador);
+        const suscriptor = Suscriptores.findOne(siniestro.suscriptor);
+        const moneda = Monedas.findOne(reserva.moneda);
 
-         // intentamos leer el riesgo (el usuario pudo o no asociar uno)
-         let riesgo = {};
-         let riesgoMovimiento = {};
-         let poliza = "";
-         let movimientoDocumentos = [];
+        // intentamos leer el riesgo (el usuario pudo o no asociar uno)
+        let riesgo = {};
+        let riesgoMovimiento = {};
+        let poliza = "";
+        let movimientoDocumentos = [];
 
-         // buscamos una descripción para el tipo de reserva
-         const tiposReserva = [
-             { tipo: 'NOT', descripcion: 'Notificación' },
-             { tipo: 'AUM', descripcion: 'Aumento' },
-             { tipo: 'DIS', descripcion: 'Disminución' },
-             { tipo: 'ANU', descripcion: 'Anulada' }
-         ];
+        // buscamos una descripción para el tipo de reserva
+        const tiposReserva = [
+            { tipo: 'NOT', descripcion: 'Notificación' },
+            { tipo: 'AUM', descripcion: 'Aumento' },
+            { tipo: 'DIS', descripcion: 'Disminución' },
+            { tipo: 'ANU', descripcion: 'Anulada' }
+        ]
 
-         const tipoReservaDescripcion = lodash.find(tiposReserva, (x) => { return x.tipo === reserva.tipo; });
+        const tipoReservaDescripcion = lodash.find(tiposReserva, (x) => { return x.tipo === reserva.tipo; });
 
-         if (siniestro.source && siniestro.source.origen == 'fac' && siniestro.source.entityID && siniestro.source.subEntityID) {
-             riesgo = Riesgos.findOne(siniestro.source.entityID);
+        if (siniestro.source && siniestro.source.origen == 'fac' && siniestro.source.entityID && siniestro.source.subEntityID) {
+            riesgo = Riesgos.findOne(siniestro.source.entityID);
 
-             if (riesgo) {
-                 riesgoMovimiento = lodash.find(riesgo.movimientos, (x) => { return x._id === siniestro.source.subEntityID; });
+            if (riesgo) {
+                riesgoMovimiento = lodash.find(riesgo.movimientos, (x) => { return x._id === siniestro.source.subEntityID; });
 
-                 poliza = lodash.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
+                poliza = lodash.find(riesgo.documentos, (x) => { return x.tipo === 'POL'; });
 
-                 if (riesgoMovimiento) {
-                     movimientoDocumentos = riesgoMovimiento.documentos;
-                 }
-             }
-         }
+                if (riesgoMovimiento) {
+                    movimientoDocumentos = riesgoMovimiento.documentos;
+                }
+            }
+        }
 
         // leemos los reaseguradores y creamos un documento para cada uno
         const reaseguradores = siniestro && siniestro.companias && lodash.isArray(siniestro.companias) ?
@@ -210,16 +206,15 @@ Meteor.methods(
         filePath = filePath.replace(/\\/g,"/");
 
         // SEGUNDO leemos el file 
-        const token = Meteor.settings.public.dropBox_appToken;      // this is the Dropbox app token 
+        const dropBoxAccessToken = Meteor.settings.public.dropBox_appToken;      // this is the Dropbox app token 
         let readStream = null; 
 
         try {
-            readStream = Promise.await(readFile(token, filePath));
+            readStream = Promise.await(readFile(dropBoxAccessToken, filePath));
         } catch(err) { 
             message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -236,7 +231,6 @@ Meteor.methods(
             message = `Error: se ha producido un error al intentar leer el archivo ${filePath} desde Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
                         `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
 
             return { 
                 error: true, 
@@ -278,42 +272,47 @@ Meteor.methods(
 
         let nombreUsuario2 = nombreUsuario.replace(/\./g, "_");           // nombre del usuario: reemplazamos un posible '.' por un '_' 
         nombreUsuario2 = nombreUsuario2.replace(/@/g, "_");              // nombre del usuario: reemplazamos un posible '@' por un '_' 
-        
+
         // construimos un id único para el archivo, para que el usuario pueda tener más de un resultado para la misma 
         // plantilla. La fecha está en Dropbox ... 
-        const fileId = new Mongo.ObjectID()._str.substring(0, 6); 
+        const fileId = new Mongo.ObjectID()._str.substring(0, 6);
 
         const fileName2 = fileName.replace('.docx', `_${nombreUsuario2}_${fileId}.docx`);
 
         // finalmente, escribimos el archivo resultado, al directorio tmp 
-        let filePath2 = path.join(folderPath, "tmp", fileName2); 
+        let filePath2 = path.join(folderPath, "tmp", fileName2);
 
         // en windows, path regresa back en vez de forward slashes ... 
-        filePath2 = filePath2.replace(/\\/g,"/");
+        filePath2 = filePath2.replace(/\\/g, "/");
 
         try {
-            Promise.await(writeFile(token, filePath2, buf));
-        } catch(err) { 
+            Promise.await(writeFile(dropBoxAccessToken, filePath2, buf));
+        } catch (err) {
             message = `Error: se ha producido un error al intentar escribir el archivo ${filePath2} a Dropbox. <br />
                         El mensaje del error obtenido es: ${err}
-                        `; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+                        `;
 
-            return { 
-                error: true, 
-                message: message, 
+            return {
+                error: true,
+                message: message,
             }
-        } 
+        }
 
-        message = `Ok, la plantilla ha sido aplicada a los datos seleccionados y el documento Word ha sido construido 
-                   en forma satisfactoria. <br /> 
-                   El resultado ha sido escrito al archivo <b><em>${filePath2}</em></b>, en el Dropbox del programa.  
-                  `; 
-        message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres???
+        // ------------------------------------------------------------------------------------------------
+        // con esta función creamos un download link para que el usuario pueda tener el archivo en su pc 
+        const result = await dropBoxCreateSharedLink(filePath2);
 
-        return { 
-            error: false, 
-            message: message, 
+        if (result.error) {
+            return {
+                error: true,
+                message: result.message
+            }
+        } else {
+            // regresamos el link 
+            return {
+                error: false,
+                sharedLink: result.sharedLink,
+            }
         }
     }
 })
