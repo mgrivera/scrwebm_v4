@@ -551,7 +551,7 @@ const Contrato_SimpleSchema = new SimpleSchema({
 
     tipo: { type:String, optional: false, },
     referencia: { type: String, min: 1, optional: false, },
-    ramo: { type: String, optional: true },
+    ramo: { type: String, optional: false },
     descripcion: { type: String, optional: true },
     renovacion: { type: renovacion_SimpleSchema, optional: true },
 

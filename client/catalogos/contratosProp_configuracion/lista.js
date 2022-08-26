@@ -167,6 +167,8 @@ function ($scope, $state, $uibModal) {
         });
     };
 
+    let subscriptionHandle = null; 
+
     $scope.save = function () {
             $scope.showProgress = true;
 
@@ -232,32 +234,46 @@ function ($scope, $state, $uibModal) {
                 $scope.codigosContrato_ui_grid.data = [];
                 itemSeleccionado = {};
 
-                $scope.subscribe('contratosProp.configuracion.listaCodigos', () => [companiaSeleccionada._id], {
-                    onReady: function () {
-                        $scope.helpers({
-                            contratosProp_configuracion_listaCodigos: () => {
-                                return ContratosProp_Configuracion_ListaCodigos.find({ cia: companiaSeleccionada._id });
-                            },
-                        });
+                $scope.showProgress = true;
 
-                        $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
+                // si se efectuó un subscription al collection antes, la detenemos ...
+                if (subscriptionHandle && subscriptionHandle.stop) {
+                    subscriptionHandle.stop();
+                }
 
-                        $scope.alerts.length = 0;
-                        $scope.alerts.push({
-                            type: 'info',
-                            msg: result
-                        });
+                subscriptionHandle = 
+                Meteor.subscribe('contratosProp.configuracion.listaCodigos', companiaSeleccionada._id, () => {
 
-                        $scope.showProgress = false;
-                        $scope.$apply();
-                    }
+                    $scope.helpers({
+                        contratosProp_configuracion_listaCodigos: () => {
+                            return ContratosProp_Configuracion_ListaCodigos.find({ cia: companiaSeleccionada._id });
+                        },
+                    });
+
+                    $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
+
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'info',
+                        msg: result
+                    });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
                 })
             })
     }
 
     $scope.showProgress = true;
-    $scope.subscribe('contratosProp.configuracion.listaCodigos', () => [companiaSeleccionada._id], {
-        onReady: function () {
+
+    // si se efectuó un subscription al collection antes, la detenemos ...
+    if (subscriptionHandle && subscriptionHandle.stop) {
+        subscriptionHandle.stop();
+    }
+
+    subscriptionHandle = 
+    Meteor.subscribe('contratosProp.configuracion.listaCodigos', companiaSeleccionada._id, () => {
+
             $scope.helpers({
                 contratosProp_configuracion_listaCodigos: () => {
                     return ContratosProp_Configuracion_ListaCodigos
@@ -268,7 +284,6 @@ function ($scope, $state, $uibModal) {
             $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
 
             $scope.showProgress = false;
-        }
     })
 
     $scope.leerTablaConfiguracionContrato = () => {
@@ -293,4 +308,10 @@ function ($scope, $state, $uibModal) {
         $state.go("catalogos.contrProp_configuracion.contratosListaProp_configuracion_tabla",
                 { codigoContrato: itemSeleccionado.codigo });
     }
-}]);
+
+    $scope.$on('$destroy', function () {
+        if (subscriptionHandle && subscriptionHandle.stop) {
+            subscriptionHandle.stop();
+        }
+    })
+}])

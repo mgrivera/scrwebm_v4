@@ -12,6 +12,8 @@ import uiRouter from 'angular-ui-router';
 import 'angular-ui-grid';
 import 'angular-ui-bootstrap'; 
 
+import "/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-csp.css"; 
+
 // nótese que importamos los assets de npm packages ...
 import "/node_modules/angular-ui-grid/ui-grid.css";  
 // import 'angular-ui-grid/ui-grid.css';
