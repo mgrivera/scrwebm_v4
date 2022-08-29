@@ -121,6 +121,8 @@ function ($scope) {
 
         $scope.coberturas_ui_grid.data = $scope.coberturas;
         $scope.showProgress = false;
+
+        $scope.$apply();
     })
     // ---------------------------------------------------------
 

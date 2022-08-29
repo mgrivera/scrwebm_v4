@@ -354,6 +354,7 @@ function ($scope, $uibModal, $timeout) {
 
         $scope.companias_ui_grid.data = $scope.companias;
         $scope.showProgress = false;
+        $scope.$apply();
     });
 
     $scope.save = () => {

@@ -138,6 +138,7 @@ function ($scope) {
 
         $scope.monedas_ui_grid.data = $scope.monedas;
         $scope.showProgress = false;
+        $scope.$apply();
     })
     // ---------------------------------------------------------
 

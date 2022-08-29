@@ -125,6 +125,8 @@ function ($scope) {
 
         $scope.suscriptores_ui_grid.data = $scope.suscriptores;
         $scope.showProgress = false;
+
+        $scope.$apply();
     })
     // ---------------------------------------------------------
 

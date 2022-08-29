@@ -129,6 +129,8 @@ function ($scope) {
 
         $scope.tiposFacultativo_ui_grid.data = $scope.tiposFacultativo;
         $scope.showProgress = false;
+
+        $scope.$apply();
     })
     // ---------------------------------------------------------
 

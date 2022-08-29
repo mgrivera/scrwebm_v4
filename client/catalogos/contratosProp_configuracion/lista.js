@@ -274,16 +274,17 @@ function ($scope, $state, $uibModal) {
     subscriptionHandle = 
     Meteor.subscribe('contratosProp.configuracion.listaCodigos', companiaSeleccionada._id, () => {
 
-            $scope.helpers({
-                contratosProp_configuracion_listaCodigos: () => {
-                    return ContratosProp_Configuracion_ListaCodigos
-                                .find({ cia: companiaSeleccionada._id }, { sort: { codigo: 1, }});
-                },
-            });
+        $scope.helpers({
+            contratosProp_configuracion_listaCodigos: () => {
+                return ContratosProp_Configuracion_ListaCodigos
+                            .find({ cia: companiaSeleccionada._id }, { sort: { codigo: 1, }});
+            },
+        });
 
-            $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
+        $scope.codigosContrato_ui_grid.data = $scope.contratosProp_configuracion_listaCodigos;
 
-            $scope.showProgress = false;
+        $scope.showProgress = false;
+        $scope.$apply();
     })
 
     $scope.leerTablaConfiguracionContrato = () => {

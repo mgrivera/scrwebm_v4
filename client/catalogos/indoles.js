@@ -121,8 +121,8 @@ function ($scope) {
         });
 
         $scope.indoles_ui_grid.data = $scope.indoles;
-
         $scope.showProgress = false;
+        $scope.$apply();
     })
 
     $scope.deleteItem = function (item) {

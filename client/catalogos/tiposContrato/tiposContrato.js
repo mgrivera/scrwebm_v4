@@ -131,6 +131,8 @@ function ($scope) {
 
         $scope.tiposContrato_ui_grid.data = $scope.tiposContrato;
         $scope.showProgress = false;
+
+        $scope.$apply();
     })
     // ---------------------------------------------------------
 

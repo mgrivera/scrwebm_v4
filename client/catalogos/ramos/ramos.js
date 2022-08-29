@@ -145,8 +145,8 @@ function ($scope) {
 
         $scope.ramos_ui_grid.data = $scope.ramos;
         $scope.showProgress = false;
+        $scope.$apply();
     })
-
 
     $scope.deleteItem = function (item) {
         item.docState = 3;

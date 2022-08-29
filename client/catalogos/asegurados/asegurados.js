@@ -127,6 +127,8 @@ function ($scope) {
 
         $scope.asegurados_ui_grid.data = $scope.asegurados;
         $scope.showProgress = false;
+        
+        $scope.$apply();
     })
 
     $scope.deleteItem = function (item) {
@@ -198,40 +200,40 @@ function ($scope) {
 
         Meteor.call('aseguradosSave', editedItems, (err, result) => {
 
-        if (err) {
-            const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+            if (err) {
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: errorMessage
+                });
+
+                $scope.asegurados_ui_grid.data = $scope.asegurados;
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
-                type: 'danger',
-                msg: errorMessage
+                type: 'info',
+                msg: result
+            });
+
+            // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
+            $scope.helpers({
+                asegurados: () => {
+                    return Asegurados.find({}, { sort: { nombre: 1 } });
+                },
             });
 
             $scope.asegurados_ui_grid.data = $scope.asegurados;
-
             $scope.showProgress = false;
+
             $scope.$apply();
-
-            return;
-        }
-
-        $scope.alerts.length = 0;
-        $scope.alerts.push({
-            type: 'info',
-            msg: result
-        });
-
-        // nótese como restablecemos el binding entre angular ($scope) y meteor (collection)
-        $scope.helpers({
-            asegurados: () => {
-                return Asegurados.find({}, { sort: { nombre: 1 } });
-            },
-        });
-
-        $scope.asegurados_ui_grid.data = $scope.asegurados;
-        $scope.showProgress = false;
-
-        $scope.$apply();
     })}
 
     $scope.$on('$destroy', function () {

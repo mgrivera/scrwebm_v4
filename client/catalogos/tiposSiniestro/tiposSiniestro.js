@@ -130,6 +130,8 @@ function ($scope) {
 
         $scope.tiposSiniestro_ui_grid.data = $scope.tiposSiniestro;
         $scope.showProgress = false;
+
+        $scope.$apply();
     })
     // ---------------------------------------------------------
 
