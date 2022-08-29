@@ -239,7 +239,10 @@ function ($scope, $state, $stateParams, $uibModal) {
 
             const newItems = result.data.slice();
 
-            for (const item of newItems) { 
+            for (let item of newItems) { 
+
+                // en ocasiones, los keys y/o valores vienen con espacios; muchas veces esto es hecho por Excel cuando convertimos 
+                item = JSON.parse(JSON.stringify(item).replace(/"\s+|\s+"/g, '"'))
 
                 item._id = new Mongo.ObjectID()._str; 
                 item.codigo = $scope.codigoContrato; 
@@ -255,22 +258,26 @@ function ($scope, $state, $stateParams, $uibModal) {
                     let message = `Se han encontrado errores al intentar leer el archivo con los registros para actualizar. <br /><br /><ul>`;
 
                     if (!compania) { 
-                        message += `<li>La compañía indicada no existe en la tabla de compañías.</li>`
+                        message += `<li>La compañía indicada no existe en la tabla de compañías.<br />Compañía no encontrada: ${item.empresa}.</li>`
                     }
 
                     if (!moneda) {
-                        message += `<li>La moneda indicada no existe en la tabla de monedas.</li>`
+                        message += `<li>La moneda indicada no existe en la tabla de monedas.<br />Moneda no encontrada: ${item.moneda}.</li>`
                     }
 
                     if (!ramo) {
-                        message += `<li>El ramo indicado no existe en la tabla de ramos.</li>`
+                        message += `<li>El ramo indicado no existe en la tabla de ramos.<br />Ramo no encontrado: ${item.ramo}.</li>`
                     }
 
                     if (!tipoContrato) {
-                        message += `<li>El tipo de contrato indicado no existe en la tabla de tipos de contrato.</li>`
+                        message += `<li>El tipo de contrato indicado no existe en la tabla de tipos de contrato.<br />Tipo de contratos no encontrado: ${item.tipoContrato}.</li>`
                     }
 
-                    message += `<ul>`
+                    message += `<br />`; 
+                    message += `<br />`; 
+                    message += `<li>Esta es la linea leída desde el archivo.<br />${JSON.stringify(item, null, 5)}.</li>`
+
+                    message += `</ul>`
 
 
                     $scope.alerts.length = 0;
@@ -296,12 +303,21 @@ function ($scope, $state, $stateParams, $uibModal) {
                 // convertimos a valores numéricos; por alguna razón, Excel pone comillas en valores también numéricos 
                 item.ano = parseInt(item.lapso ? item.lapso : 0); 
 
-                item.ordenPorc = parseFloat(item.ordenPorc ? item.ordenPorc : 0); 
-                item.comisionPorc = parseFloat(item.comisionPorc ? item.comisionPorc : 0);  
-                item.imp1Porc = parseFloat(item.imp1Porc ? item.imp1Porc : 0);  
-                item.imp2Porc = parseFloat(item.imp2Porc ? item.imp2Porc : 0);  
-                item.imp3Porc = parseFloat(item.imp3Porc ? item.imp3Porc : 0);  
-                item.corretajePorc = parseFloat(item.corretajePorc ? item.corretajePorc : 0);  
+                // parseFloat regresará NaN si viene, por ejemplo, un string, como '-' 
+                item.ordenPorc = parseFloat(item.ordenPorc);
+                item.comisionPorc = parseFloat(item.comisionPorc);
+                item.imp1Porc = parseFloat(item.imp1Porc);
+                item.imp2Porc = parseFloat(item.imp2Porc);
+                item.imp3Porc = parseFloat(item.imp3Porc);
+                item.corretajePorc = parseFloat(item.corretajePorc);  
+
+                // ahora convertimos cualquier NaN en 0 
+                item.ordenPorc = !Number.isNaN(item.ordenPorc) ? item.ordenPorc : 0; 
+                item.comisionPorc = !Number.isNaN(item.comisionPorc) ? item.comisionPorc : 0;  
+                item.imp1Porc = !Number.isNaN(item.imp1Porc) ? item.imp1Porc : 0;  
+                item.imp2Porc = !Number.isNaN(item.imp2Porc) ? item.imp2Porc : 0;  
+                item.imp3Porc = !Number.isNaN(item.imp3Porc) ? item.imp3Porc : 0;  
+                item.corretajePorc = !Number.isNaN(item.corretajePorc) ? item.corretajePorc : 0;  
 
                 delete item.lapso; 
                 delete item.empresa; 
