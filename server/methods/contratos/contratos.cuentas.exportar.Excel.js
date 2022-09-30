@@ -302,6 +302,7 @@ Meteor.methods(
                     moneda: moneda.simbolo ? moneda.simbolo : 'Indef',
                     monedaTipoRow: 'd',
                     compania: companias.find((x) => { return x._id === s.compania; }).abreviatura,
+                    serie: s.serie, 
                     nosotros: s.nosotros ? 'ok' : '',
                     primas: s.prima ? s.prima : 0,
                     ordenPorc: '0',
@@ -339,6 +340,7 @@ Meteor.methods(
                 moneda: moneda.simbolo ? moneda.simbolo : 'Indef',
                 monedaTipoRow: 't',
                 compania: '',
+                serie: '', 
                 nosotros: '',
                 primas: 0,                  // las primas (100%) son siempre las mismas para todas las compañías
                 primaBruta: sumByMon_primaBruta ? sumByMon_primaBruta : 0,
@@ -428,45 +430,12 @@ Meteor.methods(
             distribucion: lodash.orderBy(distribucionArray, ['moneda', 'monedaTipoRow', 'nosotros', 'compania', 'companiaTipoRow', 'ramo', 'tipo', 'serie'],
                                                             ['asc', 'asc', 'desc', 'asc', 'asc', 'asc', 'asc', 'asc']),
 
-            saldos: lodash.orderBy(saldosArray, ['moneda', 'monedaTipoRow', 'nosotros', 'compania', 'companiaTipoRow'],
-                                                ['asc', 'asc', 'desc', 'asc', 'asc']),
+            saldos: lodash.orderBy(saldosArray, ['moneda', 'monedaTipoRow', 'nosotros', 'compania', 'companiaTipoRow', 'serie'],
+                                                ['asc', 'asc', 'desc', 'asc', 'asc', 'asc']),
 
             cuotas: lodash.orderBy(cuotasArray, ['moneda', 'monedaTipoRow', 'compania', 'fecha'],
                                                 ['asc', 'asc', 'asc', 'asc']),
         };
-
-
-        // // Open a workbook
-        // const workbook = new XlsxInjector(templatePath);
-        // const sheetNumber = 1;
-        // workbook.substitute(sheetNumber, values);
-        // // Save the workbook
-        // workbook.writeFile(outputPath);
-
-
-        // // leemos el archivo que resulta de la instrucción anterior; la idea es pasar este 'nodebuffer' a la función que sigue para:
-        // // 1) grabar el archivo a collectionFS; 2) regresar su url (para hacer un download desde el client) ...
-        // const buf = fs.readFileSync(outputPath);      // no pasamos 'utf8' como 2do. parámetro; readFile regresa un buffer
-
-        // // el meteor method *siempre* resuelve el promise *antes* de regresar al client; el client recive el resultado del
-        // // promise y no el promise object; en este caso, el url del archivo que se ha recién grabado (a collectionFS) ...
-
-        // // nótese que en el tipo de plantilla ponemos 'no aplica'; la razón es que esta plantilla no es 'cargada' por el usuario y de las
-        // // cuales hay diferentes tipos (islr, iva, facturas, cheques, ...). Este tipo de plantilla es para obtener algún tipo de reporte
-        // // en excel y no tiene un tipo definido ...
-        // return grabarDatosACollectionFS_regresarUrl(buf, outputFileName, 'no aplica', 'scrwebm', ciaSeleccionada, Meteor.user(), 'xlsx');
-
-
-
-
-
-
-
-
-
-
-
-
 
         // ---------------------------------------------------------------------------------------------------------------
         // leemos la plantilla (excel) desde el DropBox y la escribimos a un archivo en el fs

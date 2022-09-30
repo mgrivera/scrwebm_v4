@@ -75,5 +75,4 @@ function ($scope, $uibModalInstance, contratoID, definicionCuentaTecnicaSeleccio
             $scope.$apply();
         })
     }
-}
-])
+}])
