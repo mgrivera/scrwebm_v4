@@ -18,6 +18,8 @@ import { registroCierre_simpleSchema_validar_import } from './registroCierre_sim
 import { Monedas } from '/imports/collections/catalogos/monedas'; 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
+import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';
+import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { convertFromStringToDate } from '/imports/funciones/DateFunctions'; 
@@ -44,6 +46,17 @@ function ($scope, $uibModal, $interval) {
         message: ''
     }
 
+    $scope.companiaSeleccionada = {}; 
+
+    // ------------------------------------------------------------------------------------------------
+    // leemos la compañía seleccionada
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+
+    if (companiaSeleccionada) {
+        $scope.companiaSeleccionada = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1, abreviatura: 1 } });
+    }
+    // ------------------------------------------------------------------------------------------------
+
     // -------------------------------------------------------------------------------------------------------
     // para recibir los eventos desde la tarea en el servidor ...
     EventDDP.setClient({ myuserId: Meteor.userId(), app: 'scrwebm', process: 'cierre_procesoCierre' });
@@ -62,7 +75,7 @@ function ($scope, $uibModal, $interval) {
 
     // para usar en el filtro, para que el usuario seleccione por tipo 
     $scope.tipo_list = [
-        { tipo: "", descripcion: "Todos" },
+        { tipo: "", descripcion: " " },
         { tipo: "A", descripcion: "Automáticos" },
         { tipo: "M", descripcion: "Manuales" },
     ];
@@ -81,13 +94,13 @@ function ($scope, $uibModal, $interval) {
     ];
 
     $scope.cobroPago_list = [
-        { value: null, descripcion: "Todos" },
-        { value: "cobros/pagos", descripcion: "Cobros o pagos" },
-        { value: "montos", descripcion: "Montos emitidos" },
+        { tipo: "", descripcion: " " },
+        { tipo: "cobros/pagos", descripcion: "Cobros o pagos" },
+        { tipo: "montos", descripcion: "Montos emitidos" },
     ];
 
     $scope.categorias_list = [
-        { value: null, descripcion: "" },
+        { value: "", descripcion: "" },
         { value: "Prima", descripcion: "Prima" },
         { value: "Sin", descripcion: "Sin" },
         { value: "Saldo", descripcion: "Saldo" },
@@ -713,12 +726,9 @@ function ($scope, $uibModal, $interval) {
     }
 
     let filtroConstruido = { }; 
-    let filtroConstruidoMasPeriodo = { };       // con el período incluido, ya para usar en minimongo (client) 
 
     $scope.aplicarFiltro = function () {
         $scope.showProgress = true;
-
-        $scope.filtro.cia = $scope.companiaSeleccionada._id; 
 
         // ------------------------------------------------------------------------------------------------------
         // guardamos el filtro indicado por el usuario
@@ -738,9 +748,7 @@ function ($scope, $uibModal, $interval) {
             });
         }
 
-        filtroConstruido = construirFiltro($scope.filtro); 
-        filtroConstruidoMasPeriodo = agregarPeriodoAlFiltro(filtroConstruido); 
-
+        filtroConstruido = construirFiltro($scope.filtro, $scope.companiaSeleccionada._id); 
         // ------------------------------------------------------------------------------------------------------
         // limit es la cantidad de items en la lista; inicialmente es 50; luego avanza de 50 en 50 ...
         leerPrimerosRegistrosDesdeServidor(50, filtroConstruido);
@@ -749,7 +757,7 @@ function ($scope, $uibModal, $interval) {
     }
 
     // ------------------------------------------------------------------------------------------------------
-    // si hay un filtro anterior, lo usamos
+    // si hay un filtro anterior, lo usamos para mostrar sus valores en la forma (filtro)
     // los filtros (solo del usuario) se publican en forma automática cuando se inicia la aplicación
     $scope.filtro = {};
     var filtroAnterior = Filtros.findOne({ nombre: 'cierres.registro', userId: Meteor.userId() });
@@ -764,10 +772,10 @@ function ($scope, $uibModal, $interval) {
     let recordCount = 0;
     let limit = 0;
 
-    function leerPrimerosRegistrosDesdeServidor(cantidadRecs, filtroConstruido) {
+    function leerPrimerosRegistrosDesdeServidor(cantidadRecs, filtro) {
         // cuando el usuario indica y aplica un filtro, leemos los primeros 50 registros desde mongo ...
         limit = cantidadRecs;
-        Meteor.call('getCollectionCount', 'CierreRegistro', filtroConstruido, (err, result) => {
+        Meteor.call('getCollectionCount', 'CierreRegistro', filtro, (err, result) => {
 
             if (err) {
                 const errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -785,12 +793,12 @@ function ($scope, $uibModal, $interval) {
 
             // el método regresa la cantidad de items en el collection (siempre para el usuario)
             recordCount = result;
-            $scope.leerRegistrosDesdeServer(limit, filtroConstruido);
+            $scope.leerRegistrosDesdeServer(limit, filtro);
         })
     }
 
     let subscriptionHandle = {};
-    $scope.leerRegistrosDesdeServer = function (limit, filtroConstruido) {
+    $scope.leerRegistrosDesdeServer = function (limit, filtro) {
         // la idea es 'paginar' los registros que se suscriben, de 50 en 50
         // el usuario puede indicar 'mas', para leer 50 más; o todos, para leer todos los registros ...
         $scope.showProgress = true;
@@ -808,19 +816,18 @@ function ($scope, $uibModal, $interval) {
         $scope.registro = [];
 
         subscriptionHandle =
-        Meteor.subscribe('cierre.leerRegistro', filtroConstruido, limit, () => {
+        Meteor.subscribe('cierre.leerRegistro', filtro, limit, () => {
 
             $scope.helpers({
                 registro: () => {
-                    return CierreRegistro.find(filtroConstruidoMasPeriodo, { sort: { fecha: 1, moneda: 1, compania: 1, }});
+                    return CierreRegistro.find(filtro, { sort: { fecha: 1, moneda: 1, compania: 1, }});
                 }
             });
 
             $scope.registro_ui_grid.data = $scope.registro;
 
-            let message = `${numeral($scope.registro.length).format('0,0')} registros
+            const message = `${numeral($scope.registro.length).format('0,0')} registros
             (<b>de ${numeral(recordCount).format('0,0')}</b>) han sido seleccionados ...`; 
-            message = message.replace(/\/\//g, '');     // quitamos '//' del query; typescript agrega estos caracteres??? 
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -834,12 +841,22 @@ function ($scope, $uibModal, $interval) {
     }
 
     $scope.leerMasRegistros = function () {
+
+        if (limit >= recordCount) { 
+            return; 
+        }
+
         limit += 50;    // la próxima vez, se leerán 50 más ...
         $scope.leerRegistrosDesdeServer(limit, filtroConstruido);     // cada vez se leen 50 más ...
     }
 
     $scope.leerTodosLosRegistros = function () {
         // simplemente, leemos la cantidad total de registros en el collection (en el server y para el user)
+
+        if (limit >= recordCount) {
+            return;
+        }
+
         limit = recordCount;
         $scope.leerRegistrosDesdeServer(limit, filtroConstruido);     // cada vez se leen 50 más ...
     }
@@ -961,7 +978,7 @@ function ($scope, $uibModal, $interval) {
             // refrescamos el helper 
             $scope.helpers({
                 registro: () => {
-                    return CierreRegistro.find(filtroConstruidoMasPeriodo, { sort: { fecha: 1, moneda: 1, compania: 1, }});
+                    return CierreRegistro.find(filtroConstruido, { sort: { fecha: 1, moneda: 1, compania: 1, }});
                 }
             });
 
@@ -1005,93 +1022,111 @@ function ($scope, $uibModal, $interval) {
 }
 ])
 
-// construimos el filtro en el cliente, pues lo usamos en varias partes en este código y debe estar disponible. 
-// nota: en otras funciones similares, se filtran los registros en el servidor y se graban a un collection 'temporal' 
-// para el usuario. En estos casos, posteriormente no se usa más el filtro, pues solo basta con leer los records para 
-// el usuario. No es así en este caso, que se leen y regresan los records desde el collection original, sin que medie 
-// ningún collection 'temporal' ... 
-function construirFiltro(criterioSeleccion) { 
+function construirFiltro(filtro, ciaSeleccionadaId) {
 
-    // construimos el filtro en base a todos los criterios indicados; menos el período, pues lo pasamos al method en el server 
-    // para construirlo allí ... 
-    const filtro = {
-        fecha1: criterioSeleccion.fecha1, 
-        fecha2: criterioSeleccion.fecha2
-    }
+    // con las fechas que crean el criterio del período en el filtro, hacemos algo especial 
+    let { fecha1, fecha2 } = filtro;
 
-    if (criterioSeleccion.tipo) { 
-        filtro.tipo = criterioSeleccion.tipo; 
-    }
-
-    if (criterioSeleccion.cobroPagoFlag) { 
-        switch (criterioSeleccion.cobroPagoFlag) { 
-            case "cobros/pagos": { 
-                filtro.cobroPagoFlag = { $eq: true };
-                break; 
-            }
-            case "montos": { 
-                filtro.cobroPagoFlag = { $eq: false };
-                break; 
-            }
-        }
-    }
-
-    if (criterioSeleccion.tipoNegocio && Array.isArray(criterioSeleccion.tipoNegocio) && criterioSeleccion.tipoNegocio.length) {
-        const array = lodash.clone(criterioSeleccion.tipoNegocio);
-        filtro.tipoNegocio = { $in: array };
-    }
-
-    if (criterioSeleccion.compania && Array.isArray(criterioSeleccion.compania) && criterioSeleccion.compania.length) {
-        const array = lodash.clone(criterioSeleccion.compania);
-        filtro.compania = { $in: array };
-    }
-
-    if (criterioSeleccion.cedente && Array.isArray(criterioSeleccion.cedente) && criterioSeleccion.cedente.length) {
-        const array = lodash.clone(criterioSeleccion.cedente);
-        filtro.cedente = { $in: array };
-    }
-
-    if (criterioSeleccion.moneda && Array.isArray(criterioSeleccion.moneda) && criterioSeleccion.moneda.length) {
-        const array = lodash.clone(criterioSeleccion.moneda);
-        filtro.moneda = { $in: array };
-    }
-
-    if (criterioSeleccion.referencia) { 
-        const search = new RegExp(criterioSeleccion.referencia, 'i');
-        filtro.referencia = search;
-    }
-
-    filtro.cia = criterioSeleccion.cia; 
-
-    return filtro; 
-}
-
-function agregarPeriodoAlFiltro(filtro) { 
-    let { fecha1, fecha2 } = filtro; 
-
-    fecha1 = moment(fecha1).isValid() ? moment(fecha1).toDate() : null; 
-    fecha2 = moment(fecha2).isValid() ? moment(fecha2).toDate() : null; 
+    fecha1 = moment(fecha1).isValid() ? moment(fecha1).toDate() : null;
+    fecha2 = moment(fecha2).isValid() ? moment(fecha2).toDate() : null;
 
     // la fecha final del período debe ser el último momento del día, para que incluya cualquier fecha de ese día 
-    fecha2 = fecha2 ? new Date(fecha2.getFullYear(), fecha2.getMonth(), fecha2.getDate(), 23, 59, 59) : null; 
+    fecha2 = fecha2 ? new Date(fecha2.getFullYear(), fecha2.getMonth(), fecha2.getDate(), 23, 59, 59) : null;
 
-    const fecha = {}; 
+    const fecha = {};
 
-    if (fecha1) { 
+    if (fecha1) {
         if (fecha2) {
             // las fechas vienen como strings ... 
             fecha.$gte = fecha1;
             fecha.$lte = fecha2;
         }
-        else { 
+        else {
             fecha.$eq = fecha1;
         }
     }
 
-    const filtro2 = { ...filtro, fecha }; 
+    const filtro2 = { fecha };
 
-    delete filtro2.fecha1; 
-    delete filtro2.fecha2; 
+    if (filtro.cobroPagoFlag) {
+        switch (filtro.cobroPagoFlag) {
+            case "cobros/pagos": {
+                filtro2.cobroPagoFlag = { $eq: true };
+                break;
+            }
+            case "montos": {
+                filtro2.cobroPagoFlag = { $eq: false };
+                break;
+            }
+        }
+    }
 
-    return filtro2; 
+    if (filtro.tipo) {
+        filtro2.tipo = filtro.tipo;
+    }
+
+    if (filtro.tipoNegocio && Array.isArray(filtro.tipoNegocio) && filtro.tipoNegocio.length) {
+        const array = lodash.clone(filtro.tipoNegocio);
+        filtro2.tipoNegocio = { $in: array };
+    }
+
+    if (filtro.compania && Array.isArray(filtro.compania) && filtro.compania.length) {
+        const array = lodash.clone(filtro.compania);
+        filtro2.compania = { $in: array };
+    }
+
+    if (filtro.cedente && Array.isArray(filtro.cedente) && filtro.cedente.length) {
+        const array = lodash.clone(filtro.cedente);
+        filtro2.cedente = { $in: array };
+    }
+
+    if (filtro.moneda && Array.isArray(filtro.moneda) && filtro.moneda.length) {
+        const array = lodash.clone(filtro.moneda);
+        filtro2.moneda = { $in: array };
+    }
+
+    // este filtro se usa solo para leer en mongo desde el client. Por eso agregamos el regulr expression 
+    // cuando enviamos el regular expression al server, se pierde el valor del object (el regular expression es como 
+    // el date, que es un object en javascript)
+    if (filtro.referencia) {
+        const search = new RegExp(filtro.referencia, 'i');
+        filtro2.referencia = search;
+    }
+
+    if (filtro.moneda_text) {
+        // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+        const expr = `${filtro.moneda_text}`.replace('$', '\\$');
+        const search = { $or: [{ descripcion: { $regex: expr, $options: "i" } }, { simbolo: { $regex: expr, $options: "i" } }] };
+
+        const items = Monedas.find(search, { fields: { _id: 1 } }).fetch();
+        const array = [];
+        items.forEach(x => array.push(x._id));
+        filtro2.moneda = { $in: array };
+    }
+
+    if (filtro.compania_text) {
+        // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+        const expr = `${filtro.compania_text}`;
+        const search = { $or: [{ nombre: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+        const items = Companias.find(search, { fields: { _id: 1 } }).fetch();
+        const array = [];
+        items.forEach(x => array.push(x._id));
+        filtro2.compania = { $in: array };
+    }
+
+    if (filtro.cedente_text) {
+        // escapamos $ pues tiene un significado especial en regExp; como en: db.products.find({ sku: { $regex: /789$/ }}) ...
+        const expr = `${filtro.cedente_text}`;
+        const search = { $or: [{ nombre: { $regex: expr, $options: "i" } }, { abreviatura: { $regex: expr, $options: "i" } }] };
+
+        const items = Companias.find(search, { fields: { _id: 1 } }).fetch();
+        const array = [];
+        items.forEach(x => array.push(x._id));
+        filtro2.cedente = { $in: array };
+    }
+
+    filtro2.cia = ciaSeleccionadaId;
+
+    return filtro2;
 }

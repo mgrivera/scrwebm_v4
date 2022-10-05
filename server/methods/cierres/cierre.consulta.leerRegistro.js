@@ -72,7 +72,6 @@ Meteor.methods({
 
         // leemos *todos* los registros producidos por el cierre que cumplen el filtro; los agregamos a la tabla 'temp'; 
         // luego, en un paso posterior, agregaremos registros con los saldos iniciales para el período seleccionado ... 
-
         const filtro2 = agregarPeriodoAlFiltro(filtro); 
 
         CierreRegistro.find(filtro2).forEach((item) => { 
@@ -733,6 +732,11 @@ function agregarRegistroCompaniasSinMovimientosConSaldoAnterior(cuentasCorriente
 // construimos el filtro. El tema más importante es crear el período que incluya movimientos cuya fecha sea igual 
 // a la fecha final del período 
 function agregarPeriodoAlFiltro(filtro) { 
+
+    console.log('---------------------------------------------------------------------------------------')
+    console.log(JSON.stringify(filtro, null, '\t'))
+    console.log('---------------------------------------------------------------------------------------') 
+
     let { fecha1, fecha2 } = filtro; 
 
     fecha1 = moment(fecha1).isValid() ? moment(fecha1).toDate() : null; 
@@ -754,10 +758,19 @@ function agregarPeriodoAlFiltro(filtro) {
         }
     }
 
+    if (filtro.referencia) {
+        const search = new RegExp(filtro.referencia, 'i');
+        filtro.referencia = search;
+    }
+
     const filtro2 = { ...filtro, fecha }; 
 
     delete filtro2.fecha1; 
     delete filtro2.fecha2; 
+
+    console.log('---------------------------------------------------------------------------------------')
+    console.log(JSON.stringify(filtro2, null, '\t'))
+    console.log('---------------------------------------------------------------------------------------') 
 
     return filtro2; 
 }

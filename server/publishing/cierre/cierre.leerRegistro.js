@@ -5,6 +5,9 @@ import moment from 'moment';
 import { CierreRegistro } from '/imports/collections/cierre/registroCierre'; 
 import SimpleSchema from 'simpl-schema';
 
+import { Monedas } from '/imports/collections/catalogos/monedas';
+import { Companias } from '/imports/collections/catalogos/companias'; 
+
 Meteor.publish("cierre.leerRegistro", function (filtro, cantRecords) {
 
     new SimpleSchema({
@@ -12,11 +15,9 @@ Meteor.publish("cierre.leerRegistro", function (filtro, cantRecords) {
         filtro: { type: Object, blackbox: true, optional: false, }
     }).validate({ cantRecords, filtro });
 
-    const filtro2 = agregarPeriodoAlFiltro(filtro); 
-
     const options = { sort: { fecha: 1, moneda: 1, compania: 1, }, limit: cantRecords, };
 
-    return CierreRegistro.find(filtro2, options);
+    return CierreRegistro.find(filtro, options);
 })
 
 function agregarPeriodoAlFiltro(filtro) { 
@@ -39,6 +40,13 @@ function agregarPeriodoAlFiltro(filtro) {
         else { 
             fecha.$eq = fecha1;
         }
+    }
+
+    
+
+    if (filtro.referencia) {
+        const search = new RegExp(filtro.referencia, 'i');
+        filtro.referencia = search;
     }
 
     const filtro2 = { ...filtro, fecha }; 

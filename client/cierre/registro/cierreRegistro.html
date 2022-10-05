@@ -65,6 +65,50 @@
                             </div>
 
                             <div class="row" style="margin-top: 20px; ">
+                                <!-- compañía - text  -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10" style="text-align: left; ">
+                                            <label class="control-label input-label">Compañía</label>
+                                            <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.compania_text" />
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <!-- moneda - text  -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10" style="text-align: left; ">
+                                            <label class="control-label input-label">Moneda: </label>
+                                            <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.moneda_text" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 20px; ">
+                                <!-- cedente - text  -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10" style="text-align: left; ">
+                                            <label class="control-label input-label">Cedente: </label>
+                                            <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.cedente_text" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- referencia  -->
+                                <div class="col-sm-6">
+                                    <div class="form-group form-group-sm">
+                                        <div class="col-sm-10" style="text-align: left; ">
+                                            <label class="control-label input-label">Referencia</label>
+                                            <input type="text" class="form-control input-sm myinput-sm" ng-model="filtro.referencia" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 20px; ">
                                 <!-- moneda -->
                                 <div class="col-sm-6">
                                     <div class="form-group form-group-sm">
@@ -132,17 +176,7 @@
                             </div>
 
                             <div class="row" style="margin-top: 20px; ">
-                                <!-- referencia -->
-                                <div class="col-sm-6">
-                                    <div class="form-group form-group-sm">
-                                        <div class="col-sm-10" style="text-align: left; ">
-                                            <label class="control-label input-label">Referencia</label>
-                                            <input type="text" 
-                                                   class="form-control input-sm myinput-sm" 
-                                                   ng-model="filtro.referencia" />
-                                        </div> 
-                                    </div>
-                                </div>
+                                <div class="col-sm-6"></div>
 
                                 <!-- cobroPagoFlag -->
                                 <div class="col-sm-6">
@@ -151,7 +185,7 @@
                                                 <label class="control-label input-label">Cobro o pago: </label>
                                                 <select class="form-control input-sm myinput-sm"
                                                         ng-model="filtro.cobroPagoFlag"
-                                                        ng-options="item.value as item.descripcion for item in cobroPago_list"
+                                                        ng-options="item.tipo as item.descripcion for item in cobroPago_list"
                                                         ng-model-options="{ updateOn: 'blur' }">
                                                 </select>
                                         </div>
