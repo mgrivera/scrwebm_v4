@@ -950,23 +950,24 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
     $scope.coberturasCalcular = function() {
 
-        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado))
+        if (!movimientoSeleccionado || lodash.isEmpty(movimientoSeleccionado)) { 
             return;
+        }
 
         // nótese como usamos lodash isFinite() para saber si una variable contiene un valor numérico, incluyendo el cero.
         // Si solo usamos "if (!var)" y la variable es 0, la condición será cierta ...
         movimientoSeleccionado.coberturas.forEach(function(cobertura) {
 
             if (lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.tasa)) { 
-                cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 1000;
+                cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 100;
             }
                 
             if (!lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.prima) && cobertura.tasa) { 
-                cobertura.valorARiesgo = cobertura.prima * 1000 * cobertura.tasa;
+                cobertura.valorARiesgo = cobertura.prima * 100 / cobertura.tasa;
             }
 
             if (!lodash.isFinite(cobertura.tasa) && lodash.isFinite(cobertura.prima) && cobertura.valorARiesgo) { 
-                cobertura.tasa = cobertura.prima * 1000 / cobertura.valorARiesgo;
+                cobertura.tasa = cobertura.prima * 100 / cobertura.valorARiesgo;
             }
 
             if (lodash.isFinite(cobertura.valorARiesgo) && !lodash.isFinite(cobertura.sumaAsegurada)) { 
@@ -1278,17 +1279,16 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
             return;
         }
 
-
         movimientoSeleccionado.coberturasCompanias.forEach(function (cobertura) {
 
             // prima (siempre)
             if (lodash.isFinite(cobertura.valorARiesgo) && lodash.isFinite(cobertura.tasa)) { 
-                cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 1000;
+                cobertura.prima = cobertura.valorARiesgo * cobertura.tasa / 100;
             }
 
             // tasa (solo si es blanco)
             if (!lodash.isFinite(cobertura.tasa) && cobertura.valorARiesgo && lodash.isFinite(cobertura.prima)){ 
-                cobertura.tasa = cobertura.prima / cobertura.valorARiesgo * 1000;
+                cobertura.tasa = cobertura.prima * 100 / cobertura.valorARiesgo;
             } 
 
             // suma reasegurada (siempre)
