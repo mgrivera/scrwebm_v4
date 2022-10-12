@@ -31,8 +31,8 @@ import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, 
 import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
 import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
 
-angular.module("scrwebm").controller("ContratoController", ['$scope', '$state', '$stateParams', '$meteor', '$uibModal', 'uiGridConstants', '$location', 
-function ($scope, $state, $stateParams, $meteor, $uibModal, uiGridConstants, $location) {
+angular.module("scrwebm").controller("ContratoController", ['$scope', '$state', '$stateParams', '$uibModal', 'uiGridConstants', '$location', 
+function ($scope, $state, $stateParams, $uibModal, uiGridConstants, $location) {
 
     $scope.showProgress = false;
     $scope.dataHasBeenEdited = false; 
@@ -441,19 +441,20 @@ function ($scope, $state, $stateParams, $meteor, $uibModal, uiGridConstants, $lo
 
             // guardamos el row que el usuario seleccione
             gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                //debugger;
                 $scope.capaSeleccionada = {};
 
-                if (row.isSelected)
+                if (row.isSelected) { 
                     $scope.capaSeleccionada = row.entity;
-                else
+                }
+                else { 
                     return;
-
-
+                }
+                    
                 $scope.capasReaseguradores_ui_grid.data = [];
 
-                if ($scope.capaSeleccionada.reaseguradores)
+                if ($scope.capaSeleccionada.reaseguradores) { 
                     $scope.capasReaseguradores_ui_grid.data = $scope.capaSeleccionada.reaseguradores;
+                }
             });
 
             // marcamos el contrato como actualizado cuando el usuario edita un valor
@@ -607,7 +608,6 @@ function ($scope, $state, $stateParams, $meteor, $uibModal, uiGridConstants, $lo
         }
     ]
 
-
     $scope.agregarCapa = function () {
 
         if (!Array.isArray($scope.contrato.capas))  { 
@@ -687,7 +687,27 @@ function ($scope, $state, $stateParams, $meteor, $uibModal, uiGridConstants, $lo
     }
 
     $scope.capasDeterminarRegistrosPrimaCompanias = () => {
-        Contratos_Methods.capasDeterminarRegistrosPrimaCompanias($scope, $uibModal);
+
+        // primero determinamos si el proceso debe ser ejecutado *solo* para la capa seleccionada 
+        $uibModal.open({
+            templateUrl: 'client/contratos/methods/capasDeterminarPrimasCompanias/soloCapaSeleccionada_Modal.html',
+            controller: 'ContratoCapas_soloCapaSeleccionada_modal_controller',
+            size: 'md',
+            resolve: {
+                contrato: function () {
+                    return $scope.contrato;
+                },
+                capaSeleccionada: function () {
+                    return $scope.capaSeleccionada;
+                }
+            }
+        }).result.then(
+            function (calcularSoloParaCapaSeleccionada) {
+                Contratos_Methods.capasDeterminarRegistrosPrimaCompanias($scope, $uibModal, calcularSoloParaCapaSeleccionada, $scope.capaSeleccionada);
+            },
+            function () {
+                return true;
+            })
     }
 
     // --------------------------------------------------------------------------------------
@@ -1386,10 +1406,13 @@ function ($scope, $state, $stateParams, $meteor, $uibModal, uiGridConstants, $lo
         }    
     }
 
-    $scope.generarCuotasCapaSeleccionada = function () {
-        Contratos_Methods.generarCuotasCapaSeleccionada($scope, $uibModal);
+    $scope.generarCuotasCapas = function () {
+        Contratos_Methods.generarCuotasCapas($scope, $uibModal);
     }
 
+    $scope.generarCuotasCapaSeleccionada = function () {
+        Contratos_Methods.generarCuotasCapaSeleccionada($scope, $scope.capaSeleccionada, $uibModal);
+    }
 
     // ---------------------------------------------------------------------
     // ui-grid: cuotas para la capa seleccionada

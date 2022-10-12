@@ -2,17 +2,22 @@
 import { Meteor } from 'meteor/meteor'; 
 import { Mongo } from 'meteor/mongo';
 
+import lodash from 'lodash'; 
+
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
 
 import { LeerCompaniaNosotros } from '/imports/generales/leerCompaniaNosotros'; 
 
-const capasDeterminarRegistrosPrimaCompanias = function ($scope, $uibModal) {
+const capasDeterminarRegistrosPrimaCompanias = function ($scope, $uibModal, soloCapaSeleccionada, capaSeleccionada) {
 
     const contrato = $scope.contrato;
+    const capasPrimasCompanias = soloCapaSeleccionada ? 
+                                 contrato.capasPrimasCompanias.filter(x => x.numeroCapa === capaSeleccionada.numero) : 
+                                 [ ...contrato.capasPrimasCompanias ]; 
 
     // pueden existir registros construidos antes por esta función
-    if (contrato.capasPrimasCompanias && contrato.capasPrimasCompanias.length) {
+    if (capasPrimasCompanias && Array.isArray(capasPrimasCompanias) && capasPrimasCompanias.length) {
         DialogModal($uibModal, "<em>Contratos - Capas</em>",
                             "Ya existen registros de primas para las compañías en el contrato.<br /><br />" +
                             "Probablemente Ud. generó estos registros antes usando esta misma función.<br /><br />" +
@@ -20,7 +25,7 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $uibModal) {
                             true).
             then(
                 function () {
-                    capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal);
+                    capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal, soloCapaSeleccionada, capaSeleccionada);
                     return;
                 },
                 function () {
@@ -28,10 +33,10 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $uibModal) {
                 });
     }
 
-    capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal);
+    capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal, soloCapaSeleccionada, capaSeleccionada);
 }
 
-function capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal) {
+function capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal, soloCapaSeleccionada, capaSeleccionada) {
     // la compañía 'nosotros' es nuestra empresa ... es la que, inicialmente, recibe la orden de reaseguraro 
     let companiaNosotros = {};
     const result = LeerCompaniaNosotros(Meteor.userId()); 
@@ -47,36 +52,46 @@ function capasDeterminarRegistrosPrimaCompanias1($scope, $uibModal) {
     // nota: dejamos de hacer esta validación; ahora puede haber *solo* nuestra orden; sin reaseguradores 
     const contrato = $scope.contrato;
 
-    if (!contrato.capas || !Array.isArray(contrato.capas) || !contrato.capas.length) {
+    if (!soloCapaSeleccionada && !contrato.capas || !Array.isArray(contrato.capas) || !contrato.capas.length) {
         DialogModal($uibModal, "<em>Contratos - Capas</em>",
                             `El contrato debe tener capas registradas; <br />
                             Cada capa puede o no tener reaseguradores registrados.`, false).then();
         return;
     }
 
+    // agregamos un array de reaseguradores (vacío) a las capas que no lo tienen 
     contrato.capas.forEach((c) => {
         if (!c.reaseguradores || !Array.isArray(c.reaseguradores) || !c.reaseguradores.length) {
             c.reaseguradores = []; 
         }
     })
 
-    capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros);
+    capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros, soloCapaSeleccionada, capaSeleccionada);
 }
 
-function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
+function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros, soloCapaSeleccionada, capaSeleccionada) {
 
     const contrato = $scope.contrato;
 
-    if (contrato.capasPrimasCompanias && contrato.capasPrimasCompanias.length) { 
-        contrato.capasPrimasCompanias.length = 0;
-    }
-        
-
-    if (!contrato.capasPrimasCompanias) { 
+    if (!contrato.capasPrimasCompanias || !Array.isArray(contrato.capasPrimasCompanias)) {
         contrato.capasPrimasCompanias = [];
     }
+
+    // eliminamos los registros que vamos a construir y agregar más abajo
+    if (!soloCapaSeleccionada) { 
+        contrato.capasPrimasCompanias.length = 0;
+    } else { 
+        lodash.remove(contrato.capasPrimasCompanias, x => x.numeroCapa === capaSeleccionada.numero);
+    }
         
-    contrato.capas.forEach(function(capa) {
+    for (const capa of contrato.capas) {
+
+        // el usuario puede querer ejecutar esta función *solo* para la capa seleccionada 
+        if (soloCapaSeleccionada) { 
+            if (capa.numero != capaSeleccionada.numero) { 
+                continue; 
+            }
+        }
 
         const primaCompania = {};
 
@@ -118,7 +133,7 @@ function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros) {
 
             contrato.capasPrimasCompanias.push(primaCompania);
         })
-    })
+    }
 
     $scope.capasPrimasCompanias_ui_grid.data = [];
 
