@@ -1,5 +1,6 @@
 
-
+import angular from 'angular';
+import { Mongo } from 'meteor/mongo';
 
 import lodash from 'lodash';
 import moment from 'moment';
@@ -22,7 +23,6 @@ function ($scope, $uibModalInstance, siniestro, liquidacion, cuotas) {
     $scope.cancel = function () {
         $uibModalInstance.dismiss("Cancel");
     };
-
 
     $scope.submitted = false;
     $scope.parametros = {};
@@ -69,7 +69,6 @@ function ($scope, $uibModalInstance, siniestro, liquidacion, cuotas) {
             }
         }
 
-
         if ($scope.construirCuotasForm.$valid) {
             $scope.submitted = false;
             $scope.construirCuotasForm.$setPristine();    // para que la clase 'ng-submitted deje de aplicarse a la forma ... button
@@ -82,24 +81,24 @@ function ($scope, $uibModalInstance, siniestro, liquidacion, cuotas) {
             $scope.alerts.length = 0;
             $scope.alerts.push({
                 type: 'info',
-                msg: "Ok, las cuotas para la liquidación de siniestro han sido construidas."
-            });
+                msg: `Ok, las cuotas para la liquidación de siniestro han sido construidas.<br /><br /> 
+                      Ud. debe revisarlas para asegurarse que están correctas y luego hacer un <em>click</em> en <em>Grabar</em>, pues las cuotas se 
+                      han construido y están en la lista, pero no han sido grabadas por esta función. 
+                     `
+            })
         }
-    };
-}
-]);
-
+    }
+}])
 
 function calcularCuotasLiquidacionSeleccionada(siniestro, liquidacion, cuotas, parametros) {
 
     // siempre intentamos eliminar cuotas que ahora existan para el movimiento ...
     // nótese que no las eliminamos; solo las marcamos para que sean eliminadas al guardar todo
-    if (cuotas.length)
+    if (cuotas.length) { 
         lodash(cuotas).filter(function (c) { return c.source.subEntityID === liquidacion._id; }).map(function (c) { c.docState = 3; return c; }).value();
-
-
+    }
+        
     // debemos generar cuotas para cada reasegurador, pero también par la compañía cedente;
-
     siniestro.companias.forEach( function(compania) {
 
         var fechaProximaCuota = parametros.fecha1raCuota;
@@ -122,22 +121,23 @@ function calcularCuotasLiquidacionSeleccionada(siniestro, liquidacion, cuotas, p
                     fechaProximaCuota = moment(fechaProximaCuota).add(parametros.cantidadDias, 'days').toDate();
                 else if (lodash.isNumber(parametros.cantidadMeses))
                     fechaProximaCuota = moment(fechaProximaCuota).add(parametros.cantidadMeses, 'months').toDate();
-            };
+            }
         });
-    };
+    }
 
     function construirCuota(siniestro, liquidacion, compania, numero, cantidad, fecha, diasVenc) {
 
-        var cuota = {};
+        const cuota = {};
 
-        var factor = 1 / cantidad;
+        const factor = 1 / cantidad;
 
         cuota.compania = compania.compania;
 
-        if (compania.nosotros)
+        if (compania.nosotros) { 
             cuota.compania = siniestro.compania;
-
-        var monto = 0;
+        }
+            
+        let monto = 0;
         if (liquidacion.indemnizado) monto += liquidacion.indemnizado;
         if (liquidacion.adicional) monto += liquidacion.adicional;
         if (liquidacion.ajuste) monto += liquidacion.ajuste;
@@ -174,4 +174,4 @@ function calcularCuotasLiquidacionSeleccionada(siniestro, liquidacion, cuotas, p
         cuota.docState = 1;
 
         return cuota;
-    };
+    }

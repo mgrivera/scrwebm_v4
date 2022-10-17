@@ -835,7 +835,7 @@ function ($scope, $stateParams, $state, $uibModal, uiGridConstants) {
         }
     }
 
-    $scope.construirCuotasMovimiento = function() {
+    $scope.construirCuotasLiquidacion = function() {
         if (!liquidacionSeleccionada || lodash.isEmpty(liquidacionSeleccionada)) {
             DialogModal($uibModal, "<em>Siniestros - Construcción de cuotas</em>",
                                 "Aparentemente, Ud. <em>no ha seleccionado</em> un registro de liquidación.<br />" +
@@ -891,7 +891,8 @@ function ($scope, $stateParams, $state, $uibModal, uiGridConstants) {
         if (cantidadCuotasLiquidacionSeleccionada) {
             DialogModal($uibModal, "<em>Siniestros - Construcción de cuotas</em>",
                                 "Ya existen cuotas registradas para la liquidación seleccionada.<br />" +
-                                "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden a la liquidación seleccionada <em>serán eliminadas</em> antes de " +
+                                "Si Ud. continúa y ejecuta esta función, las cuotas que corresponden a la liquidación seleccionada " + 
+                                "<em>serán eliminadas</em> antes de " +
                                 "construirlas y agregarlas nuevamente.<br /><br />" +
                                 "Aún así, desea continuar y eliminar (sustituir) las cuotas que ahora existen?",
                 true).then(
@@ -921,9 +922,10 @@ function ($scope, $stateParams, $state, $uibModal, uiGridConstants) {
                     return liquidacionSeleccionada;
                 },
                 cuotas: function () {
-                    if (!$scope.cuotas)
+                    if (!$scope.cuotas) { 
                         $scope.cuotas = [];
-
+                    }
+                        
                     return $scope.cuotas;
                 }
             }
@@ -935,9 +937,10 @@ function ($scope, $stateParams, $state, $uibModal, uiGridConstants) {
 
                 // en el controller que usa este modal se contruyen las cuotas; regresamos cuando en usuario hace click en Cancel para cerrar
                 // el diálogo. Si existen cuotas en el $scope, las mostramos en el grid que corresponde ...
-                if ($scope.cuotas)
+                if ($scope.cuotas) { 
                     $scope.cuotas_ui_grid.data = $scope.cuotas;
-
+                }
+                    
                 return true;
             });
     }

@@ -132,8 +132,11 @@ function ($scope, $uibModalInstance, $timeout, riesgo, movimiento, cuotas) {
                 
             $scope.alerts.length = 0;
             $scope.alerts.push({
-                type: 'info',
-                msg: "Ok, las cuotas para el movimiento seleccionado han sido construidas."
+                type: 'info', 
+                msg: `Ok, las cuotas para el movimiento seleccionado han sido construidas.<br /><br /> 
+                      Ud. debe revisarlas para asegurarse que están correctas y luego hacer un <em>click</em> en <em>Grabar</em>, pues las cuotas se 
+                      han construido y están en la lista, pero no han sido grabadas por esta función. 
+                     `
             });
         }
     }
