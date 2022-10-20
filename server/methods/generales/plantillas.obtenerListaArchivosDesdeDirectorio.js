@@ -28,8 +28,6 @@ Meteor.methods({
             files = lodash.orderBy(files1, ['name'], ['asc']);
 
         } catch (err) {
-            console.log(JSON.stringify(err))
-            
             message = err && err.message ? err.message : (err && err.error && err.error.error_summary ? err.error.error_summary : err);
             message = `Error: se ha producido un error al intentar obtener el contenido del directorio (${folderPath}) en Dropbox. <br />
                 El mensaje del error obtenido es: <br /><br />${message}

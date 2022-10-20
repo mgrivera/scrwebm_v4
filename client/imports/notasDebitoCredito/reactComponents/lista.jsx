@@ -1,5 +1,4 @@
 
-
 import React, { Component } from "react";
 
 export default class Lista extends React.Component {
@@ -15,9 +14,7 @@ export default class Lista extends React.Component {
 
         if (!result.error) { 
             this._totalRecCount = result.cantRecs; 
-            console.log("Excellent, everything worked as expected. This is the record count: ", this._totalRecCount.toString()); 
         } else { 
-            console.log("Whaoo, we just got an error: ", err); 
         }
 
     }

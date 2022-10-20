@@ -732,11 +732,6 @@ function agregarRegistroCompaniasSinMovimientosConSaldoAnterior(cuentasCorriente
 // construimos el filtro. El tema más importante es crear el período que incluya movimientos cuya fecha sea igual 
 // a la fecha final del período 
 function agregarPeriodoAlFiltro(filtro) { 
-
-    console.log('---------------------------------------------------------------------------------------')
-    console.log(JSON.stringify(filtro, null, '\t'))
-    console.log('---------------------------------------------------------------------------------------') 
-
     let { fecha1, fecha2 } = filtro; 
 
     fecha1 = moment(fecha1).isValid() ? moment(fecha1).toDate() : null; 
@@ -767,11 +762,7 @@ function agregarPeriodoAlFiltro(filtro) {
 
     delete filtro2.fecha1; 
     delete filtro2.fecha2; 
-
-    console.log('---------------------------------------------------------------------------------------')
-    console.log(JSON.stringify(filtro2, null, '\t'))
-    console.log('---------------------------------------------------------------------------------------') 
-
+    
     return filtro2; 
 }
 

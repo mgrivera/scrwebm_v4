@@ -22,15 +22,6 @@ Meteor.methods(
         // los dates pueden venir como strings; además, las fechas hasta siempre deben ser: ... 23:59:59 ... 
         filtro = prepararFechasEnFiltro(filtro); 
 
-        // el usuario puede seleccionar *solo* algún tipo de negocio para la construcción de la consulta 
-        const origen = filtro.origen; 
-
-        const todo = !origen;
-        const fac = origen === "fac"; 
-        const cont = origen === "cont"; 
-        const prop = origen === "prop"; 
-        const noProp = origen === "noProp"; 
-
         await leerCumulos(filtro);
 
         // antes de regresar, agregamos la zona a cada registro. Esto no es fácil hacerlo en el aggregate, por eso decidimos hacerlo aquí 
@@ -52,18 +43,6 @@ Meteor.methods(
             }
         })
 
-        // if (fac || todo) { 
-            
-        // }
-
-        // if (prop || cont || todo) { 
-        //     await leerContratosProp(filtro); 
-        // }
-
-        // if (noProp|| cont || todo) { 
-        //     await leerContratosNoProp(filtro); 
-        // }
-        
         return {
             error: false, 
             message: `Ok, la consulta de cúmulos se ha ejecutao en forma exitosa ...`
@@ -126,8 +105,6 @@ async function leerCumulos (filtro) {
     }
 
     const userId = Meteor.userId();
-
-    console.log("match: ", JSON.stringify(match)) 
 
     const pipeline = [
         { $match: match }, 

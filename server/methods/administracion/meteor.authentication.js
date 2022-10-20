@@ -142,7 +142,6 @@ Meteor.methods(
             try {
                 // tenemos que inicializar esta variable para que sea usada por el Email package 
                 process.env.MAIL_URL = Meteor.settings.mail_url;
-
                 Accounts.sendVerificationEmail(userId);
             } catch (error) {
                 return {

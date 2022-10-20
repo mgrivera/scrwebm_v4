@@ -32,9 +32,9 @@ Meteor.methods(
             check(values, Object);
 
             // leemos la definición de usuario para saber lo que se intenta modificar: username, Email, password 
-            const actualUser = Meteor.users.findOne({ _id: values._id }, { fields: { username: 1, emails: 1 }}); 
+            const currentUser = Meteor.users.findOne({ _id: values._id }, { fields: { username: 1, emails: 1 }}); 
 
-            if (!actualUser) { 
+            if (!currentUser) { 
                 return {
                     error: true,
                     message: "Error inesperado: no hemos podido leer la configuración actual del usuario que se intenta modificar."
@@ -45,13 +45,13 @@ Meteor.methods(
             let emailChanged = false; 
             let passwordChanged = false; 
 
-            const currentUserEmail = actualUser.emails[0].address; 
+            const currentUserEmail = currentUser.emails[0].address; 
 
             // ----------------------------------------------------------------------------
             // intentamos cambiar el Email 
             // ----------------------------------------------------------------------------
             if (values.email != currentUserEmail) {
-                // Ok, el usuario intenta cambiar el username 
+                // Ok, el usuario intenta cambiar el e-mail  
                 emailChanged = true; 
 
                 // la dirección de correo indicada no debe haber sido asignada a algún usuario
@@ -91,7 +91,7 @@ Meteor.methods(
             // ----------------------------------------------------------------------------
             // intentamos cambiar el username 
             // ----------------------------------------------------------------------------
-            if (values.username != actualUser.username) {
+            if (values.username != currentUser.username) {
                 // Ok, el usuario intenta cambiar el username 
                 usernameChanged = true; 
 
@@ -140,7 +140,7 @@ Meteor.methods(
                 finalMessage = `Ok, el usuario ha sido modificado en forma exitosa. En particular: <br /><br /><ul>`; 
 
                 if (usernameChanged) {
-                    finalMessage += `<li>El nombre del usuario ha sido cambiado de <em>${actualUser.username}</em>
+                    finalMessage += `<li>El nombre del usuario ha sido cambiado de <em>${currentUser.username}</em>
                                      a <em>${values.username}</em>.</li>
                                     `;
                 }
@@ -173,17 +173,17 @@ Meteor.methods(
             check(userId, String);
 
             // lo primero que hacemos es leer la definición del usuario que se intenta eliminar 
-            const actualUser = Meteor.users.findOne({ _id: userId }, { fields: { username: 1, emails: 1 } });
+            const currentUser = Meteor.users.findOne({ _id: userId }, { fields: { username: 1, emails: 1 } });
 
-            if (!actualUser) {
+            if (!currentUser) {
                 return {
                     error: true,
                     message: "Error inesperado: no hemos podido leer la configuración actual del usuario que se intenta eliminar."
                 }
             }
 
-            const currentUserName = actualUser.username; 
-            const currentUserEmail = actualUser.emails[0].address;
+            const currentUserName = currentUser.username; 
+            const currentUserEmail = currentUser.emails[0].address;
 
             // nótese que no hay un method en el api en passwords que permita eliminar un usuario 
             // simplemente, usamos el users meteor collection 
