@@ -1,5 +1,4 @@
 
-
 import React from "react";
 import PropTypes from 'prop-types';
 
@@ -7,7 +6,7 @@ import "./styles.css";
 
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 
-export default function NavBar({ grabar }) {
+export default function NavBar({ grabar, usuarioHaEditado }) {
 
     function handleSelect(selectedKey) {
         switch (selectedKey) { 
@@ -22,7 +21,10 @@ export default function NavBar({ grabar }) {
             <Navbar.Collapse>
                 <Nav onSelect={handleSelect}>
                     <NavItem eventKey={1} className="navBar_button">
-                        Grabar
+                        { usuarioHaEditado 
+                            ? <span style={{ fontStyle: 'italic' }}>Grabar (*)</span>
+                            : <span>Grabar</span>
+                        }
                     </NavItem>
                 </Nav>
             </Navbar.Collapse>
@@ -32,4 +34,5 @@ export default function NavBar({ grabar }) {
 
 NavBar.propTypes = {
     grabar: PropTypes.func.isRequired,
+    usuarioHaEditado: PropTypes.bool.isRequired
 }

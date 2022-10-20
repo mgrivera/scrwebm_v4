@@ -1,7 +1,7 @@
 
-
 import { Meteor } from 'meteor/meteor'
 import { Mongo } from 'meteor/mongo'
+
 import React from "react";
 import PropTypes from 'prop-types';
 
@@ -188,12 +188,11 @@ export default class UsuariosEmpresas extends React.Component {
             })
     }
 
-
     render() {
 
         const columns_usuarios = [
             { 
-                Header: () => (<div>E-mail</div>),  
+                Header: () => (<div>Nombre / E-mail</div>),  
                 getHeaderProps: () => {       // getHeaderProps: (state, rowInfo, column) =>    no usamos los parÃ¡metros aquÃ­ ... 
                     return {
                       style: {
@@ -203,8 +202,8 @@ export default class UsuariosEmpresas extends React.Component {
                       }
                     }
                 }, 
-                id: "email",
-                accessor: d => d.email,
+                id: "userName",
+                accessor: d => d.userName,
                 className: "fontXSmall alignLeft"
             }, 
         ]; 
@@ -282,6 +281,9 @@ export default class UsuariosEmpresas extends React.Component {
             }, 
         ]; 
 
+        // para pasar al toolbar; debe mostrar 'Grabar (*)' si el usuario ha editado algún registro 
+        const usuarioHaEditado = this.state.usuariosEmpresas.some(x => x.docState); 
+
         return (<Grid fluid={true}>
             <Row>
                 <Col sm={2} smOffset={5} style={{ textAlign: 'center' }}>
@@ -306,7 +308,7 @@ export default class UsuariosEmpresas extends React.Component {
 
             <Row style={{ marginTop: "5px" }}>
                 <Col sm={12} smOffset={0}>
-                    <NavBar grabar={this.grabar} />
+                    <NavBar grabar={this.grabar} usuarioHaEditado={usuarioHaEditado} />
                 </Col>
             </Row>
 

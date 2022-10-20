@@ -1,5 +1,4 @@
 
-
 import { Meteor } from 'meteor/meteor'
 import lodash from 'lodash'; 
 
@@ -17,18 +16,21 @@ Meteor.methods(
 
         const empresasUsuariasUsuarios = EmpresasUsuariasUsuarios.find().fetch(); 
 
-        const users = Meteor.users.find({}, { fields: { emails: 1, }, sort: { 'emails.0.address': 1, }}).fetch(); 
-        const users2 = users.map(x => { return { _id: x._id, email: x.emails[0].address, }}) 
+        const users = Meteor.users.find({}, { fields: { emails: 1, username: 1 }}).fetch(); 
+        const users2 = users.map(x => { return { 
+            _id: x._id, 
+            email: x.emails[0].address, 
+            userName: x.username ? x.username.toLowerCase() : x.emails[0].address.toLowerCase()         // el usuario puede o no tener un nombre asignado 
+        }})
 
         return { 
             error: false, 
             message: "", 
-            users: users2, 
+            users: lodash.sortBy(users2, [ 'userName' ]), 
             empresasUsuarias: empresasUsuarias, 
             empresasUsuariasUsuarios: empresasUsuariasUsuarios, 
         }
     }, 
-
 
     grabarInfoUsuariosEmpresas: function (items) {
 
