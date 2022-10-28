@@ -212,7 +212,6 @@ Meteor.methods(
 
         // ---------------------------------------------------------------------------------------------------------
         // si el usuario indica filtros para: ramo, asegurado, suscriptor, los aplicamos ahora (con lodash)
-
         if (filtro.asegurado) {
             result = lodash.filter(result, r => {
                 return r.asegurado &&
@@ -434,7 +433,43 @@ Meteor.methods(
             // -------------------------------------------------------------------------------------------------------
         }
 
-        return "Ok, el proceso se ha ejecutado en forma satisfactoria.<br /><br />" +
-               "En total, " + cantidadRegistrosAgregados.toString() + " registros han sido seleccionados y conforman esta consulta.";
+        // antes de regresar, revisamos la fechas en las cuotas (pendientse) agregadas a la tabla 
+        // si alguna de ellas es anterior al año 2.000, la consideramos errada. Probablemente esta 
+        // fecha no sea correcta y reportamos al usuario para que la revise 
+        const fechaMuyVieja = new Date(2000, 1, 1); 
+        const cuotasFallidas = Consulta_MontosPendientes.find({ 
+            user: this.userId, 
+            $or: [{ 'cuota.fecha': { $lt: fechaMuyVieja }}, { 'cuota.fechaVencimiento': { $lt: fechaMuyVieja }}]
+        }).fetch(); 
+
+        message = ""; 
+
+        for (const cuota of cuotasFallidas) { 
+            const entidad = `${cuota.source.origen}-${cuota.source.numero}`;
+            const numeroCuota = cuota.cuota.numero; 
+
+            if (message) { 
+                message += `<br /><b>Cuota #${numeroCuota} en:</b> ${cuota.monedaSimbolo} - ${cuota.companiaAbreviatura} - ${cuota.ramoAbreviatura} - ${cuota.aseguradoAbreviatura} - ${entidad}.`; 
+            } else { 
+                message = `<b>Cuota #${numeroCuota} en:</b> ${cuota.monedaSimbolo} - ${cuota.companiaAbreviatura} - ${cuota.ramoAbreviatura} - ${cuota.aseguradoAbreviatura} - ${entidad}.`; 
+            }
+        }
+
+        if (message) { 
+            // TODO: mostrar error al ussuario 
+            message = `Probablemente, los valores indicados para las fechas en las siguientes cuotas no son correctos: <br />${message}`; 
+
+            return { 
+                error: true, 
+                message
+            }
+        } else { 
+            return {
+                error: false,
+                message: "Ok, el proceso se ha ejecutado en forma satisfactoria.<br /><br />" +
+                         "En total, " + cantidadRegistrosAgregados.toString() +
+                         " registros han sido seleccionados y conforman esta consulta."
+            }
+        }
     }
 })

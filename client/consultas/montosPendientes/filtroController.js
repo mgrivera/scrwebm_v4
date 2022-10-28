@@ -118,10 +118,25 @@ angular.module("scrwebm")
         filtro = $scope.filtro;
         filtro.cia = $scope.companiaSeleccionada && $scope.companiaSeleccionada._id ? $scope.companiaSeleccionada._id : -999;
 
-        Meteor.call('consultas.montosPendientes', filtro, (err) => {
+        Meteor.call('consultas.montosPendientes', filtro, (err, result) => {
 
             if (err) {
                 const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: errorMessage
+                });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
+
+            if (result.error) {
+                const errorMessage = `<b>Error:</b> se ha producido un error al intentar ejecutar la operación. <br /><br />${result.message}`; 
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({

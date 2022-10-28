@@ -1,6 +1,10 @@
 ﻿
+import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 
+import angular from 'angular';
 import lodash from 'lodash'; 
+
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias'; 
@@ -13,9 +17,8 @@ import { Filtros } from '/imports/collections/otros/filtros';
 
 import { Consulta_Corretaje } from '/imports/collections/consultas/consulta_corretaje'; 
 
-angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller",
-['$scope', '$state', '$stateParams', '$meteor',
-  function ($scope, $state, $stateParams, $meteor) {
+angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller", ['$scope', '$state',
+function ($scope, $state) {
 
     $scope.processProgress = {
         current: 0,
@@ -49,7 +52,7 @@ angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller",
 
     // ------------------------------------------------------------------------------------------------
     // leemos la compañía seleccionada
-    let companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
+    const companiaSeleccionada = CompaniaSeleccionada.findOne({ userID: Meteor.userId() });
     let companiaSeleccionadaDoc = null;
 
     if (companiaSeleccionada) { 
@@ -64,10 +67,11 @@ angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller",
     $scope.ramos = Ramos.find().fetch();
 
     // para limpiar el filtro, simplemente inicializamos el $scope.filtro ...
-
     $scope.limpiarFiltro = function () {
         $scope.filtro = {};
     }
+
+    let Consultas_Corretaje_SubscriptionHandle = null;
 
     // el usuario hace un submit, cuando quiere 'salir' de edición ...
     $scope.submitted = false;
@@ -109,7 +113,22 @@ angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller",
         Meteor.call('consultas.corretaje', filtro, (err, result) => {
 
             if (err) {
-                let errorMessage = mensajeErrorDesdeMethod_preparar(err);
+                const errorMessage = mensajeErrorDesdeMethod_preparar(err);
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: errorMessage
+                });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return;
+            }
+
+            if (result.error) {
+                const errorMessage = `<b>Error:</b> se ha producido un error al intentar ejecutar la operación. <br /><br />${result.message}`;
 
                 $scope.alerts.length = 0;
                 $scope.alerts.push({
@@ -174,7 +193,6 @@ angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller",
     // ------------------------------------------------------------------------------------------------------
     // si hay un filtro anterior, lo usamos
     // los filtros (solo del usuario) se publican en forma automática cuando se inicia la aplicación
-
     $scope.filtro = {};
     var filtroAnterior = Filtros.findOne(
         {
@@ -187,5 +205,4 @@ angular.module("scrwebm").controller("ConsultasCorretaje_Filtro_Controller",
         $scope.filtro = lodash.clone(filtroAnterior.filtro);
     }
     // ------------------------------------------------------------------------------------------------------
-  }
-])
+}])
