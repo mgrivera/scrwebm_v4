@@ -9,7 +9,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
 
-import { Grid, Menu, Loader, Message, Table, Icon, Modal } from 'semantic-ui-react';
+import { Grid, Menu, Loader, Message, Table, Icon } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css'
 
 import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuarias';

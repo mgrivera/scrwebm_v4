@@ -432,7 +432,13 @@ function ($scope, $uibModal, uiGridConstants, $q, $interval) {
                     // las cuotas se graban seperadamente; solo las cuotas 'marcadas' son enviadas al servidor y grabadas
                     if (!rowEntity.docState) { 
                         rowEntity.docState = 2;
-                        $scope.dataHasBeenEdited = true; 
+
+                        // al menos por ahora, las definiciones (períodos) son un array en el contrato. Puede ser que 
+                        // en un futuro las separemos en una sola tabla, sin embargo, por ahora no es así. Debemos marcar 
+                        // el contrato para que Grabar lo modifique y registre las modificaciones que el usuario 
+                        // pueda haber hecho en los períodos ... 
+                        $scope.$parent.$parent.contrato.docState = 2;
+                        $scope.$parent.$parent.dataHasBeenEdited = true; 
                     }
                 }
             })
@@ -709,7 +715,12 @@ function ($scope, $uibModal, uiGridConstants, $q, $interval) {
 
         $scope.cuentasCuotas_ui_grid.data = lodash.filter($scope.cuotas, function (c) { return c.source.subEntityID === definicionCuentaTecnicaSeleccionada._id; });
 
-        $scope.dataHasBeenEdited = true; 
+        // al menos por ahora, las definiciones (períodos) son un array en el contrato. Puede ser que 
+        // en un futuro las separemos en una sola tabla, sin embargo, por ahora no es así. Debemos marcar 
+        // el contrato para que Grabar lo modifique y registre las modificaciones que el usuario 
+        // pueda haber hecho en los períodos ... 
+        $scope.$parent.$parent.contrato.docState = 2;
+        $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
     $scope.eliminarCuentaCuota = function () {
@@ -732,7 +743,13 @@ function ($scope, $uibModal, uiGridConstants, $q, $interval) {
         lodash.remove($scope.cuotas, function (cuota) { return cuota._id === definicionCuentaCuotaSeleccionada._id; });
 
         $scope.cuentasCuotas_ui_grid.data = lodash.filter($scope.cuotas, function (c) { return c.source.subEntityID === definicionCuentaTecnicaSeleccionada._id; });
-        $scope.dataHasBeenEdited = true; 
+
+        // al menos por ahora, las definiciones (períodos) son un array en el contrato. Puede ser que 
+        // en un futuro las separemos en una sola tabla, sin embargo, por ahora no es así. Debemos marcar 
+        // el contrato para que Grabar lo modifique y registre las modificaciones que el usuario 
+        // pueda haber hecho en los períodos ... 
+        $scope.$parent.$parent.contrato.docState = 2;
+        $scope.$parent.$parent.dataHasBeenEdited = true; 
     }
 
     if ($scope.contrato && $scope.contrato.cuentasTecnicas_definicion) { 
