@@ -14,7 +14,7 @@ const capasDeterminarRegistrosPrimaCompanias = function ($scope, $uibModal, solo
     const contrato = $scope.contrato;
     const capasPrimasCompanias = soloCapaSeleccionada ? 
                                  contrato.capasPrimasCompanias.filter(x => x.numeroCapa === capaSeleccionada.numero) : 
-                                 [ ...contrato.capasPrimasCompanias ]; 
+                                 [ ...(Array.isArray(contrato.capasPrimasCompanias) ? contrato.capasPrimasCompanias : []) ]; 
 
     // pueden existir registros construidos antes por esta función
     if (capasPrimasCompanias && Array.isArray(capasPrimasCompanias) && capasPrimasCompanias.length) {

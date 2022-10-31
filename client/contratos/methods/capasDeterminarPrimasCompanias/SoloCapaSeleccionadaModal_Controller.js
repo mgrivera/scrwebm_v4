@@ -2,9 +2,8 @@
 import angular from 'angular';
 
 angular.module("scrwebm").
-        controller('ContratoCapas_soloCapaSeleccionada_modal_controller', 
-        ['$scope', '$uibModalInstance', 'contrato', 'capaSeleccionada', 
-function ($scope, $uibModalInstance, contrato, capaSeleccionada) {
+        controller('ContratoCapas_soloCapaSeleccionada_modal_controller', ['$scope', '$uibModalInstance', 'capaSeleccionada', 
+function ($scope, $uibModalInstance, capaSeleccionada) {
 
     // ui-bootstrap alerts ...
     $scope.alerts = [];

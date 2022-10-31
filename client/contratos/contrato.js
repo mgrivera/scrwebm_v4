@@ -694,12 +694,7 @@ function ($scope, $state, $stateParams, $uibModal, uiGridConstants, $location) {
             controller: 'ContratoCapas_soloCapaSeleccionada_modal_controller',
             size: 'md',
             resolve: {
-                contrato: function () {
-                    return $scope.contrato;
-                },
-                capaSeleccionada: function () {
-                    return $scope.capaSeleccionada;
-                }
+                capaSeleccionada: () => $scope.capaSeleccionada
             }
         }).result.then(
             function (calcularSoloParaCapaSeleccionada) {
