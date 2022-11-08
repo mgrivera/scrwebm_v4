@@ -206,7 +206,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
     $scope.agregarMovimiento = function () {
 
-        if (!lodash.isArray($scope.riesgo.movimientos)) { 
+        if (!Array.isArray($scope.riesgo.movimientos)) { 
             $scope.riesgo.movimientos = [];
         }
             
@@ -225,8 +225,8 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         if ($scope.riesgo.movimientos.length > 0) {
 
             // para agregar un movimiento cuando ya existen otros, copiamos el último (lodash clone) y lo modificamos levemente ...
-            var ultimoMovimiento = $scope.riesgo.movimientos[$scope.riesgo.movimientos.length - 1];
-            var nuevoMovimiento = lodash.clone(ultimoMovimiento);
+            const ultimoMovimiento = $scope.riesgo.movimientos[$scope.riesgo.movimientos.length - 1];
+            let nuevoMovimiento = lodash.cloneDeep(ultimoMovimiento);
 
             if (nuevoMovimiento) {
 
@@ -234,55 +234,62 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
                 nuevoMovimiento.numero++;
                 nuevoMovimiento.tipo = null;
                 nuevoMovimiento.fechaEmision = new Date();
-                delete nuevoMovimiento.$$hashKey;
+                // delete nuevoMovimiento.$$hashKey;
 
                 // nótese como eliminamos los arrays de coberturas por compañía y primas
                 nuevoMovimiento.coberturasCompanias = [];
                 nuevoMovimiento.primas = [];
 
-                // recorremos los arrays en el nuevo movimiento, para asignar nuevos _ids y eliminar $$hashkey ...
-                nuevoMovimiento.coberturas.map(function(c) {
-                    if (c.$$hashKey)
-                        delete c.$$hashKey;
+                if (nuevoMovimiento.documentos) { 
+                    nuevoMovimiento.documentos = []; 
+                }
 
-                    c._id = new Mongo.ObjectID()._str;
-                });
+                // recorremos los arrays en el nuevo movimiento, para asignar nuevos _ids
+                nuevoMovimiento.coberturas.forEach(c => c._id = new Mongo.ObjectID()._str); 
+                nuevoMovimiento.companias.forEach(c => c._id = new Mongo.ObjectID()._str); 
 
-                nuevoMovimiento.companias.map(function(c) {
-                    if (c.$$hashKey)
-                        delete c.$$hashKey;
-
-                    c._id = new Mongo.ObjectID()._str;
-                });
-
+                if (nuevoMovimiento.productores) {
+                    nuevoMovimiento.productores.forEach(x => x._id = new Mongo.ObjectID()._str); 
+                }
+                        
                 $scope.riesgo.movimientos.push(nuevoMovimiento);
 
-                if (!$scope.riesgo.docState)
+                if (!$scope.riesgo.docState) { 
                     $scope.riesgo.docState = 2;
-
+                }
+                    
                 nuevoMovimiento = {};
 
-                DialogModal($uibModal,
-                            "<em>Riesgos - Nuevo movimiento</em>",
-                            "Ok, un nuevo movimiento ha sido agregado al riesgo. " +
-                            "Nóte que el nuevo movimiento es, simplemente, una copia del movimiento anterior.<br /><br />" +
-                            "Ud. debe seleccionarlo en la lista y asignarle un tipo. Luego debe hacer las " +
-                            "modificaciones que le parezca adecuadas.<br /><br />" +
-                            "Recuerde que las cifras que indique para el nuevo movimiento, deben corresponder <em>siempre al " +
-                            "100%</em> de la orden y a la totalidad del período; es derir, no al período que corresponde a " +
-                            "la modificación.<br /><br />" +
-                            "Posteriormente, y si es adecuado, Ud. podrá prorratear la prima para obtener solo la " +
-                            "parte que corresponde al período.",
-                            false).then();
-
                 $scope.movimientos_ui_grid.data = [];
+                $scope.companias_ui_grid.data = [];
+                $scope.coberturas_ui_grid.data = [];
+                $scope.coberturasCompanias_ui_grid.data = [];
+                $scope.primas_ui_grid.data = [];
+
                 $scope.movimientos_ui_grid.data = $scope.riesgo.movimientos;
+                // $scope.companias_ui_grid.data = $scope.riesgo.movimientos.companias;
+                // $scope.coberturas_ui_grid.data = $scope.riesgo.movimientos.coberturas;
+                // $scope.coberturasCompanias_ui_grid.data = $scope.riesgo.movimientos.coberturasCompanias;
+                // $scope.primas_ui_grid.data = $scope.riesgo.movimientos.primas;
+
+                DialogModal($uibModal,
+                    "<em>Riesgos - Nuevo movimiento</em>",
+                    "Ok, un nuevo movimiento ha sido agregado al riesgo. " +
+                    "Nóte que el nuevo movimiento es, simplemente, una copia del movimiento anterior.<br /><br />" +
+                    "Ud. debe <b>seleccionarlo en la lista</b> y asignarle un tipo. Luego debe hacer las " +
+                    "modificaciones que le parezca adecuadas.<br /><br />" +
+                    "Recuerde que las cifras que indique para el nuevo movimiento, deben corresponder <em>siempre al " +
+                    "100%</em> de la orden y a la totalidad del período; es derir, no al período que corresponde a " +
+                    "la modificación.<br /><br />" +
+                    "Posteriormente, y si es adecuado, Ud. podrá prorratear la prima para obtener solo la " +
+                    "parte que corresponde al período.",
+                    false).then();
 
                 return;
             }
         }
         else {
-            var movimiento = {};
+            let movimiento = {};
 
             movimiento._id = new Mongo.ObjectID()._str;
             movimiento.numero = 1;
@@ -294,13 +301,12 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
             // redondemos, al menos por ahora, a 365 días
             if (movimiento.cantidadDias == 366) { 
-            movimiento.cantidadDias = 365;
+                movimiento.cantidadDias = 365;
             }
                 
             movimiento.factorProrrata = movimiento.cantidadDias / 365;
 
             // 1er. movimiento del riesgo; agregamos la compañía 'nosotros' en forma automática ...
-
             movimiento.companias = [];
             movimiento.coberturas = [];
 
@@ -312,9 +318,10 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
             $scope.riesgo.movimientos.push(movimiento);
 
-            if (!$scope.riesgo.docState)
+            if (!$scope.riesgo.docState) { 
                 $scope.riesgo.docState = 2;
-
+            }
+                
             movimiento = {};
 
             $scope.movimientos_ui_grid.data = [];
@@ -582,12 +589,12 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
             return;
         }
 
-        var companiaNosotros = lodash.find(movimientoSeleccionado.companias, function (c) { return c.nosotros; });
-        var companiaAnterior = (movimientoSeleccionado.companias && movimientoSeleccionado.companias.length) ? 
+        const companiaNosotros = lodash.find(movimientoSeleccionado.companias, function (c) { return c.nosotros; });
+        const companiaAnterior = (movimientoSeleccionado.companias && movimientoSeleccionado.companias.length) ? 
                                 movimientoSeleccionado.companias[movimientoSeleccionado.companias.length - 1] : 
                                 null;
         
-        var reaseguradoresOrden = lodash(movimientoSeleccionado.companias).
+        let reaseguradoresOrden = lodash(movimientoSeleccionado.companias).
                                         filter(function(c) { return !c.nosotros; }).
                                         sumBy(function(c) { return c.ordenPorc; });
 
@@ -606,7 +613,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         } 
             
         // cada compañía que agregamos, usa los 'defaults' de la compañía anterior
-        var compania = {
+        const compania = {
             _id: new Mongo.ObjectID()._str,
             nosotros: false,
             comisionPorc: companiaAnterior ? companiaAnterior.comisionPorc : null,
@@ -641,7 +648,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
     $scope.refrescarGridCompanias = function() {
         // para refrescar las listas que usan los Selects en el ui-grid
-        var companiasParaListaUIGrid = lodash.chain($scope.companias).
+        const companiasParaListaUIGrid = lodash.chain($scope.companias).
                                     filter(function(c) { return (c.nosotros || c.tipo == 'REA' || c.tipo == "CORRR") ? true : false; }).
                                     sortBy(function(item) { return item.nombre; }).
                                     value();
@@ -731,7 +738,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     // --------------------------------------------------------------------------------------
     // ui-grid de Coberturas
     // --------------------------------------------------------------------------------------
-    var coberturaSeleccionada = {};
+    let coberturaSeleccionada = {};
 
     $scope.coberturas_ui_grid = {
         enableSorting: false,
@@ -920,7 +927,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
             return;
         }
 
-        var cobertura = {
+        const cobertura = {
             _id: new Mongo.ObjectID()._str,
             moneda: $scope.riesgo.moneda
         };
@@ -1058,7 +1065,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
     // --------------------------------------------------------------------------------------
     // ui-grid de Coberturas por compañía
     // --------------------------------------------------------------------------------------
-    var coberturaCompaniaSeleccionada = {};
+    let coberturaCompaniaSeleccionada = {};
 
     $scope.coberturasCompanias_ui_grid = {
         enableSorting: false,
@@ -1360,16 +1367,16 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
         movimientoSeleccionado.primas = [];
 
         // usamos lodash para agrupar las primas brutas para cada compañía
-        var primasBrutasCompanias = lodash.groupBy(movimientoSeleccionado.coberturasCompanias, function (c) { return c.compania; });
+        const primasBrutasCompanias = lodash.groupBy(movimientoSeleccionado.coberturasCompanias, function (c) { return c.compania; });
 
         let primaItem = {};
 
-        for (var compania in primasBrutasCompanias) {
+        for (const compania in primasBrutasCompanias) {
 
             // arriba agrupamos por compañía; ahora agrupamos por moneda
-            var primasBrutasMonedas = lodash.groupBy(primasBrutasCompanias[compania], function (c) { return c.moneda; });
+            const primasBrutasMonedas = lodash.groupBy(primasBrutasCompanias[compania], function (c) { return c.moneda; });
 
-            for(var moneda in primasBrutasMonedas) {
+            for(const moneda in primasBrutasMonedas) {
 
                 primaItem = {};
 
@@ -1382,7 +1389,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
 
                 // leemos la compañía en el movimiento, para obtener sus porcentajes (defaults)
 
-                var companiaItem = lodash.find(movimientoSeleccionado.companias, function (c) { return c.compania === compania; });
+                const companiaItem = lodash.find(movimientoSeleccionado.companias, function (c) { return c.compania === compania; });
 
                 primaItem.nosotros = companiaItem.nosotros;
 
@@ -1832,7 +1839,7 @@ export default angular.module("scrwebm.riesgos.movimientos", [ ProrratearPrimasB
             return;
         }
 
-        var cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { return c.source.subEntityID === movimientoSeleccionado._id; }).size();
+        const cantidadCuotasMovimientoSeleccionado = lodash($scope.cuotas).filter(function (c) { return c.source.subEntityID === movimientoSeleccionado._id; }).size();
 
         if (cantidadCuotasMovimientoSeleccionado) {
             DialogModal($uibModal, "<em>Riesgos - Construcción de cuotas</em>",
