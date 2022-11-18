@@ -8,7 +8,7 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { Temp_Consulta_Contratos } from '/imports/collections/consultas/tempConsultaContratos'; 
 
-angular.module("scrwebm")
+export default angular.module("scrwebm.contratos.list", [])
        .controller("ContratosListaController", ['$scope', '$state', '$stateParams',
 
 function ($scope, $state, $stateParams) {

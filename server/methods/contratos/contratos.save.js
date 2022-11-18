@@ -39,7 +39,7 @@ Meteor.methods(
 
             // si el número viene en '0', asignamos un número consecutivo al contrato
             if (!contrato.numero) {
-                var numeroAnterior = Contratos.findOne({ cia: contrato.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+                const numeroAnterior = Contratos.findOne({ cia: contrato.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
                 if (!numeroAnterior || !numeroAnterior.numero) { 
                     contrato.numero = 1;
                 }   
@@ -144,8 +144,8 @@ Meteor.methods(
             Contratos.remove({ _id: contrato._id }); 
         }
 
+        // ---------------------------------------------------------------------------------------------------------------------------------
         // usamos esta función para grabar a mongo el contenido de los arrays; nótese que pasamos el array y el mongo collection ... 
-
         reportarProgresoAlCliente(8); 
         mongoCollection_array_grabar(contratosProp_cuentas_resumen.filter(x => x.primas || x.siniestros), ContratosProp_cuentas_resumen); 
 

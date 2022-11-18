@@ -13,6 +13,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 // tenemos que importar los archivos que se usan para abrir el modal del reporte ... 
 // import '/client/imports/riesgos/reportes/opcionesReportModal.html'; 
 import Riesgos_opcionesReportController from '/client/imports/riesgos/reportes/opcionesReportModal'; 
+
 import "./lista.html";
 
 export default angular.module("scrwebm.riesgos.lista", [ Riesgos_opcionesReportController.name ])

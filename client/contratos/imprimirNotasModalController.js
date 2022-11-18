@@ -11,7 +11,7 @@ import { EmpresasUsuarias } from '/imports/collections/catalogos/empresasUsuaria
 import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSeleccionada'; 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller('ImprimirNotasContratosModalController',
+angular.module("scrwebm.contratos.contrato").controller('ImprimirNotasContratosModalController',
 ['$scope', '$uibModalInstance', '$uibModal', 'contrato',
 function ($scope, $uibModalInstance, $uibModal, contrato) {
 

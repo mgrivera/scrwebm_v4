@@ -10,8 +10,9 @@ import { Monedas } from '/imports/collections/catalogos/monedas';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_Definiciones_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$q', '$interval', 
-function ($scope, $uibModal, uiGridConstants, $q, $interval) {
+angular.module("scrwebm.contratos.contrato").
+        controller("Contrato_Cuentas_Definiciones_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$interval', 
+function ($scope, $uibModal, uiGridConstants, $interval) {
 
     $scope.showProgress = false;
 

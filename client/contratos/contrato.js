@@ -22,6 +22,9 @@ import { MostrarPagosEnCuotas } from '/client/imports/generales/mostrarPagosApli
 import { Contratos } from '/imports/collections/principales/contratos'; 
 import { ContratosParametros } from '/imports/collections/catalogos/contratosParametros'; 
 
+import ContratoDownloadToDisk from './downloadContrato/downloadContrato'; 
+import downloadToDisk_htmlTemplate from './downloadContrato/downloadContrato.html'; 
+
 // siguen todos las tablas (collections) para el registro de contratos proporcionales 
 import { ContratosProp_cuentas_resumen, ContratosProp_cuentas_distribucion, ContratosProp_cuentas_saldos, } from '/imports/collections/principales/contratos'; 
 import { ContratosProp_comAdic_resumen, ContratosProp_comAdic_distribucion, ContratosProp_comAdic_montosFinales, } from '/imports/collections/principales/contratos'; 
@@ -31,7 +34,10 @@ import { ContratosProp_entCartSn_resumen, ContratosProp_entCartSn_distribucion, 
 import { ContratosProp_retCartPr_resumen, ContratosProp_retCartPr_distribucion, ContratosProp_retCartPr_montosFinales, } from '/imports/collections/principales/contratos'; 
 import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, ContratosProp_retCartSn_montosFinales, } from '/imports/collections/principales/contratos'; 
 
-angular.module("scrwebm").controller("ContratoController", ['$scope', '$state', '$stateParams', '$uibModal', 'uiGridConstants', '$location', 
+import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
+
+export default angular.module("scrwebm.contratos.contrato", [ ContratoDownloadToDisk.name ]).
+        controller("ContratoController", ['$scope', '$state', '$stateParams', '$uibModal', 'uiGridConstants', '$location', 
 function ($scope, $state, $stateParams, $uibModal, uiGridConstants, $location) {
 
     $scope.showProgress = false;
@@ -92,6 +98,123 @@ function ($scope, $state, $stateParams, $uibModal, uiGridConstants, $location) {
             // 'cuentas' tiene 2 sub states; abrimos el primero: definiciones ...
             $state.go("contrato.cuentas.definiciones");
         }  
+    }
+
+    $scope.DownloadToDisk = function () {
+
+        if ($scope.contrato.docState && $scope.origen == 'edicion') {
+            DialogModal($uibModal, "<em>Contratos - Download</em>",
+                "Aparentemente, <em>se han efectuado cambios</em> en el registro.<br /><br />" +
+                "Por favor guarde estos cambios antes de intentar ejecutar esta función.",
+                false).then();
+            return;
+        }
+
+        $uibModal.open({
+            templateUrl: downloadToDisk_htmlTemplate,
+            controller: 'DownloadContratoToDisk_ModalController',
+            size: 'md',
+            resolve: {
+                contrato: function () {
+                    return $scope.contrato;
+                }
+            }
+        }).result.then(
+            function () {
+                return true;
+            },
+            function () {
+                return true;
+            })
+    }
+
+    $scope.importFromJson = function () {
+        // leemos algún riesgo que se haya exportado antes (con un Download) y lo agregamos como un riesgo nuevo ... 
+        const inputFile = angular.element("#fileInput");
+        if (inputFile) {
+            inputFile.click();        // simulamos un click al input (file)
+        }
+    }
+
+    $scope.uploadFile = function (files) {
+
+        $scope.showProgress = true;
+        const userSelectedFile = files[0];
+        $scope.$apply();
+
+        if (!userSelectedFile) {
+            DialogModal($uibModal, "<em>Contratos - Download</em>",
+                `Aparentemente, Ud. no ha seleccionado un archivo.<br />
+                                 Ud. debe seleccionar un archivo que haya sido creado antes 
+                                 mediante la opción <em>Download</em>, que existe en este mismo menú.`,
+                false).then();
+
+            const inputFile = angular.element("#fileInput");
+            if (inputFile && inputFile[0] && inputFile[0].value) {
+                // para que el input type file "limpie" el file indicado por el usuario
+                inputFile[0].value = null;
+            }
+
+            $scope.showProgress = false;
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+
+            // esta función importa (merge) el contenido del archivo, que es un json, al contrato en el $scope ... 
+            // TODO: Delete this!!! const result = Contratos_Methods.importarContratoFromTextFile(e, $scope.companiaSeleccionada);
+
+            const contrato = e.target.result;
+            
+            // nótese que el contrato aquí va como un string; en el method se convertirá a un objeto con JSON.parse() 
+            Meteor.call('contratos.importFromTextFile', contrato, $scope.companiaSeleccionada, (error, result) => {
+
+                if (error) {
+                    const errorMessage = mensajeErrorDesdeMethod_preparar(error);
+
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: errorMessage
+                    });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                    return;
+                }
+
+                if (result.error) {
+                    $scope.alerts.length = 0;
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: result.message
+                    });
+
+                    $scope.showProgress = false;
+                    $scope.$apply();
+                    return;
+                }
+
+                const inputFile = angular.element("#fileInput");
+                if (inputFile && inputFile[0] && inputFile[0].value) {
+                    // para que el input type file "limpie" el file indicado por el usuario
+                    inputFile[0].value = null;
+                }
+
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'info',
+                    msg: result.message
+                });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+            })
+        }
+
+        reader.readAsText(userSelectedFile);
     }
 
     $scope.nuevo0 = function () {

@@ -248,38 +248,38 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         })
         .state('riesgo', {
             url: '/riesgos/riesgo?origen&id&limit&vieneDeAfuera',
-            templateUrl: 'client/html/riesgos/riesgo.html',
+            templateUrl: 'client/imports/riesgos/riesgo.html',
             controller: 'Riesgo_Controller',
             params: { 'origen': null, 'id': null, 'limit': null, 'vieneDeAfuera': null },
         })
 
         .state('riesgo.generales', {
-            templateUrl: 'client/html/riesgos/riesgo.generales.html',
+            templateUrl: 'client/imports/riesgos/riesgo.generales.html',
             controller: 'RiesgoGenerales_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.movimientos', {
-            templateUrl: 'client/html/riesgos/riesgo.movimientos.html',
+            templateUrl: 'client/imports/riesgos/riesgo.movimientos.html',
             controller: 'RiesgoMovimientos_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.infoRamo_autos', {
-            templateUrl: 'client/html/riesgos/riesgo.infoRamo_autos.html',
+            templateUrl: 'client/imports/riesgos/riesgo.infoRamo_autos.html',
             controller: 'RiesgoInfoRamo_autos_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.productores', {
-            templateUrl: 'client/html/riesgos/riesgo.productores.html',
+            templateUrl: 'client/imports/riesgos/riesgo.productores.html',
             controller: 'RiesgoProductores_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.cuotas', {
-            templateUrl: 'client/html/riesgos/riesgo.cuotas.html',
+            templateUrl: 'client/imports/riesgos/riesgo.cuotas.html',
             controller: 'RiesgoCuotas_Controller',
             parent: 'riesgo'
         })
         .state('riesgo.notasDebito', {
-            templateUrl: 'client/html/riesgos/notasDebito/notasDebito.html',
+            templateUrl: 'client/imports/riesgos/notasDebito/notasDebito.html',
             controller: 'NotasDebitoController',
             parent: 'riesgo'
         })

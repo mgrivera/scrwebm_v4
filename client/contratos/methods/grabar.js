@@ -5,7 +5,7 @@ import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mens
 
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '/client/contratos/methods/_methods/_methods'; 
-import { validarArrayContraSchema, validarItemContraSchema } from '/client/imports/generales/validarArrayContraSchema'; 
+import { validarArrayContraSchema, validarItemContraSchema } from '/imports/generales/validarArrayContraSchema'; 
 
 import { Contratos } from '/imports/collections/principales/contratos'; 
 

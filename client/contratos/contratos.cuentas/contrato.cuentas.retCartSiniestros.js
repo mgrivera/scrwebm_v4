@@ -10,7 +10,8 @@ import { ContratosProp_Configuracion_Tablas } from '/imports/collections/catalog
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 import { Contratos_Methods } from '../methods/_methods/_methods'; 
 
-angular.module("scrwebm").controller("Contrato_Cuentas_RetCartSn_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$q',
+angular.module("scrwebm.contratos.contrato").
+        controller("Contrato_Cuentas_RetCartSn_Controller", ['$scope', '$uibModal', 'uiGridConstants', '$q',
 function ($scope, $uibModal, uiGridConstants, $q) {
 
     $scope.showProgress = false;

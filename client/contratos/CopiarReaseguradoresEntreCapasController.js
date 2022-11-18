@@ -1,9 +1,11 @@
 
 import angular from 'angular';
+import { Mongo } from 'meteor/mongo';
+
 import lodash from 'lodash';
 import { DialogModal } from '/client/imports/generales/angularGenericModal'; 
 
-angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
+angular.module("scrwebm.contratos.contrato").controller('CopiarReaseguradoresEntreCapasController',
 ['$scope', '$uibModalInstance', '$uibModal', 'contrato', function ($scope, $uibModalInstance, $uibModal, contrato) {
 
     $scope.alerts = [];
@@ -149,7 +151,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
             $scope.capasTargetSeleccionadas.length == 0) {
             // el usuario debe seleccionar al menos una capa en cada lista
 
-            let message = `Seleccione <b>al menos una capa</b> en cada lista.
+            const message = `Seleccione <b>al menos una capa</b> en cada lista.
                         `
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -165,7 +167,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
 
         if (lodash.find($scope.capasTargetSeleccionadas, function (r) { return r == $scope.capaSourceSeleccionada; })) {
 
-            let message = `La capa seleccionada en la 1ra. lista <b>no debe ser seleccionada</b> en la 2da. lista.
+            const message = `La capa seleccionada en la 1ra. lista <b>no debe ser seleccionada</b> en la 2da. lista.
                         `
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -181,7 +183,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
 
         if (!lodash.isArray($scope.capaSourceSeleccionada.reaseguradores) || $scope.capaSourceSeleccionada.reaseguradores.length == 0) {
 
-            let message = `La capa seleccionada en la 1ra. lista <b>debe tener</b> reaseguradores registrados.
+            const message = `La capa seleccionada en la 1ra. lista <b>debe tener</b> reaseguradores registrados.
                           `
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -213,7 +215,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
                 Ud. puede continuar (<em>Ok</em>) o cancelar (<em>Cancelar</em>) esta operación.`,
                 true).then(
                 function () {
-                    let message = copiarReaseguradoresEntreCapas($uibModal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
+                    const message = copiarReaseguradoresEntreCapas($uibModal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
 
                     $scope.alerts.length = 0;
                     $scope.alerts.push({
@@ -231,7 +233,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
             return;
         }
         else {
-            let message = copiarReaseguradoresEntreCapas($uibModal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
+            const message = copiarReaseguradoresEntreCapas($uibModal, $scope.capaSourceSeleccionada, $scope.capasTargetSeleccionadas);
 
             $scope.alerts.length = 0;
             $scope.alerts.push({
@@ -249,7 +251,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
         $uibModalInstance.dismiss("Cancel");
     }
 
-    let message = `Este proceso le permite copiar los reaseguradores registrados para una capa del contrato, a otras capas.
+    const message = `Este proceso le permite copiar los reaseguradores registrados para una capa del contrato, a otras capas.
                    <b>Nota importante:</b> si Ud. indica que quiere copiar a una capa que <b>ya tiene</b> resaeguradores registrados, 
                    éstos serán eliminados y sustituídos por los de la capa original.
     `
@@ -259,9 +261,7 @@ angular.module("scrwebm").controller('CopiarReaseguradoresEntreCapasController',
         type: 'info',
         msg: message
     })
-}
-])
-
+}])
 
 function copiarReaseguradoresEntreCapas($uibModal, capaSource, capasTarget) {
     // finalmente, copiamos los reaseguradores desde source a target y notificamos al usuario ...
@@ -299,11 +299,11 @@ function copiarReaseguradoresEntreCapas($uibModal, capaSource, capasTarget) {
     }, "")
 
     if (capasTarget.length > 1) {
-        let message = `Ok, los reaseguradores fueron copiados desde la capa <b>${capaSource.numero.toString()}</b> a las capas <b>${numerosCapasTarget}</b>.`; 
+        const message = `Ok, los reaseguradores fueron copiados desde la capa <b>${capaSource.numero.toString()}</b> a las capas <b>${numerosCapasTarget}</b>.`; 
         return message;
     }
     else {
-        let message = `Ok, los reaseguradores fueron copiados desde la capa <b>${capaSource.numero.toString()}</b> a la capa <b>${numerosCapasTarget.toString()}</b>.`; 
+        const message = `Ok, los reaseguradores fueron copiados desde la capa <b>${capaSource.numero.toString()}</b> a la capa <b>${numerosCapasTarget.toString()}</b>.`; 
         return message;
     }
 }

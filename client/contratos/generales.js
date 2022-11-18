@@ -1,7 +1,7 @@
 ﻿
 import angular from 'angular';
 
-angular.module("scrwebm")
+angular.module("scrwebm.contratos.contrato")
        .controller("ContratoGeneralesController", ['$scope', function ($scope) {
 
       $scope.showProgress = false;

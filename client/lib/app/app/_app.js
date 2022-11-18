@@ -31,6 +31,7 @@ import 'ui-select/dist/select.css';
 import Generales from '/client/imports/generales/generalesAngularModule';
 import Catalogos from '/client/imports/catalogos/angularModule';
 import Riesgos from '/client/imports/riesgos/riesgosAngularModule'; 
+import Contratos from '/client/contratos/contratos'; 
 import Remesas from '/client/imports/remesas/remesasAngularModule'; 
 import NotasDebitoCredito from '/client/imports/notasDebitoCredito/notasDebitoCreditoModule'; 
 import Cobranzas from '/client/imports/cobranzas/cobranzasModule'; 
@@ -96,7 +97,7 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             ngSanitize, uiSelect, 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
-                            Generales.name, Catalogos.name,
+                            Generales.name, Catalogos.name, Contratos.name, 
                             Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
                             Administracion.name, Consultas.name, Utilitarios.name, MeteorLogin.name
                           ])

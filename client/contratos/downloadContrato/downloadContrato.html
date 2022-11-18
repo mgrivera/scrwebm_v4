@@ -1,0 +1,91 @@
+
+<div class="modal-header">
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-0">
+            <h5 class="modal-title">
+                <span>Contratos - Download</span>
+            </h5>
+        </div>
+        <div class="col-sm-3 col-sm-offset-3" style="text-align: right;">
+            <a href="#" ng-click="setShowInfoModal()">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="color:white"></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0">
+                <div class="col-sm-4 col-sm-offset-4" style="text-align: center; vertical-align: middle; ">
+                    <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+                </div>
+
+                <div class="col-sm-4" style="text-align: right; font-style: italic; ">
+                    <span style="color: dodgerblue">{{ companiaSeleccionada.nombre }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div ng-if="showInfoModal">
+                    <info-modal show-info-modal="showInfoModal" set-show-info-modal="setShowInfoModal"
+                        info-header="infoHeader" info-text="infoText">
+                    </info-modal>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0" style="font-size: small; ">
+                <alert ng-repeat="alert in alerts" type="{{ alert.type }}" close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </alert>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12" style="font-size: small; ">
+                <p>
+                    Esta función convierte el contrato a un archivo de texto y lo copia a su PC. 
+                </p>
+                <p>
+                    El archivo permitirá, entonces, duplicar el contrato en uno nuevo. Para hacerlo, Ud. debe
+                    usar la opción <em>Importar</em> e indicar el archivo que recién ha creado con esta función. 
+                </p>
+                <p>
+                    Ud. puede usar este mecanismo para duplicar un contrato en la misma <em>empresa usuaria</em>, 
+                    o en una diferente.
+                </p>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 15px; ">
+            <div class="col-sm-10 col-sm-offset-1">
+
+                <form name="contratosDownloadForm" id="contratosDownloadForm" ng-submit="contratosDownloadForm_submit()"
+                    role="form" novalidate>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0">
+                <button class="btn btn-sm btn-warning pull-right" ng-click="cancel()"
+                    style="margin-right: 15px; min-width: 100px; ">Cerrar</button>
+                <button type="submit" form="contratosDownloadForm" class="btn btn-sm pull-right btn-primary"
+                    style="margin-right: 15px; min-width: 100px; ">Download</button>
+            </div>
+        </div>
+    </div>
+</div>

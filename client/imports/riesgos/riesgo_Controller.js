@@ -63,6 +63,14 @@ import downloadToDisk_htmlTemplate from './downloadRiesgo/downloadRiesgo.html';
 // import './notasDebito/notasDebito.html';
 import ConstruirNotasDebito from './notasDebito/notasDebito'; 
 
+import "./riesgo.html"; 
+import "./riesgo.generales.html";
+import "./riesgo.movimientos.html";
+import "./riesgo.infoRamo_autos.html";
+import "./riesgo.productores.html";
+import "./riesgo.cuotas.html";
+import "./notasDebito/notasDebito.html";
+
 export default angular.module("scrwebm.riesgos.riesgo", [ 'angular-meteor', 
                                                            AgregarNuevoAsegurado.name, RiesgosGenerales.name, 
                                                            RiesgoMovimientos.name, RiesgosInfoRamo.name, 

@@ -14,7 +14,7 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import { Suscriptores } from '/imports/collections/catalogos/suscriptores'; 
 import { Filtros } from '/imports/collections/otros/filtros'; 
 
-angular.module("scrwebm")
+export default angular.module("scrwebm.contratos.filter", [])
        .controller("ContratosFiltroController", ['$scope', '$state', '$stateParams', 
 function ($scope, $state, $stateParams) {
 
