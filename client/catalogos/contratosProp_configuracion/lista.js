@@ -78,6 +78,7 @@ function ($scope, $state, $uibModal) {
 
     $scope.codigosContrato_ui_grid = {
         enableSorting: false,
+        enableFiltering: true,
         showColumnFooter: false,
         enableCellEdit: false,
         enableCellEditOnFocus: true,
@@ -126,6 +127,7 @@ function ($scope, $state, $uibModal) {
             enableCellEdit: false,
             enableColumnMenu: false,
             enableSorting: false,
+            enableFiltering: false, 
             width: 25
         },
         {
@@ -143,6 +145,7 @@ function ($scope, $state, $uibModal) {
             // cellFilter: 'mapDropdown:row.grid.appScope.monedas:"codigo":"codigo"',
             enableColumnMenu: false,
             enableCellEdit: true,
+            enableFiltering: true,
             type: 'string'
         },
         {
@@ -151,6 +154,7 @@ function ($scope, $state, $uibModal) {
             cellTemplate: '<span ng-click="grid.appScope.deleteItem(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
             enableCellEdit: false,
             enableSorting: false,
+            enableFiltering: false, 
             width: 25
         }
     ]

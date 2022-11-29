@@ -25,6 +25,7 @@ const schema = new SimpleSchema({
     telefono: { type: String, label: "Teléfono", max: 100, optional: true },
     fax: { type: String, label: "Fax", max: 100, optional: true },
     nosotros: { type: Boolean, label: "Nosotros", optional: false },
+    ultAct: { type: Date, optional: true }, 
     docState: { type: Number, optional: true },
     personas: { type: Array, optional: true, minCount: 0 },
     'personas.$': { type: personas_SimpleSchema }

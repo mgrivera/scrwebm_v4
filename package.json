@@ -33,6 +33,7 @@
     "formik": "^2.1.4",
     "get-stream": "^4.1.0",
     "isomorphic-fetch": "2.2.1",
+    "knex": "2.3.0",
     "length-stream": "^0.1.1",
     "lodash": "4.17.21",
     "meteor-node-stubs": "0.3.2",
@@ -63,6 +64,7 @@
     "stream-buffers": "^2.1.0",
     "sweetalert2": "^9.10.12",
     "tabulator-tables": "^4.0.4",
+    "tedious": "15.1.0",
     "ui-select": "0.19.8",
     "xlsx": "0.17.0",
     "xlsx-injector": "0.0.3"

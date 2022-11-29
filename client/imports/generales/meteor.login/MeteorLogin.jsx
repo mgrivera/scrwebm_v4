@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { useTracker } from 'meteor/react-meteor-data'
 
 import React, { useState, useEffect } from 'react'; 
+import PropTypes from 'prop-types';
 
 import SignOut_Modal from "./SignOut_Modal"; 
 import SignIn_Modal from "./SignIn_Modal"; 
@@ -15,7 +16,7 @@ import ForgotUserPassword_Modal from "./ForgotUserPassword_Modal";
 
 import Spinner from '/client/imports/genericReactComponents/Spinner';
 
-const MeteorLogin = () => { 
+const MeteorLogin = ({ goToHomeFunction }) => { 
 
     const [user, setUser] = useState({}); 
     const [showModal, setShowModal] = useState(false); 
@@ -97,7 +98,10 @@ const MeteorLogin = () => {
             {/* de acuerdo a la función que quiera el usuario, mostramos un tipo de modal  */}
             { showModal && (modalType === "signOut") && <SignOut_Modal showModal={showModal} 
                                                                        setShowModal={setShowModal} 
-                                                                       setSpecialAction={setSpecialAction} /> }
+                                                                       setSpecialAction={setSpecialAction} 
+                                                                       // nota: este es el angular scope 
+                                                                       // lo pasamos para hacer un $scope.go('/') e ir al home de la aplicación 
+                                                                       goToHomeFunction={goToHomeFunction} /> }
 
             { showModal && (modalType === "signIn") && <SignIn_Modal showModal={showModal} 
                                                                      setShowModal={setShowModal} 
@@ -145,5 +149,9 @@ const MeteorLogin = () => {
         </>
     )
 }
+
+MeteorLogin.propTypes = {
+    goToHomeFunction: PropTypes.func       // este es el angular $scope 
+};
 
 export default MeteorLogin; 

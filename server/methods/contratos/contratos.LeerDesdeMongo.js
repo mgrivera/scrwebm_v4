@@ -39,12 +39,16 @@ Meteor.methods(
                 where.numero = filtro2.numero1;
 
         if (filtro2.codigo) {
-            var search = new RegExp(filtro2.codigo, 'i');
+            // debemos hacer un escape al signo $ pues tiene un significado especial en regular expressions 
+            const expr = `${filtro2.codigo}`.replace('$', '\\$');
+            const search = new RegExp(expr, 'i');
             where.codigo = search;
         }
 
         if (filtro2.referencia) {
-            const search = new RegExp(filtro2.referencia, 'i');
+            // debemos hacer un escape al signo $ pues tiene un significado especial en regular expressions 
+            const expr = `${filtro2.referencia}`.replace('$', '\\$');
+            const search = new RegExp(expr, 'i');
             where.referencia = search;
         }
 

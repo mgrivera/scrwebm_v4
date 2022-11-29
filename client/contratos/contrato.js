@@ -2420,4 +2420,38 @@ function ($scope, $state, $stateParams, $uibModal, uiGridConstants, $location) {
                                         url: $location.url()
         })
     }
+
+    // =========================================================================================
+    // para copiar el contrato a la base de datos de consultas (sql) 
+    // =========================================================================================
+    $scope.copiarContratoADBConsultas = () => {
+
+        if (!$scope.contrato || !$scope.contrato._id || $scope.contrato.docState) {
+            DialogModal($uibModal, "<em>Contratos</em>",
+                `Aparentemente, el contrato no se ha completado y grabado todavía.<br />
+                 Por favor complete el registro del contrato y grábelo a la base de datos <b>antes</b> de intentar copiarlo.
+                `,
+                false).then();
+
+            return;
+        }
+
+        $uibModal.open({
+            templateUrl: 'client/imports/contratos/copiarContratoADBConsultas/copiarContrato.html',
+            controller: 'Contratos_CopiarADBConsultas_Controller',
+            size: 'lg',
+            resolve: {
+                contratoId: () => {
+                    return $scope.contrato._id;
+                },
+            }
+        }).result.then(
+            function () {
+                return true;
+            },
+            function () {
+                return true;
+            }
+        )
+    }
 }])

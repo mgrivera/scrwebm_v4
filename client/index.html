@@ -131,6 +131,8 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                         <li class="dropdown" ng-show="userHasRole_utilitarios">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Utilitarios <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
+                                <li><a ui-sref="utilitarios.actualizar_db_consultas">Actualizar base de datos de consultas</a></li>
+                                <li class="divider"></li>
                                 <li><a ui-sref="utilitarios_tablaNumerosReferencia">Tabla de números de referencia</a></li>
                                 <li class="divider"></li>
                                 <li><a ui-sref="utilitarios_reconversion">Reconversión monetaria - Cuotas</a></li>
@@ -163,14 +165,14 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
 
         <div class="container body-content">
 
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
-                    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
-                        <!--<span ng-bind-html="alert.msg | unsafe"></span>-->
-                        <span ng-bind-html="alert.msg"></span>
-                    </alert>
+                    <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')"
+                        close="closeAlert($index)">
+                        <span ng-bind-html="alert.msg | unsafe"></span>
+                    </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="row" ui-view></div>
         </div>
@@ -191,7 +193,7 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                     </div>
                     <div class="col-sm-3 col-sm-offset-1">
                         <p class="navbar-text">
-                            <meteor-login></meteor-login>
+                            <meteor-login go-to-home-function="goToHome"></meteor-login>
                         </p>
                     </div>
                 </div>

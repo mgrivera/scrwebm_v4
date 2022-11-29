@@ -73,6 +73,8 @@ function ($scope) {
             enableCellEdit: false,
             enableColumnMenu: false,
             enableSorting: false,
+            pinnedLeft: true,
+            cellClass: 'ui-grid-centerCell',
             width: 25
         },
         {
@@ -85,6 +87,7 @@ function ($scope) {
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
+            pinnedLeft: true,
             type: 'string'
         },
         {
@@ -97,6 +100,7 @@ function ($scope) {
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
+            pinnedLeft: true,
             type: 'string'
         },
         {
@@ -177,6 +181,19 @@ function ($scope) {
             enableColumnMenu: false,
             enableCellEdit: true,
             type: 'string'
+        },
+        {
+            name: 'ultAct',
+            field: 'ultAct',
+            displayName: 'Ult actualización',
+            enableCellEdit: false,
+            cellFilter: 'dateTimeFilter_pretty',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableColumnMenu: false,
+            enableSorting: true,
+            type: 'date',
+            width: 130
         },
         {
             name: 'delButton',

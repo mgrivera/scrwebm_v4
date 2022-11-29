@@ -80,6 +80,15 @@ angular.module("scrwebm").filter('dateTimeFilter', function () {
     };
 })
 
+angular.module("scrwebm").filter('dateTimeFilter_pretty', function () {
+    return function (value) {
+        if (value)
+            return moment(value).format('D-MMM-YYYY h:m a');
+        else
+            return "";
+    };
+})
+
 angular.module("scrwebm").filter('boolFilter', function () {
     return function (value) {
         return value ? "Ok" : "";

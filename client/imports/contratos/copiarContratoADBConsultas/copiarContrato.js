@@ -4,32 +4,32 @@ import angular from 'angular';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
 
-import './pruebaEnviarEmail.html';
+import './copiarContrato.html';
 
-// Este controller (angular) se carga con la página primera del programa
-export default angular.module("scrwebm.utilitarios.pruebaEnviarEmail", [])
-                      .controller("Prueba_EnviarEmail_Controller", ['$scope',
-function ($scope) {
+export default angular.module("scrwebm.contrato.copiarContratoADBConsultas", []). 
+                       controller('Contratos_CopiarADBConsultas_Controller', ['$scope', '$uibModalInstance', 'contratoId',
+function ($scope, $uibModalInstance, contratoId) {
 
-    $scope.alerts.length = 0;
-    $scope.showProgress = true;
-    $scope.$parent.tituloState = "Scrwebm - Prueba a enviar un Email"; 
+    // ui-bootstrap alerts ...
+    $scope.alerts = [];
 
-    $scope.sendTestEmail = () => {
+    $scope.closeAlert = function (index) {
+        $scope.alerts.splice(index, 1);
+    }
+
+    $scope.ok = function () {
+        $uibModalInstance.close("Ok");
+    }
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss("Cancel");
+    }
+
+    $scope.copiarContrato = () => {
 
         $scope.showProgress = true;
 
-        const to = "smr.software@outlook.com";
-        const from = "smr.software@gmail.com";
-        const cc = "smr.software@gmail.com";
-        const subject = "Prueba de envío de un Email desde el programa ...";
-        const text = `Hola, <br /> 
-                    La idea de este correo es ver si llega a su destino. <br />
-                    De hacerlo, el módulo de Emails en el 
-                    programa pareciera estar correctamente configurado. <br /><br />
-                    Saludos desde el programa <b><em>scrwebm</em></b>`;
-
-        Meteor.call('sendEmail', to, from, cc, subject, text, (err, result) => {
+        Meteor.call('copiar_contrato_a_db_consultas', contratoId, (err, result) => {
 
             if (err) {
                 const errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -68,8 +68,6 @@ function ($scope) {
 
             $scope.showProgress = false;
             $scope.$apply();
-        });
+        })
     }
-
-    $scope.showProgress = false;
 }])

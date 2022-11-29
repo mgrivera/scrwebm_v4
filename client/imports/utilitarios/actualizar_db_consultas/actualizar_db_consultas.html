@@ -1,0 +1,85 @@
+
+<div>
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+            <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1" style="text-align: left; ">
+            <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')"
+                close="closeAlert($index)">
+                <span ng-bind-html="alert.msg | unsafe"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <div class="container-fluid">
+                <uib-tabset style="text-align: left; ">
+                    <uib-tab heading="Copiar tablas de tipo catálogo">
+
+                        <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
+                            <p>
+                                Esta función permite al usuario actualizar la <em>base de datos de consultas</em>, con los registros que se han
+                                agregado/editado/eliminado más recientemente.
+                            </p>
+                            <p>
+                                La <em>base de datos de consultas</em> permite al usuario de este programa, <em>scrwebm</em>, hacer consultas a
+                                los datos
+                                que se han registrado, como: riesgos, contratos, remesas, etc., desde un programa separado y diferente.
+                            </p>
+                            <p>
+                                En el programa de consultas se implementan nuevas formas de hacer consultas a los datos, de una forma
+                                (que intenta ser) más amigable, simple y efectiva.
+                            </p>
+                            <p>
+                                Para que las consultas, desde este programa separado de consultas, puedan ser llevadas a cabo, los registros
+                                que hace el usuario deben ser copiados y actualizados en forma permanente. Este es, justamente, el objetivo
+                                de esta función: mantener la <em>base de datos de consultas</em> adecuadamente actualizada.
+                            </p>
+                        </div>
+
+                        <div style="margin-top: 25px; text-align: center;">
+                            <button class="btn btn-primary btn-sm" ng-click="actualizar_db_consultas()" style="min-width: 300px; ">
+                                Actualizar base de datos de consultas
+                            </button>
+                        </div>
+
+                    </uib-tab>
+                    <uib-tab heading="Reiniciar proceso">
+                        <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
+                            <p>
+                                Esta función permite al usuario <em>reiniciar</em> el proceso de copia de registros a la <em>base de datos de 
+                                consultas</em>.
+                            </p>
+                            <p>
+                                Al ejecutar este proceso, la <em>fecha de copia más reciente</em> es eliminada. Al hacerlo, la próxima 
+                                vez que la copia sea efectuada, será como si fuese la primera vez que se esté haciendo. El resultado será  
+                                que todos los registros volverán a ser copiados (refrescados). 
+                            </p>
+                            <p>
+                                Este proceso puede ser útil cuando el usuario desee asegurarse que todos los registros, en la base de 
+                                datos de consultas, sean refrescados (actualizados); es decir, que la copia de estos se efectúe nuevamente 
+                                para asegurarnos que sus valores sean actualizados. 
+                            </p>
+                            <p>
+                                Como resultado de ejecutar esta función, la próxima copia que se efectúe será siempre bastante lenta, 
+                                pues todos los registros serán refrescados en la <em>base de datos de consultas</em>, y no 
+                                resultarán copiados <b>solo</b> los que se han editado en forma muy reciente. 
+                            </p>
+                        </div>
+
+                        <div style="margin-top: 25px; text-align: center; ">
+                            <button class="btn btn-primary btn-sm" ng-click="reiniciar_proceso()" style="min-width: 300px; ">
+                                Reiniciar proceso de copia de registros
+                            </button>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>

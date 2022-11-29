@@ -735,8 +735,14 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
         .state('utilitarios.pruebaEnviarEmail', {
             url: '/pruebaEnviarEmail',
             templateUrl: 'client/imports/utilitarios/pruebaEnviarEmail/pruebaEnviarEmail.html',
-            controller: 'Prueba_EnviarEmail_Controller', 
-            parent: 'utilitarios',
+            controller: 'Prueba_EnviarEmail_Controller',
+            parent: 'utilitarios'
+        })
+        .state('utilitarios.actualizar_db_consultas', {
+            url: '/actualizar_db_consultas',
+            templateUrl: 'client/imports/utilitarios/actualizar_db_consultas/actualizar_db_consultas.html',
+            controller: 'Actualizar_db_consultas_Controller',
+            parent: 'utilitarios'
         })
 
         // ----------------------------------------------------------------

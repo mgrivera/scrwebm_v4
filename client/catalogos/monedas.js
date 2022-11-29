@@ -106,12 +106,24 @@ function ($scope) {
             width: 80,
             headerCellClass: 'ui-grid-centerCell',
             cellClass: 'ui-grid-centerCell',
-            cellFiler: 'boolFilter',
             cellFilter: 'boolFilter',
             enableColumnMenu: false,
             enableCellEdit: true,
             enableSorting: true,
             type: 'boolean'
+        },
+        {
+            name: 'ultAct',
+            field: 'ultAct',
+            displayName: 'Ult actualización',
+            enableCellEdit: false,
+            cellFilter: 'dateTimeFilter_pretty',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableColumnMenu: false,
+            enableSorting: true,
+            type: 'date', 
+            width: 130 
         },
         {
             name: 'delButton',
@@ -199,7 +211,7 @@ function ($scope) {
 
         $scope.monedas = [];
         $scope.monedas_ui_grid.data = [];
-
+        
         Meteor.call('monedasSave', editedItems, (err, result) => {
 
             if (err) {

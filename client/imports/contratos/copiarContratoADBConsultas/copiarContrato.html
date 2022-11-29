@@ -1,0 +1,69 @@
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <span>Copiar un contrato a la base de datos de consultas</span>
+    </h5>
+</div>
+
+<div class="modal-body">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
+                <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-0" style="text-align: left; font-size: small; ">
+                <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')"
+                    close="closeAlert($index)">
+                    <span ng-bind-html="alert.msg | unsafe"></span>
+                </div>
+            </div>
+        </div>
+
+        <uib-tabset style="text-align: left; ">
+            <uib-tab heading="Copiar contrato">
+                <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
+                    <p>
+                        Haga un <em>click</em> en el botón para copiar el contrato a la <em>base de datos de consultas</em>. 
+                    </p>
+                </div>
+                
+                <div style="margin-top: 25px; text-align: center;">
+                    <button class="btn btn-primary btn-sm" ng-click="copiarContrato()" style="min-width: 300px; ">
+                        Copiar contrato
+                    </button>
+                </div>
+            </uib-tab>
+            <uib-tab heading="Notas">
+                <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
+                    <p>
+                        Esta función permite al usuario copiar el contrato seleccionado a la <em>base de datos
+                        de consultas</em>.
+                    </p>
+                    <p>
+                        La <em>base de datos de consultas</em> permite tener un programa separado, desde el cual el usuario 
+                        puede ejecutar consultas a los datos registrados. 
+                    </p>
+                    <p>
+                        Una vez copiado un contrato a la <em>base de datos de consultas</em>, el usuario puede iniciar la <em>aplicación 
+                        de consultas</em> y efectuar consultas al contrato. 
+                    </p>
+                    <p>
+                        El usuario puede copiar un contrato muchas veces. Luego de la primera copia, el contrato será actualizado 
+                        si se vuelve a copiar. Esta es la forma normal de mantener el contrato actualizado en la <em>base de datos 
+                        de consultas</em>. Es decir, el contrato puede ser copiado muchas veces, a medida que el usuario lo va 
+                        actualizando en el tiempo. 
+                    </p>
+                </div>
+            </uib-tab>
+        </uib-tabset>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button ng-click="cancel()" class="btn btn-sm pull-right btn-warning" style="margin-right: 15px; ">Cerrar</button>
+</div>

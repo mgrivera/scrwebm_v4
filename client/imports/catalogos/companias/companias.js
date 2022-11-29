@@ -312,6 +312,19 @@ function ($scope, $uibModal, $timeout) {
             type: 'boolean'
         },
         {
+            name: 'ultAct',
+            field: 'ultAct',
+            displayName: 'Ult actualización',
+            enableCellEdit: false,
+            cellFilter: 'dateTimeFilter_pretty',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableColumnMenu: false,
+            enableSorting: true,
+            type: 'date',
+            width: 130
+        },
+        {
             name: 'delButton',
             displayName: '',
             cellTemplate: '<span ng-click="grid.appScope.deleteCompania(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',
@@ -328,9 +341,10 @@ function ($scope, $uibModal, $timeout) {
 
     $scope.nuevo = () => {
         const compania = {
-            _id: new Mongo.ObjectID()._str,
-            nosotros: false,
-            docState: 1 };
+                _id: new Mongo.ObjectID()._str,
+                nosotros: false,
+                docState: 1 
+            };
 
         $scope.companias.push(compania);
         $scope.companiaSeleccionada = compania;

@@ -8,9 +8,10 @@ import { CompaniaSeleccionada } from '/imports/collections/catalogos/companiaSel
 import './utilitarios.html'; 
 
 import PruebaEnviarEmail from './pruebaEnviarEmail/pruebaEnviarEmail'; 
+import ActualizarDBConsultas from './actualizar_db_consultas/actualizar_db_consultas'; 
 
 // Este module (angular) se carga con el module principal del programa (scrwebm)
-export default angular.module("scrwebm.utilitarios", [ PruebaEnviarEmail.name ])
+export default angular.module("scrwebm.utilitarios", [ PruebaEnviarEmail.name, ActualizarDBConsultas.name ])
                       .controller("Utilitarios_Controller", ['$scope', 
 function ($scope) {
 

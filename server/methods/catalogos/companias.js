@@ -4,6 +4,8 @@ import lodash from 'lodash';
 
 import { Companias } from '/imports/collections/catalogos/companias'; 
 
+import { registroEliminacionCatalogos } from '/server/generalFunctions/registroEliminacionCatalogos'; 
+
 Meteor.methods(
 {
     companiasSave: function (companias) {
@@ -30,6 +32,7 @@ Meteor.methods(
 
 
         inserts.forEach(function (item) {
+            item.ultAct = new Date(); 
             Companias.insert(item, function (error) {
                 if (error) { 
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
@@ -45,6 +48,7 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
+            item.object.ultAct = new Date(); 
             Companias.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error) {
@@ -56,7 +60,12 @@ Meteor.methods(
         const removes = lodash.filter(companias, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
-            Companias.remove({ _id: item._id });
+            const _id = item._id;
+            Companias.remove({ _id });
+
+            // ahora agregamos el item que justo se ha eliminado a la tabla: catalogos_deletedItems
+            // la idea es luego actualizar la tabla que corresponde en la db de consultas (sql server) 
+            registroEliminacionCatalogos("companias", _id)
         });
 
         const message = "Ok, los registros han sido actualizados en la base de datos de manera satisfactoria.";

@@ -99,6 +99,19 @@ function ($scope) {
             type: 'string'
         },
         {
+            name: 'ultAct',
+            field: 'ultAct',
+            displayName: 'Ult actualización',
+            enableCellEdit: false,
+            cellFilter: 'dateTimeFilter_pretty',
+            headerCellClass: 'ui-grid-centerCell',
+            cellClass: 'ui-grid-centerCell',
+            enableColumnMenu: false,
+            enableSorting: true,
+            type: 'date',
+            width: 130
+        },
+        {
             name: 'delButton',
             displayName: '',
             cellTemplate: '<span ng-click="grid.appScope.deleteItem(row.entity)" class="fa fa-close redOnHover" style="padding-top: 8px; "></span>',

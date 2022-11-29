@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import Message from '/client/imports/genericReactComponents/Message';
 import Spinner from '/client/imports/genericReactComponents/Spinner';
 
-const SignOut_Modal = ({ showModal, setShowModal, setSpecialAction }) => { 
+const SignOut_Modal = ({ showModal, setShowModal, setSpecialAction, goToHomeFunction }) => { 
 
     const [showSpinner, setShowSpinner] = useState(false);
     const [message, setMessage] = useState({ type: '', message: '', show: false })
@@ -37,6 +37,11 @@ const SignOut_Modal = ({ showModal, setShowModal, setSpecialAction }) => {
             } else { 
                 setShowSpinner(false); 
                 setShowModal(false);
+
+                // la idea es regresar al home de la aplicación
+                // TODO: de alguna forma, debemos regrear al home en este punto 
+                // Tal vez una forma sea que pasemos una función desde angular que lo haga, pero cómo??? 
+                goToHomeFunction(); 
             }
         })
     }
@@ -108,7 +113,9 @@ const SignOut_Modal = ({ showModal, setShowModal, setSpecialAction }) => {
 SignOut_Modal.propTypes = {
     showModal: PropTypes.bool.isRequired, 
     setShowModal: PropTypes.func.isRequired,
-    setSpecialAction: PropTypes.func.isRequired
+    setSpecialAction: PropTypes.func.isRequired, 
+    // esta es una función que recibimos de angular; tan solo hace un $scope.go('/') para ir al home de la apliación 
+    goToHomeFunction: PropTypes.func        
 };
 
 export default SignOut_Modal; 

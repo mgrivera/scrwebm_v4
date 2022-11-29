@@ -47,6 +47,7 @@ function ($scope, $state, $stateParams, $uibModal) {
     $scope.suscriptores = Suscriptores.find().fetch();
     $scope.ramos = Ramos.find().fetch();
 
+    // nótese cómo recuperamos el código del contrato que fue indicado por el usuario 
     $scope.codigoContrato = $stateParams.codigoContrato;
 
     $scope.regresarALista = function () {
@@ -115,7 +116,14 @@ function ($scope, $state, $stateParams, $uibModal) {
             $scope.alerts.push({
                 type: 'info',
                 msg: `Ok, la tabla ha sido exportada a un archivo de texto en forma exitosa. <br /> 
-                      En total, se han exportado <b>${items.length.toString()}</b> lineas. 
+                      En total, se han exportado <b>${items.length.toString()}</b> lineas. <br /> 
+                      <b>Nota importante:</b> si Ud. va a importar los registros que ha exportado en otra tabla, puede ignorar las columnas: 
+                      <em>código de contrato</em> y <em>cia</em>. <br /> 
+                      Las columnas mencionadas no son importadas; más bien sus valores siempre son: <br /> 
+                      <ul> 
+                      <li>Cia: la cia siempre es la cia que el usuario ha seleccionado. </li> 
+                      <li>Código de contrato: es siempre el que corresponde a la tabla que se ha abierto desde la lista.  </li> 
+                      <ul> 
                      `
             });
 

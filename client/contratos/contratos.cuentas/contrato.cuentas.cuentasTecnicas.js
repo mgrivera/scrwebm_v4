@@ -934,7 +934,7 @@ function ($scope, $uibModal, uiGridConstants, $q) {
             // tabla de definición. Un contrato puede ser del 2.018, pero tener series muy posteriores; 
             // ej: 2019, 2020, 2021, 2022, ...
             // ano: { $lte: ano },
-            cia: ciaSeleccionadaID,
+            cia: ciaSeleccionadaID
         };
 
         $scope.showProgress = true;
@@ -955,6 +955,24 @@ function ($scope, $uibModal, uiGridConstants, $q) {
             // leemos en un array los registros en la tabla de configuración del contrato;
             // nótese que usamos el mismo filtro que usamos en el subscribe
             const tablaConfiguracion = ContratosProp_Configuracion_Tablas.find(filtro).fetch();
+
+            if (!tablaConfiguracion.length) { 
+                // no se han leído registros en la tabla de configuración para poder hacer la distribución 
+                // fallamos y notificamos al usuario 
+                $scope.alerts.length = 0;
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: `<b>Error:</b> no se ha podido leer registros en la <em>tabla de distribución</em> que permitan <b>distribuir</b>  
+                      las cifras, primas y/o siniestros, que Ud. ha indicado en la lista. <br /> 
+                      Por esta razón, este proceso no ha logrado agregar registros a la lista que sigue al resumen que se ha indicado. 
+                     `
+                });
+
+                $scope.showProgress = false;
+                $scope.$apply();
+
+                return; 
+            }
 
             // ahora leemos cada linea, con primas y siniestros, y distribuimos en la compañía particular ...
             $scope.contratosProp_cuentas_resumen.

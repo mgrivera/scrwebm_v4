@@ -8,8 +8,8 @@ import { mostrarHelp } from '../imports/generales/mostrarHelp';
 
 // Este controller se carga con la página primera del programa; es decir, la que muestra el menú (navBar) principal
 angular.module("scrwebm")
-       .controller("MainController", ['$rootScope', '$scope', '$location', 
-function ($rootScope, $scope, $location) {
+       .controller("MainController", ['$rootScope', '$scope', '$location', '$timeout', 
+function ($rootScope, $scope, $location, $timeout) {
 
     // este código jQuery permite que los 'subMenu' se muestren con un click en el Bootstrap navBar
     (function($){
@@ -56,6 +56,15 @@ function ($rootScope, $scope, $location) {
     });
     // ---------------------------------------------------------------------------------------------------------------------
 
+    $scope.goToHome = () => { 
+        // cuando esta función es ejecutada el react component, venimos dese código 'no-angular' y angular, probablemente,
+        // no ejecuta la función en el contexto (angular) correcto. 
+        // Normalemnte, este $timeout es una forma muy saudable de resolver este tipo de situaciones en angularjs ...
+        // Nota: nótese que el $timeout que viene no usa ni un callback ni un delay (ej: $timeout(callback(x, y), 2000)), pues
+        // no necesitamos ni un delay ni un callback; solo el efecto que tiene $timeout sobre angular ...
+        $timeout();
+        $scope.go('main'); 
+    }
 
     // para saber si hay un usuario authenticado
     $scope.helpers({

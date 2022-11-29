@@ -37,6 +37,7 @@ import NotasDebitoCredito from '/client/imports/notasDebitoCredito/notasDebitoCr
 import Cobranzas from '/client/imports/cobranzas/cobranzasModule'; 
 import Administracion from '/client/imports/administracion/angularModule'; 
 import Consultas from '/client/imports/consultas/angularModule'; 
+// import Contratos from '/client/imports/contratos/angularModule'; 
 
 // ---------------------------------------------------------------------------------------------------------------
 // NOTA: cuando pasamos a la versión 1.10, no pudimos mantener la ultima versión de angular-templates (1.0.9) 
@@ -99,5 +100,6 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
                             Generales.name, Catalogos.name, Contratos.name, 
                             Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
-                            Administracion.name, Consultas.name, Utilitarios.name, MeteorLogin.name
+                            Administracion.name, Consultas.name, Utilitarios.name, MeteorLogin.name, 
+                            Contratos.name
                           ])
