@@ -1,6 +1,5 @@
 
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment'; 
 import angular from 'angular';
 
 import { mensajeErrorDesdeMethod_preparar } from '/client/imports/generales/mensajeDeErrorDesdeMethodPreparar'; 
@@ -16,11 +15,11 @@ function ($scope) {
     $scope.showProgress = true;
     $scope.$parent.tituloState = "Scrwebm - Actualizar base de datos de consultas"; 
 
-    $scope.actualizar_db_consultas = () => {
+    $scope.copiarCatalogos_a_db_consultas = () => {
 
         $scope.showProgress = true;
 
-        Meteor.call('actualizar_db_consultas', (err, result) => {
+        Meteor.call('copiarCatalogos_a_db_consultas', (err, result) => {
 
             if (err) {
                 const errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -66,7 +65,7 @@ function ($scope) {
 
         $scope.showProgress = true;
 
-        Meteor.call('reiniciar_proceso_actualizar_db_consultas', (err, result) => {
+        Meteor.call('reiniciar_proceso_copiarCatalogos_a_db_consultas', (err, result) => {
 
             if (err) {
                 const errorMessage = mensajeErrorDesdeMethod_preparar(err);
@@ -108,39 +107,5 @@ function ($scope) {
         })
     }
 
-    // ======================================================================================================================
-    // leemos la fecha de última ejecución de este proceso 
-    // si no hay una fecha, el proceso nunca se ha ejecutado o el usuario quiere copiar, nuevamente, *todos* los registros 
-    leerFechaCopiaDBConsultas().then((result) => {
-        if (result.fecha) {
-            $scope.alerts.push({
-                type: 'info',
-                msg: `Este proceso fue ejecutado por última vez el día: <b>${moment(result.fecha).format('D-MMM-YYYY h:m a')}</b>.<br /> 
-                      <b>Solo</b> los registros que se han agregado/editado <b>luego</b> de esa fecha serán agregados a la base de datos de consultas.
-                     `
-            });
-
-            $scope.showProgress = false;
-            $scope.$apply();
-        } else {
-            $scope.alerts.push({
-                type: 'info',
-                msg: `<b>Nota:</b> Este proceso será ejecutado como si fuera la primera vez: copiara <b>todos</b> los registros a la base de datos de consulta.`
-            });
-
-            $scope.showProgress = false;
-            $scope.$apply();
-        }
-    })
+    $scope.showProgress = false; 
 }])
-
-// =====================================================================================================================
-// cuando el usuario inicia esta opción desde el menú del programa, leemos la fecha de última ejecución del proceso
-// para saber cuando fue ejecutado la última vez e informar al usuario 
-const leerFechaCopiaDBConsultas = () => { 
-    return new Promise(resolve => { 
-        Meteor.call('leer_fecha_from_actualizar_db_consultas', (err, result) => {
-            resolve(result); 
-        })
-    })
-}

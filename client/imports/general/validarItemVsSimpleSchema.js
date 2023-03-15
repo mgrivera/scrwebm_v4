@@ -13,9 +13,9 @@ function validarItemVsSimpleSchema(item, simpleSchema) {
 
             if (error.name.toLowerCase().includes("password")) { 
                 // la idea es no enviar el valor de un item tipo password 
-                message = `El valor indicado para el campo '${error.name}' no es adecuado; error de tipo '${error.type}'.`
+                message = `El valor indicado para el campo <b><em>${error.name}</em></b> no es adecuado; error de tipo '${error.type}'.`
             } else { 
-                message = `El valor '${error.value}' no es adecuado para el campo '${error.name}'; error de tipo '${error.type}'.`
+                message = `El valor: <b><em>'${error.value}'</em></b> no es adecuado para el campo: <b><em>${error.name}</em></b>; error de tipo: <b><em>'${error.type}'</em></b>.`
             }
             
             errores.push(message);

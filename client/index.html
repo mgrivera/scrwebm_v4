@@ -36,9 +36,7 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
 
                         <li class="dropdown"
                             ng-show="userHasRole_riesgos || userHasRole_riesgos_consulta || userHasRole_contratos || userHasRole_contratos_consulta || userHasRole_notasdbcr || userHasRole_notasdbcr_consulta || userHasRole_siniestros || userHasRole_siniestros_consulta">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                Emisión <b class="caret"></b>
-                            </a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Emisión <b class="caret"></b></a>
                             <ul class="dropdown-menu">
 
                                 <li class="dropdown dropdown-submenu" ng-show="userHasRole_riesgos || userHasRole_riesgos_consulta">
@@ -72,6 +70,17 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                                         <li ng-if="userHasRole_siniestros_consulta"><a href='/siniestros/filtro?origen=consulta'>Consulta</a></li>
                                     </ul>
                                 </li>
+
+                                <li class="divider"></li>
+
+                                <li class="dropdown dropdown-submenu">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Registros manuales</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a ui-sref="emision.registrosManuales">Registro</a></li>
+                                        <li><a ui-sref="emision.registrosManuales">Consulta</a></li>
+                                    </ul>
+                                </li>
+
                             </ul>
                         </li>
 
@@ -131,7 +140,8 @@ de 70px reseva mucho más espacio del deseado cuando 'viene de afuera' ...  -->
                         <li class="dropdown" ng-show="userHasRole_utilitarios">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Utilitarios <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a ui-sref="utilitarios.actualizar_db_consultas">Actualizar base de datos de consultas</a></li>
+                                <li><a ui-sref="utilitarios.actualizar_db_consultas">Copiar catálogos</a></li>
+                                <li><a ui-sref="utilitarios.copiar_cuotas">Copiar cuotas</a></li>
                                 <li class="divider"></li>
                                 <li><a ui-sref="utilitarios_tablaNumerosReferencia">Tabla de números de referencia</a></li>
                                 <li class="divider"></li>

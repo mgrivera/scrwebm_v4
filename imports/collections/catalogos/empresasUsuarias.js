@@ -13,7 +13,8 @@ const schema = new SimpleSchema({
     fax: { type: String, label: "Fax", max: 100, optional: true, },
     companiaNosotros: { type: String, label: "Compañía que representa a 'nosotros'", optional: true },
     ultAct: { type: Date, optional: true }, 
-    docState: { type: Number, optional: true }
+    docState: { type: Number, optional: true }, 
+    fechaCopiadaSql: { type: Date, label: 'Fecha en que el registro fue copiado a sql server', optional: true }
 })
 
 export const EmpresasUsuarias = new Mongo.Collection("empresasUsuarias");

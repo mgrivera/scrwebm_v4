@@ -570,7 +570,9 @@ const Contrato_SimpleSchema = new SimpleSchema({
     ultUsuario: { type: String, optional: true },
 
     cia: { type: String, optional: false, },
-    docState: { type: Number, optional: true }
+    docState: { type: Number, optional: true }, 
+
+    fechaCopiadaSql: { type: Date, label: 'Fecha en que el contrato fue copiado a sql server', optional: true }
 })
 
 export const Contratos = new Mongo.Collection("contratos");

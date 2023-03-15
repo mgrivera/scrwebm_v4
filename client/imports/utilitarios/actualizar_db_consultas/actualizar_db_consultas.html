@@ -23,13 +23,14 @@
 
                         <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
                             <p>
-                                Esta función permite al usuario actualizar la <em>base de datos de consultas</em>, con los registros que se han
-                                agregado/editado/eliminado más recientemente.
+                                Esta función permite al usuario copiar los catálogos, como asegurados, ramos, monedas, etc., 
+                                a la <em>base de datos de consultas</em>. Esta función copiará solo los registros que se han 
+                                agregado/editado/eliminado recientemente. Un registro que fue copiado antes no volverá a ser 
+                                copiado, a menos que haya recibido modificaciones por parte del usuario. 
                             </p>
                             <p>
                                 La <em>base de datos de consultas</em> permite al usuario de este programa, <em>scrwebm</em>, hacer consultas a
-                                los datos
-                                que se han registrado, como: riesgos, contratos, remesas, etc., desde un programa separado y diferente.
+                                los datos que se han registrado, como: riesgos, contratos, remesas, etc., desde un programa separado y diferente.
                             </p>
                             <p>
                                 En el programa de consultas se implementan nuevas formas de hacer consultas a los datos, de una forma
@@ -37,14 +38,13 @@
                             </p>
                             <p>
                                 Para que las consultas, desde este programa separado de consultas, puedan ser llevadas a cabo, los registros
-                                que hace el usuario deben ser copiados y actualizados en forma permanente. Este es, justamente, el objetivo
-                                de esta función: mantener la <em>base de datos de consultas</em> adecuadamente actualizada.
+                                que hace el usuario deben ser copiados y actualizados en forma permanente. 
                             </p>
                         </div>
 
                         <div style="margin-top: 25px; text-align: center;">
-                            <button class="btn btn-primary btn-sm" ng-click="actualizar_db_consultas()" style="min-width: 300px; ">
-                                Actualizar base de datos de consultas
+                            <button class="btn btn-primary btn-sm" ng-click="copiarCatalogos_a_db_consultas()" style="min-width: 300px; ">
+                                Copiar tablas de tipo Catálogo a base de datos de consultas
                             </button>
                         </div>
 
@@ -52,29 +52,27 @@
                     <uib-tab heading="Reiniciar proceso">
                         <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
                             <p>
-                                Esta función permite al usuario <em>reiniciar</em> el proceso de copia de registros a la <em>base de datos de 
+                                Esta función permite al usuario <em>reiniciar</em> el proceso de copia de catálogos a la <em>base de datos de 
                                 consultas</em>.
                             </p>
                             <p>
-                                Al ejecutar este proceso, la <em>fecha de copia más reciente</em> es eliminada. Al hacerlo, la próxima 
-                                vez que la copia sea efectuada, será como si fuese la primera vez que se esté haciendo. El resultado será  
-                                que todos los registros volverán a ser copiados (refrescados). 
+                                Al ejecutar este proceso, todos los registros que copia este proceso, serán copiados nuevamente, cuando 
+                                el usuario ejecute próximamente el proceso. 
                             </p>
                             <p>
-                                Este proceso puede ser útil cuando el usuario desee asegurarse que todos los registros, en la base de 
+                                Este proceso puede ser útil cuando el usuario desee asegurarse que todos los catálogos, en la base de 
                                 datos de consultas, sean refrescados (actualizados); es decir, que la copia de estos se efectúe nuevamente 
                                 para asegurarnos que sus valores sean actualizados. 
                             </p>
                             <p>
                                 Como resultado de ejecutar esta función, la próxima copia que se efectúe será siempre bastante lenta, 
-                                pues todos los registros serán refrescados en la <em>base de datos de consultas</em>, y no 
-                                resultarán copiados <b>solo</b> los que se han editado en forma muy reciente. 
+                                pues todas las tablas de tipo Catálogo serán vueltas a copiar. 
                             </p>
                         </div>
 
                         <div style="margin-top: 25px; text-align: center; ">
                             <button class="btn btn-primary btn-sm" ng-click="reiniciar_proceso()" style="min-width: 300px; ">
-                                Reiniciar proceso de copia de registros
+                                Reiniciar proceso de copia de tablas de tipo Catálogos
                             </button>
                         </div>
                     </uib-tab>

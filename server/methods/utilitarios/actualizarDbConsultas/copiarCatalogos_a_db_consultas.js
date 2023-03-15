@@ -19,51 +19,14 @@ Meteor.methods(
         // La idea es usar esta db sql para accederla desde Microsoft Access y poner allí 
         // todo tipo de consultas. Ya sabemos que resulta mucho más fácil hacer este tipo de 
         // cosas desde Access que desde Javascript (y en el browser, etc) 
-        actualizar_db_consultas: async function () {
+        copiarCatalogos_a_db_consultas: async function () {
 
-            // primero que todo, leemos un registro desde la tabla Copia_db_consultas (sql)
-            // const copia_db_consultas = Copia_db_consultas.findOne({ tipoTablas: 'catalogos' }); 
-            const copia_db_consultas = await knex_sql_database('copia_db_consultas').where({ tipoTablas: 'catalogos' }).first('*'); 
-
-            if (!copia_db_consultas || !copia_db_consultas.fecha) { 
-                // no hay un registro en la tabla; ello quiere decir que este proceso debe leer *todos* los items en las tablas 
-                // para registrar todo a sql server. Normalmente, esto ocurre la 1ra vez. También si el usuario quiere copiar 
-                // todos los registros nuevamente (una razón puede ser que los registros no fueron copiados adecuadamente antes) 
-                agregarFechaUltAct_a_registrosQueNoTienenUna(); 
-                const filter = {};   // para copiar *todos* los registros, desde mongo a sql 
-                const result = await copiar_desde_mongo_a_sql(filter); 
-                return result; 
-            } else { 
-                // Ok, este es el caso normal. Este proceso se ha ejecutado antes. 
-                // leemos y copiamos *solo* los items que se han agregado/editado en forma *posterior* a la última vez que este 
-                // proceso fue ejecutado 
-
-                // para copiar *solo* los registros que se han editado *luego* de la última vez
-                const filter = { $and: [ { ultAct: { $exists: true }}, { ultAct: { $ne: null }}, { ultAct: { $gt: copia_db_consultas.fecha } } ]}; 
-                const result = await copiar_desde_mongo_a_sql(filter);
-                return result; 
-            }
+            // para copiar *solo* los registros que se han editado *luego* de la última vez
+            const filter = { $or: [ { fechaCopiadaSql: { $exists: false }}, { fechaCopiadaSql: { $eq: null }} ]}; 
+            const result = await copiar_desde_mongo_a_sql(filter);
+            return result; 
         }
     })
-
-// ==============================================================================
-// para actualizar la fecha (ultAct) en los registros que aún no tienen una
-// nota: este proceso solo se ejecuta cuando la copia se efectúa para *todos*
-// los registros
-// ==============================================================================
-const agregarFechaUltAct_a_registrosQueNoTienenUna = () => {
-    // -------------------------------------------------------------------------------------------------------------
-    // nos aseguramos de agregar una fecha a los registros que no la tengan; esta es la fecha en el que el registro 
-    // fue editado por última vez. Esta es una copia completa, todos los registros serán copiados  
-    // los registros que aún no tienen una fecha es porqué no se han editado luego de implementar este proceso. Ahora
-    // estos registros (catálogos), al ser editados, reciben una fecha de ultima edición. 
-    const ultAct = new Date();
-    Monedas.update({ $or: [{ ultAct: null }, { ultAct: { $exists: false } }] }, { $set: { ultAct } }, { multi: true });
-    Ramos.update({ $or: [{ ultAct: null }, { ultAct: { $exists: false } }] }, { $set: { ultAct } }, { multi: true });
-    TiposContrato.update({ $or: [{ ultAct: null }, { ultAct: { $exists: false } }] }, { $set: { ultAct } }, { multi: true });
-    Suscriptores.update({ $or: [{ ultAct: null }, { ultAct: { $exists: false } }] }, { $set: { ultAct } }, { multi: true });
-    EmpresasUsuarias.update({ $or: [{ ultAct: null }, { ultAct: { $exists: false } }] }, { $set: { ultAct } }, { multi: true });
-}
 
 // ================================================================
 // para copiar un mongo collection a un sql table
@@ -87,6 +50,10 @@ const copiar_desde_mongo_a_sql = async (filter) => {
             message: `Ha ocurrido un error al intentar ejecutar este proceso: <br /><br />${result1.message}`
         }
     }
+
+    // *marcamos* los registros para indicar que fueron copiados; nota: para registros nuevos o modificados por el usuario, 
+    // esta fecha no existirá y el registro será copiado con la próxima copia  
+    Monedas.update(filter, { $set: { fechaCopiadaSql: new Date() }}, { multi: true });
 
     // ahora debemos leer la tabla de eliminaciones; debemos eliminar estos items en sql db 
     result2 = await leerTablaEliminacionesYActualizarSql("monedas");
@@ -115,6 +82,10 @@ const copiar_desde_mongo_a_sql = async (filter) => {
         }
     }
 
+    // *marcamos* los registros para indicar que fueron copiados; nota: para registros nuevos o modificados por el usuario, 
+    // esta fecha no existirá y el registro será copiado con la próxima copia  
+    Companias.update(filter, { $set: { fechaCopiadaSql: new Date() } }, { multi: true });
+
     // ahora debemos leer la tabla de eliminaciones; debemos eliminar estos items en sql db 
     result2 = await leerTablaEliminacionesYActualizarSql("companias");
 
@@ -141,6 +112,10 @@ const copiar_desde_mongo_a_sql = async (filter) => {
             message: `Ha ocurrido un error al intentar ejecutar este proceso: <br /><br />${result1.message}`
         }
     }
+
+    // *marcamos* los registros para indicar que fueron copiados; nota: para registros nuevos o modificados por el usuario, 
+    // esta fecha no existirá y el registro será copiado con la próxima copia  
+    Ramos.update(filter, { $set: { fechaCopiadaSql: new Date() } }, { multi: true });
 
     // ahora debemos leer la tabla de eliminaciones; debemos eliminar estos items en sql db 
     result2 = await leerTablaEliminacionesYActualizarSql("ramos");
@@ -169,6 +144,10 @@ const copiar_desde_mongo_a_sql = async (filter) => {
         }
     }
 
+    // *marcamos* los registros para indicar que fueron copiados; nota: para registros nuevos o modificados por el usuario, 
+    // esta fecha no existirá y el registro será copiado con la próxima copia  
+    TiposContrato.update(filter, { $set: { fechaCopiadaSql: new Date() } }, { multi: true });
+
     // ahora debemos leer la tabla de eliminaciones; debemos eliminar estos items en sql db 
     result2 = await leerTablaEliminacionesYActualizarSql("tiposContrato");
 
@@ -195,6 +174,10 @@ const copiar_desde_mongo_a_sql = async (filter) => {
             message: `Ha ocurrido un error al intentar ejecutar este proceso: <br /><br />${result1.message}`
         }
     }
+
+    // *marcamos* los registros para indicar que fueron copiados; nota: para registros nuevos o modificados por el usuario, 
+    // esta fecha no existirá y el registro será copiado con la próxima copia  
+    Suscriptores.update(filter, { $set: { fechaCopiadaSql: new Date() } }, { multi: true });
 
     // ahora debemos leer la tabla de eliminaciones; debemos eliminar estos items en sql db 
     result2 = await leerTablaEliminacionesYActualizarSql("suscriptores");
@@ -223,6 +206,10 @@ const copiar_desde_mongo_a_sql = async (filter) => {
         }
     }
 
+    // *marcamos* los registros para indicar que fueron copiados; nota: para registros nuevos o modificados por el usuario, 
+    // esta fecha no existirá y el registro será copiado con la próxima copia  
+    EmpresasUsuarias.update(filter, { $set: { fechaCopiadaSql: new Date() } }, { multi: true });
+
     // ahora debemos leer la tabla de eliminaciones; debemos eliminar estos items en sql db 
     result2 = await leerTablaEliminacionesYActualizarSql("empresasUsuarias");
 
@@ -237,19 +224,14 @@ const copiar_desde_mongo_a_sql = async (filter) => {
         finalMessage += finalMessage ? `<br />${message}` : message;
     }
 
-    // -------------------------------------------------------------------------------------------------------
-    // finalmente, actualizamos la tabla CopiaDBConsultas, para poner la fecha y hora actual 
-    await knex_sql_database("copia_db_consultas").where({ tipoTablas: 'catalogos' }).del();
-    await knex_sql_database("copia_db_consultas").insert({ tipoTablas: 'catalogos', fecha: new Date() });
-
     let message = "";
     if (items_copiados) {
         message = `Ok, el proceso se ha ejecutado en forma satisfactoria. En total:  <br /><br />${finalMessage}`
     } else {
         message = `Ok, el proceso se ha ejecutado en forma satisfactoria. <br />
-                               <b>Nota:</b> no hemos encontrado <b>ningún</b> registro que copiar. <br /> 
-                               Este proceso <b>no</b> ha copiado registros a la <em>base de datos de consultas</em>.  
-                               `
+                    <b>Nota:</b> no hemos encontrado <b>ningún</b> registro que copiar. <br /> 
+                    Este proceso <b>no</b> ha copiado registros a la <em>base de datos de consultas</em>.  
+                    `
     }
 
     return {
@@ -267,28 +249,23 @@ const mongoCollection_copiar_a_sql = async (table, items) => {
     let count_modificados = 0; 
 
     for (const item of items) { 
-        try {
-            // leemos el item en sql server; si existe lo actualizamos; si no existe, lo agregamos 
-            const result = await knex_sql_database(table).where({ _id: item._id }).first('*');
+        // este field puede venir; pero no existe en sql 
+        delete item.fechaCopiadaSql; 
 
-            // TODO: leer item en sql server 
-            // existe: update ... 
-            // no existe: insert ... 
-            if (result) {
-                // el registro existe en sql; lo actualizamos 
-                await knex_sql_database(table).update(item).where({ _id: item._id });
-                count_modificados++;
-            } else {
-                // el registro no existe en sql; lo agregamos 
-                await knex_sql_database(table).insert(item);
-                count_agregados++;
-            }
+        // leemos el item en sql server; si existe lo actualizamos; si no existe, lo agregamos 
+        const result = await knex_sql_database(table).where({ _id: item._id }).first('*');
 
-        } catch (error) {
-            return {
-                error: true, 
-                message: error
-            }
+        // TODO: leer item en sql server 
+        // existe: update ... 
+        // no existe: insert ... 
+        if (result) {
+            // el registro existe en sql; lo actualizamos 
+            await knex_sql_database(table).update(item).where({ _id: item._id });
+            count_modificados++;
+        } else {
+            // el registro no existe en sql; lo agregamos 
+            await knex_sql_database(table).insert(item);
+            count_agregados++;
         }
     }
 
@@ -308,48 +285,45 @@ const companias_copiar_a_sql = async (table, items) => {
     let count_modificados = 0;
 
     for (const item of items) {
-        try {
-            // leemos el item en sql server; si existe lo actualizamos; si no existe, lo agregamos 
-            const result = await knex_sql_database(table).where({ _id: item._id }).first('*');
 
-            // TODO: leer item en sql server 
-            // existe: update ... 
-            // no existe: insert ... 
-            if (result) {
-                // el registro existe en sql; lo actualizamos  - nota: debemos quitar el array de personas cuando exista 
-                const item2 = { ...item };
-                delete item2.personas; 
-                await knex_sql_database(table).update(item2).where({ _id: item._id });
-                count_modificados++;
+        // este field puede venir; pero no existe en sql 
+        delete item.fechaCopiadaSql; 
 
-                // -----------------------------------------------------------------------------------------------------
-                // ya modificamos los datos de la compañía. Ahora vamos a registrar sus personas  
-                await knex_sql_database("personas").where({ companiaId: item._id }).del();      // eliminamos antes las personas que puedan existir
+        // leemos el item en sql server; si existe lo actualizamos; si no existe, lo agregamos 
+        const result = await knex_sql_database(table).where({ _id: item._id }).first('*');
 
-                if (Array.isArray(item.personas)) {
-                    for (const persona of item.personas) {
-                        await knex_sql_database("personas").insert({ ...persona, companiaId: item._id });
-                    }
-                }
-            } else {
-                // el registro no existe en sql; lo agregamos - nota: debemos quitar el array de personas cuando exista 
-                const item2 = { ...item }; 
-                delete item2.personas; 
-                await knex_sql_database(table).insert(item2);
-                count_agregados++;
+        // TODO: leer item en sql server 
+        // existe: update ... 
+        // no existe: insert ... 
+        if (result) {
+            // el registro existe en sql; lo actualizamos  - nota: debemos quitar el array de personas cuando exista 
+            const item2 = { ...item };
+            delete item2.personas; 
+            await knex_sql_database(table).update(item2).where({ _id: item._id });
+            count_modificados++;
 
-                // -----------------------------------------------------------------------------------------------------
-                // agregamos una compañía; debemos agregar sus personas, si existen 
-                if (Array.isArray(item.personas)) {
-                    for (const persona of item.personas) { 
-                        await knex_sql_database("personas").insert({ ...persona, companiaId: item._id });
-                    }
+            // -----------------------------------------------------------------------------------------------------
+            // ya modificamos los datos de la compañía. Ahora vamos a registrar sus personas  
+            await knex_sql_database("personas").where({ companiaId: item._id }).del();      // eliminamos antes las personas que puedan existir
+
+            if (Array.isArray(item.personas)) {
+                for (const persona of item.personas) {
+                    await knex_sql_database("personas").insert({ ...persona, companiaId: item._id });
                 }
             }
-        } catch(error) { 
-            return {
-                error: true,
-                message: error
+        } else {
+            // el registro no existe en sql; lo agregamos - nota: debemos quitar el array de personas cuando exista 
+            const item2 = { ...item }; 
+            delete item2.personas; 
+            await knex_sql_database(table).insert(item2);
+            count_agregados++;
+
+            // -----------------------------------------------------------------------------------------------------
+            // agregamos una compañía; debemos agregar sus personas, si existen 
+            if (Array.isArray(item.personas)) {
+                for (const persona of item.personas) { 
+                    await knex_sql_database("personas").insert({ ...persona, companiaId: item._id });
+                }
             }
         }
     }
@@ -374,20 +348,13 @@ const leerTablaEliminacionesYActualizarSql = async (mongoCollection) => {
     let mongo_deleted_items = 0; 
 
     for (const item of deletedItems) { 
-        try { 
-            // eliminamos cada item en sql 
-            const result = await knex_sql_database(mongoCollection).where({ _id: item.itemId }).del();
-            if (result) {
-                // del() regresa la cantidad de items eliminados; en este caso siempre sería 1, pues eliminamos por pk 
-                // tembién podría ser 0, por supuesto, si el item no existe en sql 
-                sql_deleted_items++;
-            } 
-        } catch(error) { 
-            return {
-                error: true,
-                message: error
-            }
-        }
+        // eliminamos cada item en sql 
+        const result = await knex_sql_database(mongoCollection).where({ _id: item.itemId }).del();
+        if (result) {
+            // del() regresa la cantidad de items eliminados; en este caso siempre sería 1, pues eliminamos por pk 
+            // tembién podría ser 0, por supuesto, si el item no existe en sql 
+            sql_deleted_items++;
+        } 
     }
 
     // finalmente, elimiamos los registros en la tabla de eliminaciones (mongo) 

@@ -11,6 +11,14 @@
         <div class="row">
             <div class="col-sm-6 col-sm-offset-3" style="text-align: center; vertical-align: middle; ">
                 <i style="color: #428BCA" class="fa fa-circle-o-notch fa-spin fa-2x" ng-show="showProgress"></i>
+                <div ng-show="showProgress">
+                    <div ng-show="processProgress.current != null" style="font-size: small; font-weight: bold; ">
+                        ({{ processProgress.current }}/{{ processProgress.max }} - {{ processProgress.progress }})
+                    </div>
+                    <div ng-show="processProgress.message" style="font-size: x-small; font-weight: bold; ">
+                        ({{ processProgress.message }})
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -27,21 +35,48 @@
             <uib-tab heading="Copiar contrato">
                 <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
                     <p>
-                        Haga un <em>click</em> en el botón para copiar el contrato a la <em>base de datos de consultas</em>. 
+                        Haga un <em>click</em> en el botón para copiar <b>todos</b> los contratos a la <em>base de datos de consultas</em>. 
                     </p>
                 </div>
                 
                 <div style="margin-top: 25px; text-align: center;">
                     <button class="btn btn-primary btn-sm" ng-click="copiarContrato()" style="min-width: 300px; ">
-                        Copiar contrato
+                        Copiar contratos
                     </button>
                 </div>
             </uib-tab>
+
+            <uib-tab heading="Reiniciar proceso">
+                <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
+                    <p>
+                        Esta función permite al usuario <em>reiniciar</em> el proceso de <em>copia de contratos</em>
+                        a la <em>base de datos de consultas</em>.
+                    </p>
+                    <p>
+                        El resultado de ejecutar este proceso es que la próxima vez que se efectúe este proceso de copia, 
+                        <b>todos</b> los contratos registrados serán copiadas nuevamente.
+                    </p>
+                    <p>
+                        Este proceso puede ser útil cuando el usuario desee asegurarse que todos los contratos, 
+                        en la base de datos de consultas, sean <em>refrescados (actualizados)</em>;
+                        es decir, que la copia de estos contratos se efectúe nuevamente
+                        para asegurarnos que sus valores sean actualizados (y correctos).
+                    </p>
+                </div>
+
+                <div style="margin-top: 25px; text-align: center; ">
+                    <button class="btn btn-primary btn-sm" ng-click="reiniciar_proceso()" style="min-width: 300px; ">
+                        Reiniciar proceso de copia de contratos
+                    </button>
+                </div>
+            </uib-tab>
+
             <uib-tab heading="Notas">
                 <div style="text-align: left; padding-left: 100px; padding-right: 100px; padding-top: 15px; ">
                     <p>
-                        Esta función permite al usuario copiar el contrato seleccionado a la <em>base de datos
-                        de consultas</em>.
+                        Esta función revisa los contratos registrados para todas la empresas y copia a la <em>base de datos
+                        de consultas</em> los que no se han copiado antes, o se han copiado pero han sido modificados de alguna 
+                        manera. 
                     </p>
                     <p>
                         La <em>base de datos de consultas</em> permite tener un programa separado, desde el cual el usuario 
@@ -52,10 +87,9 @@
                         de consultas</em> y efectuar consultas al contrato. 
                     </p>
                     <p>
-                        El usuario puede copiar un contrato muchas veces. Luego de la primera copia, el contrato será actualizado 
-                        si se vuelve a copiar. Esta es la forma normal de mantener el contrato actualizado en la <em>base de datos 
-                        de consultas</em>. Es decir, el contrato puede ser copiado muchas veces, a medida que el usuario lo va 
-                        actualizando en el tiempo. 
+                        Los contratos pueden ser copiados muchas veces. Esta función puede copiar un mismo contrato muchas veces, si el 
+                        usuario lo modifica luego de que ha sido copiado. De esta forma, la base de datos de consultas se mantiene 
+                        actualizada, a medida que los contratos van siendo modificados en el tiempo. 
                     </p>
                 </div>
             </uib-tab>

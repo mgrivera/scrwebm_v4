@@ -37,6 +37,7 @@ Meteor.methods(
 
         updates.forEach(function (item) {
             item.object.ultAct = new Date(); 
+            item.object.fechaCopiadaSql = null; 
             EmpresasUsuarias.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)

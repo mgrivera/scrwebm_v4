@@ -556,7 +556,7 @@ Meteor.methods(
 
                 // el usuario puede indicar que quiere solo e-mails internos (a él mismo); solo para probar ...
                 if (!condicionesEmail.noRegistrarEnvioEnCuotas) {
-                    Cuotas.update(cuota.cuotaID, { $push: { emailsEnviados: emailEnviado }});
+                    Cuotas.update(cuota.cuotaID, { $push: { emailsEnviados: emailEnviado, fechaCopiadoSql: null }});
 
                     // también actualizamos el registro de la consulta, por si acaso el usuario ejecuta el
                     // proceso, nuevamente, de inmediato; nótese que cada cuota se actualiza en el client por

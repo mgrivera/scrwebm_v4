@@ -1,11 +1,16 @@
 
 import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
 import moment from 'moment';
 import lodash from 'lodash'; 
 
 import { Riesgos, Riesgos_InfoRamo } from '/imports/collections/principales/riesgos';  
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+
+// si este proceso elimnina cuotas, debemos agregarlas aquí para que sean eliminadas desde sql la próxima vez que el 
+// usuario corra la copia desde mongo a sql 
+import { Catalogos_deletedItems } from '/imports/collections/general/catalogos_deletedItems'; 
 
 import { calcularNumeroReferencia } from '/server/imports/general/calcularNumeroReferencia'; 
 
@@ -94,7 +99,20 @@ Meteor.methods(
         if (item.docState && item.docState == 3) {
             // hooks: si el riesgo tiene cuotas cobradas/pagadas, no podrá ser eliminado ... 
             Riesgos.remove({ _id: item._id });
+
+            // -----------------------------------------------------------------------------------------------------
             // ahora eliminamos las cuotas asociadas al riesgo 
+
+            // primero leemos las cuotas que serán eliminadas, para agregarlas a la tabla: catalogos_deletedItems 
+            const cuotasAEliminar = Cuotas.find({ 'source.entityID': item._id }).fetch();
+
+            if (Array.isArray(cuotasAEliminar) && cuotasAEliminar.length) {
+                cuotasAEliminar.forEach(c => {
+                    Catalogos_deletedItems.insert({ _id: new Mongo.ObjectID()._str, collection: "cuotas", itemId: c._id, fecha: new Date() });
+                })
+            }
+            // -----------------------------------------------------------------------------------------------------
+
             Cuotas.remove({ 'source.entityID': item._id });
         }
 

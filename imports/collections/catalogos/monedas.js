@@ -9,6 +9,7 @@ const schema = new SimpleSchema({
     defecto: { type: Boolean, label: "Moneda por defecto", optional: true, },
     ultAct: { type: Date, optional: true },
     docState: { type: Number, optional: true, },
+    fechaCopiadaSql: { type: Date, label: 'Fecha en que el registro fue copiado a sql server', optional: true }
 });
 
 export const Monedas = new Mongo.Collection("monedas");

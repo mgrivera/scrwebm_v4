@@ -16,7 +16,7 @@ Meteor.methods({
         }
             
         // eliminamos los cobros/pagos, en cuotas, que correspondan a la remesa ...
-        Cuotas.update({ 'pagos.remesaID': { $in: [remesa._id] } }, { $pull: { pagos: { remesaID: remesa._id } } }, { multi: true });
+        Cuotas.update({ 'pagos.remesaID': { $in: [remesa._id] } }, { $set: { fechaCopiadoSql: null }, $pull: { pagos: { remesaID: remesa._id } } }, { multi: true });
     
         // finalmente, 'abrimos' la remesa y eliminamos su array de 'cuadre'
         Remesas.update({ _id: remesaID }, { $set: { fechaCerrada: null }, $unset: { cuadre: true, asientoContable: true, }});

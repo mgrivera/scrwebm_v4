@@ -32,7 +32,7 @@ Meteor.methods(
             const montoOriginal2 = lodash.round(cuota.montoOriginal / divisor, 2); 
             const monto2 = lodash.round(cuota.monto / divisor, 2); 
 
-            Cuotas.update({ _id: cuota._id, }, { $set: { montoOriginal: montoOriginal2, monto: monto2, }}); 
+            Cuotas.update({ _id: cuota._id, }, { $set: { montoOriginal: montoOriginal2, monto: monto2, fechaCopiadoSql: null }}); 
 
             if (cuota.pagos && Array.isArray(cuota.pagos) && cuota.pagos.length) { 
 
@@ -43,7 +43,7 @@ Meteor.methods(
                         // actualizamos el monto del pago ... 
                         const monto2 = lodash.round(pago.monto / divisor, 2); 
 
-                        Cuotas.update({ _id: cuota._id, "pagos._id": pago._id }, { $set: { "pagos.$.monto": monto2, }}); 
+                        Cuotas.update({ _id: cuota._id, "pagos._id": pago._id }, { $set: { "pagos.$.monto": monto2, fechaCopiadoSql: null }}); 
 
                         // vamos contando los pagos que se han actualizado 
                         cantidadPagosActualizados = cantidadPagosActualizados + cuota.pagos.length; 

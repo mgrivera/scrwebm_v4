@@ -158,6 +158,16 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             templateUrl: 'client/generales/seleccionarCompania/seleccionarCompania.html',
             controller: 'SeleccionarCompaniaController'
         })
+
+        // ----------------------------------------------------------------
+        // emision
+        // ----------------------------------------------------------------
+        .state('emision', {
+            url: '/emision', 
+            abstract: true, 
+            template: '<div class="row" ui-view></div>'
+        })
+
         // ----------------------------------------------------------------
         // contratos
         // ----------------------------------------------------------------
@@ -282,6 +292,15 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             templateUrl: 'client/imports/riesgos/notasDebito/notasDebito.html',
             controller: 'NotasDebitoController',
             parent: 'riesgo'
+        })
+
+        // ----------------------------------------------------------------
+        // registros manuales
+        // ----------------------------------------------------------------
+        .state('emision.registrosManuales', {
+            url: '/registrosManuales',
+            template: '<registros-manuales />', 
+            parent: 'emision'
         })
 
         // ----------------------------------------------------------------
@@ -742,6 +761,12 @@ angular.module("scrwebm").config(['$urlRouterProvider', '$stateProvider', '$loca
             url: '/actualizar_db_consultas',
             templateUrl: 'client/imports/utilitarios/actualizar_db_consultas/actualizar_db_consultas.html',
             controller: 'Actualizar_db_consultas_Controller',
+            parent: 'utilitarios'
+        })
+        .state('utilitarios.copiar_cuotas', {
+            url: '/copiar_cuotas',
+            templateUrl: 'client/imports/utilitarios/copiar_cuotas/copiar_cuotas.html',
+            controller: 'Copiar_cuotas_Controller',
             parent: 'utilitarios'
         })
 

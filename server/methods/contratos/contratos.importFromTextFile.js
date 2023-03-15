@@ -80,6 +80,23 @@ Meteor.methods(
                 contrato.cuentasTecnicas_definicion.forEach((x) => x._id = new Mongo.ObjectID()._str);
             }
 
+            // ------------------------------------------------------------------------------------------------------------
+            // si el contrato es de tipo no proporcional, los datos que corresponden vienen como arrays en el contrato 
+            // para proporcionales es diferente; sus datos vienen en tablas (collections) diferentes 
+            // ahora, para contratos *no* proporcionales, ajustamos el array con la información de sus capas 
+            if (contrato.capas && Array.isArray(contrato.capas)) {
+                // cambiamos el id para cada período en el array 
+                contrato.capas.forEach((x) => x._id = new Mongo.ObjectID()._str);
+            }
+
+            // ------------------------------------------------------------------------------------------------------------
+            // si el contrato es de tipo no proporcional, viene un array con la información de capas determinada para cada 
+            // compañía (nosotros y reaseguradores). Eliminamos este array del contrato pues debe ser calculado y determinado 
+            // nuevamente 
+            if (contrato.capasPrimasCompanias && Array.isArray(contrato.capasPrimasCompanias)) {
+                delete contrato.capasPrimasCompanias; 
+            }
+
             // siempre eliminamos alguna información de renovación que pueda existir en el contrato de origen 
             contrato.renovacion = {};
 

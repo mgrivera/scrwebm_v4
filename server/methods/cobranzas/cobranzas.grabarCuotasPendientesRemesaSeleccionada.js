@@ -16,8 +16,6 @@ Meteor.methods(
         check(remesaID, String);
         check(pagosAAplicar, [Object]);
 
-        var self = this;
-
         // leemos la remesa
         var remesa = Remesas.findOne(remesaID);
 
@@ -49,7 +47,10 @@ Meteor.methods(
             };
 
             // agregamos el pago a la cuota
-            Cuotas.update({ _id: pago.cuotaID }, { $push: { pagos: pagoCuota } });
+
+            // -----------------------------------------------------------------------------------------------------
+            // fechaCopiadoSql: para que el registro se copie a sql en la prox copia que efectúe el usuario
+            Cuotas.update({ _id: pago.cuotaID }, { $set: { fechaCopiadoSql: null }, $push: { pagos: pagoCuota } });
             cantidadPagosAplicados++;
         });
 

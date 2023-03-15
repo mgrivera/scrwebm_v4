@@ -1,8 +1,10 @@
 ﻿
 import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
 import lodash from 'lodash'; 
 import { Cuotas } from '/imports/collections/principales/cuotas'; 
+import { Catalogos_deletedItems } from '/imports/collections/general/catalogos_deletedItems'; 
 
 Meteor.methods(
 {
@@ -20,7 +22,7 @@ Meteor.methods(
 
 
         inserts.forEach(function (item) {
-            Cuotas.insert(item, function (error, result) {
+            Cuotas.insert(item, function (error) {
                 if (error)
                     if (error.invalidKeys) 
                         throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
@@ -28,7 +30,6 @@ Meteor.methods(
                         throw new Meteor.Error("meteorError", error);
                 });
         });
-
 
         var updates = lodash.chain(cuotas).
                         filter(function (item) { return item.docState && item.docState == 2; }).
@@ -38,7 +39,14 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
-            Cuotas.update({ _id: item._id }, { $set: item.object }, {}, function (error, result) {
+            // -----------------------------------------------------------------------------------------------------
+            // para que el registro se copie a sql en la prox copia que efectúe el usuario 
+            if (item?.object?.fechaCopiadaSql) { 
+                item.object.fechaCopiadaSql = null; 
+            }
+            // -----------------------------------------------------------------------------------------------------
+            
+            Cuotas.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
                     if (error.invalidKeys)
@@ -52,8 +60,13 @@ Meteor.methods(
 
         removes.forEach(function (item) {
             Cuotas.remove({ _id: item._id });
+
+            // -----------------------------------------------------------------------------------------------------
+            // para que el registro se elimine en sql la prox copia que efectúe el usuario 
+            Catalogos_deletedItems.insert({ _id: new Mongo.ObjectID()._str, collection: "cuotas", itemId: item._id, fecha: new Date() }); 
+            // -----------------------------------------------------------------------------------------------------
         });
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
-});
+})

@@ -71,7 +71,9 @@ const simpleSchema = new SimpleSchema({
 
     cia: { type: String, label: 'Cia', optional: false },
     protegida: { type: schema_protegida, optional: true, minCount: 0 },     // para saber si la entidad está 'protegida' (ej: por un proceso de cierre)
-    docState: { type: Number, optional: true }
+    docState: { type: Number, optional: true }, 
+
+    fechaCopiadaSql: { type: Date, label: 'Fecha en que la cuota fue copiada a sql server', optional: true }
 })
 
 export const Cuotas = new Mongo.Collection("cuotas");

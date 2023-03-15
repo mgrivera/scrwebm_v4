@@ -1,5 +1,6 @@
 
 import { Meteor } from 'meteor/meteor'; 
+import { Mongo } from 'meteor/mongo';
 
 import lodash from 'lodash'; 
 import moment from 'moment';
@@ -18,6 +19,10 @@ import { ContratosProp_retCartSn_resumen, ContratosProp_retCartSn_distribucion, 
 
 import { mongoCollection_array_grabar } from '/server/imports/general/mongoCollection.grabar'; 
 import { calcularNumeroReferencia } from '/server/imports/general/calcularNumeroReferencia'; 
+
+// si este proceso elimnina cuotas, debemos agregarlas aquí para que sean eliminadas desde sql la próxima vez que el 
+// usuario corra la copia desde mongo a sql 
+import { Catalogos_deletedItems } from '/imports/collections/general/catalogos_deletedItems'; 
 
 Meteor.methods(
 {
@@ -111,10 +116,26 @@ Meteor.methods(
                 item2.personas.forEach(x => delete x.docState);
             }
 
+            //  ponemos la fecha de copiado a sql server en null, para que el contrato sea copiado la próxima vez 
+            // (cuando se corra la copia) 
+
+            item2.fechaCopiadaSql = null; 
+
             Contratos.update({ _id: contrato._id }, { $set: item2 });
         }
 
         if (contrato.docState && contrato.docState == 3) {
+
+            // -----------------------------------------------------------------------------------------------------
+            // primero leemos las cuotas que serán eliminadas, para agregarlas a la tabla: catalogos_deletedItems 
+            const cuotasAEliminar = Cuotas.find({ 'source.entityID': contrato._id }).fetch();
+            
+            if (Array.isArray(cuotasAEliminar) && cuotasAEliminar.length) { 
+                cuotasAEliminar.forEach(c => { 
+                    Catalogos_deletedItems.insert({ _id: new Mongo.ObjectID()._str, collection: "cuotas", itemId: c._id, fecha: new Date() });
+                })
+            }
+            // -----------------------------------------------------------------------------------------------------
             
             Cuotas.remove({ 'source.entityID': contrato._id });
 
@@ -142,6 +163,11 @@ Meteor.methods(
             ContratosProp_retCartSn_montosFinales.remove({ contratoID: contrato._id }); 
 
             Contratos.remove({ _id: contrato._id }); 
+
+            // ---------------------------------------------------------------------------------------------------------------------------------------
+            // para que el registro se elimine en sql la prox copia que efectúe el usuario 
+            Catalogos_deletedItems.insert({ _id: new Mongo.ObjectID()._str, collection: "contratos", itemId: contrato._id, fecha: new Date() });
+            // ---------------------------------------------------------------------------------------------------------------------------------------
         }
 
         // ---------------------------------------------------------------------------------------------------------------------------------

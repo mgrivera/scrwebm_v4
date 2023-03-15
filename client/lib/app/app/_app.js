@@ -30,6 +30,7 @@ import 'ui-select/dist/select.css';
 // hacemos un import de los módulos (angular modules) que están en /client/imports, y los pasamos en DI (angular dependency injection) 
 import Generales from '/client/imports/generales/generalesAngularModule';
 import Catalogos from '/client/imports/catalogos/angularModule';
+import Emision from '/client/imports/emision/angular.module'; 
 import Riesgos from '/client/imports/riesgos/riesgosAngularModule'; 
 import Contratos from '/client/contratos/contratos'; 
 import Remesas from '/client/imports/remesas/remesasAngularModule'; 
@@ -98,7 +99,7 @@ angular.module("scrwebm", [ angularMeteor, uiRouter, 'ui.bootstrap',
                             'ui.grid.pinning', 'ui.grid.grouping', 
                             ngSanitize, uiSelect, 
                             // pasamos los modules (angular modules) que están directamente bajo éste ... 
-                            Generales.name, Catalogos.name, Contratos.name, 
+                            Generales.name, Catalogos.name, Emision.name, Contratos.name, 
                             Riesgos.name, Remesas.name, NotasDebitoCredito.name, Cobranzas.name, 
                             Administracion.name, Consultas.name, Utilitarios.name, MeteorLogin.name, 
                             Contratos.name

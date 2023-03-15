@@ -2440,11 +2440,7 @@ function ($scope, $state, $stateParams, $uibModal, uiGridConstants, $location) {
             templateUrl: 'client/imports/contratos/copiarContratoADBConsultas/copiarContrato.html',
             controller: 'Contratos_CopiarADBConsultas_Controller',
             size: 'lg',
-            resolve: {
-                contratoId: () => {
-                    return $scope.contrato._id;
-                },
-            }
+            resolve: { }
         }).result.then(
             function () {
                 return true;

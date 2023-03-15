@@ -39,6 +39,26 @@ DateCell.propTypes = {
     columnKey: PropTypes.string,
 };
 
+// ------------- DateCell -----------------------------------------------
+function DateTimeCell({ data, rowIndex, columnKey, ...props }) {
+
+    const dateValue = data[rowIndex][columnKey]; 
+
+    return (
+        <Cell {...props}>
+            { 
+                moment.isDate(dateValue) ? moment(dateValue).format('D-MMM-YYYY h:m a') : "" 
+            }
+        </Cell>
+    );
+}
+
+DateTimeCell.propTypes = {
+    data: PropTypes.array.isRequired,
+    rowIndex: PropTypes.number,
+    columnKey: PropTypes.string,
+};
+
 // ------------- DateCellShort -----------------------------------------------
 function DateCellShort({ data, rowIndex, columnKey, ...props }) {
 
@@ -50,6 +70,22 @@ function DateCellShort({ data, rowIndex, columnKey, ...props }) {
 }
 
 DateCellShort.propTypes = {
+    data: PropTypes.array.isRequired,
+    rowIndex: PropTypes.number,
+    columnKey: PropTypes.string,
+};
+
+// ------------- DateCellShort -----------------------------------------------
+function DateCellNotSoShort({ data, rowIndex, columnKey, ...props }) {
+
+    return (
+        <Cell {...props}>
+            {moment(data[rowIndex][columnKey]).format('D-MMM-YYYY')}
+        </Cell>
+    );
+}
+
+DateCellNotSoShort.propTypes = {
     data: PropTypes.array.isRequired,
     rowIndex: PropTypes.number,
     columnKey: PropTypes.string,
@@ -187,4 +223,4 @@ SortHeaderCell.propTypes = {
     applySort: PropTypes.func.isRequired
 };
 
-export { TextCell, SortHeaderCell, BooleanCell, DocStateCell, DateCell, DateCellShort, Number2DecimalsCell }
+export { TextCell, SortHeaderCell, BooleanCell, DocStateCell, DateCell, DateCellShort, DateCellNotSoShort, Number2DecimalsCell, DateTimeCell }

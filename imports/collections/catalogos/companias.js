@@ -28,7 +28,8 @@ const schema = new SimpleSchema({
     ultAct: { type: Date, optional: true }, 
     docState: { type: Number, optional: true },
     personas: { type: Array, optional: true, minCount: 0 },
-    'personas.$': { type: personas_SimpleSchema }
+    'personas.$': { type: personas_SimpleSchema }, 
+    fechaCopiadaSql: { type: Date, label: 'Fecha en que el registro fue copiado a sql server', optional: true }
 });
 
 export const Companias = new Mongo.Collection("companias");

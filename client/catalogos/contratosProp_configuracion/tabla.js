@@ -219,7 +219,7 @@ function ($scope, $state, $stateParams, $uibModal) {
             const config = {
                 // delimiter: "\t",
                 delimiter: "",	            // auto-detect
-                quoteChar: '"',	            // a veces Excel usa comillas para calificar; solo en algunos valores (???)
+                quoteChar: "'",	            // a veces Excel usa comillas para calificar; solo en algunos valores (???)
                 skipEmptyLines: 'greedy',   // super útil; si el usuario deja lineas en blanco en Excel, no las importamos 
                 header: true                // el usuario debe dejar el header 
             };
