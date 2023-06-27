@@ -107,7 +107,8 @@ function capasDeterminarRegistrosPrimaCompanias2($scope, companiaNosotros, soloC
 
         primaCompania.imp1Porc = capa.imp1Porc;
         primaCompania.imp2Porc = capa.imp2Porc;
-        primaCompania.corretajePorc = capa.corretajePorc;
+        // nótese cómo *no* usamos el %corr default para el registro 'nosotros' (solo para reaseguradores)
+        primaCompania.corretajePorc = 0;                    
         primaCompania.impSPNPorc = capa.impSPNPorc;
 
         contrato.capasPrimasCompanias.push(primaCompania);

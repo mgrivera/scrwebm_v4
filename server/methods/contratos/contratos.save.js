@@ -181,7 +181,6 @@ Meteor.methods(
         reportarProgresoAlCliente(16); 
         mongoCollection_array_grabar(contratosProp_cuentas_saldos, ContratosProp_cuentas_saldos); 
 
-
         reportarProgresoAlCliente(20); 
         mongoCollection_array_grabar(contratosProp_comAdic_resumen.filter(x => x.monto), ContratosProp_comAdic_resumen); 
 
