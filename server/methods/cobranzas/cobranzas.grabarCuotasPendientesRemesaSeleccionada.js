@@ -19,14 +19,16 @@ Meteor.methods(
         // leemos la remesa
         var remesa = Remesas.findOne(remesaID);
 
-        if (!remesa)
+        if (!remesa) { 
             throw new Meteor.Error("remesa-no-encontrada", "Error inesperado: la remesa indicada no pudo ser leída en la base de datos.");
+        }
 
         // ésto no debe ser para nada necesario; la remesa usada en este proceso no debe estar cerrada ni tener pagos asociados ...
-        if (remesa.fechaCerrada)
+        if (remesa.fechaCerrada) { 
             throw new Meteor.Error("remesa-cerrada", "Error inesperado: la remesa está cerrada; no debe estarlo, pues significa " +
                 "que este proceso fue ejecutado antes para esta remesa.");
-
+        }
+            
         if (remesa.pagos && remesa.pagos.length) {
             throw new Meteor.Error("remesa-con-pagos-asociados", "Error inesperado: la remesa seleccionada tiene pagos asociados.");
         }
@@ -52,7 +54,7 @@ Meteor.methods(
             // fechaCopiadoSql: para que el registro se copie a sql en la prox copia que efectúe el usuario
             Cuotas.update({ _id: pago.cuotaID }, { $set: { fechaCopiadoSql: null }, $push: { pagos: pagoCuota } });
             cantidadPagosAplicados++;
-        });
+        })
 
         // finalmente, cerramos la remesa
         Remesas.update({ _id: remesaID }, { $set: { fechaCerrada: new Date() } });
