@@ -99,7 +99,9 @@ const Remesa_SimpleSchema = new SimpleSchema({
 
     cia: { type: String, optional: false },
     protegida: { type: schema_protegida, optional: true, minCount: 0 },     // para saber si la entidad está 'protegida' (ej: por un proceso de cierre)
-    docState: { type: Number, optional: true }
+    docState: { type: Number, optional: true }, 
+
+    fechaCopiadaSql: { type: Date, label: 'Fecha en que el registro fue copiado a sql server', optional: true }
 })
 
 export const Remesas = new Mongo.Collection("remesas");

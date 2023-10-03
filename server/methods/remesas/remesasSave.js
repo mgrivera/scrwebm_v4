@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import lodash from 'lodash'; 
 import { Remesas } from '/imports/collections/principales/remesas';  
+import { registroEliminacionCatalogos } from '/server/generalFunctions/registroEliminacionCatalogos'; 
 
 Meteor.methods(
 {
@@ -23,7 +24,7 @@ Meteor.methods(
             // si el número viene en '0', asignamos un número consecutivo al remesa
             // TODO: encontrar una mejor forma de actualizar el consecutivo ...
             if (!item.numero) {
-                var numeroAnterior = Remesas.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+                const numeroAnterior = Remesas.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
                 if (!numeroAnterior || !numeroAnterior.numero) { 
                     item.numero = 1;
                 }
@@ -44,10 +45,12 @@ Meteor.methods(
 
             item2.ultAct = new Date();
             item2.ultUsuario = Meteor.user().emails[0].address; 
+            // para que el item que se ha editado sea copiado a sql 
+            item2.fechaCopiadaSql = null;     
 
             // si el número viene en '0', asignamos un número consecutivo al remesa
             if (!item2.numero) {
-                var numeroAnterior = Remesas.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
+                const numeroAnterior = Remesas.findOne({ cia: item.cia }, { fields: { numero: 1 }, sort: { numero: -1 } });
                 if (!numeroAnterior.numero) { 
                     item2.numero = 1;
                 }
@@ -66,7 +69,13 @@ Meteor.methods(
         }
 
         if (item.docState && item.docState == 3) {
-            Remesas.remove({ _id: item._id });
+            const _id = item._id;
+
+            Remesas.remove({ _id });
+
+            // ahora agregamos el item que justo se ha eliminado a la tabla: catalogos_deletedItems
+            // la idea es luego actualizar la tabla que corresponde en la db de consultas (sql server) 
+            registroEliminacionCatalogos("remesas", _id); 
         }
 
         return "Ok, los datos han sido actualizados en la base de datos.";

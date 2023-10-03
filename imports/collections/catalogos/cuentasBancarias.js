@@ -13,6 +13,7 @@ const schema = new SimpleSchema({
     cuentaContable: { type: String, label: "Cuenta contable", optional: true, min: 1, max: 25, },
     cia: { type: String, label: "Cia", optional: false, },
     docState: { type: Number, optional: true, },
+    fechaCopiadaSql: { type: Date, label: 'Fecha en que el registro fue copiado a sql server', optional: true }
 });
 
 export const CuentasBancarias = new Mongo.Collection("cuentasBancarias");

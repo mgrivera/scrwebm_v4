@@ -24,8 +24,8 @@ Meteor.methods(
             TiposContrato.insert(item, function (error) {
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
-            });
-        });
+            })
+        })
 
         const updates = lodash.chain(tiposContrato).
                         filter(function (item) { return item.docState && item.docState == 2; }).
@@ -41,8 +41,8 @@ Meteor.methods(
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
                     throw new Meteor.Error("validationErrors", error.invalidKeys.toString());
-            });
-        });
+            })
+        })
 
         const removes = lodash.filter(tiposContrato, function (item) { return item.docState && item.docState == 3; });
 
@@ -53,7 +53,7 @@ Meteor.methods(
             // ahora agregamos el item que justo se ha eliminado a la tabla: catalogos_deletedItems
             // la idea es luego actualizar la tabla que corresponde en la db de consultas (sql server) 
             registroEliminacionCatalogos("tiposContrato", _id)
-        });
+        })
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }

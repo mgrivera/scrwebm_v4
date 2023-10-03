@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import lodash from 'lodash'; 
 
 import { Bancos } from '/imports/collections/catalogos/bancos'; 
+import { registroEliminacionCatalogos } from '/server/generalFunctions/registroEliminacionCatalogos'; 
 
 Meteor.methods(
 {
@@ -32,6 +33,8 @@ Meteor.methods(
                         value();
 
         updates.forEach(function (item) {
+            // para que el item que se ha editado sea copiado a sql 
+            item.object.fechaCopiadaSql = null;           
             Bancos.update({ _id: item._id }, { $set: item.object }, {}, function (error) {
                 //The list of errors is available on `error.invalidKeys` or by calling Books.simpleSchema().namedContext().invalidKeys()
                 if (error)
@@ -42,8 +45,13 @@ Meteor.methods(
         const removes = lodash.filter(bancos, function (item) { return item.docState && item.docState == 3; });
 
         removes.forEach(function (item) {
-            Bancos.remove({ _id: item._id });
-        });
+            const _id = item._id;
+            Bancos.remove({ _id });
+
+            // ahora agregamos el item que justo se ha eliminado a la tabla: catalogos_deletedItems
+            // la idea es luego actualizar la tabla que corresponde en la db de consultas (sql server) 
+            registroEliminacionCatalogos("bancos", _id); 
+        })
 
         return "Ok, los datos han sido actualizados en la base de datos.";
     }
