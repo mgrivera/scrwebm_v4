@@ -17,7 +17,7 @@ function ($scope) {
     let companiaSeleccionadaDoc = {};
 
     if (companiaSeleccionada) { 
-        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1, abreviatura: 1 } });
+        companiaSeleccionadaDoc = EmpresasUsuarias.findOne(companiaSeleccionada.companiaID, { fields: { nombre: 1, abreviatura: 1, companiaNosotros: 1 } });
     } 
 
     $scope.companiaSeleccionada = {};

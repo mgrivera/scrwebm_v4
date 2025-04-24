@@ -31,6 +31,12 @@ function ($rootScope, $scope, $location, $timeout) {
     const queryParams = $location.search();
     $scope.vieneDeAfuera = queryParams && queryParams.vieneDeAfuera && queryParams.vieneDeAfuera === 'true';
 
+    // -----------------------------------------------------------------------------------------------
+    // para mostrar un link que permita abrir la aplicación: scrweb_blazor 
+    const scrweb_blazor_app_address = Meteor.settings.public.scrweb_blazor_app_address;
+    $scope.scrweb_blazor_app_address = scrweb_blazor_app_address;    
+    
+
     $scope.showProgress = false;
 
     // ui-bootstrap alerts ...

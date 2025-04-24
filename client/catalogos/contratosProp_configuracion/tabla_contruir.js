@@ -469,6 +469,8 @@ function ($scope, $state, $stateParams, $uibModal, $interval) {
         }
 
         // 1) leemos la compañía 'nosotros' ... 
+        // Nota Importante: la compañía Nosotros se define en la tabla Empresas Usuarias 
+        // Aquí leemos la que se ha definido en la Empresa Usuaria que ha seleccionado el usuario 
         let companiaNosotros = {};
         const result = LeerCompaniaNosotros(Meteor.userId());
 
@@ -522,7 +524,10 @@ function ($scope, $state, $stateParams, $uibModal, $interval) {
                                 _id: new Mongo.ObjectID()._str,
                                 compania: compania._id,
                                 companiaAbreviatura: compania.abreviatura, 
-                                nosotros: compania.nosotros,
+
+                                // asignamos Nosotros si la compañia es la que leímos antes como Nosotros 
+                                nosotros: (compania._id === companiaNosotros._id ? true : false),
+
                                 ano: ano.ano,
                                 moneda: moneda._id,
                                 monedaSimbolo: moneda.simbolo, 
